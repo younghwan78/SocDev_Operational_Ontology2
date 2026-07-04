@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -51,6 +52,27 @@ class InMemoryRepository:
             assert isinstance(request, ScenarioRequest)
             result.update(p.propagation_id for p in request.propagation)
         return result
+
+    def add_objects(self, collection: str, objects: Sequence[OntologyObject]) -> None:
+        """반입 계층 전용 추가 경로 — 일반 코드에서 직접 호출하지 않는다."""
+        from backend.ontology import COLLECTIONS
+
+        if collection not in COLLECTIONS:
+            raise KeyError(f"알 수 없는 컬렉션: {collection}")
+        self._collections.setdefault(collection, []).extend(objects)
+        self._by_id.setdefault(collection, {}).update({obj.id: obj for obj in objects})
+
+    def remove_by_ref_prefix(self, ref_prefix: str) -> int:
+        """반입 배치 rollback 전용 제거 경로. 제거 건수를 반환한다."""
+        removed = 0
+        for collection, items in self._collections.items():
+            keep = [
+                obj for obj in items if not (obj.source.ref or "").startswith(ref_prefix)
+            ]
+            removed += len(items) - len(keep)
+            self._collections[collection] = keep
+            self._by_id[collection] = {obj.id: obj for obj in keep}
+        return removed
 
 
 @dataclass

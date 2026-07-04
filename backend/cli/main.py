@@ -122,6 +122,53 @@ def db_check(
     console.print(table)
 
 
+@app.command("ingest-file")
+def ingest_file(
+    file: Path = typer.Option(..., "--file", help="CSV/XLSX 파일 경로"),
+    mapping: str = typer.Option(..., "--mapping", help="매핑 이름"),
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (미지정 시 메모리 — 검증 전용)"),
+) -> None:
+    """실데이터 파일을 반입한다. DSN 미지정 시 검증만 수행된다(비영속)."""
+    from backend.ingest.service import IngestService, MemoryIngestWriter
+    from backend.loaders.repository import InMemoryRepository
+
+    if dsn or __import__("os").environ.get("SOC_ONTOLOGY_DSN"):
+        from backend.db.connection import get_connection
+        from backend.ingest.service import PostgresIngestWriter
+
+        with get_connection(dsn) as conn:
+            service = IngestService(PostgresIngestWriter(conn))
+            report = service.ingest(file.name, file.read_bytes(), mapping)
+    else:
+        repo = InMemoryRepository.from_fixtures(DEFAULT_FIXTURES)
+        service = IngestService(MemoryIngestWriter(repo))
+        report = service.ingest(file.name, file.read_bytes(), mapping)
+        console.print("[yellow]DSN 미지정 — 검증만 수행됨 (저장되지 않음)[/yellow]")
+
+    console.print(
+        f"배치 {report.batch.id}: 수용 {report.batch.accepted_count}건 / "
+        f"거부 {report.batch.rejected_count}건"
+    )
+    for rejected in report.rejected_rows:
+        console.print(f"[red]{rejected.row_number}행[/red] {rejected.reason}")
+    if report.rejected_rows:
+        raise typer.Exit(code=1)
+
+
+@app.command("ingest-rollback")
+def ingest_rollback(
+    batch_id: str = typer.Option(..., "--batch-id", help="롤백할 배치 ID"),
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN"),
+) -> None:
+    """반입 배치를 롤백한다 — 허용되는 유일한 삭제 경로."""
+    from backend.db.connection import get_connection
+    from backend.ingest.service import IngestService, PostgresIngestWriter
+
+    with get_connection(dsn) as conn:
+        removed = IngestService(PostgresIngestWriter(conn)).rollback(batch_id)
+    console.print(f"롤백 완료: {removed}건 제거")
+
+
 def main() -> None:
     app()
 

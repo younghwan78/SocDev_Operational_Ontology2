@@ -120,6 +120,31 @@ def test_postgres_run_store_roundtrip(pg_conn) -> None:
     assert match.validation_notes == ["테스트 기록"]
 
 
+def test_postgres_ingest_and_rollback(pg_conn, seeded) -> None:
+    """PostgreSQL 반입 → 조회 → rollback 왕복. synthetic 데이터는 보존."""
+    from pathlib import Path
+
+    from backend.db.repository import PostgresRepository
+    from backend.ingest.service import IngestService, PostgresIngestWriter
+
+    sample = Path(__file__).resolve().parents[1] / "samples" / "sample_milestones.csv"
+    service = IngestService(PostgresIngestWriter(pg_conn))
+    repo = PostgresRepository(pg_conn)
+    before = len(repo.list("project_milestones"))
+
+    report = service.ingest("sample_milestones.csv", sample.read_bytes(), "project_milestones")
+    assert report.batch.accepted_count == 3
+    assert len(repo.list("project_milestones")) == before + 3
+    imported = repo.get("project_milestones", "import_u_pvt_review")
+    assert imported is not None and imported.source.origin.value == "imported"
+
+    removed = service.rollback(report.batch.id)
+    assert removed == 3
+    assert len(repo.list("project_milestones")) == before
+    assert repo.get("project_milestones", "project_u_package_out_done") is not None
+    assert service.list_batches()[0].status == "rolled_back"
+
+
 def test_api_parity_memory_vs_postgres(pg_conn, seeded) -> None:
     """API 응답은 저장소 백엔드(메모리/PostgreSQL)와 무관하게 동일해야 한다."""
     from backend.api.app import create_app

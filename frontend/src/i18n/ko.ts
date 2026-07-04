@@ -87,6 +87,18 @@ export const ko = {
     requests_section: "시나리오 요청",
     counts: "이벤트 {e} · 활동 {a} · 요청 {r}",
   },
+  origin: {
+    synthetic: "가상",
+    imported: "반입",
+    integrated: "연동",
+  },
+  ingest: {
+    history: "반입 이력",
+    accepted: "수용",
+    rejected: "거부",
+    status_completed: "완료",
+    status_rolled_back: "롤백됨",
+  },
   evidence: {
     title: "근거 탐색",
     filter_availability: "가용성",

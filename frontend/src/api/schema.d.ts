@@ -72,6 +72,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ingest/batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Ingest Batches
+         * @description 반입 이력 (최신순).
+         */
+        get: operations["list_ingest_batches_api_v1_ingest_batches_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ingest/batches/{batch_id}/rollback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rollback Ingest Batch
+         * @description 반입 배치 단위 rollback — 허용되는 유일한 삭제 경로.
+         */
+        post: operations["rollback_ingest_batch_api_v1_ingest_batches__batch_id__rollback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ingest/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ingest File
+         * @description 실데이터 반입 — 온톨로지 데이터가 진입하는 유일한 쓰기 경로.
+         */
+        post: operations["ingest_file_api_v1_ingest_file_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta": {
         parameters: {
             query?: never;
@@ -436,6 +496,14 @@ export interface components {
             /** Title */
             title: string;
         };
+        /** Body_ingest_file_api_v1_ingest_file_post */
+        Body_ingest_file_api_v1_ingest_file_post: {
+            /**
+             * File
+             * @description CSV 또는 XLSX 파일
+             */
+            file: string;
+        };
         /**
          * CandidateOption
          * @description 검토 후보 옵션 — 결정이 아닌 검토 대상.
@@ -735,6 +803,37 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * IngestBatch
+         * @description 반입 배치 기록.
+         */
+        IngestBatch: {
+            /** Accepted Count */
+            accepted_count: number;
+            /** Created At */
+            created_at: string;
+            /** Filename */
+            filename: string;
+            /** Id */
+            id: string;
+            /** Mapping Name */
+            mapping_name: string;
+            /** Rejected Count */
+            rejected_count: number;
+            /** Status */
+            status: string;
+            /** Target Collection */
+            target_collection: string;
+        };
+        /**
+         * IngestReport
+         * @description 반입 결과 보고서 — 실패 행 사유는 한국어로.
+         */
+        IngestReport: {
+            batch: components["schemas"]["IngestBatch"];
+            /** Rejected Rows */
+            rejected_rows?: components["schemas"]["RejectedRow"][];
+        };
+        /**
          * Issue
          * @description 개발 이슈 — 증상/근본원인 후보/영향 범위.
          */
@@ -1018,6 +1117,13 @@ export interface components {
             to_project_id: string;
             /** Trigger Role */
             trigger_role: string;
+        };
+        /** RejectedRow */
+        RejectedRow: {
+            /** Reason */
+            reason: string;
+            /** Row Number */
+            row_number: number;
         };
         /**
          * RequiredEvidenceNeed
@@ -1681,6 +1787,95 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     };
+                };
+            };
+        };
+    };
+    list_ingest_batches_api_v1_ingest_batches_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngestBatch"][];
+                };
+            };
+        };
+    };
+    rollback_ingest_batch_api_v1_ingest_batches__batch_id__rollback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: number;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ingest_file_api_v1_ingest_file_post: {
+        parameters: {
+            query: {
+                /** @description 매핑 이름 (예: project_milestones) */
+                mapping: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_ingest_file_api_v1_ingest_file_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngestReport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

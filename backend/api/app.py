@@ -11,11 +11,18 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 
 from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
 from backend.agents.runner import AdvisoryRunner
+from backend.ingest.service import (
+    IngestBatch,
+    IngestError,
+    IngestReport,
+    IngestService,
+    MemoryIngestWriter,
+)
 from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.repository import InMemoryRepository
 from backend.ontology import COLLECTIONS, RUNTIME_CONTRACTS
@@ -53,6 +60,7 @@ class AppServices:
     traceability: TraceabilityService
     advisory: AdvisoryRunner
     run_store: RunStoreProtocol
+    ingest: IngestService
 
 
 def build_services(
@@ -60,6 +68,7 @@ def build_services(
 ) -> AppServices:
     backend_kind = "memory"
     run_store: RunStoreProtocol = InMemoryRunStore()
+    ingest_service: IngestService | None = None
     if repo is None:
         dsn = os.environ.get("SOC_ONTOLOGY_DSN")
         if dsn:
@@ -67,13 +76,20 @@ def build_services(
 
             from backend.agents.run_store import PostgresRunStore
             from backend.db.repository import PostgresRepository
+            from backend.ingest.service import PostgresIngestWriter
 
             conn = psycopg.connect(dsn)
             repo = PostgresRepository(conn)
             run_store = PostgresRunStore(conn)
+            ingest_service = IngestService(PostgresIngestWriter(conn))
             backend_kind = "postgres"
         else:
             repo = InMemoryRepository.from_fixtures(fixtures_dir)
+    if ingest_service is None:
+        if isinstance(repo, InMemoryRepository):
+            ingest_service = IngestService(MemoryIngestWriter(repo))
+        else:
+            ingest_service = IngestService(MemoryIngestWriter(InMemoryRepository({})))
     index = ObjectIndex(repo)
     return AppServices(
         repo=repo,
@@ -84,6 +100,7 @@ def build_services(
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
         run_store=run_store,
+        ingest=ingest_service,
     )
 
 
@@ -228,5 +245,28 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     def list_advisory(scenario_id: str) -> list[AgentRun]:
         """해당 시나리오의 advisory 실행 기록 (최신순)."""
         return services.run_store.list_for_scenario(scenario_id)
+
+    @app.post(f"{prefix}/ingest/file", response_model=IngestReport)
+    async def ingest_file(
+        mapping: str = Query(description="매핑 이름 (예: project_milestones)"),
+        file: UploadFile = File(description="CSV 또는 XLSX 파일"),
+    ) -> IngestReport:
+        """실데이터 반입 — 온톨로지 데이터가 진입하는 유일한 쓰기 경로."""
+        content = await file.read()
+        try:
+            return services.ingest.ingest(file.filename or "upload", content, mapping)
+        except IngestError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get(f"{prefix}/ingest/batches", response_model=list[IngestBatch])
+    def list_ingest_batches() -> list[IngestBatch]:
+        """반입 이력 (최신순)."""
+        return services.ingest.list_batches()
+
+    @app.post(f"{prefix}/ingest/batches/{{batch_id}}/rollback")
+    def rollback_ingest_batch(batch_id: str) -> dict[str, int]:
+        """반입 배치 단위 rollback — 허용되는 유일한 삭제 경로."""
+        removed = services.ingest.rollback(batch_id)
+        return {"removed": removed}
 
     return app

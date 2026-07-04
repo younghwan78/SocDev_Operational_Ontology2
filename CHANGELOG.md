@@ -1,5 +1,33 @@
 # CHANGELOG
 
+## Stage 7 — Excel/CSV 실데이터 반입 파일럿 (2026-07-04)
+
+### 추가
+
+- `backend/ingest/tabular.py`: CSV(UTF-8/CP949)·XLSX 파서.
+- `backend/ingest/mappings.py`: **한국어 열 이름** → 온톨로지 필드 매핑 레지스트리.
+  1차 매핑: 프로젝트 마일스톤, 측정 근거. 리스트 열(`;` 구분)/정수 열 변환 지원.
+- `backend/ingest/service.py`: 반입 서비스 — 파싱 → 매핑 → 모델 검증 → 배치 저장.
+  - 실패 행은 한국어 사유와 행 번호로 보고 (`필수 열 누락`, `형 변환 실패`, 필드 검증 실패).
+  - 모든 반입 객체는 `source.origin=imported` + `import:<배치>:<파일>#row<N>` 계보.
+  - **rollback은 배치 단위만** — 개별 객체 수정/삭제 API는 계속 부재.
+  - synthetic 데이터는 rollback의 영향을 받지 않음 (테스트 강제).
+- 저장 백엔드별 writer: `MemoryIngestWriter`(개발) / `PostgresIngestWriter`(운영,
+  마이그레이션 `0003_ingest_batches.sql`).
+- API: `POST /api/v1/ingest/file`(multipart), `GET /api/v1/ingest/batches`,
+  `POST /api/v1/ingest/batches/{id}/rollback`.
+- CLI: `ingest-file --file --mapping [--dsn]` (DSN 없으면 검증만), `ingest-rollback`.
+- UI: `SourceBadge`(가상/반입/연동) — 근거 탐색에 표시, 반입 이력 카드.
+- 샘플: `samples/sample_milestones.csv` (한국어 헤더).
+
+### 검증
+
+```text
+backend 82 passed (+PG: 반입→조회→rollback 왕복 포함) / ruff / mypy pass
+frontend build / test(5) / lint pass
+validate-data → 오류 0건 유지
+```
+
 ## Stage 6 — 포트폴리오 현황 · 리뷰 센터 · 근거 탐색 (2026-07-04)
 
 ### 추가

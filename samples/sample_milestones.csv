@@ -1,0 +1,4 @@
+마일스톤 ID,프로젝트 ID,제목,설명,유형,개발 단계,결정 구간,주차,분기,관련 역할
+import_u_pvt_review,project_u,Project U PVT 검토,PVT 진입 전 품질 검토 마일스톤,quality_review,pvt,pre_pvt,40,Q4,pm;hw_development
+import_u_mp_ramp,project_u,Project U 양산 램프업,양산 수율 램프업 점검,mp_checkpoint,mp,ramp_window,46,Q4,pm;management
+import_v_evt2_entry,project_v,Project V EVT2 진입,EVT2 빌드 진입 판정,build_gate,evt2,pre_evt2,34,Q3,pm;hw_development;sw_development

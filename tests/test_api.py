@@ -136,6 +136,7 @@ def test_no_write_endpoints(client: TestClient) -> None:
     """
     openapi = client.get("/openapi.json").json()
     for path, operations in openapi["paths"].items():
-        allowed = {"get", "post"} if path.endswith("/advisory") else {"get"}
+        is_operation = path.endswith("/advisory") or "/ingest/" in path
+        allowed = {"get", "post"} if is_operation else {"get"}
         assert set(operations.keys()) <= allowed, f"{path}에 허용 외 메서드 존재"
         assert not {"put", "patch", "delete"} & set(operations.keys()), path

@@ -87,6 +87,14 @@ export async function fetchWeeklySnapshot(week: number): Promise<WeeklySnapshot>
   return data;
 }
 
+export type IngestBatch = components["schemas"]["IngestBatch"];
+
+export async function fetchIngestBatches(): Promise<IngestBatch[]> {
+  const { data, error } = await client.GET("/api/v1/ingest/batches");
+  if (error || !data) throw new Error("ingest batches 조회 실패");
+  return data;
+}
+
 export async function fetchEvidence(filters: {
   projectId?: string;
   availability?: string;

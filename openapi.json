@@ -313,6 +313,21 @@
         "title": "AttentionItem",
         "type": "object"
       },
+      "Body_ingest_file_api_v1_ingest_file_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "description": "CSV 또는 XLSX 파일",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_ingest_file_api_v1_ingest_file_post",
+        "type": "object"
+      },
       "CandidateOption": {
         "additionalProperties": false,
         "description": "검토 후보 옵션 — 결정이 아닌 검토 대상.",
@@ -1122,6 +1137,77 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "IngestBatch": {
+        "additionalProperties": false,
+        "description": "반입 배치 기록.",
+        "properties": {
+          "accepted_count": {
+            "title": "Accepted Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "mapping_name": {
+            "title": "Mapping Name",
+            "type": "string"
+          },
+          "rejected_count": {
+            "title": "Rejected Count",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "target_collection": {
+            "title": "Target Collection",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "mapping_name",
+          "target_collection",
+          "accepted_count",
+          "rejected_count",
+          "status",
+          "created_at"
+        ],
+        "title": "IngestBatch",
+        "type": "object"
+      },
+      "IngestReport": {
+        "additionalProperties": false,
+        "description": "반입 결과 보고서 — 실패 행 사유는 한국어로.",
+        "properties": {
+          "batch": {
+            "$ref": "#/components/schemas/IngestBatch"
+          },
+          "rejected_rows": {
+            "items": {
+              "$ref": "#/components/schemas/RejectedRow"
+            },
+            "title": "Rejected Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "batch"
+        ],
+        "title": "IngestReport",
+        "type": "object"
+      },
       "Issue": {
         "additionalProperties": false,
         "description": "개발 이슈 — 증상/근본원인 후보/영향 범위.",
@@ -1911,6 +1997,25 @@
           "relation_summary"
         ],
         "title": "Propagation",
+        "type": "object"
+      },
+      "RejectedRow": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "row_number": {
+            "title": "Row Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "row_number",
+          "reason"
+        ],
+        "title": "RejectedRow",
         "type": "object"
       },
       "RequiredEvidenceNeed": {
@@ -3652,6 +3757,125 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/v1/ingest/batches": {
+      "get": {
+        "description": "반입 이력 (최신순).",
+        "operationId": "list_ingest_batches_api_v1_ingest_batches_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/IngestBatch"
+                  },
+                  "title": "Response List Ingest Batches Api V1 Ingest Batches Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Ingest Batches"
+      }
+    },
+    "/api/v1/ingest/batches/{batch_id}/rollback": {
+      "post": {
+        "description": "반입 배치 단위 rollback — 허용되는 유일한 삭제 경로.",
+        "operationId": "rollback_ingest_batch_api_v1_ingest_batches__batch_id__rollback_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "title": "Batch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Rollback Ingest Batch Api V1 Ingest Batches  Batch Id  Rollback Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Rollback Ingest Batch"
+      }
+    },
+    "/api/v1/ingest/file": {
+      "post": {
+        "description": "실데이터 반입 — 온톨로지 데이터가 진입하는 유일한 쓰기 경로.",
+        "operationId": "ingest_file_api_v1_ingest_file_post",
+        "parameters": [
+          {
+            "description": "매핑 이름 (예: project_milestones)",
+            "in": "query",
+            "name": "mapping",
+            "required": true,
+            "schema": {
+              "description": "매핑 이름 (예: project_milestones)",
+              "title": "Mapping",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_ingest_file_api_v1_ingest_file_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngestReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ingest File"
       }
     },
     "/api/v1/meta": {
