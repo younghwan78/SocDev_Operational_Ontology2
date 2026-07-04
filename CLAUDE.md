@@ -161,4 +161,7 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
 
 ## 8. 현재 상태
 
-설계 확정 완료 (아키텍처 + 전체 로드맵). Stage 1(온톨로지 v1.0 계약 + 스캐폴드)의 scope lock이 `CURRENT_TASK.md`에 준비되어 있으며 사용자 승인 대기 중. 승인 전 구현 착수 금지.
+Stage 1~7 구현 완료 (2026-07-04): 온톨로지 계약, PostgreSQL 계층, 결정론 서비스+API,
+한국어 frontend 4화면, LLM 3단 체인 advisory, Excel/CSV 반입 파일럿.
+Stage 8(사내 연동 고도화)은 `CURRENT_TASK.md`에 승인 대기 상태 — 승인 전 구현 착수 금지.
+진행 이력은 `CHANGELOG.md`, 원격은 github.com/younghwan78/SocDev_Operational_Ontology2.
