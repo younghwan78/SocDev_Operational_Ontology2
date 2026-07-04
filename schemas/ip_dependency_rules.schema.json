@@ -1,0 +1,112 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "IP 간 의존 규칙 — 조건부 동작 의존성.",
+  "properties": {
+    "condition": {
+      "title": "Condition",
+      "type": "string"
+    },
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "depends_on_ip_id": {
+      "title": "Depends On Ip Id",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "ip_id": {
+      "title": "Ip Id",
+      "type": "string"
+    },
+    "rationale": {
+      "title": "Rationale",
+      "type": "string"
+    },
+    "relationship": {
+      "title": "Relationship",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_ref": {
+      "title": "Source Ref",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "ip_id",
+    "depends_on_ip_id",
+    "relationship",
+    "condition",
+    "rationale",
+    "confidence",
+    "source_ref"
+  ],
+  "title": "IPDependencyRule",
+  "type": "object"
+}

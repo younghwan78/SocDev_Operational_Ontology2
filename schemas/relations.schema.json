@@ -1,0 +1,126 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "온톨로지 관계 — 객체 간 typed link. traceability의 골격.",
+  "properties": {
+    "basis": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Basis",
+      "type": "array"
+    },
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "relation_type": {
+      "title": "Relation Type",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_id": {
+      "title": "Source Id",
+      "type": "string"
+    },
+    "source_type": {
+      "title": "Source Type",
+      "type": "string"
+    },
+    "target_id": {
+      "title": "Target Id",
+      "type": "string"
+    },
+    "target_type": {
+      "title": "Target Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "source_id",
+    "source_type",
+    "relation_type",
+    "target_id",
+    "target_type",
+    "confidence"
+  ],
+  "title": "Relation",
+  "type": "object"
+}

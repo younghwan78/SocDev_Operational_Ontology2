@@ -1,0 +1,232 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "측정 근거 — 실측/예측 값과 한계를 갖는 근거.",
+  "properties": {
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "evidence_id": {
+      "title": "Evidence Id",
+      "type": "string"
+    },
+    "evidence_type": {
+      "title": "Evidence Type",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "measurement_type": {
+      "title": "Measurement Type",
+      "type": "string"
+    },
+    "notes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Notes",
+      "type": "array"
+    },
+    "observed_value": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Observed Value"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "qualitative_result": {
+      "title": "Qualitative Result",
+      "type": "string"
+    },
+    "related_ip_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Ip Ids",
+      "type": "array"
+    },
+    "related_knob_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Knob Ids",
+      "type": "array"
+    },
+    "related_kpi_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Kpi Ids",
+      "type": "array"
+    },
+    "related_measurement_requirement_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Measurement Requirement Ids",
+      "type": "array"
+    },
+    "related_resource_profile_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Resource Profile Ids",
+      "type": "array"
+    },
+    "related_risk_basis_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Risk Basis Ids",
+      "type": "array"
+    },
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_kind": {
+      "title": "Source Kind",
+      "type": "string"
+    },
+    "source_ref": {
+      "title": "Source Ref",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "unit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Unit"
+    },
+    "value_status": {
+      "title": "Value Status",
+      "type": "string"
+    },
+    "variant_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Variant Id"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "title",
+    "evidence_type",
+    "measurement_type",
+    "event_id",
+    "evidence_id",
+    "scenario_id",
+    "value_status",
+    "qualitative_result",
+    "confidence",
+    "source_kind",
+    "source_ref"
+  ],
+  "title": "MeasurementEvidence",
+  "type": "object"
+}

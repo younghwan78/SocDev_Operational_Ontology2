@@ -1,0 +1,45 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "근거 문장 — 서술/도출 과정/뒷받침 근거/확신도를 항상 함께 갖는다.",
+  "properties": {
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "description_derivation": {
+      "title": "Description Derivation",
+      "type": "string"
+    },
+    "supporting_basis": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supporting Basis",
+      "type": "array"
+    }
+  },
+  "required": [
+    "description",
+    "description_derivation",
+    "supporting_basis",
+    "confidence"
+  ],
+  "title": "GroundedStatement",
+  "type": "object"
+}

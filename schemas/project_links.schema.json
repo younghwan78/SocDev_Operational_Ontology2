@@ -1,0 +1,95 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "프로젝트 간 연결 — 이슈/교훈/요구의 전파 경로.",
+  "properties": {
+    "from_project": {
+      "title": "From Project",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "link_type": {
+      "title": "Link Type",
+      "type": "string"
+    },
+    "related_scenario_groups": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Scenario Groups",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "to_project": {
+      "title": "To Project",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "from_project",
+    "to_project",
+    "link_type",
+    "title"
+  ],
+  "title": "ProjectLink",
+  "type": "object"
+}

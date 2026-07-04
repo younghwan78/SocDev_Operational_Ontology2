@@ -1,0 +1,152 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "근거 카탈로그 — 시나리오별 근거의 가용성/한계/기여도 목록.",
+  "properties": {
+    "availability": {
+      "title": "Availability",
+      "type": "string"
+    },
+    "confidence_contribution": {
+      "title": "Confidence Contribution",
+      "type": "string"
+    },
+    "evidence_type": {
+      "title": "Evidence Type",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "is_measurement": {
+      "title": "Is Measurement",
+      "type": "boolean"
+    },
+    "is_prediction": {
+      "title": "Is Prediction",
+      "type": "boolean"
+    },
+    "known_limitation": {
+      "title": "Known Limitation",
+      "type": "string"
+    },
+    "measurement_stage": {
+      "title": "Measurement Stage",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "related_milestone_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Milestone Ids",
+      "type": "array"
+    },
+    "related_request_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Request Ids",
+      "type": "array"
+    },
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "scenario_match": {
+      "title": "Scenario Match",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_ref": {
+      "title": "Source Ref",
+      "type": "string"
+    },
+    "source_system": {
+      "title": "Source System",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "week": {
+      "title": "Week",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "scenario_id",
+    "title",
+    "evidence_type",
+    "availability",
+    "confidence_contribution",
+    "is_measurement",
+    "is_prediction",
+    "known_limitation",
+    "measurement_stage",
+    "scenario_match",
+    "source_system",
+    "source_ref",
+    "week"
+  ],
+  "title": "EvidenceCatalogEntry",
+  "type": "object"
+}

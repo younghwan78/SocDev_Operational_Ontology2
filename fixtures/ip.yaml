@@ -1,0 +1,1548 @@
+# GENERATED — tools/convert_56_fixtures.py가 56 synthetic_data에서 변환함.
+# 직접 편집 금지. 재생성: uv run python tools/convert_56_fixtures.py
+ip_blocks:
+- id: ip_isp
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#ip_isp
+  name: ISP
+  category: functional_mm_ip
+  domain: camera
+  aliases:
+  - ISP
+  - Camera ISP
+  - IFE
+  - IPE
+  - VFE
+  - Titan
+  notes: Camera recording/capture, HDR, low-light, AI ISP path.
+  rt_relevant: true
+- id: ip_dpu
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#ip_dpu
+  name: DPU
+  category: functional_mm_ip
+  domain: display
+  aliases:
+  - DPU
+  - Display
+  - MDSS
+  - MDP
+  notes: Composition, video mode panel, underrun prevention.
+  rt_relevant: true
+- id: ip_mfc
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#ip_mfc
+  name: MFC
+  category: functional_mm_ip
+  domain: codec
+  aliases:
+  - MFC
+  - Codec
+  - VPU
+  - Video Codec
+  notes: Encode/decode and video editor performance.
+  rt_relevant: false
+- id: ip_abox_vts
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#ip_abox_vts
+  name: ABOX/VTS
+  category: functional_mm_ip
+  domain: audio
+  aliases:
+  - ABOX
+  - VTS
+  - Audio
+  - LPASS
+  - ADSP
+  - AFE
+  notes: Voice/video call, A/V sync, audio latency.
+  rt_relevant: true
+- id: ip_gpu
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#ip_gpu
+  name: GPU
+  category: compute_ip
+  domain: graphics_ai
+  aliases:
+  - GPU
+  - G3D
+  notes: AI camera assist and graphics/video workloads.
+  rt_relevant: false
+- id: ip_npu
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#ip_npu
+  name: NPU
+  category: compute_ip
+  domain: ai
+  aliases:
+  - NPU
+  - AI accelerator
+  notes: AI ISP, capture enhancement, future camera AI path.
+  rt_relevant: false
+- id: ip_cpu
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#ip_cpu
+  name: CPU
+  category: compute_ip
+  domain: cpu_scheduler
+  aliases:
+  - CPU
+  - CPUFreq
+  - EMS
+  - DSU
+  notes: Stage 17 IP base spec entry for CPUFreq and EMS capability references; not part of the initial
+    MM system influence block set.
+  rt_relevant: false
+- id: sys_mif
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#sys_mif
+  name: MIF / Memory
+  category: system_influence_block
+  domain: memory
+  aliases:
+  - MIF
+  - Memory
+  - DRAM
+  - DDR
+  notes: Memory bandwidth, power, sustained workload behavior.
+  rt_relevant: true
+- id: sys_noc
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#sys_noc
+  name: NoC / Bus
+  category: system_influence_block
+  domain: interconnect
+  aliases:
+  - NoC
+  - Bus
+  - Interconnect
+  - QoS
+  notes: QoS, contention, real-time traffic guarantee.
+  rt_relevant: true
+- id: sys_smmu
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#sys_smmu
+  name: SystemMMU
+  category: system_influence_block
+  domain: memory_management
+  aliases:
+  - SystemMMU
+  - SMMU
+  - IOMMU
+  notes: Translation overhead and mapping behavior under multimedia traffic.
+  rt_relevant: true
+- id: sys_power_clock_thermal
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ips.yaml#sys_power_clock_thermal
+  name: Power/Clock/Thermal Control
+  category: system_influence_block
+  domain: power_thermal
+  aliases:
+  - DVFS
+  - Clock
+  - Thermal
+  - Power controller
+  notes: Clock floor, throttling, power state transition.
+  rt_relevant: true
+ip_base_specs:
+- id: spec_aud
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#spec_aud
+  ip_id: ip_abox_vts
+  spec_id: AUD_spec
+  display_name: ABOX/VTS Audio
+  domain: audio
+  driver_name: Samsung A-BOX
+  driver_path: exynos/soc-series/common/sound/soc/samsung/exynos/abox
+  internal_blocks:
+  - Cadence HiFi5 DSP
+  - VTS
+  - UDMA
+  - ABOX_IPC
+  supported_modes:
+  - receiver
+  - speaker
+  - headset
+  - bluetooth
+  - usb_audio
+  - call_forwarding
+  dvfs_or_control_domains:
+  - DEVFREQ_AUD
+  - DM_AUD
+  - DM_VTS
+  capabilities:
+  - cap_aud_sample_rates
+  - cap_aud_bit_widths
+  - cap_aud_vts
+  knobs:
+  - knob_aud_devfreq_aud
+  - knob_aud_sample_rate
+  - knob_aud_vts_activation
+  - knob_aud_offload
+  notes:
+  - ALSA SoC based control with IPC communication to DSP.
+  source_ref: source_data/ip_specs/AUD_spec.md#overview
+- id: spec_cpu
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#spec_cpu
+  ip_id: ip_cpu
+  spec_id: CPU_spec
+  display_name: CPUFreq and EMS
+  domain: cpu_scheduler
+  driver_name: Exynos CPUFreq
+  driver_path: exynos/soc-series/common/drivers/cpufreq
+  internal_blocks:
+  - CPUCL0
+  - CPUCL1
+  - CPUCL2
+  - CPUCL3
+  - DSU
+  - EMS
+  supported_modes:
+  - schedutil
+  - performance
+  - powersave
+  dvfs_or_control_domains:
+  - CPUCL0
+  - CPUCL1
+  - CPUCL2
+  - CPUCL3
+  - DSU
+  capabilities:
+  - cap_cpu_cluster_domains
+  - cap_cpu_variable_freq_table
+  - cap_cpu_max_frequency_unknown
+  knobs:
+  - knob_cpu_cluster_freq_limit
+  - knob_cpu_governor
+  - knob_cpu_dsu_frequency
+  - knob_cpu_idle
+  notes:
+  - Exact core counts and maximum frequencies are source-dependent runtime DT/sysfs values.
+  source_ref: source_data/ip_specs/CPU_spec.md#overview
+- id: spec_dpu
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#spec_dpu
+  ip_id: ip_dpu
+  spec_id: DPU_spec
+  display_name: Display Processing Unit
+  domain: display
+  driver_name: Exynos DRM/KMS DPU
+  driver_path: exynos/soc-series/common/drivers/dpu
+  internal_blocks:
+  - DECON
+  - DSIM
+  - DisplayPort
+  - DPP
+  - DQE
+  - AIQE
+  supported_modes:
+  - mipi_dsi
+  - displayport
+  dvfs_or_control_domains:
+  - DISP
+  - DEVFREQ_DISP
+  capabilities:
+  - cap_dpu_mipi_dsi_4_lanes
+  - cap_dpu_compression_formats
+  - cap_dpu_hdr_formats
+  - cap_dpu_displayport_hbr3
+  knobs:
+  - knob_dpu_devfreq_disp
+  - knob_dpu_bts_fps
+  - knob_dpu_compression
+  - knob_dpu_partial_update
+  notes:
+  - DisplayPort link rate is dynamically determined by DP_CAL.
+  source_ref: source_data/ip_specs/DPU_spec.md#overview
+- id: spec_gpu
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#spec_gpu
+  ip_id: ip_gpu
+  spec_id: GPU_spec
+  display_name: Samsung GPU
+  domain: graphics_ai
+  driver_name: SGPU
+  driver_path: exynos/external-modules/sgpu
+  internal_blocks:
+  - AMD GFX
+  - SDMA
+  - RLC
+  - HDP
+  - LLC
+  supported_modes:
+  - graphics_context
+  - compute_context
+  - IFPO_DISABLED
+  - IFPO_ABORT
+  - IFPO_HALF_AUTO
+  - IFPO_FULL_AUTO
+  dvfs_or_control_domains:
+  - DM_G3D
+  - G3D
+  capabilities:
+  - cap_gpu_api_support
+  - cap_gpu_llc_partitions
+  - cap_gpu_dedicated_vram
+  - cap_gpu_compute_units_unknown
+  knobs:
+  - knob_gpu_devfreq
+  - knob_gpu_ifpo_mode
+  - knob_gpu_llc_partition
+  - knob_gpu_clock_gating
+  notes:
+  - GPU uses shared system memory rather than dedicated VRAM.
+  source_ref: source_data/ip_specs/GPU_spec.md#overview
+- id: spec_isp
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#spec_isp
+  ip_id: ip_isp
+  spec_id: ISP_spec
+  display_name: Image Signal Processor
+  domain: camera
+  driver_name: Pablo ISP
+  driver_path: exynos/external-modules/camera
+  internal_blocks:
+  - SSVC0-3
+  - CSIS
+  - PDP
+  - BYRP
+  - RGBP
+  - YUVP
+  - MCSC
+  - MTNR0/1
+  - MLSC
+  supported_modes:
+  - single_pixel
+  - dual_pixel
+  - quad_pixel
+  - octa_pixel
+  dvfs_or_control_domains:
+  - INTCAM
+  - CAM
+  - CSIS
+  - ISP
+  capabilities:
+  - cap_isp_sensor_count_6
+  - cap_isp_stream_count_15
+  - cap_isp_csi_pixel_mode_octa
+  - cap_isp_raw_formats
+  knobs:
+  - knob_isp_devfreq_isp
+  - knob_isp_pixel_mode
+  - knob_isp_preview_stream_max
+  - knob_isp_otf_dma_path
+  notes:
+  - Exact throughput and power values are not specified in the source document.
+  source_ref: source_data/ip_specs/ISP_spec.md#overview
+- id: spec_mfc
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#spec_mfc
+  ip_id: ip_mfc
+  spec_id: MFC_spec
+  display_name: Multi-Format Codec
+  domain: codec
+  driver_name: Samsung MFC
+  driver_path: exynos/soc-series/common/drivers/mfc
+  internal_blocks:
+  - MFC core0
+  - MFC core1
+  - NAL Queue
+  - V4L2 M2M
+  supported_modes:
+  - decode
+  - encode
+  - NAL_Q_DEFAULT
+  - NAL_Q_BATCH
+  - NAL_Q_LL
+  dvfs_or_control_domains:
+  - DEVFREQ_MFC
+  - DM_MFC
+  capabilities:
+  - cap_mfc_hevc_encode
+  - cap_mfc_av1_decode
+  - cap_mfc_8k_resolution
+  - cap_mfc_8k_cavlc
+  knobs:
+  - knob_mfc_devfreq
+  - knob_mfc_nal_queue
+  - knob_mfc_otf_path
+  - knob_mfc_sbwc
+  notes:
+  - Performance is described by source thresholds, not calibrated simulation equations.
+  source_ref: source_data/ip_specs/MFC_spec.md#overview
+- id: spec_npu
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#spec_npu
+  ip_id: ip_npu
+  spec_id: NPU_spec
+  display_name: Neural Processing Unit
+  domain: ai
+  driver_name: Samsung NPU
+  driver_path: exynos/soc-series/common/drivers/vision/npu
+  internal_blocks:
+  - NPUCON
+  - TE0
+  - TE1
+  - TE2
+  - TE3
+  - VE0
+  - VE1
+  - SP0
+  supported_modes:
+  - MODE_CMDQ
+  - MODE_IMB
+  - MODE_NPUMEM
+  - MODE_INTERNAL
+  - MODE_INTEROP_SYNC
+  dvfs_or_control_domains:
+  - NPU0
+  - NPU1
+  - NPUCON
+  - NPE
+  capabilities:
+  - cap_npu_precision_int8_fp16
+  - cap_npu_dvfs_level_count
+  - cap_npu_modes
+  - cap_npu_exact_frequency_unknown
+  knobs:
+  - knob_npu_pm_qos
+  - knob_npu_freq_maxlock
+  - knob_npu_precision
+  - knob_npu_llc_mode
+  notes:
+  - Exact frequency values are not listed; only DVFS level structure is listed.
+  source_ref: source_data/ip_specs/NPU_spec.md#overview
+ip_capabilities:
+- id: cap_aud_sample_rates
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_aud_sample_rates
+  ip_id: ip_abox_vts
+  name: Supported audio sample rates
+  category: audio_format
+  support_status: supported
+  condition: not_specified
+  confidence: high
+  value: multiple
+  values:
+  - '24000'
+  - '32000'
+  - '44100'
+  - '48000'
+  - '96000'
+  - '192000'
+  - '384000'
+  unit: Hz
+  aliases:
+  - audio_sample_rates
+  - displayport_audio_384khz
+  source_ref: source_data/ip_specs/AUD_spec.md#sample-rate-bit-width
+- id: cap_aud_bit_widths
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_aud_bit_widths
+  ip_id: ip_abox_vts
+  name: Audio bit widths
+  category: audio_format
+  support_status: supported
+  condition: not_specified
+  confidence: high
+  value: multiple
+  values:
+  - 16bit
+  - 24bit
+  - 32bit
+  unit: bit
+  aliases:
+  - audio_bit_widths
+  source_ref: source_data/ip_specs/AUD_spec.md#sample-rate-bit-width
+- id: cap_aud_vts
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_aud_vts
+  ip_id: ip_abox_vts
+  name: Voice Trigger Subsystem
+  category: low_power_audio
+  support_status: supported
+  condition: VTS low-power wakeup path is described, but exact power is not quantified.
+  confidence: high
+  value: supported
+  values:
+  - DM_VTS
+  aliases:
+  - vts
+  - voice_trigger
+  source_ref: source_data/ip_specs/AUD_spec.md#features
+- id: cap_cpu_cluster_domains
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_cpu_cluster_domains
+  ip_id: ip_cpu
+  name: CPU cluster DVFS domains
+  category: dvfs_domain
+  support_status: supported
+  condition: not_specified
+  confidence: high
+  value: multiple
+  values:
+  - CPUCL0
+  - CPUCL1
+  - CPUCL2
+  - CPUCL3
+  - DSU
+  aliases:
+  - cpu_cluster_domains
+  - dsu_domain
+  source_ref: source_data/ip_specs/CPU_spec.md#cpu-cluster-configuration
+- id: cap_cpu_variable_freq_table
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_cpu_variable_freq_table
+  ip_id: ip_cpu
+  name: Variable frequency table
+  category: frequency_control
+  support_status: conditional
+  condition: Temperature or condition specific table switching is supported.
+  confidence: high
+  value: supported
+  values:
+  - support_variable_freq_table
+  - num_table_index
+  aliases:
+  - variable_freq_table
+  source_ref: source_data/ip_specs/CPU_spec.md#frequency-characteristics
+- id: cap_cpu_max_frequency_unknown
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_cpu_max_frequency_unknown
+  ip_id: ip_cpu
+  name: Maximum CPU frequency
+  category: frequency
+  support_status: unknown
+  condition: Exact core counts and maximum frequencies are determined by DT/sysfs and are not specified
+    in the source document.
+  confidence: medium
+  value: unknown
+  values: []
+  unit: unknown
+  aliases:
+  - max_frequency
+  - cluster_freq_max
+  source_ref: source_data/ip_specs/CPU_spec.md#cpu-cluster-configuration
+- id: cap_dpu_mipi_dsi_4_lanes
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_dpu_mipi_dsi_4_lanes
+  ip_id: ip_dpu
+  name: MIPI DSI data lanes
+  category: display_interface
+  support_status: supported
+  condition: Maximum lane count listed by MAX_DSIM_DATALANE_CNT.
+  confidence: high
+  value: '4'
+  values:
+  - '4'
+  unit: lanes
+  aliases:
+  - mipi_dsi_4_lanes
+  source_ref: source_data/ip_specs/DPU_spec.md#current-spec
+- id: cap_dpu_compression_formats
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_dpu_compression_formats
+  ip_id: ip_dpu
+  name: Display compression formats
+  category: compression
+  support_status: supported
+  condition: Compression ratio options are listed for SBWC/SAJC, but workload impact is directional only
+    in Stage 17.
+  confidence: high
+  value: multiple
+  values:
+  - SAJC
+  - SBWC_lossless
+  - SBWC_lossy
+  aliases:
+  - dpu_compression
+  - sbwc
+  - sajc
+  source_ref: source_data/ip_specs/DPU_spec.md#compression-formats
+- id: cap_dpu_hdr_formats
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_dpu_hdr_formats
+  ip_id: ip_dpu
+  name: HDR formats
+  category: hdr
+  support_status: supported
+  condition: not_specified
+  confidence: high
+  value: multiple
+  values:
+  - Dolby Vision
+  - HDR10
+  - HLG
+  - HDR10+
+  aliases:
+  - hdr_formats
+  source_ref: source_data/ip_specs/DPU_spec.md#hdr-support
+- id: cap_dpu_displayport_hbr3
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_dpu_displayport_hbr3
+  ip_id: ip_dpu
+  name: DisplayPort HBR3
+  category: display_interface
+  support_status: conditional
+  condition: Link rate support is dynamically determined by DP_CAL.
+  confidence: medium
+  value: conditional
+  values:
+  - HBR3
+  - 4 lanes
+  aliases:
+  - displayport_hbr3
+  source_ref: source_data/ip_specs/DPU_spec.md#displayport
+- id: cap_gpu_api_support
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_gpu_api_support
+  ip_id: ip_gpu
+  name: GPU graphics and compute APIs
+  category: api
+  support_status: supported
+  condition: not_specified
+  confidence: high
+  value: multiple
+  values:
+  - OpenGL ES
+  - Vulkan
+  - OpenCL
+  aliases:
+  - gpu_api_support
+  - vulkan
+  - opencl
+  source_ref: source_data/ip_specs/GPU_spec.md#current-spec
+- id: cap_gpu_llc_partitions
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_gpu_llc_partitions
+  ip_id: ip_gpu
+  name: GPU LLC partitions
+  category: cache
+  support_status: supported
+  condition: Maximum partition count is listed by SGPU_SOC_INFO_LLC_MAX_PARTITION.
+  confidence: high
+  value: '16'
+  values:
+  - '16'
+  unit: partitions
+  aliases:
+  - llc_partitions
+  source_ref: source_data/ip_specs/GPU_spec.md#current-spec
+- id: cap_gpu_dedicated_vram
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_gpu_dedicated_vram
+  ip_id: ip_gpu
+  name: Dedicated VRAM
+  category: memory
+  support_status: unsupported
+  condition: Source states system memory sharing with no separate VRAM.
+  confidence: high
+  value: not_supported
+  values: []
+  aliases:
+  - dedicated_vram
+  source_ref: source_data/ip_specs/GPU_spec.md#current-spec
+- id: cap_gpu_compute_units_unknown
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_gpu_compute_units_unknown
+  ip_id: ip_gpu
+  name: Compute unit count
+  category: hardware_topology
+  support_status: unknown
+  condition: Compute unit count is dynamically confirmed through SFR and not specified as a fixed number.
+  confidence: medium
+  value: unknown
+  values: []
+  unit: compute_units
+  aliases:
+  - compute_units
+  source_ref: source_data/ip_specs/GPU_spec.md#current-spec
+- id: cap_isp_sensor_count_6
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_isp_sensor_count_6
+  ip_id: ip_isp
+  name: Sensor count
+  category: camera_topology
+  support_status: supported
+  condition: Listed as IS_SENSOR_COUNT = 6.
+  confidence: high
+  value: '6'
+  values:
+  - '6'
+  unit: sensors
+  aliases:
+  - sensor_count_6
+  source_ref: source_data/ip_specs/ISP_spec.md#current-spec
+- id: cap_isp_stream_count_15
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_isp_stream_count_15
+  ip_id: ip_isp
+  name: Total stream count
+  category: camera_topology
+  support_status: supported
+  condition: Listed as IS_STREAM_COUNT = IS_PREVIEW_STREAM_MAX * 3.
+  confidence: high
+  value: '15'
+  values:
+  - '15'
+  unit: streams
+  aliases:
+  - stream_count_15
+  source_ref: source_data/ip_specs/ISP_spec.md#current-spec
+- id: cap_isp_csi_pixel_mode_octa
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_isp_csi_pixel_mode_octa
+  ip_id: ip_isp
+  name: CSI pixel mode Octa
+  category: csi_pixel_mode
+  support_status: supported
+  condition: Source lists Single, Dual, Quad, and Octa pixel mode.
+  confidence: high
+  value: Octa
+  values:
+  - Single
+  - Dual
+  - Quad
+  - Octa
+  unit: pixel_mode
+  aliases:
+  - csi_pixel_mode_octa
+  - pixel_mode_octa
+  source_ref: source_data/ip_specs/ISP_spec.md#current-spec
+- id: cap_isp_raw_formats
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_isp_raw_formats
+  ip_id: ip_isp
+  name: RAW formats
+  category: raw_format
+  support_status: supported
+  condition: not_specified
+  confidence: high
+  value: multiple
+  values:
+  - RAW8
+  - RAW10
+  - RAW12
+  - RAW14
+  - RAW16
+  - RAW20
+  aliases:
+  - raw_formats
+  source_ref: source_data/ip_specs/ISP_spec.md#current-spec
+- id: cap_mfc_hevc_encode
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_mfc_hevc_encode
+  ip_id: ip_mfc
+  name: HEVC encode
+  category: codec_encode
+  support_status: supported
+  condition: HEVC is listed in the Encode codec set.
+  confidence: high
+  value: supported
+  values:
+  - HEVC
+  aliases:
+  - hevc_encode
+  source_ref: source_data/ip_specs/MFC_spec.md#supported-codecs
+- id: cap_mfc_av1_decode
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_mfc_av1_decode
+  ip_id: ip_mfc
+  name: AV1 decode
+  category: codec_decode
+  support_status: supported
+  condition: AV1 is listed in the Decode codec set.
+  confidence: high
+  value: supported
+  values:
+  - AV1
+  aliases:
+  - av1_decode
+  source_ref: source_data/ip_specs/MFC_spec.md#supported-codecs
+- id: cap_mfc_8k_resolution
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_mfc_8k_resolution
+  ip_id: ip_mfc
+  name: 8K resolution
+  category: codec_resolution
+  support_status: supported
+  condition: Listed as MFC_8K_RES.
+  confidence: high
+  value: 8K
+  values:
+  - 8K
+  - 7680x4320
+  unit: resolution
+  aliases:
+  - 8k_resolution
+  source_ref: source_data/ip_specs/MFC_spec.md#maximum-resolution-performance
+- id: cap_mfc_8k_cavlc
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_mfc_8k_cavlc
+  ip_id: ip_mfc
+  name: H.264 8K CAVLC
+  category: codec_feature
+  support_status: conditional
+  condition: Source describes support_8K_cavlc as support 여부, so exact support is conditional on configuration.
+  confidence: medium
+  value: conditional
+  values:
+  - support_8K_cavlc
+  aliases:
+  - 8k_cavlc
+  source_ref: source_data/ip_specs/MFC_spec.md#special-features
+- id: cap_npu_precision_int8_fp16
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_npu_precision_int8_fp16
+  ip_id: ip_npu
+  name: NPU precision support
+  category: ai_precision
+  support_status: supported
+  condition: not_specified
+  confidence: high
+  value: multiple
+  values:
+  - PRE_INT8
+  - PRE_INT16
+  - PRE_FP16
+  aliases:
+  - int8_inference
+  - fp16_inference
+  - precision_support
+  source_ref: source_data/ip_specs/NPU_spec.md#precision-support
+- id: cap_npu_dvfs_level_count
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_npu_dvfs_level_count
+  ip_id: ip_npu
+  name: NPU DVFS level count
+  category: dvfs
+  support_status: supported
+  condition: Listed as MAX_FREQ_LEVELS.
+  confidence: high
+  value: '10'
+  values:
+  - '10'
+  unit: levels
+  aliases:
+  - npu_dvfs_levels
+  source_ref: source_data/ip_specs/NPU_spec.md#dvfs
+- id: cap_npu_modes
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_npu_modes
+  ip_id: ip_npu
+  name: NPU operation modes
+  category: operation_mode
+  support_status: supported
+  condition: not_specified
+  confidence: high
+  value: multiple
+  values:
+  - MODE_CMDQ
+  - MODE_IMB
+  - MODE_NPUMEM
+  - MODE_INTERNAL
+  - MODE_INTEROP_SYNC
+  aliases:
+  - npu_modes
+  - mode_cmdq
+  source_ref: source_data/ip_specs/NPU_spec.md#operation-modes
+- id: cap_npu_exact_frequency_unknown
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_base_specs.yaml#cap_npu_exact_frequency_unknown
+  ip_id: ip_npu
+  name: Exact NPU frequency values
+  category: frequency
+  support_status: unknown
+  condition: Source lists levels and indices, but not calibrated frequency values.
+  confidence: medium
+  value: unknown
+  values: []
+  unit: unknown
+  aliases:
+  - npu_exact_frequency
+  - exact_frequency
+  source_ref: source_data/ip_specs/NPU_spec.md#dvfs
+ip_knobs:
+- id: knob_aud_devfreq_aud
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_aud_devfreq_aud
+  ip_id: ip_abox_vts
+  name: DEVFREQ_AUD
+  category: performance_power
+  description: ABOX DSP operating frequency requested through abox_get_requiring_aud_freq_in_khz.
+  control_domain: DEVFREQ_AUD
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: unknown
+  risk_direction: mixed
+  affected_kpis:
+  - audio_power
+  - audio_latency
+  related_scenarios: []
+  confidence: medium
+  source_ref: source_data/ip_specs/AUD_spec.md#performance-power-knob
+- id: knob_aud_sample_rate
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_aud_sample_rate
+  ip_id: ip_abox_vts
+  name: sample_rate
+  category: performance_power
+  description: Higher sample rates such as 96/192/384 kHz increase audio processing load.
+  control_domain: ABOX
+  power_direction: increase
+  latency_direction: mixed
+  bandwidth_direction: increase
+  risk_direction: mixed
+  affected_kpis:
+  - audio_power
+  - audio_latency
+  related_scenarios: []
+  confidence: medium
+  source_ref: source_data/ip_specs/AUD_spec.md#performance-power-knob
+- id: knob_aud_vts_activation
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_aud_vts_activation
+  ip_id: ip_abox_vts
+  name: VTS activation
+  category: power
+  description: VTS always-on operation trades ultra-low-power wakeup against ABOX fallback.
+  control_domain: DM_VTS
+  power_direction: mixed
+  latency_direction: decrease
+  bandwidth_direction: unknown
+  risk_direction: mixed
+  affected_kpis:
+  - audio_power
+  - latency
+  related_scenarios: []
+  confidence: medium
+  source_ref: source_data/ip_specs/AUD_spec.md#performance-power-knob
+- id: knob_aud_offload
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_aud_offload
+  ip_id: ip_abox_vts
+  name: audio_offload
+  category: power
+  description: PCM offload to ABOX can reduce AP load while increasing AUD activity.
+  control_domain: ABOX
+  power_direction: mixed
+  latency_direction: mixed
+  bandwidth_direction: unknown
+  risk_direction: mixed
+  affected_kpis:
+  - audio_power
+  - lpass_usage
+  related_scenarios: []
+  confidence: medium
+  source_ref: source_data/ip_specs/AUD_spec.md#performance-power-knob
+- id: knob_cpu_cluster_freq_limit
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_cpu_cluster_freq_limit
+  ip_id: ip_cpu
+  name: cluster_freq_max_min
+  category: performance_power
+  description: Per-cluster max/min frequency limits affect thermal boost and sustained performance.
+  control_domain: CPUCL0-3
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: mixed
+  risk_direction: mixed
+  affected_kpis:
+  - scenario_power
+  - thermal_throttling
+  - latency
+  related_scenarios: []
+  confidence: medium
+  source_ref: source_data/ip_specs/CPU_spec.md#performance-power-knob
+- id: knob_cpu_governor
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_cpu_governor
+  ip_id: ip_cpu
+  name: CPUFreq governor
+  category: performance_power
+  description: schedutil, performance, and powersave governors trade response time and power.
+  control_domain: CPUFreq
+  power_direction: mixed
+  latency_direction: mixed
+  bandwidth_direction: unknown
+  risk_direction: mixed
+  affected_kpis:
+  - scenario_power
+  - latency
+  related_scenarios: []
+  confidence: medium
+  source_ref: source_data/ip_specs/CPU_spec.md#performance-power-knob
+- id: knob_cpu_dsu_frequency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_cpu_dsu_frequency
+  ip_id: ip_cpu
+  name: DSU frequency
+  category: performance_power
+  description: DSU frequency controls L3/SLC bandwidth between CPU clusters and MIF.
+  control_domain: DSU
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: increase
+  risk_direction: mixed
+  affected_kpis:
+  - mif_bw
+  - latency
+  related_scenarios: []
+  confidence: medium
+  source_ref: source_data/ip_specs/CPU_spec.md#performance-power-knob
+- id: knob_cpu_idle
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_cpu_idle
+  ip_id: ip_cpu
+  name: CPU idle c-state
+  category: power
+  description: WFI, cluster power down, and system sleep reduce power during idle windows.
+  control_domain: CPUPM
+  power_direction: decrease
+  latency_direction: increase
+  bandwidth_direction: unknown
+  risk_direction: mixed
+  affected_kpis:
+  - scenario_power
+  - latency
+  related_scenarios: []
+  confidence: medium
+  source_ref: source_data/ip_specs/CPU_spec.md#performance-power-knob
+- id: knob_dpu_devfreq_disp
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_dpu_devfreq_disp
+  ip_id: ip_dpu
+  name: DEVFREQ_DISP
+  category: performance_power
+  description: DISP clock directly affects DPU processing speed and BTS bandwidth calculations.
+  control_domain: DISP
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: increase
+  risk_direction: mixed
+  affected_kpis:
+  - dpu_power
+  - dpu_clock
+  - display_latency
+  related_scenarios:
+  - video_mode_panel_underrun_prevention
+  confidence: medium
+  source_ref: source_data/ip_specs/DPU_spec.md#performance-power-knob
+- id: knob_dpu_bts_fps
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_dpu_bts_fps
+  ip_id: ip_dpu
+  name: bts_fps
+  category: performance_power
+  description: Higher BTS FPS values request more bus bandwidth for display.
+  control_domain: BTS
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: increase
+  risk_direction: mixed
+  affected_kpis:
+  - dpu_bw
+  - noc_qos_margin
+  - underrun_count
+  related_scenarios:
+  - video_mode_panel_underrun_prevention
+  confidence: medium
+  source_ref: source_data/ip_specs/DPU_spec.md#performance-power-knob
+- id: knob_dpu_compression
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_dpu_compression
+  ip_id: ip_dpu
+  name: SAJC/SBWC activation
+  category: power
+  description: Compression reduces DDR bandwidth while adding DPP processing load.
+  control_domain: DPP
+  power_direction: decrease
+  latency_direction: mixed
+  bandwidth_direction: decrease
+  risk_direction: mixed
+  affected_kpis:
+  - ddr_bw
+  - dpu_power
+  - display_latency
+  related_scenarios:
+  - video_mode_panel_underrun_prevention
+  confidence: medium
+  source_ref: source_data/ip_specs/DPU_spec.md#performance-power-knob
+- id: knob_dpu_partial_update
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_dpu_partial_update
+  ip_id: ip_dpu
+  name: Partial Update
+  category: power
+  description: Partial update drives only changed regions to reduce display power.
+  control_domain: DECON
+  power_direction: decrease
+  latency_direction: mixed
+  bandwidth_direction: decrease
+  risk_direction: mixed
+  affected_kpis:
+  - dpu_power
+  - dpu_bw
+  related_scenarios:
+  - video_mode_panel_underrun_prevention
+  confidence: medium
+  source_ref: source_data/ip_specs/DPU_spec.md#performance-power-knob
+- id: knob_gpu_devfreq
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_gpu_devfreq
+  ip_id: ip_gpu
+  name: GPU frequency
+  category: performance_power
+  description: GPU devfreq max frequency is based on OPP table control.
+  control_domain: DM_G3D
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: increase
+  risk_direction: mixed
+  affected_kpis:
+  - gpu_usage
+  - scenario_power
+  - thermal
+  related_scenarios:
+  - low_light_ai_capture
+  - video_editor_export
+  confidence: medium
+  source_ref: source_data/ip_specs/GPU_spec.md#performance-power-knob
+- id: knob_gpu_ifpo_mode
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_gpu_ifpo_mode
+  ip_id: ip_gpu
+  name: IFPO mode
+  category: power
+  description: Inter-frame power off modes trade wake latency and frame-to-frame power.
+  control_domain: IFPO
+  power_direction: decrease
+  latency_direction: increase
+  bandwidth_direction: unknown
+  risk_direction: mixed
+  affected_kpis:
+  - scenario_power
+  - fps_stability
+  related_scenarios:
+  - low_light_ai_capture
+  confidence: medium
+  source_ref: source_data/ip_specs/GPU_spec.md#performance-power-knob
+- id: knob_gpu_llc_partition
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_gpu_llc_partition
+  ip_id: ip_gpu
+  name: LLC partition allocation
+  category: performance
+  description: Larger GPU LLC partition can reduce cache misses while competing with other IPs.
+  control_domain: LLC
+  power_direction: mixed
+  latency_direction: decrease
+  bandwidth_direction: decrease
+  risk_direction: mixed
+  affected_kpis:
+  - gpu_usage
+  - ddr_bw
+  - bus_contention
+  related_scenarios:
+  - low_light_ai_capture
+  - video_editor_export
+  confidence: medium
+  source_ref: source_data/ip_specs/GPU_spec.md#performance-power-knob
+- id: knob_gpu_clock_gating
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_gpu_clock_gating
+  ip_id: ip_gpu
+  name: Clock Gating level
+  category: power
+  description: Fine to coarse-grain clock gating reduces idle power.
+  control_domain: G3D
+  power_direction: decrease
+  latency_direction: mixed
+  bandwidth_direction: unknown
+  risk_direction: mixed
+  affected_kpis:
+  - scenario_power
+  - thermal
+  related_scenarios:
+  - low_light_ai_capture
+  confidence: medium
+  source_ref: source_data/ip_specs/GPU_spec.md#performance-power-knob
+- id: knob_isp_devfreq_isp
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_isp_devfreq_isp
+  ip_id: ip_isp
+  name: DEVFREQ_ISP
+  category: performance
+  description: ISP core clock controls BYRP, YUVP, and MCSC processing speed.
+  control_domain: ISP
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: mixed
+  risk_direction: mixed
+  affected_kpis:
+  - isp_power
+  - isp_latency
+  - fps_stability
+  related_scenarios:
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  - low_light_ai_capture
+  confidence: medium
+  source_ref: source_data/ip_specs/ISP_spec.md#performance-power-knob
+- id: knob_isp_pixel_mode
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_isp_pixel_mode
+  ip_id: ip_isp
+  name: pixel_mode
+  category: performance_power
+  description: Single to Octa pixel mode raises processing speed and bandwidth demand.
+  control_domain: CSIS
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: increase
+  risk_direction: mixed
+  affected_kpis:
+  - ddr_bw
+  - isp_power
+  - fps_stability
+  related_scenarios:
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  confidence: medium
+  source_ref: source_data/ip_specs/ISP_spec.md#performance-power-knob
+- id: knob_isp_preview_stream_max
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_isp_preview_stream_max
+  ip_id: ip_isp
+  name: preview_stream_max
+  category: performance
+  description: More concurrent preview streams increase processing and power demand.
+  control_domain: ISP
+  power_direction: increase
+  latency_direction: mixed
+  bandwidth_direction: increase
+  risk_direction: increase
+  affected_kpis:
+  - isp_power
+  - ddr_bw
+  - thermal
+  related_scenarios:
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  - low_light_ai_capture
+  confidence: medium
+  source_ref: source_data/ip_specs/ISP_spec.md#performance-power-knob
+- id: knob_isp_otf_dma_path
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_isp_otf_dma_path
+  ip_id: ip_isp
+  name: OTF vs DMA path
+  category: performance_power
+  description: OTF path can reduce DDR DMA traffic compared with block-to-block DDR transfers.
+  control_domain: ISP pipeline
+  power_direction: mixed
+  latency_direction: decrease
+  bandwidth_direction: decrease
+  risk_direction: mixed
+  affected_kpis:
+  - ddr_bw
+  - isp_latency
+  related_scenarios:
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  - low_light_ai_capture
+  confidence: medium
+  source_ref: source_data/ip_specs/ISP_spec.md#performance-power-knob
+- id: knob_mfc_devfreq
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_mfc_devfreq
+  ip_id: ip_mfc
+  name: DEVFREQ_MFC
+  category: performance_power
+  description: MFC core clock scales automatically by resolution and FPS.
+  control_domain: DEVFREQ_MFC
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: increase
+  risk_direction: mixed
+  affected_kpis:
+  - codec_power
+  - codec_throughput
+  - thermal
+  related_scenarios:
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  - video_editor_export
+  confidence: medium
+  source_ref: source_data/ip_specs/MFC_spec.md#performance-power-knob
+- id: knob_mfc_nal_queue
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_mfc_nal_queue
+  ip_id: ip_mfc
+  name: NAL Queue mode
+  category: performance
+  description: NAL Queue modes select low-latency and batch encode/decode behavior.
+  control_domain: NAL_Q
+  power_direction: mixed
+  latency_direction: decrease
+  bandwidth_direction: mixed
+  risk_direction: mixed
+  affected_kpis:
+  - codec_throughput
+  - video_editor_latency
+  related_scenarios:
+  - video_editor_export
+  confidence: medium
+  source_ref: source_data/ip_specs/MFC_spec.md#performance-power-knob
+- id: knob_mfc_otf_path
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_mfc_otf_path
+  ip_id: ip_mfc
+  name: OTF path
+  category: performance_power
+  description: Camera to MFC to Display OTF path can bypass DDR traffic.
+  control_domain: MFC pipeline
+  power_direction: mixed
+  latency_direction: decrease
+  bandwidth_direction: decrease
+  risk_direction: mixed
+  affected_kpis:
+  - ddr_bw
+  - codec_power
+  - display_latency
+  related_scenarios:
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  - video_editor_export
+  confidence: medium
+  source_ref: source_data/ip_specs/MFC_spec.md#performance-power-knob
+- id: knob_mfc_sbwc
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_mfc_sbwc
+  ip_id: ip_mfc
+  name: SBWC ON/OFF
+  category: power
+  description: MFC output compression reduces DDR bandwidth.
+  control_domain: MFC
+  power_direction: decrease
+  latency_direction: mixed
+  bandwidth_direction: decrease
+  risk_direction: mixed
+  affected_kpis:
+  - ddr_bw
+  - codec_power
+  related_scenarios:
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  - video_editor_export
+  confidence: medium
+  source_ref: source_data/ip_specs/MFC_spec.md#performance-power-knob
+- id: knob_npu_pm_qos
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_npu_pm_qos
+  ip_id: ip_npu
+  name: PM_QOS_NPU throughput
+  category: performance
+  description: PM QoS throughput requests adjust NPUCON and NPU0/1 clocks.
+  control_domain: NPUCON/NPU0/NPU1
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: increase
+  risk_direction: mixed
+  affected_kpis:
+  - npu_usage
+  - capture_latency
+  - scenario_power
+  related_scenarios:
+  - low_light_ai_capture
+  confidence: medium
+  source_ref: source_data/ip_specs/NPU_spec.md#performance-power-knob
+- id: knob_npu_freq_maxlock
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_npu_freq_maxlock
+  ip_id: ip_npu
+  name: npu_max_freq
+  category: performance_power
+  description: NPU max frequency lock limits or raises maximum NPU operating point by policy.
+  control_domain: NPU DVFS
+  power_direction: increase
+  latency_direction: decrease
+  bandwidth_direction: increase
+  risk_direction: mixed
+  affected_kpis:
+  - npu_usage
+  - capture_latency
+  - thermal
+  related_scenarios:
+  - low_light_ai_capture
+  confidence: medium
+  source_ref: source_data/ip_specs/NPU_spec.md#performance-power-knob
+- id: knob_npu_precision
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_npu_precision
+  ip_id: ip_npu
+  name: precision selection
+  category: performance_power
+  description: INT8 reduces compute load while FP16 improves accuracy.
+  control_domain: NPU execution
+  power_direction: mixed
+  latency_direction: mixed
+  bandwidth_direction: mixed
+  risk_direction: mixed
+  affected_kpis:
+  - npu_usage
+  - image_quality
+  - capture_latency
+  related_scenarios:
+  - low_light_ai_capture
+  confidence: medium
+  source_ref: source_data/ip_specs/NPU_spec.md#performance-power-knob
+- id: knob_npu_llc_mode
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_knobs.yaml#knob_npu_llc_mode
+  ip_id: ip_npu
+  name: llc_mode
+  category: performance
+  description: NPU LLC partition mode affects cache residency and contention.
+  control_domain: LLC
+  power_direction: mixed
+  latency_direction: decrease
+  bandwidth_direction: decrease
+  risk_direction: mixed
+  affected_kpis:
+  - npu_usage
+  - ddr_bw
+  - bus_contention
+  related_scenarios:
+  - low_light_ai_capture
+  confidence: medium
+  source_ref: source_data/ip_specs/NPU_spec.md#performance-power-knob
+ip_dependency_rules:
+- id: dep_isp_pixel_mode_mif
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_dependency_rules.yaml#dep_isp_pixel_mode_mif
+  ip_id: ip_isp
+  depends_on_ip_id: sys_mif
+  relationship: bandwidth_dependency
+  condition: Higher CSIS pixel mode increases processing speed and bandwidth demand.
+  rationale: ISP pixel mode knob explicitly states Single to Octa raises bandwidth.
+  confidence: medium
+  source_ref: source_data/ip_specs/ISP_spec.md#performance-power-knob
+- id: dep_dpu_bts_noc
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_dependency_rules.yaml#dep_dpu_bts_noc
+  ip_id: ip_dpu
+  depends_on_ip_id: sys_noc
+  relationship: bus_qos_dependency
+  condition: Higher bts_fps requests more display bus bandwidth.
+  rationale: DPU BTS FPS knob is used for Bus Throughput Scheduler bandwidth calculation.
+  confidence: medium
+  source_ref: source_data/ip_specs/DPU_spec.md#performance-power-knob
+- id: dep_mfc_otf_mif
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_dependency_rules.yaml#dep_mfc_otf_mif
+  ip_id: ip_mfc
+  depends_on_ip_id: sys_mif
+  relationship: bandwidth_reduction_dependency
+  condition: OTF path can reduce DDR traffic when camera/MFC/display direct path is available.
+  rationale: MFC OTF path is described as bypassing DDR traffic.
+  confidence: medium
+  source_ref: source_data/ip_specs/MFC_spec.md#performance-power-knob
+- id: dep_npu_bts_mif
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_dependency_rules.yaml#dep_npu_bts_mif
+  ip_id: ip_npu
+  depends_on_ip_id: sys_mif
+  relationship: bandwidth_reservation_dependency
+  condition: NPU BTS reserves MIF bandwidth to avoid NPU bottlenecks.
+  rationale: NPU BTS knob references npu-bts.c MIF bandwidth reservation.
+  confidence: medium
+  source_ref: source_data/ip_specs/NPU_spec.md#performance-power-knob
+- id: dep_gpu_llc_contention
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/ip_dependency_rules.yaml#dep_gpu_llc_contention
+  ip_id: ip_gpu
+  depends_on_ip_id: sys_mif
+  relationship: shared_cache_memory_dependency
+  condition: GPU LLC partitioning can reduce cache misses while competing with other IPs.
+  rationale: GPU LLC partition knob describes cache miss reduction and inter-IP competition.
+  confidence: medium
+  source_ref: source_data/ip_specs/GPU_spec.md#performance-power-knob

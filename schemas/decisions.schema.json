@@ -1,0 +1,201 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "DecisionBasis": {
+      "additionalProperties": false,
+      "description": "결정의 뒷받침 근거 항목.",
+      "properties": {
+        "basis_type": {
+          "title": "Basis Type",
+          "type": "string"
+        },
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "ref_id": {
+          "title": "Ref Id",
+          "type": "string"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "basis_type",
+        "ref_id",
+        "statement",
+        "confidence"
+      ],
+      "title": "DecisionBasis",
+      "type": "object"
+    },
+    "DecisionOption": {
+      "additionalProperties": false,
+      "description": "결정 옵션 — 이득/리스크/비용 영향.",
+      "properties": {
+        "benefits": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Benefits",
+          "type": "array"
+        },
+        "cost_impact": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Cost Impact",
+          "type": "object"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "risks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Risks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "DecisionOption",
+      "type": "object"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "결정 — 옵션/선택/트레이드오프/미해결 리스크를 기록.",
+  "properties": {
+    "action_items": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Action Items",
+      "type": "array"
+    },
+    "decision_type": {
+      "title": "Decision Type",
+      "type": "string"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "options": {
+      "items": {
+        "$ref": "#/$defs/DecisionOption"
+      },
+      "title": "Options",
+      "type": "array"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "selected_option": {
+      "title": "Selected Option",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "supporting_basis": {
+      "items": {
+        "$ref": "#/$defs/DecisionBasis"
+      },
+      "title": "Supporting Basis",
+      "type": "array"
+    },
+    "tradeoff_summary": {
+      "title": "Tradeoff Summary",
+      "type": "string"
+    },
+    "unresolved_risks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unresolved Risks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "event_id",
+    "decision_type",
+    "selected_option",
+    "tradeoff_summary"
+  ],
+  "title": "Decision",
+  "type": "object"
+}

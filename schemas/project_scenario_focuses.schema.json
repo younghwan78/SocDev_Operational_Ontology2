@@ -1,0 +1,193 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    },
+    "StageWindow": {
+      "additionalProperties": false,
+      "description": "개발 단계별 주차 구간과 측정 정책.",
+      "properties": {
+        "end_week": {
+          "title": "End Week",
+          "type": "integer"
+        },
+        "focus_types": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Focus Types",
+          "type": "array"
+        },
+        "measurement_policy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Measurement Policy"
+        },
+        "stage": {
+          "title": "Stage",
+          "type": "string"
+        },
+        "start_week": {
+          "title": "Start Week",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "stage",
+        "start_week",
+        "end_week"
+      ],
+      "title": "StageWindow",
+      "type": "object"
+    },
+    "WeekWindow": {
+      "additionalProperties": false,
+      "description": "주차 구간.",
+      "properties": {
+        "end_week": {
+          "title": "End Week",
+          "type": "integer"
+        },
+        "start_week": {
+          "title": "Start Week",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_week",
+        "end_week"
+      ],
+      "title": "WeekWindow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "프로젝트가 특정 시나리오 그룹에 두는 연간 포커스.",
+  "properties": {
+    "annual_horizon": {
+      "$ref": "#/$defs/WeekWindow"
+    },
+    "development_stage_windows": {
+      "items": {
+        "$ref": "#/$defs/StageWindow"
+      },
+      "title": "Development Stage Windows",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "objectives": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Objectives",
+      "type": "array"
+    },
+    "priority": {
+      "title": "Priority",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "relevant_roles": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Relevant Roles",
+      "type": "array"
+    },
+    "scenario_group_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Scenario Group Ids",
+      "type": "array"
+    },
+    "scenario_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Scenario Ids",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_refs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Refs",
+      "type": "array"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "title",
+    "priority",
+    "annual_horizon"
+  ],
+  "title": "ProjectScenarioFocus",
+  "type": "object"
+}

@@ -1,0 +1,3833 @@
+# GENERATED — tools/convert_56_fixtures.py가 56 synthetic_data에서 변환함.
+# 직접 편집 금지. 재생성: uv run python tools/convert_56_fixtures.py
+development_events:
+- id: project_u_package_out_checkpoint
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_package_out_checkpoint
+  project_id: project_u
+  title: Project U package-out checkpoint recorded
+  description: Completed package-out timing is recorded as the opening Project U process checkpoint.
+  event_type: milestone_checkpoint
+  event_category: milestone
+  lifecycle_stage: package
+  week: 2
+  quarter: Q1
+  severity: info
+  status: recorded
+  schedule_signal: on_track
+  roles_involved:
+  - hw_development
+  - pm
+  affected_domains:
+  - project
+  - package
+  linked_scenario_ids: []
+  linked_evidence_ids: []
+  linked_milestone_ids:
+  - project_u_package_out_done
+  linked_request_ids: []
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal: []
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_u_package_out_done
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_dvfs_characterization_evidence_update
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_dvfs_characterization_evidence_update
+  project_id: project_u
+  title: Project U DVFS characterization evidence updated
+  description: Partial current-project power dashboard evidence is linked to the post-EVT1 characterization
+    checkpoint.
+  event_type: evidence_updated
+  event_category: evidence
+  lifecycle_stage: characterization
+  week: 14
+  quarter: Q2
+  severity: medium
+  status: available
+  schedule_signal: watch
+  roles_involved:
+  - hw_development
+  - system_engineering
+  affected_domains:
+  - power
+  - camera
+  linked_scenario_ids:
+  - uhd60_recording_eis_on
+  linked_evidence_ids:
+  - evidence_u_uhd60_current_power_dashboard
+  linked_milestone_ids:
+  - project_u_dvfs_characterization
+  linked_request_ids:
+  - req_uhd60_eis_u_w12
+  linked_propagation_ids: []
+  missing_data:
+  - current_project_power_measurement
+  resource_signal:
+  - additional_measurement_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Partial dashboard evidence records characterization progress but does not close the scenario-specific
+      gap.
+    basis: evidence_available
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_u_uhd60_current_power_dashboard
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_es_release_checkpoint
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_es_release_checkpoint
+  project_id: project_u
+  title: Project U ES release checkpoint
+  description: The ES release window is recorded before customer-project setup begins.
+  event_type: release_checkpoint
+  event_category: release
+  lifecycle_stage: es
+  week: 12
+  quarter: Q1
+  severity: info
+  status: recorded
+  schedule_signal: on_track
+  roles_involved:
+  - pm
+  - management
+  affected_domains:
+  - project
+  - release
+  linked_scenario_ids: []
+  linked_evidence_ids: []
+  linked_milestone_ids:
+  - project_u_es_release_w12
+  linked_request_ids: []
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal: []
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_u_es_release_w12
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_customer_project_setup_event
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_customer_project_setup_event
+  project_id: project_u
+  title: Project U customer project setup after ES
+  description: Customer-project setup is recorded after ES so current-project scenario evidence can be
+    collected.
+  event_type: milestone_checkpoint
+  event_category: milestone
+  lifecycle_stage: customer_setup
+  week: 14
+  quarter: Q2
+  severity: info
+  status: recorded
+  schedule_signal: on_track
+  roles_involved:
+  - product_planning
+  - pm
+  - system_engineering
+  affected_domains:
+  - customer
+  - project
+  linked_scenario_ids:
+  - uhd60_recording_eis_on
+  linked_evidence_ids: []
+  linked_milestone_ids:
+  - project_u_customer_project_setup_after_es
+  linked_request_ids:
+  - req_uhd60_eis_u_w12
+  linked_propagation_ids: []
+  missing_data:
+  - current_project_power_measurement
+  resource_signal:
+  - additional_measurement_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_u_customer_project_setup_after_es
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_uhd60_request_opened
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_uhd60_request_opened
+  project_id: project_u
+  title: Project U recording KPI power optimization target set
+  description: UHD60 is reviewed against FHD30 and UHD30 baselines with matched power and bandwidth evidence
+    still incomplete.
+  event_type: optimization_target_set
+  event_category: review
+  lifecycle_stage: customer_setup
+  week: 14
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: watch
+  roles_involved:
+  - system_engineering
+  - product_planning
+  affected_domains:
+  - camera
+  - power
+  - bandwidth
+  linked_scenario_ids:
+  - fhd30_recording_kpi
+  - uhd30_recording_kpi
+  - uhd60_recording_eis_on
+  linked_evidence_ids:
+  - evidence_u_uhd60_previous_measurement
+  - evidence_u_uhd60_current_power_dashboard
+  - evidence_u_kpi_matched_scope_note
+  linked_milestone_ids:
+  - project_u_customer_project_setup_after_es
+  linked_request_ids:
+  - req_uhd60_eis_u_w12
+  linked_propagation_ids:
+  - prop_uhd60_eis_u_to_v
+  - prop_uhd60_eis_u_to_w
+  missing_data:
+  - current_project_power_measurement
+  - scenario_specific_bw_trace
+  resource_signal:
+  - additional_measurement_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_uhd60_eis_u_w12
+  candidate_options:
+  - option_id: opt_u_kpi_sw_knob
+    title: SW and DVFS knob review
+    description: Review software and DVFS controls using matched workload evidence.
+    option_type: sw_workaround
+    current_posture: conditional_candidate
+    feasibility: conditional
+    known_risks:
+    - Matched EIS and HDR combinations are incomplete.
+    qualitative_impact:
+      power: lower
+      bandwidth: unchanged
+      latency: mixed
+      performance: mixed
+      quality: unchanged
+      area: unchanged
+      risk: mixed
+      schedule: lower
+    related_ip_ids:
+    - ip_isp
+    - ip_mfc
+    related_scenario_ids:
+    - uhd60_recording_eis_on
+    required_evidence_need_ids:
+    - need_u_kpi_power
+    - need_u_kpi_bw
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_u_uhd60_current_power_dashboard
+    target_project_id: project_u
+  - option_id: opt_u_kpi_hw_carryover
+    title: Next-project HW feasibility review
+    description: Carry unresolved block pressure into the Project V HW review window.
+    option_type: hw_microarchitecture_change
+    current_posture: evidence_blocked
+    feasibility: unknown
+    known_risks:
+    - Current-project attribution is incomplete.
+    qualitative_impact:
+      power: lower
+      bandwidth: mixed
+      latency: mixed
+      performance: mixed
+      quality: unchanged
+      area: higher
+      risk: mixed
+      schedule: higher
+    related_ip_ids:
+    - ip_isp
+    - ip_mfc
+    related_scenario_ids:
+    - uhd60_recording_eis_on
+    required_evidence_need_ids:
+    - need_u_kpi_power
+    - need_u_kpi_bw
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_uhd60_eis_u_w12
+    target_project_id: project_v
+  decision_question:
+    question_id: q_u_recording_kpi_power_scope
+    question: Which matched recording workload and optimization posture should be reviewed before carrying
+      the gap forward?
+    scopes:
+    - measurement_scope
+    - sw_workaround
+    - hw_feasibility
+    required_by_week: 20
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_uhd60_eis_u_w12
+  expected_review_output:
+    output_type: candidate_option_summary
+    description: Record matched KPI scope, optimization candidates, and carry-over evidence gaps.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_u_kpi_power
+    evidence_type: scenario_matched_power_trace
+    reason: Current dashboard coverage is partial across EIS and HDR combinations.
+    availability: partial
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_u_uhd60_current_power_dashboard
+    related_option_ids:
+    - opt_u_kpi_sw_knob
+    - opt_u_kpi_hw_carryover
+    required_by_week: 20
+    review_impact: limits_confidence
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_u_uhd60_current_power_dashboard
+  - evidence_need_id: need_u_kpi_bw
+    evidence_type: scenario_matched_bandwidth_trace
+    reason: Scenario-specific bandwidth attribution is missing.
+    availability: missing
+    blocks_confidence_above: M
+    linked_evidence_ids: []
+    related_option_ids:
+    - opt_u_kpi_sw_knob
+    - opt_u_kpi_hw_carryover
+    required_by_week: 20
+    review_impact: blocks_review
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_uhd60_eis_u_w12
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: project_u_uhd60_power_measurement_available
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_uhd60_power_measurement_available
+  project_id: project_u
+  title: Project U UHD60 partial power measurement available
+  description: Current-project dashboard measurement becomes available as partial evidence without resolving
+    the full EIS delta.
+  event_type: measurement_available
+  event_category: measurement
+  lifecycle_stage: characterization
+  week: 14
+  quarter: Q2
+  severity: medium
+  status: available
+  schedule_signal: watch
+  roles_involved:
+  - hw_development
+  - system_engineering
+  affected_domains:
+  - camera
+  - power
+  linked_scenario_ids:
+  - uhd60_recording_eis_on
+  linked_evidence_ids:
+  - evidence_u_uhd60_current_power_dashboard
+  linked_milestone_ids:
+  - project_u_dvfs_characterization
+  linked_request_ids:
+  - req_uhd60_eis_u_w12
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_specific_bw_trace
+  resource_signal:
+  - additional_measurement_needed
+  confidence_signal:
+    direction: increased
+    reason: Partial current-project measurement improves the basis but does not establish complete scenario
+      coverage.
+    basis: evidence_available
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_u_uhd60_current_power_dashboard
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_8k30_measurement_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_8k30_measurement_gap
+  project_id: project_u
+  title: Project U 8K30 thermal and sustain measurement gap identified
+  description: Prediction and partial thermal evidence leave current-project sustain power unresolved.
+  event_type: measurement_gap_identified
+  event_category: measurement
+  lifecycle_stage: characterization
+  week: 19
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - system_engineering
+  - hw_development
+  affected_domains:
+  - camera
+  - thermal
+  - power
+  linked_scenario_ids:
+  - eight_k30_recording_kpi
+  linked_evidence_ids:
+  - evidence_u_8k_prediction
+  - evidence_u_8k_thermal_report
+  linked_milestone_ids:
+  - project_u_fc_release_w20
+  linked_request_ids:
+  - req_u_8k30_thermal_w18
+  linked_propagation_ids: []
+  missing_data:
+  - current_project_power_measurement
+  - thermal_log
+  resource_signal:
+  - additional_measurement_needed
+  confidence_signal:
+    direction: decreased
+    reason: Prediction-only and partial thermal evidence leave the sustain condition unmeasured.
+    basis: measurement_gap
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_u_8k30_thermal_w18
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_fc_release_checkpoint
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_fc_release_checkpoint
+  project_id: project_u
+  title: Project U FC release checkpoint
+  description: FC release timing is recorded while open scenario measurements continue.
+  event_type: release_checkpoint
+  event_category: release
+  lifecycle_stage: fc
+  week: 20
+  quarter: Q2
+  severity: info
+  status: recorded
+  schedule_signal: watch
+  roles_involved:
+  - pm
+  - management
+  affected_domains:
+  - project
+  - release
+  linked_scenario_ids:
+  - eight_k30_recording_kpi
+  linked_evidence_ids: []
+  linked_milestone_ids:
+  - project_u_fc_release_w20
+  linked_request_ids:
+  - req_u_8k30_thermal_w18
+  linked_propagation_ids: []
+  missing_data:
+  - thermal_log
+  resource_signal:
+  - pm_schedule_review_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_u_fc_release_w20
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_cs_release_checkpoint
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_cs_release_checkpoint
+  project_id: project_u
+  title: Project U CS release checkpoint
+  description: CS release timing is recorded before the Q3 customer feature and issue window expands.
+  event_type: release_checkpoint
+  event_category: release
+  lifecycle_stage: cs
+  week: 27
+  quarter: Q3
+  severity: info
+  status: recorded
+  schedule_signal: on_track
+  roles_involved:
+  - pm
+  - management
+  affected_domains:
+  - project
+  - release
+  linked_scenario_ids: []
+  linked_evidence_ids: []
+  linked_milestone_ids:
+  - project_u_cs_release_w27
+  linked_request_ids: []
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal: []
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_u_cs_release_w27
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_dual_recording_field_issue
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_dual_recording_field_issue
+  project_id: project_u
+  title: Project U dual recording field issue recorded
+  description: Reproducible field evidence is linked after CS for the dual-recording power issue.
+  event_type: field_issue_reported
+  event_category: issue
+  lifecycle_stage: commercial_issue
+  week: 28
+  quarter: Q3
+  severity: high
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - system_engineering
+  - hw_development
+  - sw_development
+  affected_domains:
+  - camera
+  - codec
+  - power
+  linked_scenario_ids:
+  - dual_video_recording
+  linked_evidence_ids:
+  - evidence_u_dual_field_log
+  linked_milestone_ids:
+  - project_u_cs_release_w27
+  linked_request_ids:
+  - req_u_dual_recording_power_w23
+  linked_propagation_ids:
+  - prop_u_dual_to_v_w25
+  missing_data:
+  - current_project_power_measurement
+  resource_signal:
+  - sw_workaround_required
+  - hw_review_required
+  confidence_signal:
+    direction: increased
+    reason: Reproducible field evidence strengthens issue existence without proving a final remedy.
+    basis: issue_reproduced
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_u_dual_field_log
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_dual_recording_confidence_signal
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_dual_recording_confidence_signal
+  project_id: project_u
+  title: Project U dual recording confidence signal recorded
+  description: The ledger records improved issue confidence from reproducible field evidence without calculating
+    a score.
+  event_type: confidence_signal_recorded
+  event_category: confidence
+  lifecycle_stage: commercial_issue
+  week: 28
+  quarter: Q3
+  severity: medium
+  status: recorded
+  schedule_signal: watch
+  roles_involved:
+  - system_engineering
+  affected_domains:
+  - camera
+  - evidence
+  linked_scenario_ids:
+  - dual_video_recording
+  linked_evidence_ids:
+  - evidence_u_dual_field_log
+  linked_milestone_ids: []
+  linked_request_ids:
+  - req_u_dual_recording_power_w23
+  linked_propagation_ids: []
+  missing_data:
+  - current_project_power_measurement
+  resource_signal:
+  - additional_measurement_needed
+  confidence_signal:
+    direction: increased
+    reason: A matched field log records the issue more directly than the previous-project measurement
+      alone.
+    basis: issue_reproduced
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_u_dual_field_log
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_editable_portrait_requirement_change
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_editable_portrait_requirement_change
+  project_id: project_u
+  title: Project U editable portrait customer requirement recorded
+  description: A post-CS customer feature request is recorded with solution detail and SW power evidence
+    still unavailable.
+  event_type: customer_requirement_change
+  event_category: customer
+  lifecycle_stage: customer_setup
+  week: 29
+  quarter: Q3
+  severity: high
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - product_planning
+  - system_engineering
+  - sw_development
+  affected_domains:
+  - camera
+  - ai
+  - power
+  linked_scenario_ids:
+  - editable_portrait_video_recording
+  linked_evidence_ids:
+  - evidence_u_portrait_customer_feedback
+  - evidence_u_portrait_sw_power_unknown
+  - evidence_u_editable_control_flow_delta
+  - evidence_u_editable_power_trace_missing
+  linked_milestone_ids:
+  - project_u_cs_release_w27
+  linked_request_ids:
+  - req_u_editable_portrait_w29
+  linked_propagation_ids:
+  - prop_u_portrait_to_v_w30
+  - prop_u_portrait_to_w_w32
+  missing_data:
+  - customer_solution_detail
+  - sw_power_estimate
+  resource_signal:
+  - customer_clarification_needed
+  - additional_measurement_needed
+  confidence_signal:
+    direction: decreased
+    reason: Customer intent is available but implementation detail and SW power evidence remain unknown.
+    basis: customer_unknown
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_u_editable_portrait_w29
+  candidate_options:
+  - option_id: opt_u_portrait_sw_scope
+    title: Bound the SW feature scope
+    description: Review a bounded control-flow implementation while power evidence remains open.
+    option_type: sw_workaround
+    current_posture: evidence_blocked
+    feasibility: conditional
+    known_risks:
+    - Customer solution detail and matched power remain unavailable.
+    qualitative_impact:
+      power: unknown
+      bandwidth: higher
+      latency: mixed
+      performance: mixed
+      quality: higher
+      area: unchanged
+      risk: mixed
+      schedule: mixed
+    related_ip_ids:
+    - ip_isp
+    - ip_npu
+    - ip_gpu
+    related_scenario_ids:
+    - editable_portrait_video_recording
+    required_evidence_need_ids:
+    - need_u_portrait_control
+    - need_u_portrait_power
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_u_editable_control_flow_delta
+    target_project_id: project_u
+  decision_question:
+    question_id: q_u_editable_portrait_power
+    question: What power and data-path evidence is required before the Editable Portrait feature can be
+      reviewed beyond customer intent?
+    scopes:
+    - measurement_scope
+    - sw_compatibility
+    - resource_allocation
+    required_by_week: 32
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_u_editable_portrait_w29
+  expected_review_output:
+    output_type: handoff_to_next_project
+    description: Record bounded SW compatibility and architecture evidence needs for later projects.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_u_portrait_control
+    evidence_type: control_flow_delta
+    reason: The feature control-flow delta is only partially defined.
+    availability: partial
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_u_editable_control_flow_delta
+    related_option_ids:
+    - opt_u_portrait_sw_scope
+    required_by_week: 32
+    review_impact: limits_confidence
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_u_editable_control_flow_delta
+  - evidence_need_id: need_u_portrait_power
+    evidence_type: scenario_matched_power_trace
+    reason: No matched current-project power trace is available.
+    availability: missing
+    blocks_confidence_above: L
+    linked_evidence_ids:
+    - evidence_u_editable_power_trace_missing
+    related_option_ids:
+    - opt_u_portrait_sw_scope
+    required_by_week: 32
+    review_impact: blocks_review
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_u_editable_power_trace_missing
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: project_u_kpi_evaluation_checkpoint
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_kpi_evaluation_checkpoint
+  project_id: project_u
+  title: Project U Q3 KPI evaluation checkpoint
+  description: The Q3 KPI evaluation window is recorded for open power, thermal, and quality evidence.
+  event_type: milestone_checkpoint
+  event_category: milestone
+  lifecycle_stage: kpi_evaluation
+  week: 32
+  quarter: Q3
+  severity: medium
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - system_engineering
+  - pm
+  - management
+  affected_domains:
+  - power
+  - thermal
+  - quality
+  linked_scenario_ids:
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  linked_evidence_ids:
+  - evidence_u_uhd60_current_power_dashboard
+  - evidence_u_8k_thermal_report
+  linked_milestone_ids:
+  - project_u_kpi_evaluation_q3
+  linked_request_ids:
+  - req_uhd60_eis_u_w12
+  - req_u_8k30_thermal_w18
+  linked_propagation_ids: []
+  missing_data:
+  - current_project_power_measurement
+  - thermal_log
+  resource_signal:
+  - additional_measurement_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_u_kpi_evaluation_q3
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_display_underrun_customer_issue
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_display_underrun_customer_issue
+  project_id: project_u
+  title: Project U display underrun customer issue recorded
+  description: A Q3 display video-mode underrun issue is linked to field log and dump evidence.
+  event_type: customer_issue_reported
+  event_category: customer
+  lifecycle_stage: commercial_issue
+  week: 33
+  quarter: Q3
+  severity: critical
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  affected_domains:
+  - display
+  - realtime
+  - bandwidth
+  linked_scenario_ids:
+  - video_mode_panel_underrun_prevention
+  linked_evidence_ids:
+  - evidence_u_display_field_log
+  - evidence_u_display_dump
+  linked_milestone_ids:
+  - project_u_customer_issue_peak_q3_q4
+  linked_request_ids:
+  - req_display_underrun_u_w10
+  linked_propagation_ids:
+  - prop_u_display_to_v_w34
+  - prop_u_display_to_w_w35
+  missing_data: []
+  resource_signal:
+  - sw_workaround_required
+  - hw_review_required
+  confidence_signal:
+    direction: increased
+    reason: Matched field log and dump establish reproducible issue context.
+    basis: issue_reproduced
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_display_underrun_u_w10
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_display_underrun_lab_reproduced
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_display_underrun_lab_reproduced
+  project_id: project_u
+  title: Project U display underrun issue reproduction recorded
+  description: The deterministic ledger records issue reproduction using the available dump and field-log
+    basis.
+  event_type: lab_issue_reproduced
+  event_category: issue
+  lifecycle_stage: commercial_issue
+  week: 34
+  quarter: Q3
+  severity: high
+  status: recorded
+  schedule_signal: watch
+  roles_involved:
+  - hw_development
+  - sw_development
+  - system_engineering
+  affected_domains:
+  - display
+  - realtime
+  linked_scenario_ids:
+  - video_mode_panel_underrun_prevention
+  linked_evidence_ids:
+  - evidence_u_display_field_log
+  - evidence_u_display_dump
+  linked_milestone_ids: []
+  linked_request_ids:
+  - req_display_underrun_u_w10
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal:
+  - sw_workaround_required
+  confidence_signal:
+    direction: increased
+    reason: Reproduced context narrows issue uncertainty but does not prove the remedy.
+    basis: issue_reproduced
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_u_display_dump
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_display_triage_risk_mitigated
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_display_triage_risk_mitigated
+  project_id: project_u
+  title: Project U display triage uncertainty reduced
+  description: Field evidence reduces uncertainty about issue reproduction while the implementation risk
+    remains under review.
+  event_type: risk_mitigated
+  event_category: risk
+  lifecycle_stage: commercial_issue
+  week: 34
+  quarter: Q3
+  severity: medium
+  status: mitigated
+  schedule_signal: watch
+  roles_involved:
+  - system_engineering
+  - sw_development
+  affected_domains:
+  - display
+  - evidence
+  linked_scenario_ids:
+  - video_mode_panel_underrun_prevention
+  linked_evidence_ids:
+  - evidence_u_display_dump
+  linked_milestone_ids: []
+  linked_request_ids:
+  - req_display_underrun_u_w10
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal:
+  - sw_workaround_required
+  confidence_signal:
+    direction: increased
+    reason: Reproduction evidence mitigates triage uncertainty only.
+    basis: issue_reproduced
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_u_display_dump
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_video_editor_benchmark_gap_reported
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_video_editor_benchmark_gap_reported
+  project_id: project_u
+  title: Project U video editor benchmark gap reported
+  description: Competitor measurement is available while scenario-specific regression evidence remains
+    missing.
+  event_type: customer_issue_reported
+  event_category: customer
+  lifecycle_stage: commercial_issue
+  week: 37
+  quarter: Q3
+  severity: high
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - product_planning
+  - system_engineering
+  - sw_development
+  affected_domains:
+  - codec
+  - video
+  - benchmark
+  linked_scenario_ids:
+  - video_editor_export
+  linked_evidence_ids:
+  - evidence_u_editor_competitor_measurement
+  - evidence_u_editor_regression_missing
+  linked_milestone_ids:
+  - project_u_customer_issue_peak_q3_q4
+  linked_request_ids:
+  - req_video_editor_u_w16
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - additional_measurement_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Competitor measurement supplies comparison context but current regression evidence is absent.
+    basis: measurement_gap
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_video_editor_u_w16
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_q4_customer_issue_peak_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_q4_customer_issue_peak_review
+  project_id: project_u
+  title: Project U Q3 and Q4 customer issue peak review
+  description: The commercial issue peak window is recorded for coordinated issue and evidence review.
+  event_type: milestone_checkpoint
+  event_category: milestone
+  lifecycle_stage: commercial_issue
+  week: 38
+  quarter: Q3
+  severity: high
+  status: in_review
+  schedule_signal: at_risk
+  roles_involved:
+  - pm
+  - system_engineering
+  - management
+  affected_domains:
+  - customer
+  - project
+  - quality
+  linked_scenario_ids:
+  - video_mode_panel_underrun_prevention
+  - video_editor_export
+  linked_evidence_ids:
+  - evidence_u_display_dump
+  - evidence_u_editor_competitor_measurement
+  linked_milestone_ids:
+  - project_u_customer_issue_peak_q3_q4
+  linked_request_ids:
+  - req_display_underrun_u_w10
+  - req_video_editor_u_w16
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - pm_schedule_review_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_u_customer_issue_peak_q3_q4
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_youtube_dou_tracking_update
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_youtube_dou_tracking_update
+  project_id: project_u
+  title: Project U YouTube playback DoU evidence tracking update
+  description: Partial power dashboard evidence is recorded while the scenario-specific lab trace remains
+    planned.
+  event_type: evidence_updated
+  event_category: evidence
+  lifecycle_stage: commercial_issue
+  week: 43
+  quarter: Q4
+  severity: medium
+  status: available
+  schedule_signal: watch
+  roles_involved:
+  - system_engineering
+  - sw_development
+  affected_domains:
+  - video
+  - power
+  - dou
+  linked_scenario_ids:
+  - youtube_video_playback_dou
+  linked_evidence_ids:
+  - evidence_u_youtube_power_dashboard
+  - evidence_u_youtube_lab_trace_missing
+  linked_milestone_ids:
+  - project_u_mass_production_q4
+  linked_request_ids:
+  - req_u_youtube_dou_w43
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_specific_bw_trace
+  resource_signal:
+  - additional_measurement_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Partial dashboard evidence does not replace the planned scenario-specific trace.
+    basis: measurement_gap
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_u_youtube_power_dashboard
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_mass_production_risk_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_mass_production_risk_review
+  project_id: project_u
+  title: Project U mass production readiness risk review
+  description: Remaining measurement and regression gaps are recorded against the Q4 mass-production window.
+  event_type: risk_raised
+  event_category: risk
+  lifecycle_stage: mass_production
+  week: 44
+  quarter: Q4
+  severity: high
+  status: in_review
+  schedule_signal: at_risk
+  roles_involved:
+  - pm
+  - system_engineering
+  - management
+  affected_domains:
+  - project
+  - power
+  - quality
+  linked_scenario_ids:
+  - youtube_video_playback_dou
+  - video_editor_export
+  linked_evidence_ids:
+  - evidence_u_youtube_power_dashboard
+  - evidence_u_editor_regression_missing
+  linked_milestone_ids:
+  - project_u_mass_production_q4
+  linked_request_ids:
+  - req_u_youtube_dou_w43
+  - req_video_editor_u_w16
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_regression_result
+  - scenario_specific_bw_trace
+  resource_signal:
+  - pm_schedule_review_needed
+  - additional_measurement_needed
+  confidence_signal:
+    direction: unchanged
+    reason: The readiness review records unresolved evidence without calculating a release score.
+    basis: measurement_gap
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_u_mass_production_q4
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_low_light_customer_issue
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_low_light_customer_issue
+  project_id: project_u
+  title: Project U low-light quality customer issue recorded
+  description: Late customer feedback is recorded with scenario-specific regression evidence unavailable.
+  event_type: customer_issue_reported
+  event_category: customer
+  lifecycle_stage: commercial_issue
+  week: 50
+  quarter: Q4
+  severity: high
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - product_planning
+  - system_engineering
+  - sw_development
+  affected_domains:
+  - camera
+  - ai
+  - quality
+  linked_scenario_ids:
+  - low_light_video_recording_ai
+  linked_evidence_ids:
+  - evidence_u_low_light_customer_feedback
+  - evidence_u_low_light_regression_missing
+  linked_milestone_ids:
+  - project_u_mass_production_q4
+  linked_request_ids:
+  - req_u_low_light_quality_w50
+  linked_propagation_ids:
+  - prop_u_low_light_to_w_w52
+  missing_data:
+  - scenario_regression_result
+  - customer_solution_detail
+  resource_signal:
+  - customer_clarification_needed
+  - additional_measurement_needed
+  confidence_signal:
+    direction: decreased
+    reason: Customer feedback identifies quality concern while a matching regression result is missing.
+    basis: customer_unknown
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_u_low_light_quality_w50
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_low_light_propagation_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_low_light_propagation_review
+  project_id: project_u
+  title: Project U low-light issue propagation review recorded
+  description: The Project U issue is linked to a Project W spec reflection as a derived review relationship,
+    not causal proof.
+  event_type: propagation_review_recorded
+  event_category: review
+  lifecycle_stage: commercial_issue
+  week: 52
+  quarter: Q4
+  severity: medium
+  status: recorded
+  schedule_signal: not_applicable
+  roles_involved:
+  - system_engineering
+  - soc_architecture
+  affected_domains:
+  - camera
+  - architecture
+  linked_scenario_ids:
+  - low_light_video_recording_ai
+  linked_evidence_ids:
+  - evidence_u_low_light_customer_feedback
+  linked_milestone_ids: []
+  linked_request_ids:
+  - req_u_low_light_quality_w50
+  linked_propagation_ids:
+  - prop_u_low_light_to_w_w52
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - architecture_model_update_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#prop_u_low_light_to_w_w52
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_evt0_fix_checkpoint
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_evt0_fix_checkpoint
+  project_id: project_v
+  title: Project V EVT0 fix checkpoint
+  description: The Q1 EVT0 fix checkpoint is recorded before emulator-based SW pre-development.
+  event_type: milestone_checkpoint
+  event_category: milestone
+  lifecycle_stage: evt
+  week: 8
+  quarter: Q1
+  severity: info
+  status: recorded
+  schedule_signal: on_track
+  roles_involved:
+  - hw_development
+  - pm
+  affected_domains:
+  - project
+  - silicon
+  linked_scenario_ids: []
+  linked_evidence_ids: []
+  linked_milestone_ids:
+  - project_v_evt0_fix_q1
+  linked_request_ids: []
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal: []
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_v_evt0_fix_q1
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_sw_predev_start
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_sw_predev_start
+  project_id: project_v
+  title: Project V emulator SW pre-development started
+  description: Emulator-based SW pre-development starts in Q2 before silicon power correlation is available.
+  event_type: sw_predev_checkpoint
+  event_category: milestone
+  lifecycle_stage: sw_predevelopment
+  week: 15
+  quarter: Q2
+  severity: medium
+  status: recorded
+  schedule_signal: on_track
+  roles_involved:
+  - sw_development
+  - pm
+  - system_engineering
+  affected_domains:
+  - software
+  - emulator
+  linked_scenario_ids:
+  - ai_isp_capture_tap_in_out
+  linked_evidence_ids:
+  - evidence_v_isp_architecture_note
+  linked_milestone_ids:
+  - project_v_sw_predev_start_q2
+  linked_request_ids:
+  - req_v_isp_pipeline_predev_w15
+  linked_propagation_ids: []
+  missing_data:
+  - emulator_power_correlation
+  resource_signal:
+  - additional_measurement_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_v_sw_predev_start_q2
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_isp_request_opened
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_isp_request_opened
+  project_id: project_v
+  title: Project V ISP pipeline SW pre-development request opened
+  description: The pipeline-change request is recorded for HW, SW, and system review.
+  event_type: scenario_request_opened
+  event_category: request
+  lifecycle_stage: sw_predevelopment
+  week: 15
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - sw_development
+  affected_domains:
+  - camera
+  - isp
+  - software
+  linked_scenario_ids:
+  - ai_isp_capture_tap_in_out
+  linked_evidence_ids:
+  - evidence_v_isp_architecture_note
+  linked_milestone_ids:
+  - project_v_sw_predev_start_q2
+  linked_request_ids:
+  - req_v_isp_pipeline_predev_w15
+  linked_propagation_ids: []
+  missing_data:
+  - emulator_power_correlation
+  - scenario_regression_result
+  resource_signal:
+  - hw_review_required
+  - architecture_model_update_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_v_isp_pipeline_predev_w15
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_isp_pipeline_change_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_isp_pipeline_change_review
+  project_id: project_v
+  title: Project V ISP pipeline architecture change review
+  description: Architecture and emulator evidence are reviewed without selecting a final implementation
+    direction.
+  event_type: sw_compatibility_review
+  event_category: review
+  lifecycle_stage: sw_predevelopment
+  week: 16
+  quarter: Q2
+  severity: high
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  affected_domains:
+  - camera
+  - isp
+  - architecture
+  linked_scenario_ids:
+  - ai_isp_capture_tap_in_out
+  linked_evidence_ids:
+  - evidence_v_isp_architecture_note
+  - evidence_v_isp_emulator_result
+  - evidence_v_camera_regression_matrix
+  linked_milestone_ids:
+  - project_v_sw_predev_start_q2
+  linked_request_ids:
+  - req_v_isp_pipeline_predev_w15
+  linked_propagation_ids: []
+  missing_data:
+  - emulator_power_correlation
+  - scenario_regression_result
+  resource_signal:
+  - hw_review_required
+  - architecture_model_update_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Architecture and partial emulator evidence support review but not silicon behavior.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_v_isp_architecture_note
+  candidate_options:
+  - option_id: opt_v_isp_adapt_interface
+    title: Adapt SW to the revised pipeline interface
+    description: Review interface adaptation with emulator regression coverage.
+    option_type: sw_workaround
+    current_posture: evidence_blocked
+    feasibility: conditional
+    known_risks:
+    - Emulator results do not establish silicon timing or power.
+    qualitative_impact:
+      power: unknown
+      bandwidth: mixed
+      latency: mixed
+      performance: mixed
+      quality: mixed
+      area: unchanged
+      risk: mixed
+      schedule: higher
+    related_ip_ids:
+    - ip_isp
+    - ip_npu
+    related_scenario_ids:
+    - ai_isp_capture_tap_in_out
+    required_evidence_need_ids:
+    - need_v_isp_interface
+    - need_v_camera_regression
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_v_isp_architecture_note
+    target_project_id: project_v
+  decision_question:
+    question_id: q_v_isp_sw_compatibility
+    question: Which SW interface and control-flow changes are required for the revised Camera pipeline?
+    scopes:
+    - sw_compatibility
+    - scenario_regression
+    - schedule_risk
+    required_by_week: 24
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_v_isp_pipeline_predev_w15
+  expected_review_output:
+    output_type: regression_checkpoint_result
+    description: Record SW interface compatibility, functional coverage, and silicon correlation gaps.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_v_isp_interface
+    evidence_type: pipeline_interface_delta
+    reason: The architecture note defines the interface delta for SW review.
+    availability: available
+    blocks_confidence_above: H
+    linked_evidence_ids:
+    - evidence_v_isp_architecture_note
+    related_option_ids:
+    - opt_v_isp_adapt_interface
+    required_by_week: 24
+    review_impact: supports_review
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_v_isp_architecture_note
+  - evidence_need_id: need_v_camera_regression
+    evidence_type: emulator_regression_coverage
+    reason: Camera regression coverage is partial and cannot establish silicon behavior.
+    availability: partial
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_v_camera_regression_matrix
+    related_option_ids:
+    - opt_v_isp_adapt_interface
+    required_by_week: 24
+    review_impact: limits_confidence
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_v_camera_regression_matrix
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: project_v_multicamera_request_opened
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_multicamera_request_opened
+  project_id: project_v
+  title: Project V multi-camera control request opened
+  description: Sensor-mode switch control risk is recorded for emulator and regression review.
+  event_type: scenario_request_opened
+  event_category: request
+  lifecycle_stage: sw_predevelopment
+  week: 19
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: watch
+  roles_involved:
+  - system_engineering
+  - sw_development
+  affected_domains:
+  - camera
+  - control
+  - software
+  linked_scenario_ids:
+  - multi_camera_zoom_sensor_mode_switch
+  linked_evidence_ids:
+  - evidence_v_multi_camera_emulator_result
+  linked_milestone_ids:
+  - project_v_sw_predev_start_q2
+  linked_request_ids:
+  - req_v_multi_camera_control_w19
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - sw_workaround_required
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_v_multi_camera_control_w19
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_multicamera_control_risk_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_multicamera_control_risk_review
+  project_id: project_v
+  title: Project V multi-camera control risk review
+  description: Partial emulator evidence and a missing regression result keep control-transition risk
+    open.
+  event_type: scenario_regression_checkpoint
+  event_category: evidence
+  lifecycle_stage: sw_predevelopment
+  week: 20
+  quarter: Q2
+  severity: high
+  status: in_review
+  schedule_signal: at_risk
+  roles_involved:
+  - system_engineering
+  - sw_development
+  - pm
+  affected_domains:
+  - camera
+  - control
+  - schedule
+  linked_scenario_ids:
+  - multi_camera_zoom_sensor_mode_switch
+  linked_evidence_ids:
+  - evidence_v_multi_camera_emulator_result
+  - evidence_v_multi_camera_regression_missing
+  linked_milestone_ids:
+  - project_v_emulator_fc_target
+  linked_request_ids:
+  - req_v_multi_camera_control_w19
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - sw_workaround_required
+  - pm_schedule_review_needed
+  confidence_signal:
+    direction: decreased
+    reason: The functional path is partial and scenario regression evidence is absent.
+    basis: measurement_gap
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_v_multi_camera_regression_missing
+  candidate_options: []
+  decision_question:
+    question_id: q_v_multicamera_regression
+    question: Does the revised Camera control path preserve existing zoom and sensor-mode transition scenarios?
+    scopes:
+    - sw_compatibility
+    - scenario_regression
+    required_by_week: 24
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_v_multi_camera_control_w19
+  expected_review_output:
+    output_type: regression_checkpoint_result
+    description: Record functional transition coverage and unresolved regression gaps.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_v_multicamera_emulator
+    evidence_type: emulator_regression_coverage
+    reason: Emulator coverage is partial for transition sequencing.
+    availability: partial
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_v_multi_camera_emulator_result
+    related_option_ids: []
+    required_by_week: 24
+    review_impact: limits_confidence
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_v_multi_camera_emulator_result
+  - evidence_need_id: need_v_multicamera_regression
+    evidence_type: control_flow_delta
+    reason: Scenario-specific control transition regression is missing.
+    availability: missing
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_v_multi_camera_regression_missing
+    related_option_ids: []
+    required_by_week: 24
+    review_impact: blocks_review
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_v_multi_camera_regression_missing
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: project_v_isp_propagation_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_isp_propagation_review
+  project_id: project_v
+  title: Project V ISP architecture lesson propagation recorded
+  description: The ISP pre-development risk is linked to Project W as a derived review relationship, not
+    causal proof.
+  event_type: propagation_review_recorded
+  event_category: review
+  lifecycle_stage: sw_predevelopment
+  week: 22
+  quarter: Q2
+  severity: medium
+  status: recorded
+  schedule_signal: not_applicable
+  roles_involved:
+  - system_engineering
+  - soc_architecture
+  affected_domains:
+  - camera
+  - architecture
+  linked_scenario_ids:
+  - ai_isp_capture_tap_in_out
+  linked_evidence_ids:
+  - evidence_v_isp_architecture_note
+  linked_milestone_ids: []
+  linked_request_ids:
+  - req_v_isp_pipeline_predev_w15
+  linked_propagation_ids:
+  - prop_v_isp_to_w_w22
+  missing_data:
+  - emulator_power_correlation
+  resource_signal:
+  - architecture_model_update_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#prop_v_isp_to_w_w22
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_emulator_request_opened
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_emulator_request_opened
+  project_id: project_v
+  title: Project V emulator feature-done power review request opened
+  description: Functional completion is recorded separately from unavailable power correlation.
+  event_type: scenario_request_opened
+  event_category: request
+  lifecycle_stage: sw_predevelopment
+  week: 24
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - sw_development
+  - system_engineering
+  affected_domains:
+  - camera
+  - emulator
+  - power
+  linked_scenario_ids:
+  - uhd60_recording_eis_on
+  linked_evidence_ids:
+  - evidence_v_emulator_functional_result
+  - evidence_v_emulator_sw_power_unknown
+  linked_milestone_ids:
+  - project_v_emulator_fc_target
+  linked_request_ids:
+  - req_v_emulator_power_unknown_w24
+  linked_propagation_ids: []
+  missing_data:
+  - emulator_power_correlation
+  - sw_power_estimate
+  resource_signal:
+  - additional_measurement_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_v_emulator_power_unknown_w24
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_emulator_feature_done_power_unknown
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_emulator_feature_done_power_unknown
+  project_id: project_v
+  title: Project V emulator feature complete with power evidence unavailable
+  description: Functional completion is recorded while silicon-correlated power remains missing.
+  event_type: risk_raised
+  event_category: risk
+  lifecycle_stage: sw_predevelopment
+  week: 24
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - sw_development
+  - system_engineering
+  affected_domains:
+  - camera
+  - power
+  linked_scenario_ids:
+  - uhd60_recording_eis_on
+  linked_evidence_ids:
+  - evidence_v_emulator_sw_power_unknown
+  linked_milestone_ids:
+  - project_v_emulator_fc_target
+  linked_request_ids:
+  - req_v_emulator_power_unknown_w24
+  linked_propagation_ids:
+  - prop_v_emulator_power_to_w_w27
+  missing_data:
+  - emulator_power_correlation
+  - sw_power_estimate
+  resource_signal:
+  - additional_measurement_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Functional evidence does not establish power behavior.
+    basis: sw_power_unknown
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_v_emulator_sw_power_unknown
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_evt1_design_fix_checkpoint
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_evt1_design_fix_checkpoint
+  project_id: project_v
+  title: Project V EVT1 design fix checkpoint
+  description: The Q3 EVT1 design-fix point is recorded before the HW change window closes.
+  event_type: milestone_checkpoint
+  event_category: milestone
+  lifecycle_stage: evt
+  week: 28
+  quarter: Q3
+  severity: high
+  status: recorded
+  schedule_signal: window_closing
+  roles_involved:
+  - hw_development
+  - pm
+  - soc_architecture
+  affected_domains:
+  - project
+  - hardware
+  linked_scenario_ids:
+  - mfc_mfd_parallel_4k8k_recording
+  linked_evidence_ids: []
+  linked_milestone_ids:
+  - project_v_evt1_design_fix_q3
+  linked_request_ids:
+  - req_v_mfc_parallel_power_w28
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_specific_bw_trace
+  resource_signal:
+  - hw_review_required
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_v_evt1_design_fix_q3
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_mfc_request_opened
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_mfc_request_opened
+  project_id: project_v
+  title: Project V MFC and MFD parallel recording request opened
+  description: Parallel recording power and bandwidth review enters the EVT1 design-fix window.
+  event_type: scenario_request_opened
+  event_category: request
+  lifecycle_stage: evt
+  week: 28
+  quarter: Q3
+  severity: high
+  status: open
+  schedule_signal: window_closing
+  roles_involved:
+  - system_engineering
+  - hw_development
+  - sw_development
+  affected_domains:
+  - codec
+  - bandwidth
+  - power
+  linked_scenario_ids:
+  - mfc_mfd_parallel_4k8k_recording
+  linked_evidence_ids:
+  - evidence_v_mfc_bandwidth_estimation
+  - evidence_v_mfc_power_unknown
+  linked_milestone_ids:
+  - project_v_evt1_design_fix_q3
+  linked_request_ids:
+  - req_v_mfc_parallel_power_w28
+  linked_propagation_ids: []
+  missing_data:
+  - current_project_power_measurement
+  - scenario_specific_bw_trace
+  resource_signal:
+  - hw_review_required
+  - additional_measurement_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_v_mfc_parallel_power_w28
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_mfc_mfd_parallel_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_mfc_mfd_parallel_review
+  project_id: project_v
+  title: Project V MFC and MFD parallel path review
+  description: Bandwidth estimation and missing power evidence are reviewed before HW closure.
+  event_type: architecture_review
+  event_category: review
+  lifecycle_stage: evt
+  week: 29
+  quarter: Q3
+  severity: high
+  status: in_review
+  schedule_signal: window_closing
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  affected_domains:
+  - codec
+  - bandwidth
+  - architecture
+  linked_scenario_ids:
+  - mfc_mfd_parallel_4k8k_recording
+  linked_evidence_ids:
+  - evidence_v_mfc_bandwidth_estimation
+  - evidence_v_mfc_power_unknown
+  linked_milestone_ids:
+  - project_v_evt1_design_fix_q3
+  linked_request_ids:
+  - req_v_mfc_parallel_power_w28
+  linked_propagation_ids: []
+  missing_data:
+  - current_project_power_measurement
+  - scenario_specific_bw_trace
+  resource_signal:
+  - hw_review_required
+  - architecture_model_update_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Bandwidth estimation supports option review while power remains unknown.
+    basis: sw_power_unknown
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_v_mfc_bandwidth_estimation
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_evt1_hw_window_close
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_evt1_hw_window_close
+  project_id: project_v
+  title: Project V EVT1 HW change window closing
+  description: The HW change window is recorded as closing after the EVT1 design-fix checkpoint.
+  event_type: hw_design_window_update
+  event_category: milestone
+  lifecycle_stage: design
+  week: 31
+  quarter: Q3
+  severity: high
+  status: recorded
+  schedule_signal: window_closing
+  roles_involved:
+  - hw_development
+  - pm
+  - soc_architecture
+  affected_domains:
+  - hardware
+  - schedule
+  linked_scenario_ids:
+  - eight_k30_recording_kpi
+  linked_evidence_ids:
+  - evidence_v_hw_window_architecture_note
+  linked_milestone_ids:
+  - project_v_evt1_design_fix_q3
+  - project_v_hw_change_window_close_q3
+  linked_request_ids:
+  - req_v_hw_window_evidence_w35
+  linked_propagation_ids: []
+  missing_data:
+  - thermal_log
+  resource_signal:
+  - pm_schedule_review_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_v_hw_change_window_close_q3
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_dpu_ai_scaler_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_dpu_ai_scaler_review
+  project_id: project_v
+  title: Project V DPU fallback and AI scaler review
+  description: Partial RTL area and emulator evidence are reviewed as qualitative option basis only.
+  event_type: architecture_review
+  event_category: review
+  lifecycle_stage: design
+  week: 31
+  quarter: Q3
+  severity: medium
+  status: in_review
+  schedule_signal: window_closing
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  affected_domains:
+  - display
+  - ai
+  - realtime
+  linked_scenario_ids:
+  - ai_scaler_display_scale_up
+  linked_evidence_ids:
+  - evidence_v_dpu_rtl_area_estimate
+  - evidence_v_dpu_emulator_result
+  linked_milestone_ids:
+  - project_v_hw_change_window_close_q3
+  linked_request_ids:
+  - req_v_dpu_ai_scaler_w31
+  linked_propagation_ids: []
+  missing_data:
+  - rtl_area_detail
+  - current_project_power_measurement
+  resource_signal:
+  - area_budget_review_needed
+  - hw_review_required
+  confidence_signal:
+    direction: unchanged
+    reason: Partial RTL and functional evidence do not establish real-time or power outcome.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_v_dpu_ai_scaler_w31
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_hw_window_evidence_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_hw_window_evidence_gap
+  project_id: project_v
+  title: Project V post-EVT1 evidence gap recorded
+  description: Planned lab trace remains unavailable after the HW change window closes.
+  event_type: measurement_gap_identified
+  event_category: measurement
+  lifecycle_stage: design
+  week: 35
+  quarter: Q3
+  severity: high
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - system_engineering
+  - pm
+  affected_domains:
+  - camera
+  - thermal
+  - schedule
+  linked_scenario_ids:
+  - eight_k30_recording_kpi
+  linked_evidence_ids:
+  - evidence_v_hw_window_lab_trace_planned
+  linked_milestone_ids:
+  - project_v_hw_change_window_close_q3
+  linked_request_ids:
+  - req_v_hw_window_evidence_w35
+  linked_propagation_ids:
+  - prop_v_hw_window_to_w_w37
+  missing_data:
+  - thermal_log
+  resource_signal:
+  - additional_measurement_needed
+  - pm_schedule_review_needed
+  confidence_signal:
+    direction: decreased
+    reason: The planned trace is not available within the closed HW window.
+    basis: measurement_gap
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_v_hw_window_lab_trace_planned
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_evt0_package_out_preparation
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_evt0_package_out_preparation
+  project_id: project_v
+  title: Project V EVT0 package-out preparation
+  description: Q4 package-out preparation is recorded with remaining evidence gaps carried as review inputs.
+  event_type: hw_design_progress_checkpoint
+  event_category: milestone
+  lifecycle_stage: package
+  week: 50
+  quarter: Q4
+  severity: medium
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - pm
+  - hw_development
+  - system_engineering
+  affected_domains:
+  - project
+  - package
+  - schedule
+  linked_scenario_ids:
+  - eight_k30_recording_kpi
+  linked_evidence_ids:
+  - evidence_v_hw_window_architecture_note
+  - evidence_v_hw_window_lab_trace_planned
+  linked_milestone_ids:
+  - project_v_evt0_package_out_q4
+  linked_request_ids:
+  - req_v_hw_window_evidence_w35
+  linked_propagation_ids: []
+  missing_data:
+  - thermal_log
+  resource_signal:
+  - pm_schedule_review_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_v_evt0_package_out_q4
+  candidate_options: []
+  decision_question:
+    question_id: q_v_evt0_design_progress
+    question: Which unresolved evidence and verification gaps remain visible at EVT0 package-out preparation?
+    scopes:
+    - design_readiness
+    - scenario_regression
+    - schedule_risk
+    required_by_week: 50
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/project_milestones.yaml#project_v_evt0_package_out_q4
+  expected_review_output:
+    output_type: evidence_gap_list
+    description: Record unresolved scenario evidence and verification gaps at the design progress checkpoint.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_v_evt0_trace
+    evidence_type: scenario_matched_thermal_trace
+    reason: The planned scenario trace remains unavailable at the progress checkpoint.
+    availability: missing
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_v_hw_window_lab_trace_planned
+    related_option_ids: []
+    required_by_week: 50
+    review_impact: limits_confidence
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_v_hw_window_lab_trace_planned
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: project_w_customer_spec_discussion
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_customer_spec_discussion
+  project_id: project_w
+  title: Project W customer specification discussion
+  description: Early customer specification discussion is recorded as input to N+2 architecture exploration.
+  event_type: milestone_checkpoint
+  event_category: milestone
+  lifecycle_stage: spec
+  week: 5
+  quarter: Q1
+  severity: info
+  status: recorded
+  schedule_signal: on_track
+  roles_involved:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  affected_domains:
+  - customer
+  - specification
+  linked_scenario_ids:
+  - low_light_video_recording_ai
+  linked_evidence_ids:
+  - evidence_w_low_light_architecture_note
+  linked_milestone_ids:
+  - project_w_customer_spec_discussion_q1_q2
+  linked_request_ids:
+  - req_w_low_light_arch_w5
+  linked_propagation_ids: []
+  missing_data:
+  - customer_solution_detail
+  resource_signal:
+  - customer_clarification_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_w_customer_spec_discussion_q1_q2
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_low_light_ai_architecture_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_low_light_ai_architecture_review
+  project_id: project_w
+  title: Project W low-light AI architecture review
+  description: Previous measurement and architecture notes are reviewed as Camera IQ option basis without
+    selecting an implementation.
+  event_type: architecture_option_screening
+  event_category: review
+  lifecycle_stage: architecture
+  week: 7
+  quarter: Q1
+  severity: high
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  affected_domains:
+  - camera
+  - ai
+  - architecture
+  linked_scenario_ids:
+  - low_light_video_recording_ai
+  linked_evidence_ids:
+  - evidence_w_low_light_architecture_note
+  - evidence_w_low_light_previous_measurement
+  - evidence_w_camera_iq_previous_comparison
+  linked_milestone_ids:
+  - project_w_customer_spec_discussion_q1_q2
+  linked_request_ids:
+  - req_w_low_light_arch_w5
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - architecture_model_update_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Previous-project measurement supports exploration but current architecture behavior remains
+      unmeasured.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_w_low_light_architecture_note
+  candidate_options:
+  - option_id: opt_w_iq_retain_pipeline
+    title: Retain the existing Camera processing path
+    description: Preserve feature coverage while carrying the observed IQ limitations.
+    option_type: monitor_only
+    current_posture: conditional_candidate
+    feasibility: conditional
+    known_risks:
+    - Previous-project evidence has only a partial scenario match.
+    qualitative_impact:
+      power: unchanged
+      bandwidth: unchanged
+      latency: unchanged
+      performance: unchanged
+      quality: mixed
+      area: unchanged
+      risk: mixed
+      schedule: lower
+    related_ip_ids:
+    - ip_isp
+    related_scenario_ids:
+    - low_light_video_recording_ai
+    required_evidence_need_ids:
+    - need_w_iq_comparison
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_camera_iq_previous_comparison
+    target_project_id: project_w
+  - option_id: opt_w_iq_ai_partition
+    title: Review an AI-assisted Camera partition
+    description: Screen AI partitioning as a quality candidate with explicit resource gaps.
+    option_type: architecture_option
+    current_posture: evidence_blocked
+    feasibility: unknown
+    known_risks:
+    - Matched Project W IQ and power regression is unavailable.
+    qualitative_impact:
+      power: higher
+      bandwidth: mixed
+      latency: mixed
+      performance: mixed
+      quality: higher
+      area: higher
+      risk: mixed
+      schedule: higher
+    related_ip_ids:
+    - ip_isp
+    - ip_npu
+    related_scenario_ids:
+    - low_light_video_recording_ai
+    - ai_isp_capture_tap_in_out
+    required_evidence_need_ids:
+    - need_w_iq_comparison
+    - need_w_iq_regression
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_low_light_architecture_note
+    target_project_id: project_w
+  decision_question:
+    question_id: q_w_camera_iq_partition
+    question: Which Camera pipeline partition should remain under review for low-light IQ without hiding
+      power and area pressure?
+    scopes:
+    - architecture_tradeoff
+    - resource_allocation
+    - measurement_scope
+    required_by_week: 21
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_w_low_light_arch_w5
+  expected_review_output:
+    output_type: architecture_screening_note
+    description: Record Camera IQ candidates, evidence gaps, and qualitative resource pressure.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_w_iq_comparison
+    evidence_type: iq_regression_comparison
+    reason: Previous-project IQ comparison is available with a partial scenario match.
+    availability: available
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_w_camera_iq_previous_comparison
+    related_option_ids:
+    - opt_w_iq_retain_pipeline
+    - opt_w_iq_ai_partition
+    required_by_week: 21
+    review_impact: supports_review
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_camera_iq_previous_comparison
+  - evidence_need_id: need_w_iq_regression
+    evidence_type: iq_regression_comparison
+    reason: Project W matched IQ and resource regression is not available.
+    availability: missing
+    blocks_confidence_above: M
+    linked_evidence_ids: []
+    related_option_ids:
+    - opt_w_iq_ai_partition
+    required_by_week: 21
+    review_impact: blocks_review
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_w_low_light_arch_w5
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: project_w_apv_request_opened
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_apv_request_opened
+  project_id: project_w
+  title: Project W APV high-bandwidth architecture request opened
+  description: The APV option request is recorded with bandwidth estimation and missing thermal evidence.
+  event_type: scenario_request_opened
+  event_category: request
+  lifecycle_stage: spec
+  week: 14
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  affected_domains:
+  - camera
+  - codec
+  - bandwidth
+  linked_scenario_ids:
+  - apv_recording_high_bw
+  linked_evidence_ids:
+  - evidence_w_apv_bandwidth_estimation
+  - evidence_w_apv_thermal_log_missing
+  linked_milestone_ids:
+  - project_w_spec_freeze_q2
+  linked_request_ids:
+  - req_w_apv_arch_w14
+  linked_propagation_ids: []
+  missing_data:
+  - thermal_log
+  - scenario_specific_bw_trace
+  resource_signal:
+  - architecture_model_update_needed
+  - additional_measurement_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_w_apv_arch_w14
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_apv_high_bw_architecture_option
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_apv_high_bw_architecture_option
+  project_id: project_w
+  title: Project W APV high-bandwidth architecture option review
+  description: The bandwidth estimate is reviewed as qualitative candidate basis while thermal evidence
+    is missing.
+  event_type: architecture_option_screening
+  event_category: review
+  lifecycle_stage: architecture
+  week: 15
+  quarter: Q2
+  severity: high
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  affected_domains:
+  - camera
+  - codec
+  - bandwidth
+  - architecture
+  linked_scenario_ids:
+  - apv_recording_high_bw
+  linked_evidence_ids:
+  - evidence_w_apv_bandwidth_estimation
+  - evidence_w_apv_thermal_log_missing
+  linked_milestone_ids:
+  - project_w_spec_freeze_q2
+  linked_request_ids:
+  - req_w_apv_arch_w14
+  linked_propagation_ids: []
+  missing_data:
+  - thermal_log
+  - scenario_specific_bw_trace
+  resource_signal:
+  - architecture_model_update_needed
+  - additional_measurement_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Bandwidth estimation supports candidate review but does not prove thermal feasibility.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_w_apv_bandwidth_estimation
+  candidate_options:
+  - option_id: opt_w_apv_existing_path
+    title: Retain the existing APV path
+    description: Preserve the existing path while carrying bandwidth and thermal gaps.
+    option_type: monitor_only
+    current_posture: evidence_blocked
+    feasibility: conditional
+    known_risks:
+    - Architecture estimation is not a matched silicon trace.
+    qualitative_impact:
+      power: unknown
+      bandwidth: higher
+      latency: unchanged
+      performance: mixed
+      quality: unchanged
+      area: unchanged
+      risk: mixed
+      schedule: lower
+    related_ip_ids:
+    - ip_isp
+    - ip_mfc
+    related_scenario_ids:
+    - apv_recording_high_bw
+    required_evidence_need_ids:
+    - need_w_apv_bw
+    - need_w_apv_thermal
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_apv_bandwidth_estimation
+    target_project_id: project_w
+  decision_question:
+    question_id: q_w_apv_architecture_option
+    question: Which APV data-path option should remain under review before matched bandwidth and thermal
+      evidence exists?
+    scopes:
+    - architecture_tradeoff
+    - resource_allocation
+    - measurement_scope
+    required_by_week: 21
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_w_apv_arch_w14
+  expected_review_output:
+    output_type: architecture_screening_note
+    description: Record APV architecture candidates and unresolved bandwidth and thermal evidence.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_w_apv_bw
+    evidence_type: scenario_matched_bandwidth_trace
+    reason: Architecture bandwidth estimation is available but is not silicon measurement.
+    availability: available
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_w_apv_bandwidth_estimation
+    related_option_ids:
+    - opt_w_apv_existing_path
+    required_by_week: 21
+    review_impact: supports_review
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_apv_bandwidth_estimation
+  - evidence_need_id: need_w_apv_thermal
+    evidence_type: scenario_matched_thermal_trace
+    reason: Matched APV thermal evidence is missing.
+    availability: missing
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_w_apv_thermal_log_missing
+    related_option_ids:
+    - opt_w_apv_existing_path
+    required_by_week: 21
+    review_impact: blocks_review
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_apv_thermal_log_missing
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: project_w_apv_decision_deferred
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_apv_decision_deferred
+  project_id: project_w
+  title: Project W APV option decision deferred
+  description: Option selection remains deferred until thermal and scenario-specific bandwidth evidence
+    is available.
+  event_type: decision_deferred
+  event_category: review
+  lifecycle_stage: architecture
+  week: 16
+  quarter: Q2
+  severity: medium
+  status: deferred
+  schedule_signal: deferred
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - pm
+  affected_domains:
+  - camera
+  - bandwidth
+  - thermal
+  linked_scenario_ids:
+  - apv_recording_high_bw
+  linked_evidence_ids:
+  - evidence_w_apv_thermal_log_missing
+  linked_milestone_ids:
+  - project_w_spec_freeze_q2
+  linked_request_ids:
+  - req_w_apv_arch_w14
+  linked_propagation_ids: []
+  missing_data:
+  - thermal_log
+  - scenario_specific_bw_trace
+  resource_signal:
+  - additional_measurement_needed
+  - pm_schedule_review_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Missing thermal evidence prevents stronger option confidence.
+    basis: measurement_gap
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_w_apv_thermal_log_missing
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_spec_freeze_checkpoint
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_spec_freeze_checkpoint
+  project_id: project_w
+  title: Project W specification freeze checkpoint
+  description: The Q2 specification freeze point is recorded with unresolved architecture evidence retained
+    as gaps.
+  event_type: milestone_checkpoint
+  event_category: milestone
+  lifecycle_stage: spec
+  week: 21
+  quarter: Q2
+  severity: high
+  status: recorded
+  schedule_signal: window_closing
+  roles_involved:
+  - product_planning
+  - soc_architecture
+  - pm
+  affected_domains:
+  - specification
+  - project
+  linked_scenario_ids:
+  - apv_recording_high_bw
+  - mfc_mfd_parallel_4k8k_recording
+  linked_evidence_ids:
+  - evidence_w_apv_bandwidth_estimation
+  linked_milestone_ids:
+  - project_w_spec_freeze_q2
+  linked_request_ids:
+  - req_w_apv_arch_w14
+  - req_w_mmip_area_tradeoff_w21
+  linked_propagation_ids: []
+  missing_data:
+  - thermal_log
+  - rtl_area_detail
+  resource_signal:
+  - architecture_model_update_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_w_spec_freeze_q2
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_mmip_area_request_opened
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_mmip_area_request_opened
+  project_id: project_w
+  title: Project W multimedia IP area trade-off request opened
+  description: The MMIP area-reduction request is recorded with partial RTL estimate evidence.
+  event_type: scenario_request_opened
+  event_category: request
+  lifecycle_stage: architecture
+  week: 21
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: watch
+  roles_involved:
+  - management
+  - soc_architecture
+  - system_engineering
+  affected_domains:
+  - codec
+  - area
+  - power
+  linked_scenario_ids:
+  - mfc_mfd_parallel_4k8k_recording
+  linked_evidence_ids:
+  - evidence_w_mmip_rtl_area_estimate
+  - evidence_w_mmip_confluence_note
+  linked_milestone_ids:
+  - project_w_spec_freeze_q2
+  linked_request_ids:
+  - req_w_mmip_area_tradeoff_w21
+  linked_propagation_ids: []
+  missing_data:
+  - rtl_area_detail
+  - current_project_power_measurement
+  resource_signal:
+  - area_budget_review_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_w_mmip_area_tradeoff_w21
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_mmip_area_tradeoff_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_mmip_area_tradeoff_review
+  project_id: project_w
+  title: Project W MMIP area and power trade-off review
+  description: Partial RTL area evidence is reviewed with power behavior explicitly unresolved.
+  event_type: architecture_review
+  event_category: review
+  lifecycle_stage: architecture
+  week: 22
+  quarter: Q2
+  severity: high
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - management
+  affected_domains:
+  - codec
+  - area
+  - power
+  - architecture
+  linked_scenario_ids:
+  - mfc_mfd_parallel_4k8k_recording
+  linked_evidence_ids:
+  - evidence_w_mmip_rtl_area_estimate
+  - evidence_w_mmip_confluence_note
+  linked_milestone_ids:
+  - project_w_architecture_review_q2_q3
+  linked_request_ids:
+  - req_w_mmip_area_tradeoff_w21
+  linked_propagation_ids: []
+  missing_data:
+  - rtl_area_detail
+  - current_project_power_measurement
+  resource_signal:
+  - area_budget_review_needed
+  - architecture_model_update_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Partial area estimation supports trade-off review but does not establish power impact.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_w_mmip_rtl_area_estimate
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_area_option_deferred
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_area_option_deferred
+  project_id: project_w
+  title: Project W high-area option remains deferred
+  description: Active implementation of the candidate option remains deferred pending detailed RTL area
+    evidence.
+  event_type: feature_dropped_or_deferred
+  event_category: review
+  lifecycle_stage: architecture
+  week: 23
+  quarter: Q2
+  severity: medium
+  status: deferred
+  schedule_signal: deferred
+  roles_involved:
+  - soc_architecture
+  - management
+  - pm
+  affected_domains:
+  - codec
+  - area
+  linked_scenario_ids:
+  - mfc_mfd_parallel_4k8k_recording
+  linked_evidence_ids:
+  - evidence_w_mmip_rtl_area_estimate
+  linked_milestone_ids:
+  - project_w_architecture_review_q2_q3
+  linked_request_ids:
+  - req_w_mmip_area_tradeoff_w21
+  linked_propagation_ids: []
+  missing_data:
+  - rtl_area_detail
+  resource_signal:
+  - area_budget_review_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Partial RTL estimation does not support an active implementation commitment.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_w_mmip_rtl_area_estimate
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_audio_request_opened
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_audio_request_opened
+  project_id: project_w
+  title: Project W audio AI latency request opened
+  description: Audio AI latency, SRAM, and accelerator review is recorded with a planned trace.
+  event_type: scenario_request_opened
+  event_category: request
+  lifecycle_stage: architecture
+  week: 25
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  affected_domains:
+  - audio
+  - ai
+  - latency
+  linked_scenario_ids:
+  - voice_call_audio_ai_latency
+  linked_evidence_ids:
+  - evidence_w_audio_architecture_note
+  - evidence_w_audio_latency_trace_planned
+  linked_milestone_ids:
+  - project_w_architecture_review_q2_q3
+  linked_request_ids:
+  - req_w_audio_ai_latency_w25
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - architecture_model_update_needed
+  - additional_measurement_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_w_audio_ai_latency_w25
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_audio_ai_latency_architecture_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_audio_ai_latency_architecture_review
+  project_id: project_w
+  title: Project W audio AI latency and SRAM architecture review
+  description: Architecture notes are reviewed while the scenario-matched latency trace remains planned.
+  event_type: architecture_review
+  event_category: review
+  lifecycle_stage: architecture
+  week: 26
+  quarter: Q2
+  severity: high
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  affected_domains:
+  - audio
+  - ai
+  - latency
+  - memory
+  linked_scenario_ids:
+  - voice_call_audio_ai_latency
+  linked_evidence_ids:
+  - evidence_w_audio_architecture_note
+  - evidence_w_audio_latency_trace_planned
+  linked_milestone_ids:
+  - project_w_architecture_review_q2_q3
+  linked_request_ids:
+  - req_w_audio_ai_latency_w25
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - architecture_model_update_needed
+  - additional_measurement_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Architecture notes support review but the latency trace is not available.
+    basis: measurement_gap
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_w_audio_architecture_note
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_audio_resource_need
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_audio_resource_need
+  project_id: project_w
+  title: Project W audio AI measurement resource need identified
+  description: A scenario-matched latency trace and architecture model update are recorded as required
+    review resources.
+  event_type: resource_need_identified
+  event_category: resource
+  lifecycle_stage: architecture
+  week: 26
+  quarter: Q2
+  severity: medium
+  status: open
+  schedule_signal: watch
+  roles_involved:
+  - system_engineering
+  - pm
+  affected_domains:
+  - audio
+  - measurement
+  - architecture
+  linked_scenario_ids:
+  - voice_call_audio_ai_latency
+  linked_evidence_ids:
+  - evidence_w_audio_latency_trace_planned
+  linked_milestone_ids:
+  - project_w_architecture_review_q2_q3
+  linked_request_ids:
+  - req_w_audio_ai_latency_w25
+  linked_propagation_ids: []
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - additional_measurement_needed
+  - architecture_model_update_needed
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_w_audio_latency_trace_planned
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_architecture_doc_complete
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_architecture_doc_complete
+  project_id: project_w
+  title: Project W architecture document completion checkpoint
+  description: The architecture document completion point is recorded with open evidence limitations retained.
+  event_type: milestone_checkpoint
+  event_category: milestone
+  lifecycle_stage: architecture
+  week: 30
+  quarter: Q3
+  severity: medium
+  status: recorded
+  schedule_signal: on_track
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - pm
+  affected_domains:
+  - architecture
+  - project
+  linked_scenario_ids:
+  - low_light_video_recording_ai
+  - apv_recording_high_bw
+  - voice_call_audio_ai_latency
+  linked_evidence_ids:
+  - evidence_w_low_light_architecture_note
+  - evidence_w_apv_bandwidth_estimation
+  - evidence_w_audio_architecture_note
+  linked_milestone_ids:
+  - project_w_architecture_doc_complete_q3
+  linked_request_ids:
+  - req_w_low_light_arch_w5
+  - req_w_apv_arch_w14
+  - req_w_audio_ai_latency_w25
+  linked_propagation_ids:
+  - prop_u_dual_to_w_w29
+  - prop_v_multi_camera_to_w_w24
+  - prop_v_mfc_to_w_w30
+  missing_data:
+  - thermal_log
+  - scenario_regression_result
+  resource_signal:
+  - architecture_model_update_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_w_architecture_doc_complete_q3
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_display_lesson_propagation_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_display_lesson_propagation_review
+  project_id: project_w
+  title: Project W display underrun architecture lesson recorded
+  description: The Project U display issue is retained as a derived architecture lesson, not causal proof.
+  event_type: propagation_review_recorded
+  event_category: review
+  lifecycle_stage: architecture
+  week: 35
+  quarter: Q3
+  severity: medium
+  status: recorded
+  schedule_signal: not_applicable
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  affected_domains:
+  - display
+  - realtime
+  - architecture
+  linked_scenario_ids:
+  - video_mode_panel_underrun_prevention
+  linked_evidence_ids:
+  - evidence_w_display_architecture_lesson
+  - evidence_w_display_previous_dump
+  linked_milestone_ids:
+  - project_w_evt0_design_progress
+  linked_request_ids:
+  - req_display_underrun_u_w10
+  linked_propagation_ids:
+  - prop_u_display_to_w_w35
+  - prop_v_dpu_scaler_to_w_w33
+  missing_data: []
+  resource_signal:
+  - architecture_model_update_needed
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#prop_u_display_to_w_w35
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_dou_architecture_support_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_dou_architecture_support_review
+  project_id: project_w
+  title: Project W DoU SW optimization architecture support review
+  description: Architecture note and prediction evidence are reviewed without treating prediction as measurement.
+  event_type: architecture_review
+  event_category: review
+  lifecycle_stage: design
+  week: 39
+  quarter: Q3
+  severity: medium
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - sw_development
+  affected_domains:
+  - video
+  - power
+  - dou
+  - architecture
+  linked_scenario_ids:
+  - youtube_video_playback_dou
+  linked_evidence_ids:
+  - evidence_w_dou_architecture_note
+  - evidence_w_dou_power_prediction
+  linked_milestone_ids:
+  - project_w_evt0_design_progress
+  linked_request_ids:
+  - req_w_dou_arch_support_w39
+  linked_propagation_ids: []
+  missing_data:
+  - current_project_power_measurement
+  resource_signal:
+  - architecture_model_update_needed
+  - additional_measurement_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Prediction evidence remains candidate basis and does not establish measured DoU improvement.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_w_dou_arch_support_w39
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_w_alpha_beta_planning
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_alpha_beta_planning
+  project_id: project_w
+  title: Project W alpha and beta release planning checkpoint
+  description: Q4 alpha and beta planning is recorded with architecture evidence gaps still visible.
+  event_type: release_checkpoint
+  event_category: release
+  lifecycle_stage: release
+  week: 46
+  quarter: Q4
+  severity: medium
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - pm
+  - soc_architecture
+  - system_engineering
+  affected_domains:
+  - project
+  - release
+  - architecture
+  linked_scenario_ids:
+  - low_light_video_recording_ai
+  - voice_call_audio_ai_latency
+  linked_evidence_ids:
+  - evidence_w_low_light_architecture_note
+  - evidence_w_audio_architecture_note
+  linked_milestone_ids:
+  - project_w_alpha_beta_q4
+  linked_request_ids:
+  - req_w_low_light_arch_w5
+  - req_w_audio_ai_latency_w25
+  linked_propagation_ids:
+  - prop_u_editor_to_w_w40
+  - prop_u_youtube_to_w_w45
+  missing_data:
+  - scenario_regression_result
+  resource_signal:
+  - pm_schedule_review_needed
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_w_alpha_beta_q4
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_apv_request_opened
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_apv_request_opened
+  project_id: project_u
+  title: Project U APV power optimization request opened
+  description: APV power and bandwidth optimization is recorded with matched power and thermal evidence
+    still unavailable.
+  event_type: scenario_request_opened
+  event_category: request
+  lifecycle_stage: fc
+  week: 21
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: watch
+  roles_involved:
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  affected_domains:
+  - camera
+  - codec
+  - power
+  - bandwidth
+  - thermal
+  linked_scenario_ids:
+  - apv_recording_high_bw
+  linked_evidence_ids:
+  - evidence_u_apv_bw_trace_partial
+  - evidence_u_apv_power_trace_missing
+  linked_milestone_ids:
+  - project_u_fc_release_w20
+  linked_request_ids:
+  - req_u_apv_power_w21
+  linked_propagation_ids:
+  - prop_u_apv_to_v_w23
+  - prop_u_apv_to_w_w24
+  missing_data:
+  - current_project_power_measurement
+  - thermal_log
+  resource_signal:
+  - additional_measurement_needed
+  - hw_review_required
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_u_apv_power_w21
+  candidate_options: []
+  event_relations:
+    predecessor_event_ids:
+    - project_u_fc_release_checkpoint
+    derived_from_event_ids: []
+    propagation_event_ids:
+    - project_v_u_carryover_hw_feasibility_review
+    - project_w_camera_microarchitecture_review
+    supersedes_event_ids: []
+    validation_event_ids:
+    - project_u_apv_measurement_gap
+    not_causal_proof: true
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_u_apv_measurement_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_u_apv_measurement_gap
+  project_id: project_u
+  title: Project U APV matched measurement gap identified
+  description: Partial bandwidth coverage cannot substitute for matched APV power and sustained thermal
+    evidence.
+  event_type: measurement_gap_identified
+  event_category: measurement
+  lifecycle_stage: fc
+  week: 22
+  quarter: Q2
+  severity: high
+  status: open
+  schedule_signal: at_risk
+  roles_involved:
+  - system_engineering
+  - hw_development
+  - pm
+  affected_domains:
+  - camera
+  - codec
+  - power
+  - bandwidth
+  - thermal
+  linked_scenario_ids:
+  - apv_recording_high_bw
+  linked_evidence_ids:
+  - evidence_u_apv_bw_trace_partial
+  - evidence_u_apv_power_trace_missing
+  - evidence_u_apv_thermal_trace_missing
+  linked_milestone_ids:
+  - project_u_fc_release_w20
+  linked_request_ids:
+  - req_u_apv_power_w21
+  linked_propagation_ids: []
+  missing_data:
+  - current_project_power_measurement
+  - thermal_log
+  resource_signal:
+  - additional_measurement_needed
+  confidence_signal:
+    direction: decreased
+    reason: Matched power and thermal evidence remains missing.
+    basis: measurement_gap
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_u_apv_power_trace_missing
+  candidate_options: []
+  event_relations:
+    predecessor_event_ids:
+    - project_u_apv_request_opened
+    derived_from_event_ids: []
+    propagation_event_ids:
+    - project_v_u_carryover_hw_feasibility_review
+    supersedes_event_ids: []
+    validation_event_ids: []
+    not_causal_proof: true
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: project_v_u_carryover_hw_feasibility_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_v_u_carryover_hw_feasibility_review
+  project_id: project_v
+  title: Project V pre-EVT1 Project U carry-over HW feasibility review
+  description: Bounded HW, SW workaround, and Project W deferral candidates are reviewed before EVT1 design
+    fix.
+  event_type: hw_feasibility_review
+  event_category: review
+  lifecycle_stage: design
+  week: 26
+  quarter: Q2
+  severity: high
+  status: in_review
+  schedule_signal: window_closing
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  affected_domains:
+  - camera
+  - codec
+  - power
+  - bandwidth
+  - area
+  - schedule
+  linked_scenario_ids:
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  - dual_video_recording
+  - apv_recording_high_bw
+  linked_evidence_ids:
+  - evidence_v_carryover_hw_feasibility_note
+  - evidence_u_apv_bw_trace_partial
+  - evidence_u_apv_power_trace_missing
+  linked_milestone_ids:
+  - project_v_evt1_design_fix_q3
+  linked_request_ids:
+  - req_uhd60_eis_u_w12
+  - req_u_8k30_thermal_w18
+  - req_u_dual_recording_power_w23
+  - req_u_apv_power_w21
+  linked_propagation_ids:
+  - prop_uhd60_eis_u_to_v
+  - prop_u_8k30_to_v_w21
+  - prop_u_dual_to_v_w25
+  - prop_u_apv_to_v_w23
+  missing_data:
+  - current_project_power_measurement
+  - rtl_area_detail
+  resource_signal:
+  - hw_review_required
+  - area_budget_review_needed
+  - pm_schedule_review_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Feasibility review is bounded by incomplete power attribution and RTL detail.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/evidence_catalog.yaml#evidence_v_carryover_hw_feasibility_note
+  candidate_options:
+  - option_id: opt_v_bounded_hw_change
+    title: Bounded HW or HW knob candidate
+    description: Review only changes with bounded area, verification, and schedule exposure.
+    option_type: hw_microarchitecture_change
+    current_posture: evidence_blocked
+    feasibility: conditional
+    known_risks:
+    - RTL detail and current-project power attribution are incomplete.
+    qualitative_impact:
+      power: lower
+      bandwidth: mixed
+      latency: mixed
+      performance: mixed
+      quality: unchanged
+      area: higher
+      risk: mixed
+      schedule: higher
+    related_ip_ids:
+    - ip_isp
+    - ip_mfc
+    - ip_dpu
+    related_scenario_ids:
+    - uhd60_recording_eis_on
+    - apv_recording_high_bw
+    required_evidence_need_ids:
+    - need_v_hw_feasibility
+    - need_v_carryover_power
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_v_carryover_hw_feasibility_note
+    target_project_id: project_v
+  - option_id: opt_v_sw_workaround
+    title: SW workaround candidate
+    description: Review a control-path mitigation when the HW window is not suitable.
+    option_type: sw_workaround
+    current_posture: ready_for_role_review
+    feasibility: conditional
+    known_risks:
+    - Functional mitigation does not establish silicon power.
+    qualitative_impact:
+      power: unknown
+      bandwidth: mixed
+      latency: mixed
+      performance: mixed
+      quality: unchanged
+      area: unchanged
+      risk: mixed
+      schedule: lower
+    related_ip_ids:
+    - ip_isp
+    - ip_mfc
+    - ip_dpu
+    related_scenario_ids:
+    - uhd60_recording_eis_on
+    - apv_recording_high_bw
+    required_evidence_need_ids:
+    - need_v_carryover_power
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_u_apv_power_w21
+    target_project_id: project_v
+  - option_id: opt_v_defer_to_w
+    title: Project W architecture reflection
+    description: Preserve unresolved structural pressure for Project W architecture review.
+    option_type: spec_reflection
+    current_posture: ready_for_role_review
+    feasibility: feasible_candidate
+    known_risks:
+    - Deferral does not mitigate the current Project U issue.
+    qualitative_impact:
+      power: unknown
+      bandwidth: unknown
+      latency: unknown
+      performance: unknown
+      quality: unknown
+      area: unknown
+      risk: lower
+      schedule: lower
+    related_ip_ids:
+    - ip_isp
+    - ip_mfc
+    - ip_dpu
+    related_scenario_ids:
+    - uhd60_recording_eis_on
+    - apv_recording_high_bw
+    required_evidence_need_ids:
+    - need_v_hw_feasibility
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_u_apv_power_w21
+    target_project_id: project_w
+  decision_question:
+    question_id: q_v_u_carryover_evt1
+    question: Which Project U carry-over items have a bounded Project V HW candidate before EVT1 design
+      fix?
+    scopes:
+    - hw_feasibility
+    - sw_workaround
+    - schedule_risk
+    required_by_week: 28
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/project_milestones.yaml#project_v_evt1_design_fix_q3
+  event_relations:
+    predecessor_event_ids:
+    - project_u_uhd60_request_opened
+    - project_u_apv_measurement_gap
+    derived_from_event_ids: []
+    propagation_event_ids:
+    - project_w_camera_microarchitecture_review
+    supersedes_event_ids: []
+    validation_event_ids:
+    - project_v_evt1_design_fix_checkpoint
+    not_causal_proof: true
+  expected_review_output:
+    output_type: feasibility_note
+    description: Record bounded HW feasibility, SW workaround posture, and Project W handoff gaps.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_v_hw_feasibility
+    evidence_type: verification_effort
+    reason: The review note records bounded feasibility but lacks final RTL timing detail.
+    availability: available
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_v_carryover_hw_feasibility_note
+    related_option_ids:
+    - opt_v_bounded_hw_change
+    - opt_v_defer_to_w
+    required_by_week: 28
+    review_impact: supports_review
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_v_carryover_hw_feasibility_note
+  - evidence_need_id: need_v_carryover_power
+    evidence_type: scenario_matched_power_trace
+    reason: APV and other carry-over items lack complete current-project attribution.
+    availability: missing
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_u_apv_power_trace_missing
+    related_option_ids:
+    - opt_v_bounded_hw_change
+    - opt_v_sw_workaround
+    required_by_week: 28
+    review_impact: blocks_review
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_u_apv_power_trace_missing
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: project_w_camera_pipeline_area_screening
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_camera_pipeline_area_screening
+  project_id: project_w
+  title: Project W Camera pipeline area option screening
+  description: Camera feature coverage, IQ pressure, SRAM needs, and area direction are reviewed before
+    architecture completion.
+  event_type: architecture_option_screening
+  event_category: review
+  lifecycle_stage: architecture
+  week: 19
+  quarter: Q2
+  severity: high
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - management
+  affected_domains:
+  - camera
+  - isp
+  - ai
+  - area
+  - power
+  - quality
+  linked_scenario_ids:
+  - ai_isp_capture_tap_in_out
+  - low_light_video_recording_ai
+  linked_evidence_ids:
+  - evidence_w_camera_pipeline_rtl_area_breakdown
+  - evidence_w_camera_sram_buffer_requirement
+  - evidence_w_camera_iq_previous_comparison
+  linked_milestone_ids:
+  - project_w_spec_freeze_q2
+  - project_w_architecture_review_q2_q3
+  linked_request_ids:
+  - req_w_camera_pipeline_area_w18
+  linked_propagation_ids: []
+  missing_data:
+  - rtl_area_detail
+  - scenario_regression_result
+  resource_signal:
+  - area_budget_review_needed
+  - architecture_model_update_needed
+  confidence_signal:
+    direction: unchanged
+    reason: Partial area and resource evidence supports screening but not implementation readiness.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_w_camera_pipeline_area_w18
+  candidate_options:
+  - option_id: opt_w_camera_retain
+    title: Retain the full Camera pipeline
+    description: Preserve feature coverage while carrying current area pressure.
+    option_type: monitor_only
+    current_posture: conditional_candidate
+    feasibility: conditional
+    known_risks:
+    - Area pressure may reduce project profitability.
+    qualitative_impact:
+      power: unchanged
+      bandwidth: unchanged
+      latency: unchanged
+      performance: unchanged
+      quality: unchanged
+      area: higher
+      risk: lower
+      schedule: lower
+    related_ip_ids:
+    - ip_isp
+    related_scenario_ids:
+    - ai_isp_capture_tap_in_out
+    required_evidence_need_ids:
+    - need_w_camera_area
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_camera_pipeline_rtl_area_breakdown
+    target_project_id: project_w
+  - option_id: opt_w_camera_share_resources
+    title: Share Camera pipeline resources
+    description: Screen resource reuse with explicit IQ and control complexity gaps.
+    option_type: architecture_option
+    current_posture: evidence_blocked
+    feasibility: conditional
+    known_risks:
+    - Resource sharing may affect IQ and pipeline scheduling.
+    qualitative_impact:
+      power: mixed
+      bandwidth: mixed
+      latency: mixed
+      performance: mixed
+      quality: mixed
+      area: lower
+      risk: higher
+      schedule: higher
+    related_ip_ids:
+    - ip_isp
+    - ip_npu
+    related_scenario_ids:
+    - ai_isp_capture_tap_in_out
+    - low_light_video_recording_ai
+    required_evidence_need_ids:
+    - need_w_camera_area
+    - need_w_camera_resource
+    - need_w_camera_iq
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_camera_sram_buffer_requirement
+    target_project_id: project_w
+  decision_question:
+    question_id: q_w_camera_pipeline_area
+    question: Which Camera pipeline structure preserves required IQ coverage with the lowest qualitative
+      area pressure?
+    scopes:
+    - architecture_tradeoff
+    - resource_allocation
+    - scenario_regression
+    required_by_week: 21
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_w_camera_pipeline_area_w18
+  event_relations:
+    predecessor_event_ids:
+    - project_w_low_light_ai_architecture_review
+    derived_from_event_ids: []
+    propagation_event_ids: []
+    supersedes_event_ids: []
+    validation_event_ids:
+    - project_w_camera_microarchitecture_review
+    not_causal_proof: true
+  expected_review_output:
+    output_type: architecture_screening_note
+    description: Record Camera area candidates, IQ trade-offs, and missing resource detail.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_w_camera_area
+    evidence_type: rtl_area_breakdown
+    reason: Early Camera RTL area breakdown is partial.
+    availability: partial
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_w_camera_pipeline_rtl_area_breakdown
+    related_option_ids:
+    - opt_w_camera_retain
+    - opt_w_camera_share_resources
+    required_by_week: 21
+    review_impact: limits_confidence
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_camera_pipeline_rtl_area_breakdown
+  - evidence_need_id: need_w_camera_resource
+    evidence_type: sram_buffer_requirement
+    reason: SRAM and buffer requirements remain partial.
+    availability: partial
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_w_camera_sram_buffer_requirement
+    related_option_ids:
+    - opt_w_camera_share_resources
+    required_by_week: 21
+    review_impact: limits_confidence
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_camera_sram_buffer_requirement
+  - evidence_need_id: need_w_camera_iq
+    evidence_type: iq_regression_comparison
+    reason: Previous-project IQ comparison does not match the candidate pipeline.
+    availability: available
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_w_camera_iq_previous_comparison
+    related_option_ids:
+    - opt_w_camera_share_resources
+    required_by_week: 21
+    review_impact: supports_review
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_camera_iq_previous_comparison
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: project_w_camera_microarchitecture_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/development_events.yaml#project_w_camera_microarchitecture_review
+  project_id: project_w
+  title: Project W Camera microarchitecture evidence handoff
+  description: Camera IQ and area screening results enter microarchitecture review with unresolved RTL
+    and regression detail.
+  event_type: microarchitecture_review
+  event_category: review
+  lifecycle_stage: design
+  week: 32
+  quarter: Q3
+  severity: high
+  status: in_review
+  schedule_signal: watch
+  roles_involved:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - pm
+  affected_domains:
+  - camera
+  - isp
+  - ai
+  - area
+  - quality
+  - design
+  linked_scenario_ids:
+  - ai_isp_capture_tap_in_out
+  - low_light_video_recording_ai
+  - editable_portrait_video_recording
+  - apv_recording_high_bw
+  linked_evidence_ids:
+  - evidence_w_camera_pipeline_rtl_area_breakdown
+  - evidence_w_camera_sram_buffer_requirement
+  - evidence_w_camera_iq_previous_comparison
+  linked_milestone_ids:
+  - project_w_architecture_doc_complete_q3
+  linked_request_ids:
+  - req_w_camera_pipeline_area_w18
+  - req_w_low_light_arch_w5
+  - req_u_editable_portrait_w29
+  - req_u_apv_power_w21
+  linked_propagation_ids:
+  - prop_u_portrait_to_w_w32
+  - prop_u_apv_to_w_w24
+  missing_data:
+  - rtl_area_detail
+  - scenario_regression_result
+  resource_signal:
+  - area_budget_review_needed
+  - architecture_model_update_needed
+  - hw_review_required
+  confidence_signal:
+    direction: unchanged
+    reason: Architecture screening is available while detailed RTL and matched regression remain incomplete.
+    basis: prediction_only
+  source_basis:
+  - synthetic_data/project_milestones.yaml#project_w_architecture_doc_complete_q3
+  candidate_options:
+  - option_id: opt_w_camera_continue_detail
+    title: Continue detailed candidate review
+    description: Carry the screened candidates into RTL and regression evidence planning.
+    option_type: architecture_option
+    current_posture: ready_for_role_review
+    feasibility: conditional
+    known_risks:
+    - Detailed RTL area and matched IQ regression remain open.
+    qualitative_impact:
+      power: mixed
+      bandwidth: mixed
+      latency: mixed
+      performance: mixed
+      quality: mixed
+      area: lower
+      risk: mixed
+      schedule: higher
+    related_ip_ids:
+    - ip_isp
+    - ip_npu
+    related_scenario_ids:
+    - ai_isp_capture_tap_in_out
+    - low_light_video_recording_ai
+    required_evidence_need_ids:
+    - need_w_micro_area
+    - need_w_micro_regression
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_camera_pipeline_rtl_area_breakdown
+    target_project_id: project_w
+  decision_question:
+    question_id: q_w_camera_microarchitecture_handoff
+    question: Which Camera architecture candidates are sufficiently evidenced for microarchitecture review?
+    scopes:
+    - architecture_tradeoff
+    - design_readiness
+    - resource_allocation
+    required_by_week: 36
+    not_final_decision: true
+    source_refs:
+    - synthetic_data/project_milestones.yaml#project_w_architecture_doc_complete_q3
+  event_relations:
+    predecessor_event_ids:
+    - project_w_camera_pipeline_area_screening
+    - project_w_architecture_doc_complete
+    derived_from_event_ids:
+    - project_w_low_light_ai_architecture_review
+    propagation_event_ids: []
+    supersedes_event_ids: []
+    validation_event_ids: []
+    not_causal_proof: true
+  expected_review_output:
+    output_type: resource_need_summary
+    description: Record microarchitecture evidence needs and qualitative resource pressure.
+    not_final_decision: true
+  required_evidence:
+  - evidence_need_id: need_w_micro_area
+    evidence_type: rtl_area_breakdown
+    reason: The available Camera area breakdown remains partial.
+    availability: partial
+    blocks_confidence_above: M
+    linked_evidence_ids:
+    - evidence_w_camera_pipeline_rtl_area_breakdown
+    related_option_ids:
+    - opt_w_camera_continue_detail
+    required_by_week: 36
+    review_impact: limits_confidence
+    source_refs:
+    - synthetic_data/evidence_catalog.yaml#evidence_w_camera_pipeline_rtl_area_breakdown
+  - evidence_need_id: need_w_micro_regression
+    evidence_type: iq_regression_comparison
+    reason: Candidate-specific IQ and scenario regression is missing.
+    availability: missing
+    blocks_confidence_above: M
+    linked_evidence_ids: []
+    related_option_ids:
+    - opt_w_camera_continue_detail
+    required_by_week: 36
+    review_impact: blocks_review
+    source_refs:
+    - synthetic_data/scenario_requests.yaml#req_w_camera_pipeline_area_w18
+  review_posture: evidence_blocked
+  not_final_decision: true
+  read_only: true
+- id: evt_u_heavy_power_request
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/events.yaml#evt_u_heavy_power_request
+  project_id: project_u
+  title: Customer requests heavy recording power improvement for Project U
+  description: Customer requests power improvement for heavy recording scenarios that caused thermal issues
+    in previous generation.
+  event_type: customer_request
+  event_category: legacy_event
+  severity: info
+  status: recorded
+  roles_involved: []
+  affected_domains: []
+  linked_scenario_ids:
+  - dual_video_recording
+  - editable_portrait_video_recording
+  - apv_recording_high_bw
+  - high_speed_fhd240_recording
+  linked_evidence_ids: []
+  linked_milestone_ids: []
+  linked_request_ids: []
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal: []
+  source_basis: []
+  requested_by: product_planning
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: evt_v_isp_pipeline_change_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/events.yaml#evt_v_isp_pipeline_change_review
+  project_id: project_v
+  title: Review Project V ISP pipeline architecture change impact
+  description: Project V introduces ISP pipeline changes, requiring impact review across HW/SW/System.
+    Verification scope is handled inside HW/SW development agents.
+  event_type: architecture_change_review
+  event_category: legacy_event
+  severity: info
+  status: recorded
+  roles_involved: []
+  affected_domains: []
+  linked_scenario_ids:
+  - eight_k30_recording_kpi
+  - low_light_ai_capture
+  - multi_camera_zoom_sensor_mode_switch
+  - ai_isp_capture_tap_in_out
+  linked_evidence_ids: []
+  linked_milestone_ids: []
+  linked_request_ids: []
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal: []
+  source_basis: []
+  requested_by: soc_architecture
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: evt_w_mmip_area_exploration
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/events.yaml#evt_w_mmip_area_exploration
+  project_id: project_w
+  title: Explore Project W MMIP area reduction options
+  description: Project W requires MMIP area reduction while maintaining performance and power competitiveness.
+  event_type: architecture_exploration
+  event_category: legacy_event
+  severity: info
+  status: recorded
+  roles_involved: []
+  affected_domains: []
+  linked_scenario_ids:
+  - uhd60_recording_eis_on
+  - video_mode_panel_underrun_prevention
+  - video_editor_export
+  linked_evidence_ids: []
+  linked_milestone_ids: []
+  linked_request_ids: []
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal: []
+  source_basis: []
+  requested_by: management
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+- id: evt_w_8k30_architecture_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/events.yaml#evt_w_8k30_architecture_review
+  project_id: project_w
+  title: Review Project W 8K30 sustain architecture evidence
+  description: Project W reviews the Stage 35 8K30 sustain scenario using existing qualitative capability
+    and knob evidence.
+  event_type: architecture_exploration
+  event_category: legacy_event
+  severity: info
+  status: recorded
+  roles_involved: []
+  affected_domains: []
+  linked_scenario_ids:
+  - eight_k30_recording_kpi
+  linked_evidence_ids: []
+  linked_milestone_ids: []
+  linked_request_ids: []
+  linked_propagation_ids: []
+  missing_data: []
+  resource_signal: []
+  source_basis: []
+  requested_by: soc_architecture
+  candidate_options: []
+  required_evidence: []
+  not_final_decision: true
+  read_only: true
+issues:
+- id: issue_u_uhd60_eis_power_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/issues.yaml#issue_u_uhd60_eis_power_gap
+  project_id: project_u
+  title: UHD60 EIS on/off power gap remains too large
+  issue_type: power_gap
+  status: synthetic_open
+  symptom: Customer requests reduction of UHD60 EIS on/off power difference compared with previous generation.
+  confidence: medium
+  evidence_refs:
+  - evd_u_customer_eis_power_request
+  - evd_synthetic_missing_power_breakdown
+  root_cause_candidates:
+  - Increased EIS processing workload may raise ISP/GPU utilization.
+  - Additional memory traffic may increase MIF/NoC power.
+  - Codec and DPU concurrency may reduce thermal margin.
+  affected_scope:
+    scenarios:
+    - uhd60_recording_eis_on
+    ip_blocks:
+    - ip_isp
+    - ip_gpu
+    - ip_mfc
+    system_blocks:
+    - sys_mif
+    - sys_noc
+    - sys_power_clock_thermal
+    kpis:
+    - power
+    - eis_power_gap
+    - ddr_bw
+    - thermal
+- id: issue_u_display_video_mode_underrun
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/issues.yaml#issue_u_display_video_mode_underrun
+  project_id: project_u
+  title: Display underrun risk under video mode panel and low DPU clock
+  issue_type: real_time_stability
+  status: synthetic_open
+  symptom: DPU clock should be reduced for power, but video mode panel requires RT guarantee to avoid
+    underrun.
+  confidence: medium
+  evidence_refs:
+  - evd_u_display_video_mode_context
+  - evd_synthetic_rt_rule
+  root_cause_candidates:
+  - Low DPU clock may not cover bus stress with scale/rotation/composition.
+  - NoC QoS margin may be insufficient under concurrent camera/display traffic.
+  affected_scope:
+    scenarios:
+    - video_mode_panel_underrun_prevention
+    ip_blocks:
+    - ip_dpu
+    system_blocks:
+    - sys_mif
+    - sys_noc
+    - sys_smmu
+    - sys_power_clock_thermal
+    kpis:
+    - underrun_count
+    - dpu_clock
+    - noc_qos_margin
+    - display_latency
+- id: issue_u_mfc_video_editor_perf_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/issues.yaml#issue_u_mfc_video_editor_perf_gap
+  project_id: project_u
+  title: MFC video editor performance gap versus competitor
+  issue_type: performance_competitiveness
+  status: synthetic_open
+  symptom: Customer requests video editor performance improvement due to competitor gap.
+  confidence: medium
+  evidence_refs:
+  - evd_u_video_editor_customer_context
+  root_cause_candidates:
+  - MFC encode throughput may be insufficient for target editor workflow.
+  - Memory/bus contention may limit end-to-end export performance.
+  - GPU assist path may need optimization.
+  affected_scope:
+    scenarios:
+    - video_editor_export
+    ip_blocks:
+    - ip_mfc
+    - ip_dpu
+    - ip_gpu
+    system_blocks:
+    - sys_mif
+    - sys_noc
+    - sys_power_clock_thermal
+    kpis:
+    - encoder_throughput
+    - video_editor_latency
+    - codec_power
+- id: issue_w_mmip_area_tradeoff
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/issues.yaml#issue_w_mmip_area_tradeoff
+  project_id: project_w
+  title: Project W MMIP area reduction trade-off requires explicit evidence
+  issue_type: architecture_tradeoff
+  status: synthetic_open
+  symptom: Business viability requires MMIP area reduction, but new feature additions need clear evidence.
+  confidence: high
+  evidence_refs:
+  - evd_w_business_area_pressure
+  - evd_project_w_spec_uncertainty
+  root_cause_candidates:
+  - Reusing previous IP may reduce area/cost but limit feature competitiveness.
+  - Adding new IP features may improve performance but increase area and development time.
+  affected_scope:
+    scenarios:
+    - uhd60_recording_eis_on
+    - video_editor_export
+    - video_mode_panel_underrun_prevention
+    ip_blocks:
+    - ip_isp
+    - ip_mfc
+    - ip_dpu
+    - ip_gpu
+    - ip_npu
+    system_blocks:
+    - sys_mif
+    - sys_noc
+    - sys_smmu
+    kpis:
+    - area_cost
+    - power
+    - sustained_power
+    - codec_throughput
+    - underrun_count

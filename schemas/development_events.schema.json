@@ -1,0 +1,678 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "CandidateOption": {
+      "additionalProperties": false,
+      "description": "검토 후보 옵션 — 결정이 아닌 검토 대상.",
+      "properties": {
+        "current_posture": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current Posture"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "feasibility": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Feasibility"
+        },
+        "known_risks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Known Risks",
+          "type": "array"
+        },
+        "option_id": {
+          "title": "Option Id",
+          "type": "string"
+        },
+        "option_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Option Type"
+        },
+        "qualitative_impact": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Qualitative Impact",
+          "type": "object"
+        },
+        "related_ip_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Related Ip Ids",
+          "type": "array"
+        },
+        "related_scenario_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Related Scenario Ids",
+          "type": "array"
+        },
+        "required_evidence_need_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Evidence Need Ids",
+          "type": "array"
+        },
+        "source_refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Refs",
+          "type": "array"
+        },
+        "target_project_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Project Id"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "option_id",
+        "title"
+      ],
+      "title": "CandidateOption",
+      "type": "object"
+    },
+    "ConfidenceSignal": {
+      "additionalProperties": false,
+      "description": "이벤트가 주는 확신도 신호 — 방향과 근거.",
+      "properties": {
+        "basis": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Basis"
+        },
+        "direction": {
+          "title": "Direction",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "direction",
+        "reason"
+      ],
+      "title": "ConfidenceSignal",
+      "type": "object"
+    },
+    "DecisionQuestion": {
+      "additionalProperties": false,
+      "description": "이벤트가 제기하는 결정 질문 — 최종 결정이 아님.",
+      "properties": {
+        "not_final_decision": {
+          "default": true,
+          "title": "Not Final Decision",
+          "type": "boolean"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "question_id": {
+          "title": "Question Id",
+          "type": "string"
+        },
+        "required_by_week": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Required By Week"
+        },
+        "scopes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Scopes",
+          "type": "array"
+        },
+        "source_refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "question_id",
+        "question"
+      ],
+      "title": "DecisionQuestion",
+      "type": "object"
+    },
+    "EventRelations": {
+      "additionalProperties": false,
+      "description": "이벤트 간 관계 — 인과 증명이 아닌 유래/전파/검증 연결.",
+      "properties": {
+        "derived_from_event_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Derived From Event Ids",
+          "type": "array"
+        },
+        "not_causal_proof": {
+          "default": true,
+          "title": "Not Causal Proof",
+          "type": "boolean"
+        },
+        "predecessor_event_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Predecessor Event Ids",
+          "type": "array"
+        },
+        "propagation_event_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Propagation Event Ids",
+          "type": "array"
+        },
+        "supersedes_event_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supersedes Event Ids",
+          "type": "array"
+        },
+        "validation_event_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Validation Event Ids",
+          "type": "array"
+        }
+      },
+      "title": "EventRelations",
+      "type": "object"
+    },
+    "ExpectedReviewOutput": {
+      "additionalProperties": false,
+      "description": "이벤트 검토의 기대 산출물.",
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "not_final_decision": {
+          "default": true,
+          "title": "Not Final Decision",
+          "type": "boolean"
+        },
+        "output_type": {
+          "title": "Output Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "output_type",
+        "description"
+      ],
+      "title": "ExpectedReviewOutput",
+      "type": "object"
+    },
+    "RequiredEvidenceNeed": {
+      "additionalProperties": false,
+      "description": "검토에 필요한 근거 요구 — 가용성과 확신도 상한을 명시.",
+      "properties": {
+        "availability": {
+          "title": "Availability",
+          "type": "string"
+        },
+        "blocks_confidence_above": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Blocks Confidence Above"
+        },
+        "evidence_need_id": {
+          "title": "Evidence Need Id",
+          "type": "string"
+        },
+        "evidence_type": {
+          "title": "Evidence Type",
+          "type": "string"
+        },
+        "linked_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Linked Evidence Ids",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "related_option_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Related Option Ids",
+          "type": "array"
+        },
+        "required_by_week": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Required By Week"
+        },
+        "review_impact": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Review Impact"
+        },
+        "source_refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "evidence_need_id",
+        "evidence_type",
+        "reason",
+        "availability"
+      ],
+      "title": "RequiredEvidenceNeed",
+      "type": "object"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "개발 이벤트 — 마일스톤/이슈/검토/전파 등 개발 과정의 사건 단위.\n\n56의 event(구 MVP)와 development_event(Stage36) 계약을 통합했다.\n구 event는 week/quarter가 없으므로 해당 필드는 optional이다.",
+  "properties": {
+    "affected_domains": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Affected Domains",
+      "type": "array"
+    },
+    "candidate_options": {
+      "items": {
+        "$ref": "#/$defs/CandidateOption"
+      },
+      "title": "Candidate Options",
+      "type": "array"
+    },
+    "confidence_signal": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ConfidenceSignal"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "decision_question": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DecisionQuestion"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "event_category": {
+      "title": "Event Category",
+      "type": "string"
+    },
+    "event_relations": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EventRelations"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "event_type": {
+      "title": "Event Type",
+      "type": "string"
+    },
+    "expected_review_output": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExpectedReviewOutput"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "lifecycle_stage": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lifecycle Stage"
+    },
+    "linked_evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Evidence Ids",
+      "type": "array"
+    },
+    "linked_milestone_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Milestone Ids",
+      "type": "array"
+    },
+    "linked_propagation_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Propagation Ids",
+      "type": "array"
+    },
+    "linked_request_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Request Ids",
+      "type": "array"
+    },
+    "linked_scenario_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Scenario Ids",
+      "type": "array"
+    },
+    "missing_data": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Data",
+      "type": "array"
+    },
+    "not_final_decision": {
+      "default": true,
+      "title": "Not Final Decision",
+      "type": "boolean"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "quarter": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quarter"
+    },
+    "read_only": {
+      "default": true,
+      "title": "Read Only",
+      "type": "boolean"
+    },
+    "requested_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Requested By"
+    },
+    "required_evidence": {
+      "items": {
+        "$ref": "#/$defs/RequiredEvidenceNeed"
+      },
+      "title": "Required Evidence",
+      "type": "array"
+    },
+    "resource_signal": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Resource Signal",
+      "type": "array"
+    },
+    "review_posture": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Review Posture"
+    },
+    "roles_involved": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Roles Involved",
+      "type": "array"
+    },
+    "schedule_signal": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Schedule Signal"
+    },
+    "severity": {
+      "default": "info",
+      "title": "Severity",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_basis": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Basis",
+      "type": "array"
+    },
+    "status": {
+      "default": "recorded",
+      "title": "Status",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "week": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Week"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "title",
+    "description",
+    "event_type",
+    "event_category"
+  ],
+  "title": "DevelopmentEvent",
+  "type": "object"
+}

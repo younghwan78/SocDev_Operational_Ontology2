@@ -1,0 +1,179 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "FeedbackItem": {
+      "additionalProperties": false,
+      "description": "HW/SW 개발 → System Engineering/SoC Architecture 피드백 (런타임 계약).",
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "description_derivation": {
+          "title": "Description Derivation",
+          "type": "string"
+        },
+        "supporting_basis": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supporting Basis",
+          "type": "array"
+        },
+        "target_role": {
+          "title": "Target Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_role",
+        "description",
+        "description_derivation",
+        "confidence"
+      ],
+      "title": "FeedbackItem",
+      "type": "object"
+    },
+    "GroundedStatement": {
+      "additionalProperties": false,
+      "description": "근거 문장 — 서술/도출 과정/뒷받침 근거/확신도를 항상 함께 갖는다.",
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "description_derivation": {
+          "title": "Description Derivation",
+          "type": "string"
+        },
+        "supporting_basis": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supporting Basis",
+          "type": "array"
+        }
+      },
+      "required": [
+        "description",
+        "description_derivation",
+        "supporting_basis",
+        "confidence"
+      ],
+      "title": "GroundedStatement",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Role agent 런타임 출력 계약 — Stage 5 advisory의 스키마 (fixture 없음).",
+  "properties": {
+    "concerns": {
+      "items": {
+        "$ref": "#/$defs/GroundedStatement"
+      },
+      "title": "Concerns",
+      "type": "array"
+    },
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "cost_impact": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Cost Impact",
+      "type": "object"
+    },
+    "derivation_summary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Derivation Summary"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "feedback_items": {
+      "items": {
+        "$ref": "#/$defs/FeedbackItem"
+      },
+      "title": "Feedback Items",
+      "type": "array"
+    },
+    "missing_information": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Information",
+      "type": "array"
+    },
+    "recommendation": {
+      "title": "Recommendation",
+      "type": "string"
+    },
+    "required_evidence": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Evidence",
+      "type": "array"
+    },
+    "risk_assessment": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Risk Assessment"
+    },
+    "role_id": {
+      "title": "Role Id",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "event_id",
+    "role_id",
+    "summary",
+    "recommendation",
+    "confidence"
+  ],
+  "title": "RoleOutput",
+  "type": "object"
+}

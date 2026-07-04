@@ -1,0 +1,203 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    },
+    "VariantStream": {
+      "additionalProperties": false,
+      "description": "다중 스트림 변형의 개별 스트림 사양.",
+      "properties": {
+        "fps": {
+          "title": "Fps",
+          "type": "integer"
+        },
+        "resolution": {
+          "title": "Resolution",
+          "type": "string"
+        }
+      },
+      "required": [
+        "resolution",
+        "fps"
+      ],
+      "title": "VariantStream",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "시나리오 변형 — 해상도/fps/토글 등 구체 동작 조건.",
+  "properties": {
+    "ai_solution": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ai Solution"
+    },
+    "capture_mode": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Capture Mode"
+    },
+    "dpu_clock_policy": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Dpu Clock Policy"
+    },
+    "fps": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Fps"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "mode": {
+      "title": "Mode",
+      "type": "string"
+    },
+    "operation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Operation"
+    },
+    "operations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Operations",
+      "type": "array"
+    },
+    "panel_mode": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Panel Mode"
+    },
+    "resolution": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Resolution"
+    },
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "streams": {
+      "items": {
+        "$ref": "#/$defs/VariantStream"
+      },
+      "title": "Streams",
+      "type": "array"
+    },
+    "toggles": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Toggles",
+      "type": "object"
+    }
+  },
+  "required": [
+    "id",
+    "scenario_id",
+    "mode"
+  ],
+  "title": "Variant",
+  "type": "object"
+}

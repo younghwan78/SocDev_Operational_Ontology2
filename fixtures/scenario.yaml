@@ -1,0 +1,3553 @@
+# GENERATED — tools/convert_56_fixtures.py가 56 synthetic_data에서 변환함.
+# 직접 편집 금지. 재생성: uv run python tools/convert_56_fixtures.py
+kpi_definitions:
+- id: scenario_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#scenario_power
+  group: power
+  unit: mW
+  direction: lower_is_better
+- id: sustained_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#sustained_power
+  group: power
+  unit: mW
+  direction: lower_is_better
+- id: dou_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#dou_power
+  group: power
+  unit: mW
+  direction: lower_is_better
+- id: eis_power_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#eis_power_gap
+  group: power
+  unit: mW
+  direction: lower_is_better
+- id: ddr_bw
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#ddr_bw
+  group: bandwidth_memory
+  unit: GBps
+  direction: lower_is_better_with_margin
+- id: ddr_bw_peak
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#ddr_bw_peak
+  group: bandwidth_memory
+  unit: GBps
+  direction: lower_is_better_with_margin
+- id: mif_bw
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#mif_bw
+  group: bandwidth_memory
+  unit: GBps
+  direction: lower_is_better_with_margin
+- id: noc_qos_margin
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#noc_qos_margin
+  group: noc_bus_qos
+  unit: percent
+  direction: higher_is_better
+- id: bus_contention
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#bus_contention
+  group: noc_bus_qos
+  unit: risk_level
+  direction: lower_is_better
+- id: smmu_latency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#smmu_latency
+  group: system_mmu
+  unit: us
+  direction: lower_is_better
+- id: thermal_throttling
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#thermal_throttling
+  group: thermal
+  unit: count_or_bool
+  direction: lower_is_better
+- id: fps_stability
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#fps_stability
+  group: performance
+  unit: percent
+  direction: higher_is_better
+- id: latency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#latency
+  group: performance
+  unit: ms
+  direction: lower_is_better
+- id: video_editor_latency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#video_editor_latency
+  group: performance
+  unit: ms
+  direction: lower_is_better
+- id: rt_deadline_miss
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#rt_deadline_miss
+  group: real_time
+  unit: count
+  direction: lower_is_better
+- id: rt_latency_margin
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#rt_latency_margin
+  group: real_time
+  unit: ms
+  direction: higher_is_better
+- id: underrun_count
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#underrun_count
+  group: real_time
+  unit: count
+  direction: lower_is_better
+- id: audio_underrun
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#audio_underrun
+  group: real_time
+  unit: count
+  direction: lower_is_better
+- id: av_sync
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#av_sync
+  group: audio
+  unit: ms_delta
+  direction: lower_is_better
+- id: audio_latency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#audio_latency
+  group: audio
+  unit: ms
+  direction: lower_is_better
+- id: image_quality
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#image_quality
+  group: camera_quality
+  unit: qualitative_score
+  direction: higher_is_better
+- id: ghost_artifact_risk
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#ghost_artifact_risk
+  group: camera_quality
+  unit: risk_level
+  direction: lower_is_better
+- id: low_light_video_quality
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#low_light_video_quality
+  group: camera_quality
+  unit: qualitative_score
+  direction: higher_is_better
+- id: npu_usage
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#npu_usage
+  group: ai_utilization
+  unit: percent
+  direction: balanced
+- id: gpu_usage
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#gpu_usage
+  group: ai_utilization
+  unit: percent
+  direction: balanced
+- id: mmip_area
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#mmip_area
+  group: area_cost
+  unit: mm2
+  direction: lower_is_better
+- id: new_ip_area_cost
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#new_ip_area_cost
+  group: area_cost
+  unit: mm2
+  direction: lower_is_better
+- id: development_duration
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#development_duration
+  group: development_cost
+  unit: weeks
+  direction: lower_is_better
+- id: verification_effort
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#verification_effort
+  group: development_cost
+  unit: person_weeks
+  direction: lower_is_better
+- id: product_value
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#product_value
+  group: business
+  unit: score
+  direction: higher_is_better
+- id: profitability_impact
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#profitability_impact
+  group: business
+  unit: score
+  direction: higher_is_better
+- id: evidence_confidence
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#evidence_confidence
+  group: evidence_traceability
+  unit: level_0_to_5
+  direction: higher_is_better
+- id: traceability_coverage
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#traceability_coverage
+  group: evidence_traceability
+  unit: percent
+  direction: higher_is_better
+- id: power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#power
+  group: power
+  unit: mW
+  direction: lower_is_better
+- id: thermal
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#thermal
+  group: thermal
+  unit: risk_level
+  direction: lower_is_better
+- id: thermal_sustainability
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#thermal_sustainability
+  group: thermal
+  unit: score
+  direction: higher_is_better
+- id: codec_throughput
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#codec_throughput
+  group: performance
+  unit: fps_or_mbps
+  direction: higher_is_better
+- id: isp_latency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#isp_latency
+  group: performance
+  unit: ms
+  direction: lower_is_better
+- id: fps_drop
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#fps_drop
+  group: performance
+  unit: count
+  direction: lower_is_better
+- id: capture_latency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#capture_latency
+  group: performance
+  unit: ms
+  direction: lower_is_better
+- id: motion_artifact_risk
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#motion_artifact_risk
+  group: camera_quality
+  unit: risk_level
+  direction: lower_is_better
+- id: isp_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#isp_power
+  group: power
+  unit: mW
+  direction: lower_is_better
+- id: dpu_clock
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#dpu_clock
+  group: real_time
+  unit: MHz
+  direction: lower_with_rt_margin
+- id: dpu_bw
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#dpu_bw
+  group: bandwidth_memory
+  unit: GBps
+  direction: lower_is_better_with_margin
+- id: display_latency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#display_latency
+  group: real_time
+  unit: ms
+  direction: lower_is_better
+- id: frame_drop
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#frame_drop
+  group: real_time
+  unit: count
+  direction: lower_is_better
+- id: codec_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#codec_power
+  group: power
+  unit: mW
+  direction: lower_is_better
+- id: dpu_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#dpu_power
+  group: power
+  unit: mW
+  direction: lower_is_better
+- id: decoder_utilization
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#decoder_utilization
+  group: performance
+  unit: percent
+  direction: balanced
+- id: encoder_throughput
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#encoder_throughput
+  group: performance
+  unit: fps_or_mbps
+  direction: higher_is_better
+- id: underrun
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#underrun
+  group: real_time
+  unit: count_or_bool
+  direction: lower_is_better
+- id: audio_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#audio_power
+  group: power
+  unit: mW
+  direction: lower_is_better
+- id: lpass_usage
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/kpi_definitions.yaml#lpass_usage
+  group: audio
+  unit: percent
+  direction: balanced
+scenario_groups:
+- id: camera_recording_kpi
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#camera_recording_kpi
+  name: Camera Recording KPI Scenario
+  purpose: 전작 대비 power/performance 개선 추적
+  primary_kpis:
+  - power
+  - ddr_bw
+  - thermal
+  - fps_stability
+  - latency
+  - eis_power_gap
+  scenarios:
+  - fhd30_recording_kpi
+  - fhd60_recording_kpi
+  - uhd30_recording_kpi
+  - uhd60_recording_kpi
+  - eight_k30_recording_kpi
+  - uhd60_recording_eis_on
+  feature_toggles:
+    hdr:
+    - true
+    - false
+    hier_b:
+    - true
+    - false
+    eis:
+    - true
+    - false
+  variants:
+    resolution_fps:
+    - FHD30
+    - FHD60
+    - UHD30
+    - UHD60
+    - 8K30
+- id: camera_recording_heavy
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#camera_recording_heavy
+  name: Camera Recording Heavy Scenario
+  purpose: 고객 특화 heavy recording scenario 및 발열/power risk 추적
+  primary_kpis:
+  - sustained_power
+  - thermal_throttling
+  - ddr_bw_peak
+  - codec_throughput
+  - isp_latency
+  - fps_drop
+  scenarios:
+  - dual_video_recording
+  - editable_portrait_video_recording
+  - apv_recording_high_bw
+  - high_speed_fhd120_recording
+  - high_speed_uhd120_recording
+  - high_speed_fhd240_recording
+- id: camera_capture
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#camera_capture
+  name: Camera Capture Scenario
+  purpose: AI ISP, multi-frame capture, low-light, artifact 품질 모델링
+  primary_kpis:
+  - capture_latency
+  - image_quality
+  - ghost_artifact_risk
+  - motion_artifact_risk
+  - npu_usage
+  - gpu_usage
+  - isp_power
+  scenarios:
+  - multi_frame_hdr_capture
+  - ai_isp_solution
+  - front_camera_ai_isp_capture
+  - low_light_ai_capture
+  - ai_isp_capture_tap_in_out
+- id: display_rt_bus
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#display_rt_bus
+  name: Display RT / Bus Stress Scenario
+  purpose: video mode panel과 DPU RT 보장, bus stress 검증
+  primary_kpis:
+  - underrun_count
+  - dpu_clock
+  - dpu_bw
+  - noc_qos_margin
+  - display_latency
+  - frame_drop
+  scenarios:
+  - video_mode_panel_underrun_prevention
+  - dpu_low_clock_rt_guarantee
+  - scale_rotation_bus_stress
+  - camera_preview_display_concurrency
+  - ai_scaler_display_scale_up
+- id: codec_display_dou
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#codec_display_dou
+  name: Codec / Display / DoU Scenario
+  purpose: DoU power, playback, video editor 성능 모델링
+  primary_kpis:
+  - dou_power
+  - codec_power
+  - dpu_power
+  - decoder_utilization
+  - encoder_throughput
+  - video_editor_latency
+  - thermal_sustainability
+  scenarios:
+  - youtube_playback
+  - local_video_playback
+  - hdr_video_playback
+  - long_duration_video_playback
+  - video_editor_preview
+  - video_editor_export
+  - youtube_video_playback_dou
+  - video_playback_dou
+- id: audio_call
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#audio_call
+  name: Audio Scenario
+  purpose: call, A/V sync, low-power audio path 모델링
+  primary_kpis:
+  - audio_latency
+  - av_sync
+  - underrun
+  - audio_power
+  - lpass_usage
+  scenarios:
+  - voice_call
+  - video_call
+  - video_recording_av_sync
+  - bluetooth_audio_playback
+- id: camera_low_light_recording
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#camera_low_light_recording
+  name: Camera Low-Light Recording Scenario
+  purpose: AI-assisted low-light video quality and sustained power architecture review
+  primary_kpis:
+  - low_light_video_quality
+  - isp_power
+  - npu_usage
+  - gpu_usage
+  - fps_stability
+  scenarios:
+  - low_light_video_recording_ai
+- id: camera_multi_camera_control
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#camera_multi_camera_control
+  name: Camera Multi-Camera Control Scenario
+  purpose: zoom and sensor-mode switch control sequencing review
+  primary_kpis:
+  - fps_stability
+  - latency
+  - ddr_bw
+  - image_quality
+  scenarios:
+  - multi_camera_zoom_sensor_mode_switch
+- id: video_codec_heavy
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#video_codec_heavy
+  name: Video Codec Heavy Scenario
+  purpose: parallel codec throughput, power, bandwidth, and thermal review
+  primary_kpis:
+  - codec_throughput
+  - codec_power
+  - ddr_bw_peak
+  - thermal_sustainability
+  scenarios:
+  - mfc_mfd_parallel_4k8k_recording
+- id: audio_ai_latency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_groups.yaml#audio_ai_latency
+  name: Audio AI Latency Scenario
+  purpose: call-path AI latency, underrun, power, and accelerator review
+  primary_kpis:
+  - audio_latency
+  - audio_underrun
+  - audio_power
+  - npu_usage
+  scenarios:
+  - voice_call_audio_ai_latency
+scenarios:
+- id: uhd60_recording_eis_on
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#uhd60_recording_eis_on
+  name: UHD60 Recording with EIS and HDR Review
+  description: UHD60 recording scenario for EIS and HDR power, bandwidth, and sustain review.
+  domain: camera_recording
+  scenario_class: quality_feature
+  scenario_group_id: camera_recording_kpi
+  primary_kpis:
+  - power
+  - eis_power_gap
+  - ddr_bw
+  - thermal
+  - fps_stability
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  - ip_dpu
+  - ip_gpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants:
+  - var_uhd60_eis_on_hdr_off
+  generation_path:
+  - previous_project_base
+  - previous_customer_improvement_request
+  - power_kpi_tracking
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  derived_from_scenario_id: uhd60_recording_kpi
+  customer_request_relevance: high
+  development_relevance: Project U KPI evidence, Project V HW review, and Project W architecture lessons.
+  dou_relevance: none
+  iq_relevance: medium
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: dual_video_recording
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#dual_video_recording
+  name: Dual Video Recording Power
+  description: Concurrent recording workload used to review power and thermal carry-over issues.
+  domain: camera_recording
+  scenario_class: heavy_recording
+  scenario_group_id: camera_recording_heavy
+  primary_kpis:
+  - sustained_power
+  - thermal_throttling
+  - ddr_bw_peak
+  - fps_drop
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants:
+  - var_dual_recording_uhd30_fhd30
+  generation_path:
+  - previous_project_base
+  - commercial_issue_response
+  - power_kpi_tracking
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  customer_request_relevance: high
+  development_relevance: Commercial issue response and next-generation HW improvement review.
+  dou_relevance: none
+  iq_relevance: low
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: video_mode_panel_underrun_prevention
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#video_mode_panel_underrun_prevention
+  name: Display Video Mode Underrun Prevention
+  description: Display RT workload for underrun prevention under low-clock and bus-pressure conditions.
+  domain: display
+  scenario_class: rt_risk
+  scenario_group_id: display_rt_bus
+  primary_kpis:
+  - underrun_count
+  - dpu_clock
+  - noc_qos_margin
+  - display_latency
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants:
+  - var_display_low_clock_scale_rotation
+  generation_path:
+  - previous_project_base
+  - commercial_issue_response
+  - hw_pipeline_change_review
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Project U issue response, Project V fallback review, and Project W architecture
+    lesson.
+  dou_relevance: medium
+  iq_relevance: none
+  sustain_power_relevance: medium
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: medium
+  legacy_aliases: []
+- id: video_editor_export
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#video_editor_export
+  name: Video Editor Export Benchmark
+  description: Video editor export scenario for customer benchmark and competitor gap review.
+  domain: codec
+  scenario_class: codec_workload
+  scenario_group_id: codec_display_dou
+  primary_kpis:
+  - encoder_throughput
+  - video_editor_latency
+  - codec_power
+  - thermal_sustainability
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_mfc
+  - ip_dpu
+  - ip_gpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants:
+  - var_video_editor_uhd_export
+  generation_path:
+  - previous_project_base
+  - competitor_benchmark_gap
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  customer_request_relevance: high
+  development_relevance: Customer benchmark response and codec/display architecture planning.
+  dou_relevance: high
+  iq_relevance: none
+  sustain_power_relevance: medium
+  hw_pipeline_change_sensitivity: medium
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: low_light_ai_capture
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#low_light_ai_capture
+  name: Low-Light AI Capture
+  description: Multi-frame capture scenario for qualitative low-light AI quality review.
+  domain: camera_capture
+  scenario_class: quality_feature
+  scenario_group_id: camera_capture
+  primary_kpis:
+  - image_quality
+  - ghost_artifact_risk
+  - motion_artifact_risk
+  - npu_usage
+  - gpu_usage
+  - capture_latency
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_npu
+  - ip_gpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants:
+  - var_low_light_ai_multiframe
+  generation_path:
+  - previous_project_base
+  - quality_improvement
+  source_basis:
+  - CURRENT_TASK.md#scenario-taxonomy-expansion
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Existing capture baseline for Project W AI architecture comparison.
+  dou_relevance: none
+  iq_relevance: high
+  sustain_power_relevance: medium
+  hw_pipeline_change_sensitivity: medium
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: fhd30_recording_kpi
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#fhd30_recording_kpi
+  name: FHD30 Recording KPI
+  description: Baseline FHD30 recording workload for previous-project power and stability comparison.
+  domain: camera_recording
+  scenario_class: baseline_kpi
+  scenario_group_id: camera_recording_kpi
+  primary_kpis:
+  - power
+  - ddr_bw
+  - thermal
+  - fps_stability
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - power_kpi_tracking
+  source_basis:
+  - CURRENT_TASK.md#scenario-definition-set
+  base_from_previous_project: true
+  customer_request_relevance: low
+  development_relevance: Stable baseline used to distinguish general regressions from heavy-mode pressure.
+  dou_relevance: none
+  iq_relevance: low
+  sustain_power_relevance: medium
+  hw_pipeline_change_sensitivity: low
+  sw_control_complexity: low
+  legacy_aliases: []
+- id: uhd30_recording_kpi
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#uhd30_recording_kpi
+  name: UHD30 Recording KPI
+  description: UHD30 recording workload used as an intermediate sustain and bandwidth baseline.
+  domain: camera_recording
+  scenario_class: baseline_kpi
+  scenario_group_id: camera_recording_kpi
+  primary_kpis:
+  - power
+  - ddr_bw
+  - thermal
+  - fps_stability
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - power_kpi_tracking
+  source_basis:
+  - CURRENT_TASK.md#scenario-definition-set
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Cross-project KPI tracking and previous-project regression comparison.
+  dou_relevance: none
+  iq_relevance: low
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: medium
+  sw_control_complexity: medium
+  legacy_aliases: []
+- id: eight_k30_recording_kpi
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#eight_k30_recording_kpi
+  name: 8K30 Recording KPI
+  description: 8K30 recording workload for sustained thermal, power, and memory pressure review.
+  domain: camera_recording
+  scenario_class: baseline_kpi
+  scenario_group_id: camera_recording_kpi
+  primary_kpis:
+  - power
+  - ddr_bw_peak
+  - thermal_throttling
+  - fps_stability
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - power_kpi_tracking
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Project U post-ES KPI evaluation and next-generation codec architecture input.
+  dou_relevance: none
+  iq_relevance: low
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: medium
+  legacy_aliases: []
+- id: editable_portrait_video_recording
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#editable_portrait_video_recording
+  name: Editable Portrait Video Recording
+  description: Customer-added portrait video solution requiring editable effect data and AI processing.
+  domain: camera_recording
+  scenario_class: quality_feature
+  scenario_group_id: camera_recording_heavy
+  primary_kpis:
+  - sustained_power
+  - ddr_bw_peak
+  - image_quality
+  - codec_throughput
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  - ip_npu
+  - ip_gpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - current_customer_feature_request
+  - quality_improvement
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: false
+  customer_request_relevance: high
+  development_relevance: Project U post-CS feature integration and Project W feature-value review.
+  dou_relevance: none
+  iq_relevance: high
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: medium
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: high_speed_fhd240_recording
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#high_speed_fhd240_recording
+  name: High-Speed FHD240 Recording
+  description: High-speed recording baseline for throughput and sustained thermal review.
+  domain: camera_recording
+  scenario_class: heavy_recording
+  scenario_group_id: camera_recording_heavy
+  primary_kpis:
+  - codec_throughput
+  - ddr_bw_peak
+  - thermal_throttling
+  - fps_drop
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - hw_pipeline_change_review
+  source_basis:
+  - CURRENT_TASK.md#scenario-definition-set
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Previous-project carry-over and Project V pipeline change sensitivity.
+  dou_relevance: none
+  iq_relevance: low
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: medium
+  legacy_aliases: []
+- id: low_light_video_recording_ai
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#low_light_video_recording_ai
+  name: Low-Light Video Recording AI
+  description: Low-light video recording scenario for AI partitioning, quality, and sustained power review.
+  domain: camera_recording
+  scenario_class: quality_feature
+  scenario_group_id: camera_low_light_recording
+  primary_kpis:
+  - low_light_video_quality
+  - isp_power
+  - npu_usage
+  - gpu_usage
+  - fps_stability
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_npu
+  - ip_gpu
+  - ip_mfc
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - architecture_exploration
+  - quality_improvement
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  customer_request_relevance: high
+  development_relevance: Project W architecture option review grounded in Project U quality observations.
+  dou_relevance: none
+  iq_relevance: high
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: multi_camera_zoom_sensor_mode_switch
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#multi_camera_zoom_sensor_mode_switch
+  name: Multi-Camera Zoom and Sensor Mode Switch
+  description: Multi-camera control scenario for zoom transition and sensor-mode switch sequencing.
+  domain: camera_recording
+  scenario_class: control_integration
+  scenario_group_id: camera_multi_camera_control
+  primary_kpis:
+  - fps_stability
+  - latency
+  - ddr_bw
+  - image_quality
+  project_relevance:
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - sw_predevelopment_risk
+  - hw_pipeline_change_review
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Project V emulator SW pre-development and Project W interface lesson.
+  dou_relevance: none
+  iq_relevance: high
+  sustain_power_relevance: medium
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: ai_isp_capture_tap_in_out
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#ai_isp_capture_tap_in_out
+  name: AI ISP Capture Tap-In and Tap-Out
+  description: AI ISP capture path review for tap-in and tap-out placement and control complexity.
+  domain: camera_capture
+  scenario_class: control_integration
+  scenario_group_id: camera_capture
+  primary_kpis:
+  - capture_latency
+  - image_quality
+  - npu_usage
+  - gpu_usage
+  - isp_power
+  project_relevance:
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_npu
+  - ip_gpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - hw_pipeline_change_review
+  - architecture_exploration
+  source_basis:
+  - CURRENT_TASK.md#scenario-definition-set
+  base_from_previous_project: false
+  customer_request_relevance: medium
+  development_relevance: Project V pipeline change review and Project W AI partition exploration.
+  dou_relevance: none
+  iq_relevance: high
+  sustain_power_relevance: medium
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: ai_scaler_display_scale_up
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#ai_scaler_display_scale_up
+  name: AI Scaler Display Scale-Up
+  description: Display scale-up scenario comparing RT fallback and AI scaler candidate paths.
+  domain: display
+  scenario_class: rt_risk
+  scenario_group_id: display_rt_bus
+  primary_kpis:
+  - dpu_bw
+  - noc_qos_margin
+  - display_latency
+  - npu_usage
+  - dpu_power
+  project_relevance:
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_dpu
+  - ip_npu
+  - ip_gpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - hw_pipeline_change_review
+  - architecture_exploration
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: false
+  customer_request_relevance: medium
+  development_relevance: Project V design-fix window and Project W area/power architecture trade-off.
+  dou_relevance: high
+  iq_relevance: medium
+  sustain_power_relevance: medium
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: apv_recording_high_bw
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#apv_recording_high_bw
+  name: APV Recording High Bandwidth
+  description: APV recording workload for high-bandwidth architecture option review.
+  domain: camera_recording
+  scenario_class: heavy_recording
+  scenario_group_id: camera_recording_heavy
+  primary_kpis:
+  - ddr_bw_peak
+  - sustained_power
+  - codec_throughput
+  - thermal_throttling
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - architecture_exploration
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Project W spec and architecture trade-off before design commitment.
+  dou_relevance: none
+  iq_relevance: low
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: medium
+  legacy_aliases: []
+- id: mfc_mfd_parallel_4k8k_recording
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#mfc_mfd_parallel_4k8k_recording
+  name: MFC and MFD Parallel 4K/8K Recording
+  description: Parallel codec workload for 4K and 8K encode/decode power and bandwidth review.
+  domain: codec
+  scenario_class: codec_workload
+  scenario_group_id: video_codec_heavy
+  primary_kpis:
+  - codec_throughput
+  - codec_power
+  - ddr_bw_peak
+  - thermal_sustainability
+  project_relevance:
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_mfc
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - power_kpi_tracking
+  - hw_pipeline_change_review
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Project V power optimization review and Project W codec architecture lesson.
+  dou_relevance: high
+  iq_relevance: none
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: medium
+  legacy_aliases: []
+- id: youtube_video_playback_dou
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#youtube_video_playback_dou
+  name: YouTube Video Playback DoU
+  description: Long-duration streaming playback workload for DoU SW optimization and architecture support.
+  domain: codec
+  scenario_class: dou_workload
+  scenario_group_id: codec_display_dou
+  primary_kpis:
+  - dou_power
+  - codec_power
+  - dpu_power
+  - decoder_utilization
+  - thermal_sustainability
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_mfc
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - previous_customer_improvement_request
+  - power_kpi_tracking
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: true
+  derived_from_scenario_id: video_playback_dou
+  customer_request_relevance: high
+  development_relevance: Project U commercial optimization and Project W reuse guidance.
+  dou_relevance: high
+  iq_relevance: none
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: low
+  sw_control_complexity: high
+  catalog_status: deprecated
+  legacy_aliases: []
+- id: voice_call_audio_ai_latency
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#voice_call_audio_ai_latency
+  name: Voice Call Audio AI Latency
+  description: Voice-call AI workload for latency, SRAM path, and NN accelerator architecture review.
+  domain: audio
+  scenario_class: audio_rt_ai
+  scenario_group_id: audio_ai_latency
+  primary_kpis:
+  - audio_latency
+  - audio_underrun
+  - audio_power
+  - npu_usage
+  project_relevance:
+  - project_w
+  uses_ip_blocks:
+  - ip_abox_vts
+  - ip_npu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - architecture_exploration
+  - current_customer_feature_request
+  source_basis:
+  - CURRENT_TASK.md#required-stage35-request-examples
+  base_from_previous_project: false
+  customer_request_relevance: high
+  development_relevance: Project W architecture exploration before documentation completion.
+  dou_relevance: low
+  iq_relevance: none
+  sustain_power_relevance: medium
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: fhd60_recording_kpi
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#fhd60_recording_kpi
+  name: FHD60 Recording KPI
+  description: FHD60 recording baseline for frame-rate power and stability comparison.
+  domain: camera_recording
+  scenario_class: baseline_kpi
+  scenario_group_id: camera_recording_kpi
+  primary_kpis:
+  - power
+  - ddr_bw
+  - thermal
+  - fps_stability
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - power_kpi_tracking
+  source_basis:
+  - docs/domain/multimedia_priority_scenario_baseline.md#camera
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Common KPI baseline for Project U silicon measurement, Project V regression,
+    and Project W estimation.
+  dou_relevance: none
+  iq_relevance: low
+  sustain_power_relevance: medium
+  hw_pipeline_change_sensitivity: medium
+  sw_control_complexity: medium
+  legacy_aliases: []
+- id: uhd60_recording_kpi
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#uhd60_recording_kpi
+  name: UHD60 Recording KPI
+  description: Canonical UHD60 recording baseline independent of feature-specific EIS and HDR review.
+  domain: camera_recording
+  scenario_class: baseline_kpi
+  scenario_group_id: camera_recording_kpi
+  primary_kpis:
+  - power
+  - ddr_bw
+  - thermal
+  - fps_stability
+  - eis_power_gap
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - previous_customer_improvement_request
+  - power_kpi_tracking
+  source_basis:
+  - docs/domain/multimedia_priority_scenario_baseline.md#camera
+  base_from_previous_project: true
+  customer_request_relevance: high
+  development_relevance: Common parent scenario for power, bandwidth, thermal, and feature-option comparison.
+  dou_relevance: none
+  iq_relevance: medium
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: high_speed_fhd120_recording
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#high_speed_fhd120_recording
+  name: High-Speed FHD120 Recording
+  description: FHD120 high-speed recording workload for throughput and sustained thermal review.
+  domain: camera_recording
+  scenario_class: heavy_recording
+  scenario_group_id: camera_recording_heavy
+  primary_kpis:
+  - codec_throughput
+  - ddr_bw_peak
+  - thermal_throttling
+  - fps_drop
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - hw_pipeline_change_review
+  source_basis:
+  - docs/domain/multimedia_priority_scenario_baseline.md#camera
+  base_from_previous_project: true
+  customer_request_relevance: medium
+  development_relevance: Bridges normal recording KPI and FHD240 peak-load verification.
+  dou_relevance: none
+  iq_relevance: low
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: medium
+  legacy_aliases: []
+- id: high_speed_uhd120_recording
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#high_speed_uhd120_recording
+  name: High-Speed UHD120 Recording
+  description: UHD120 high-speed recording workload for codec, memory, and thermal architecture screening.
+  domain: camera_recording
+  scenario_class: heavy_recording
+  scenario_group_id: camera_recording_heavy
+  primary_kpis:
+  - codec_throughput
+  - ddr_bw_peak
+  - thermal_throttling
+  - fps_drop
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_isp
+  - ip_mfc
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - architecture_exploration
+  - hw_pipeline_change_review
+  source_basis:
+  - docs/domain/multimedia_priority_scenario_baseline.md#camera
+  base_from_previous_project: false
+  customer_request_relevance: high
+  development_relevance: High-load option used for Project V regression planning and Project W architecture
+    estimation.
+  dou_relevance: none
+  iq_relevance: medium
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: high
+  sw_control_complexity: high
+  legacy_aliases: []
+- id: video_playback_dou
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenarios.yaml#video_playback_dou
+  name: Video Playback DoU
+  description: Canonical long-duration video playback workload for DoU power and thermal review.
+  domain: codec
+  scenario_class: dou_workload
+  scenario_group_id: codec_display_dou
+  primary_kpis:
+  - dou_power
+  - codec_power
+  - dpu_power
+  - decoder_utilization
+  - thermal_sustainability
+  project_relevance:
+  - project_u
+  - project_v
+  - project_w
+  uses_ip_blocks:
+  - ip_mfc
+  - ip_dpu
+  depends_on_system_blocks:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  variants: []
+  generation_path:
+  - previous_project_base
+  - previous_customer_improvement_request
+  - power_kpi_tracking
+  source_basis:
+  - docs/domain/multimedia_priority_scenario_baseline.md#dou
+  base_from_previous_project: true
+  customer_request_relevance: high
+  development_relevance: Project U current-silicon optimization and Project W architecture reuse guidance.
+  dou_relevance: high
+  iq_relevance: none
+  sustain_power_relevance: high
+  hw_pipeline_change_sensitivity: low
+  sw_control_complexity: high
+  legacy_aliases:
+  - youtube_video_playback_dou
+variants:
+- id: var_uhd60_eis_on_hdr_off
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/variants.yaml#var_uhd60_eis_on_hdr_off
+  scenario_id: uhd60_recording_eis_on
+  mode: normal
+  resolution: UHD
+  fps: 60
+  toggles:
+    eis: true
+    hdr: false
+    hier_b: false
+  streams: []
+  operations: []
+- id: var_dual_recording_uhd30_fhd30
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/variants.yaml#var_dual_recording_uhd30_fhd30
+  scenario_id: dual_video_recording
+  mode: sustained_recording
+  toggles:
+    eis: true
+    hdr: false
+  streams:
+  - resolution: UHD
+    fps: 30
+  - resolution: FHD
+    fps: 30
+  operations: []
+- id: var_display_low_clock_scale_rotation
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/variants.yaml#var_display_low_clock_scale_rotation
+  scenario_id: video_mode_panel_underrun_prevention
+  mode: rt_stress
+  toggles: {}
+  streams: []
+  operations:
+  - scale
+  - rotation
+  - composition
+  dpu_clock_policy: low_clock
+  panel_mode: video_mode
+- id: var_video_editor_uhd_export
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/variants.yaml#var_video_editor_uhd_export
+  scenario_id: video_editor_export
+  mode: performance_competition
+  resolution: UHD
+  toggles: {}
+  streams: []
+  operation: export
+  operations: []
+- id: var_low_light_ai_multiframe
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/variants.yaml#var_low_light_ai_multiframe
+  scenario_id: low_light_ai_capture
+  mode: low_light
+  toggles: {}
+  streams: []
+  operations: []
+  ai_solution: enabled
+  capture_mode: multi_frame
+scenario_ip_requirements:
+- id: req_uhd60_isp_octa_pixel_mode
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_ip_requirements.yaml#req_uhd60_isp_octa_pixel_mode
+  scenario_id: uhd60_recording_eis_on
+  ip_id: ip_isp
+  required_capability: csi_pixel_mode_octa
+  required_mode: octa_pixel
+  requirement_level: required
+  rationale: UHD60 EIS recording is camera-heavy and needs high-speed CSI/ISP handling.
+  source_ref: synthetic_data/scenarios.yaml#uhd60_recording_eis_on
+  variant_id: var_uhd60_eis_on_hdr_off
+- id: req_uhd60_mfc_hevc_encode
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_ip_requirements.yaml#req_uhd60_mfc_hevc_encode
+  scenario_id: uhd60_recording_eis_on
+  ip_id: ip_mfc
+  required_capability: hevc_encode
+  required_mode: encode
+  requirement_level: required
+  rationale: UHD60 recording uses codec encode capability in the existing scenario IP list.
+  source_ref: synthetic_data/scenarios.yaml#uhd60_recording_eis_on
+  variant_id: var_uhd60_eis_on_hdr_off
+- id: req_display_dpu_compression
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_ip_requirements.yaml#req_display_dpu_compression
+  scenario_id: video_mode_panel_underrun_prevention
+  ip_id: ip_dpu
+  required_capability: dpu_compression
+  required_mode: video_mode
+  requirement_level: candidate
+  rationale: Display underrun prevention can use compression as a candidate bandwidth-reduction mechanism.
+  source_ref: synthetic_data/scenarios.yaml#video_mode_panel_underrun_prevention
+  variant_id: var_display_low_clock_scale_rotation
+- id: req_video_editor_mfc_8k
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_ip_requirements.yaml#req_video_editor_mfc_8k
+  scenario_id: video_editor_export
+  ip_id: ip_mfc
+  required_capability: 8k_resolution
+  required_mode: encode
+  requirement_level: candidate
+  rationale: Video editor export is codec-heavy and references high throughput codec capability.
+  source_ref: synthetic_data/scenarios.yaml#video_editor_export
+  variant_id: var_video_editor_uhd_export
+- id: req_low_light_npu_precision
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_ip_requirements.yaml#req_low_light_npu_precision
+  scenario_id: low_light_ai_capture
+  ip_id: ip_npu
+  required_capability: int8_inference
+  required_mode: MODE_CMDQ
+  requirement_level: required
+  rationale: Low-light AI capture depends on NPU inference capability.
+  source_ref: synthetic_data/scenarios.yaml#low_light_ai_capture
+  variant_id: var_low_light_ai_multiframe
+- id: req_low_light_gpu_api
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_ip_requirements.yaml#req_low_light_gpu_api
+  scenario_id: low_light_ai_capture
+  ip_id: ip_gpu
+  required_capability: opencl
+  required_mode: compute_context
+  requirement_level: candidate
+  rationale: Low-light AI capture can use GPU compute assist when NPU/ISP partitioning requires it.
+  source_ref: synthetic_data/scenarios.yaml#low_light_ai_capture
+  variant_id: var_low_light_ai_multiframe
+- id: req_8k30_mfc_resolution
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_ip_requirements.yaml#req_8k30_mfc_resolution
+  scenario_id: eight_k30_recording_kpi
+  ip_id: ip_mfc
+  required_capability: 8k_resolution
+  required_mode: encode
+  requirement_level: required
+  rationale: The 8K30 recording fixture requires the existing MFC 8K resolution capability.
+  source_ref: synthetic_data/scenarios.yaml#eight_k30_recording_kpi
+scenario_requests:
+- id: req_uhd60_eis_u_w12
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_uhd60_eis_u_w12
+  title: Project U UHD60 EIS and HDR power KPI review
+  request_type: power_kpi_review
+  status: under_review
+  priority: P1
+  confidence: medium
+  origin_project_id: project_u
+  scenario_id: uhd60_recording_eis_on
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 14
+  review_cadence: weekly
+  domains:
+  - camera
+  - isp
+  - codec
+  - power
+  - bandwidth
+  role_relevance:
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - pm
+  management_interest: customer_power_kpi
+  system_engineering_tracking_focus: matched_eis_hdr_power_and_bandwidth
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_u_uhd60_previous_measurement
+  - evidence_u_uhd60_current_power_dashboard
+  missing_evidence:
+  - current_project_hdr_eis_matched_power_trace
+  milestone_refs:
+  - project_u_es_release_w12
+  - project_u_customer_project_setup_after_es
+  linked_focus_ids:
+  - focus_u_camera_kpi
+  linked_review_pack_ids:
+  - pack_project_w_multimedia_review
+  linked_review_report_scenario_id: uhd60_recording_eis_on
+  project_spans:
+  - project_id: project_u
+    start_week: 14
+    end_week: 20
+    lifecycle_stage: es_customer_setup
+    impact_direction: kpi_measurement
+    posture: act_now
+    evidence_status: partial
+    confidence: medium
+    note: ES enables current-project KPI measurement and customer solution setup.
+  - project_id: project_v
+    start_week: 16
+    end_week: 28
+    lifecycle_stage: sw_predevelopment_evt1
+    impact_direction: hw_improvement
+    posture: hw_sw_review
+    evidence_status: partial
+    confidence: medium
+    note: Review reusable HW and SW improvements before EVT1 design fix.
+  - project_id: project_w
+    start_week: 18
+    end_week: 30
+    lifecycle_stage: spec_architecture
+    impact_direction: architecture_lesson
+    posture: spec_reflect
+    evidence_status: missing_measurement
+    confidence: low
+    note: Preserve the KPI gap as architecture review input without causal claims.
+  propagation:
+  - propagation_id: prop_uhd60_eis_u_to_v
+    from_project_id: project_u
+    to_project_id: project_v
+    at_week: 17
+    propagation_type: hw_improvement_review
+    trigger_role: system_engineering
+    relation_summary: Project U KPI evidence is reviewed in the feasible Project V HW and SW window.
+    not_causal_proof: true
+  - propagation_id: prop_uhd60_eis_u_to_w
+    from_project_id: project_u
+    to_project_id: project_w
+    at_week: 20
+    propagation_type: spec_reflection
+    trigger_role: soc_architecture
+    relation_summary: Project U evidence gaps are reflected in Project W scenario and spec review.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#uhd60_recording_eis_on
+  - synthetic_data/project_milestones.yaml#project_u_customer_project_setup_after_es
+  - synthetic_data/evidence_catalog.yaml#evidence_u_uhd60_previous_measurement
+- id: req_u_8k30_thermal_w18
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_u_8k30_thermal_w18
+  title: Project U 8K30 recording thermal and power review
+  request_type: power_kpi_review
+  status: evidence_open
+  priority: P1
+  confidence: low
+  origin_project_id: project_u
+  scenario_id: eight_k30_recording_kpi
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 18
+  review_cadence: weekly
+  domains:
+  - camera
+  - codec
+  - memory
+  - thermal
+  role_relevance:
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - pm
+  management_interest: thermal_sustain_risk
+  system_engineering_tracking_focus: sustained_power_thermal_and_memory_pressure
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_u_8k_prediction
+  - evidence_u_8k_thermal_report
+  missing_evidence:
+  - matched_sustained_power_trace
+  - matched_bandwidth_trace
+  milestone_refs:
+  - project_u_fc_release_w20
+  linked_focus_ids:
+  - focus_u_camera_kpi
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: eight_k30_recording_kpi
+  project_spans:
+  - project_id: project_u
+    start_week: 18
+    end_week: 25
+    lifecycle_stage: fc_kpi
+    impact_direction: evidence_collection
+    posture: act_now
+    evidence_status: partial
+    confidence: low
+    note: Collect sustain evidence around FC without converting prediction to proof.
+  - project_id: project_v
+    start_week: 20
+    end_week: 29
+    lifecycle_stage: sw_predevelopment_evt1
+    impact_direction: hw_improvement
+    posture: review_window
+    evidence_status: missing_measurement
+    confidence: low
+    note: Review codec and memory implications before EVT1 design fix.
+  propagation:
+  - propagation_id: prop_u_8k30_to_v_w21
+    from_project_id: project_u
+    to_project_id: project_v
+    at_week: 21
+    propagation_type: hw_improvement_review
+    trigger_role: system_engineering
+    relation_summary: Project U 8K sustain risk enters the Project V design review window.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#eight_k30_recording_kpi
+  - synthetic_data/project_milestones.yaml#project_u_fc_release_w20
+  - synthetic_data/evidence_catalog.yaml#evidence_u_8k_thermal_report
+- id: req_u_dual_recording_power_w23
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_u_dual_recording_power_w23
+  title: Project U dual recording power issue review
+  request_type: customer_issue_response
+  status: reproduced
+  priority: P1
+  confidence: high
+  origin_project_id: project_u
+  scenario_id: dual_video_recording
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: pm
+  requested_week: 23
+  review_cadence: weekly
+  domains:
+  - camera
+  - codec
+  - power
+  - thermal
+  role_relevance:
+  - system_engineering
+  - sw_development
+  - hw_development
+  - pm
+  trigger_roles:
+  - pm
+  - system_engineering
+  management_interest: commercial_issue_containment
+  system_engineering_tracking_focus: reproducible_issue_and_cross_project_mitigation
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_u_dual_previous_measurement
+  - evidence_u_dual_field_log
+  missing_evidence:
+  - mitigation_comparison_trace
+  milestone_refs:
+  - project_u_fc_release_w20
+  - project_u_cs_release_w27
+  linked_focus_ids:
+  - focus_u_heavy_customer_camera
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: dual_video_recording
+  project_spans:
+  - project_id: project_u
+    start_week: 23
+    end_week: 32
+    lifecycle_stage: fc_to_cs
+    impact_direction: sw_workaround
+    posture: issue_response
+    evidence_status: available
+    confidence: high
+    note: Reproducible field evidence supports issue occurrence, not final root cause.
+  - project_id: project_v
+    start_week: 24
+    end_week: 31
+    lifecycle_stage: evt1_design_fix
+    impact_direction: hw_improvement
+    posture: last_hw_window
+    evidence_status: partial
+    confidence: medium
+    note: Evaluate feasible HW improvement before the Project V change window closes.
+  - project_id: project_w
+    start_week: 27
+    end_week: 36
+    lifecycle_stage: architecture
+    impact_direction: spec_update
+    posture: architecture_lesson
+    evidence_status: partial
+    confidence: medium
+    note: Preserve the reproduced issue as a next-generation architecture lesson.
+  propagation:
+  - propagation_id: prop_u_dual_to_v_w25
+    from_project_id: project_u
+    to_project_id: project_v
+    at_week: 25
+    propagation_type: carry_over_issue
+    trigger_role: pm
+    relation_summary: Reproduced Project U issue is reviewed before Project V HW closure.
+    not_causal_proof: true
+  - propagation_id: prop_u_dual_to_w_w29
+    from_project_id: project_u
+    to_project_id: project_w
+    at_week: 29
+    propagation_type: architecture_lesson
+    trigger_role: system_engineering
+    relation_summary: The issue pattern is retained in Project W architecture documentation.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#dual_video_recording
+  - synthetic_data/project_milestones.yaml#project_u_fc_release_w20
+  - synthetic_data/evidence_catalog.yaml#evidence_u_dual_field_log
+- id: req_u_editable_portrait_w29
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_u_editable_portrait_w29
+  title: Project U editable portrait video customer solution request
+  request_type: customer_feature_request
+  status: feasibility_review
+  priority: P1
+  confidence: low
+  origin_project_id: project_u
+  scenario_id: editable_portrait_video_recording
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: product_planning
+  requested_week: 29
+  review_cadence: weekly
+  domains:
+  - camera
+  - ai
+  - codec
+  - software
+  role_relevance:
+  - product_planning
+  - system_engineering
+  - sw_development
+  - pm
+  - management
+  trigger_roles:
+  - product_planning
+  - system_engineering
+  - management
+  management_interest: customer_feature_value_and_power_risk
+  system_engineering_tracking_focus: feature_scope_power_and_data_path
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_u_portrait_customer_feedback
+  - evidence_u_portrait_sw_power_unknown
+  missing_evidence:
+  - customer_solution_detail
+  - added_sw_power_measurement
+  - bandwidth_trace
+  milestone_refs:
+  - project_u_cs_release_w27
+  - project_u_kpi_evaluation_q3
+  linked_focus_ids:
+  - focus_u_heavy_customer_camera
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: editable_portrait_video_recording
+  project_spans:
+  - project_id: project_u
+    start_week: 29
+    end_week: 40
+    lifecycle_stage: post_cs_customer_feature
+    impact_direction: sw_solution
+    posture: feasibility_review
+    evidence_status: missing_measurement
+    confidence: low
+    note: Customer solution detail and measured feature cost remain unavailable.
+  - project_id: project_w
+    start_week: 31
+    end_week: 39
+    lifecycle_stage: architecture_document_to_design
+    impact_direction: spec_reflection
+    posture: feature_value_review
+    evidence_status: partial
+    confidence: low
+    note: Review reusable architecture support without treating the feature as approved.
+  - project_id: project_v
+    start_week: 30
+    end_week: 36
+    lifecycle_stage: post_evt1_sw_predevelopment
+    impact_direction: sw_workaround
+    posture: sw_compatibility_review
+    evidence_status: missing_measurement
+    confidence: low
+    note: The post-EVT1 feature can enter SW compatibility review but not the closed HW window.
+  propagation:
+  - propagation_id: prop_u_portrait_to_v_w30
+    from_project_id: project_u
+    to_project_id: project_v
+    at_week: 30
+    propagation_type: sw_workaround_review
+    trigger_role: system_engineering
+    relation_summary: Editable Portrait enters Project V SW compatibility review after the EVT1 HW window.
+    not_causal_proof: true
+  - propagation_id: prop_u_portrait_to_w_w32
+    from_project_id: project_u
+    to_project_id: project_w
+    at_week: 32
+    propagation_type: spec_reflection
+    trigger_role: product_planning
+    relation_summary: Customer feature intent is reflected as a Project W architecture question.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#editable_portrait_video_recording
+  - synthetic_data/project_milestones.yaml#project_u_cs_release_w27
+  - synthetic_data/evidence_catalog.yaml#evidence_u_portrait_customer_feedback
+- id: req_display_underrun_u_w10
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_display_underrun_u_w10
+  title: Project U display video-mode underrun issue
+  request_type: display_rt_risk
+  status: reproduced
+  priority: P0
+  confidence: high
+  origin_project_id: project_u
+  scenario_id: video_mode_panel_underrun_prevention
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 33
+  review_cadence: weekly
+  domains:
+  - display
+  - dpu
+  - noc
+  - real_time
+  role_relevance:
+  - system_engineering
+  - sw_development
+  - hw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - pm
+  - management
+  management_interest: customer_visible_rt_issue
+  system_engineering_tracking_focus: reproducibility_rt_margin_and_mitigation
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_u_display_field_log
+  - evidence_u_display_dump
+  missing_evidence:
+  - mitigation_margin_trace
+  milestone_refs:
+  - project_u_kpi_evaluation_q3
+  - project_u_customer_issue_peak_q3_q4
+  linked_focus_ids:
+  - focus_u_customer_issue_response
+  linked_review_pack_ids:
+  - pack_project_w_multimedia_review
+  linked_review_report_scenario_id: video_mode_panel_underrun_prevention
+  project_spans:
+  - project_id: project_u
+    start_week: 33
+    end_week: 44
+    lifecycle_stage: customer_issue_peak
+    impact_direction: sw_workaround
+    posture: act_now
+    evidence_status: available
+    confidence: high
+    note: Matched log and dump support occurrence while mitigation margin remains open.
+  - project_id: project_w
+    start_week: 34
+    end_week: 42
+    lifecycle_stage: design_progress
+    impact_direction: architecture_lesson
+    posture: architecture_lesson
+    evidence_status: partial
+    confidence: medium
+    note: Preserve RT guarantee and fallback requirements for future design review.
+  - project_id: project_v
+    start_week: 34
+    end_week: 38
+    lifecycle_stage: post_evt1_sw_predevelopment
+    impact_direction: sw_workaround
+    posture: sw_workaround_review
+    evidence_status: partial
+    confidence: medium
+    note: The reproduced issue can inform a SW fallback review but the Project V HW window is closed.
+  propagation:
+  - propagation_id: prop_u_display_to_v_w34
+    from_project_id: project_u
+    to_project_id: project_v
+    at_week: 34
+    propagation_type: sw_workaround_review
+    trigger_role: system_engineering
+    relation_summary: Project U underrun evidence enters Project V post-EVT1 SW fallback review.
+    not_causal_proof: true
+  - propagation_id: prop_u_display_to_w_w35
+    from_project_id: project_u
+    to_project_id: project_w
+    at_week: 35
+    propagation_type: architecture_lesson
+    trigger_role: system_engineering
+    relation_summary: Reproduced underrun context is retained as a Project W RT architecture lesson.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#video_mode_panel_underrun_prevention
+  - synthetic_data/project_milestones.yaml#project_u_kpi_evaluation_q3
+  - synthetic_data/evidence_catalog.yaml#evidence_u_display_dump
+- id: req_video_editor_u_w16
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_video_editor_u_w16
+  title: Project U video editor benchmark gap review
+  request_type: video_benchmark_gap
+  status: evidence_open
+  priority: P2
+  confidence: medium
+  origin_project_id: project_u
+  scenario_id: video_editor_export
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: product_planning
+  requested_week: 37
+  review_cadence: weekly
+  domains:
+  - codec
+  - display
+  - gpu
+  - software
+  role_relevance:
+  - product_planning
+  - system_engineering
+  - sw_development
+  - pm
+  trigger_roles:
+  - product_planning
+  - system_engineering
+  - pm
+  management_interest: competitor_gap
+  system_engineering_tracking_focus: benchmark_reproducibility_and_codec_path
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_u_editor_competitor_measurement
+  - evidence_u_editor_regression_missing
+  missing_evidence:
+  - matched_project_u_export_regression
+  milestone_refs:
+  - project_u_customer_issue_peak_q3_q4
+  linked_focus_ids:
+  - focus_u_dou
+  linked_review_pack_ids:
+  - pack_project_w_multimedia_review
+  linked_review_report_scenario_id: video_editor_export
+  project_spans:
+  - project_id: project_u
+    start_week: 37
+    end_week: 46
+    lifecycle_stage: customer_issue_peak
+    impact_direction: sw_optimization
+    posture: benchmark_review
+    evidence_status: partial
+    confidence: medium
+    note: Competitor evidence is available but matched Project U regression is missing.
+  - project_id: project_w
+    start_week: 39
+    end_week: 47
+    lifecycle_stage: design_progress
+    impact_direction: architecture_lesson
+    posture: architecture_support
+    evidence_status: missing_measurement
+    confidence: low
+    note: Preserve codec and display path questions without promising benchmark closure.
+  propagation:
+  - propagation_id: prop_u_editor_to_w_w40
+    from_project_id: project_u
+    to_project_id: project_w
+    at_week: 40
+    propagation_type: sw_workaround_review
+    trigger_role: product_planning
+    relation_summary: Project U benchmark gap informs Project W codec and SW optimization support.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#video_editor_export
+  - synthetic_data/project_milestones.yaml#project_u_customer_issue_peak_q3_q4
+  - synthetic_data/evidence_catalog.yaml#evidence_u_editor_competitor_measurement
+- id: req_u_youtube_dou_w43
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_u_youtube_dou_w43
+  title: Project U YouTube playback DoU optimization
+  request_type: dou_optimization_request
+  status: optimization_review
+  priority: P2
+  confidence: medium
+  origin_project_id: project_u
+  scenario_id: youtube_video_playback_dou
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 43
+  review_cadence: weekly
+  domains:
+  - codec
+  - display
+  - software
+  - power
+  role_relevance:
+  - system_engineering
+  - sw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - pm
+  management_interest: battery_life_customer_value
+  system_engineering_tracking_focus: content_matched_playback_power_and_activity
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_u_youtube_power_dashboard
+  - evidence_u_youtube_lab_trace_missing
+  missing_evidence:
+  - matched_playback_lab_trace
+  milestone_refs:
+  - project_u_mass_production_q4
+  linked_focus_ids:
+  - focus_u_dou
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: youtube_video_playback_dou
+  project_spans:
+  - project_id: project_u
+    start_week: 43
+    end_week: 50
+    lifecycle_stage: mass_production
+    impact_direction: sw_workaround
+    posture: sw_optimization
+    evidence_status: partial
+    confidence: medium
+    note: HW is closed; review content-matched SW optimization and missing traces.
+  - project_id: project_w
+    start_week: 44
+    end_week: 51
+    lifecycle_stage: alpha_beta
+    impact_direction: architecture_lesson
+    posture: architecture_support
+    evidence_status: missing_measurement
+    confidence: low
+    note: Preserve reuse and control-path support for later validation.
+  propagation:
+  - propagation_id: prop_u_youtube_to_w_w45
+    from_project_id: project_u
+    to_project_id: project_w
+    at_week: 45
+    propagation_type: architecture_lesson
+    trigger_role: system_engineering
+    relation_summary: Project U DoU optimization evidence gaps inform Project W SW architecture support.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#youtube_video_playback_dou
+  - synthetic_data/project_milestones.yaml#project_u_mass_production_q4
+  - synthetic_data/evidence_catalog.yaml#evidence_u_youtube_power_dashboard
+- id: req_u_low_light_quality_w50
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_u_low_light_quality_w50
+  title: Project U low-light video quality issue update
+  request_type: quality_improvement_request
+  status: evidence_open
+  priority: P2
+  confidence: low
+  origin_project_id: project_u
+  scenario_id: low_light_video_recording_ai
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: product_planning
+  requested_week: 50
+  review_cadence: weekly
+  domains:
+  - camera
+  - ai
+  - quality
+  - software
+  role_relevance:
+  - product_planning
+  - system_engineering
+  - sw_development
+  - pm
+  trigger_roles:
+  - product_planning
+  - system_engineering
+  management_interest: customer_quality_issue
+  system_engineering_tracking_focus: quality_reproduction_and_power_context
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_u_low_light_customer_feedback
+  - evidence_u_low_light_regression_missing
+  missing_evidence:
+  - matched_low_light_video_regression
+  - matched_power_trace
+  milestone_refs:
+  - project_u_mass_production_q4
+  linked_focus_ids:
+  - focus_u_heavy_customer_camera
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: low_light_video_recording_ai
+  project_spans:
+  - project_id: project_u
+    start_week: 50
+    end_week: 52
+    lifecycle_stage: mass_production
+    impact_direction: sw_workaround
+    posture: quality_followup
+    evidence_status: missing_measurement
+    confidence: low
+    note: Customer feedback is available but matched quality and power regressions are missing.
+  - project_id: project_w
+    start_week: 50
+    end_week: 52
+    lifecycle_stage: alpha_beta
+    impact_direction: spec_reflection
+    posture: spec_lesson
+    evidence_status: partial
+    confidence: low
+    note: Preserve quality requirements without claiming measured improvement.
+  propagation:
+  - propagation_id: prop_u_low_light_to_w_w52
+    from_project_id: project_u
+    to_project_id: project_w
+    at_week: 52
+    propagation_type: spec_reflection
+    trigger_role: product_planning
+    relation_summary: Late Project U quality feedback is retained as Project W validation input.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#low_light_video_recording_ai
+  - synthetic_data/project_milestones.yaml#project_u_mass_production_q4
+  - synthetic_data/evidence_catalog.yaml#evidence_u_low_light_customer_feedback
+- id: req_v_isp_pipeline_predev_w15
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_v_isp_pipeline_predev_w15
+  title: Project V ISP pipeline change SW pre-development risk
+  request_type: sw_predevelopment_risk
+  status: predevelopment_review
+  priority: P1
+  confidence: medium
+  origin_project_id: project_v
+  scenario_id: ai_isp_capture_tap_in_out
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 15
+  review_cadence: weekly
+  domains:
+  - camera
+  - isp
+  - ai
+  - software
+  role_relevance:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - soc_architecture
+  - pm
+  management_interest: evt1_schedule_risk
+  system_engineering_tracking_focus: hw_sw_interface_and_emulator_gap
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_v_isp_architecture_note
+  - evidence_v_isp_emulator_result
+  missing_evidence:
+  - silicon_pipeline_timing_trace
+  - silicon_power_trace
+  milestone_refs:
+  - project_v_sw_predev_start_q2
+  linked_focus_ids:
+  - focus_v_emulator_sw
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: ai_isp_capture_tap_in_out
+  project_spans:
+  - project_id: project_v
+    start_week: 15
+    end_week: 30
+    lifecycle_stage: emulator_sw_predevelopment
+    impact_direction: hw_sw_alignment
+    posture: interface_review
+    evidence_status: partial
+    confidence: medium
+    note: Emulator supports functional review while silicon timing and power remain unknown.
+  - project_id: project_w
+    start_week: 20
+    end_week: 32
+    lifecycle_stage: spec_architecture
+    impact_direction: spec_reflection
+    posture: architecture_lesson
+    evidence_status: missing_measurement
+    confidence: low
+    note: Retain pipeline partition and interface constraints for Project W.
+  propagation:
+  - propagation_id: prop_v_isp_to_w_w22
+    from_project_id: project_v
+    to_project_id: project_w
+    at_week: 22
+    propagation_type: architecture_lesson
+    trigger_role: soc_architecture
+    relation_summary: Project V pipeline integration risk informs Project W architecture review.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#ai_isp_capture_tap_in_out
+  - synthetic_data/project_milestones.yaml#project_v_sw_predev_start_q2
+  - synthetic_data/evidence_catalog.yaml#evidence_v_isp_architecture_note
+- id: req_v_multi_camera_control_w19
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_v_multi_camera_control_w19
+  title: Project V multi-camera zoom and sensor-mode switch control risk
+  request_type: sw_predevelopment_risk
+  status: regression_open
+  priority: P1
+  confidence: medium
+  origin_project_id: project_v
+  scenario_id: multi_camera_zoom_sensor_mode_switch
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 19
+  review_cadence: weekly
+  domains:
+  - camera
+  - sensor_control
+  - software
+  - real_time
+  role_relevance:
+  - system_engineering
+  - sw_development
+  - hw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - pm
+  management_interest: feature_completion_schedule
+  system_engineering_tracking_focus: sensor_control_sequence_and_frame_continuity
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_v_multi_camera_emulator_result
+  - evidence_v_multi_camera_regression_missing
+  missing_evidence:
+  - sensor_mode_switch_regression
+  - silicon_contention_trace
+  milestone_refs:
+  - project_v_sw_predev_start_q2
+  - project_v_emulator_fc_target
+  linked_focus_ids:
+  - focus_v_emulator_sw
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: multi_camera_zoom_sensor_mode_switch
+  project_spans:
+  - project_id: project_v
+    start_week: 19
+    end_week: 29
+    lifecycle_stage: emulator_sw_predevelopment
+    impact_direction: sw_control_risk
+    posture: regression_review
+    evidence_status: partial
+    confidence: medium
+    note: Emulator result is available but mode-switch regression remains incomplete.
+  - project_id: project_w
+    start_week: 23
+    end_week: 34
+    lifecycle_stage: architecture
+    impact_direction: architecture_lesson
+    posture: interface_lesson
+    evidence_status: missing_measurement
+    confidence: low
+    note: Preserve control interface and frame-continuity requirements.
+  propagation:
+  - propagation_id: prop_v_multi_camera_to_w_w24
+    from_project_id: project_v
+    to_project_id: project_w
+    at_week: 24
+    propagation_type: architecture_lesson
+    trigger_role: system_engineering
+    relation_summary: Project V control risk informs Project W camera interface architecture.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#multi_camera_zoom_sensor_mode_switch
+  - synthetic_data/project_milestones.yaml#project_v_sw_predev_start_q2
+  - synthetic_data/evidence_catalog.yaml#evidence_v_multi_camera_emulator_result
+- id: req_v_emulator_power_unknown_w24
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_v_emulator_power_unknown_w24
+  title: Project V emulator feature-done but power-unknown risk
+  request_type: evidence_update_request
+  status: function_done_power_open
+  priority: P1
+  confidence: low
+  origin_project_id: project_v
+  scenario_id: uhd60_recording_eis_on
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: pm
+  requested_week: 24
+  review_cadence: weekly
+  domains:
+  - camera
+  - software
+  - emulator
+  - power
+  role_relevance:
+  - system_engineering
+  - sw_development
+  - pm
+  - management
+  trigger_roles:
+  - pm
+  - system_engineering
+  management_interest: feature_done_with_unbounded_power
+  system_engineering_tracking_focus: functional_completion_vs_measurement_gap
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_v_emulator_functional_result
+  - evidence_v_emulator_sw_power_unknown
+  missing_evidence:
+  - silicon_power_measurement
+  - silicon_bandwidth_trace
+  milestone_refs:
+  - project_v_emulator_fc_target
+  linked_focus_ids:
+  - focus_v_pipeline_regression
+  linked_review_pack_ids:
+  - pack_project_w_multimedia_review
+  linked_review_report_scenario_id: uhd60_recording_eis_on
+  project_spans:
+  - project_id: project_v
+    start_week: 24
+    end_week: 34
+    lifecycle_stage: emulator_fc_to_evt1
+    impact_direction: measurement_required
+    posture: evidence_gap
+    evidence_status: missing_measurement
+    confidence: low
+    note: Functional completion cannot upgrade power confidence.
+  - project_id: project_w
+    start_week: 26
+    end_week: 36
+    lifecycle_stage: architecture_document
+    impact_direction: evidence_requirement
+    posture: architecture_lesson
+    evidence_status: missing_measurement
+    confidence: low
+    note: Preserve the functional-versus-power evidence distinction in architecture review.
+  propagation:
+  - propagation_id: prop_v_emulator_power_to_w_w27
+    from_project_id: project_v
+    to_project_id: project_w
+    at_week: 27
+    propagation_type: spec_reflection
+    trigger_role: pm
+    relation_summary: Power-unknown functional completion becomes a Project W evidence requirement.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#uhd60_recording_eis_on
+  - synthetic_data/project_milestones.yaml#project_v_emulator_fc_target
+  - synthetic_data/evidence_catalog.yaml#evidence_v_emulator_sw_power_unknown
+- id: req_v_mfc_parallel_power_w28
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_v_mfc_parallel_power_w28
+  title: Project V MFC and MFD parallel recording power optimization review
+  request_type: power_kpi_review
+  status: evt1_review
+  priority: P1
+  confidence: low
+  origin_project_id: project_v
+  scenario_id: mfc_mfd_parallel_4k8k_recording
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 28
+  review_cadence: weekly
+  domains:
+  - codec
+  - memory
+  - power
+  - thermal
+  role_relevance:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - soc_architecture
+  - pm
+  management_interest: evt1_power_and_area_tradeoff
+  system_engineering_tracking_focus: parallel_codec_bandwidth_power_and_thermal
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_v_mfc_bandwidth_estimation
+  - evidence_v_mfc_power_unknown
+  missing_evidence:
+  - parallel_codec_power_measurement
+  - matched_bandwidth_trace
+  milestone_refs:
+  - project_v_evt1_design_fix_q3
+  linked_focus_ids:
+  - focus_v_pipeline_regression
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: mfc_mfd_parallel_4k8k_recording
+  project_spans:
+  - project_id: project_v
+    start_week: 28
+    end_week: 33
+    lifecycle_stage: evt1_design_fix
+    impact_direction: hw_improvement
+    posture: last_hw_window
+    evidence_status: missing_measurement
+    confidence: low
+    note: Review candidate changes before closure without treating estimation as proof.
+  - project_id: project_w
+    start_week: 29
+    end_week: 39
+    lifecycle_stage: architecture_to_design
+    impact_direction: architecture_option
+    posture: architecture_lesson
+    evidence_status: partial
+    confidence: low
+    note: Retain codec parallelism and memory pressure as Project W architecture input.
+  propagation:
+  - propagation_id: prop_v_mfc_to_w_w30
+    from_project_id: project_v
+    to_project_id: project_w
+    at_week: 30
+    propagation_type: architecture_lesson
+    trigger_role: soc_architecture
+    relation_summary: Project V parallel codec review is captured in Project W architecture documentation.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#mfc_mfd_parallel_4k8k_recording
+  - synthetic_data/project_milestones.yaml#project_v_evt1_design_fix_q3
+  - synthetic_data/evidence_catalog.yaml#evidence_v_mfc_bandwidth_estimation
+- id: req_v_dpu_ai_scaler_w31
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_v_dpu_ai_scaler_w31
+  title: Project V DPU RT fallback and AI scaler review
+  request_type: hw_pipeline_change_review
+  status: drop_or_defer_review
+  priority: P1
+  confidence: medium
+  origin_project_id: project_v
+  scenario_id: ai_scaler_display_scale_up
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: soc_architecture
+  requested_week: 31
+  review_cadence: weekly
+  domains:
+  - display
+  - ai
+  - real_time
+  - area
+  role_relevance:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  - management
+  trigger_roles:
+  - soc_architecture
+  - system_engineering
+  - management
+  management_interest: area_power_schedule_tradeoff
+  system_engineering_tracking_focus: rt_fallback_area_and_functional_coverage
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_v_dpu_rtl_area_estimate
+  - evidence_v_dpu_emulator_result
+  missing_evidence:
+  - silicon_rt_trace
+  - final_rtl_area
+  milestone_refs:
+  - project_v_evt1_design_fix_q3
+  - project_v_hw_change_window_close_q3
+  linked_focus_ids:
+  - focus_v_carry_over_issues
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: ai_scaler_display_scale_up
+  project_spans:
+  - project_id: project_v
+    start_week: 31
+    end_week: 34
+    lifecycle_stage: evt1_window_close
+    impact_direction: hw_option_review
+    posture: drop_or_defer_review
+    evidence_status: partial
+    confidence: medium
+    note: Area estimate and emulator function are insufficient for guaranteed improvement.
+  - project_id: project_w
+    start_week: 31
+    end_week: 41
+    lifecycle_stage: design_progress
+    impact_direction: architecture_option
+    posture: option_revisit
+    evidence_status: missing_measurement
+    confidence: low
+    note: Revisit only as a Project W option with explicit RT and area evidence.
+  propagation:
+  - propagation_id: prop_v_dpu_scaler_to_w_w33
+    from_project_id: project_v
+    to_project_id: project_w
+    at_week: 33
+    propagation_type: no_propagation_due_to_area
+    trigger_role: management
+    relation_summary: Project V does not carry active implementation; Project W keeps a review-only option.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#ai_scaler_display_scale_up
+  - synthetic_data/project_milestones.yaml#project_v_hw_change_window_close_q3
+  - synthetic_data/evidence_catalog.yaml#evidence_v_dpu_rtl_area_estimate
+- id: req_v_hw_window_evidence_w35
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_v_hw_window_evidence_w35
+  title: Project V post-EVT1 HW window evidence update
+  request_type: evidence_update_request
+  status: hw_window_closed
+  priority: P2
+  confidence: low
+  origin_project_id: project_v
+  scenario_id: eight_k30_recording_kpi
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: pm
+  requested_week: 35
+  review_cadence: monthly
+  domains:
+  - camera
+  - codec
+  - hardware
+  - evidence
+  role_relevance:
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  trigger_roles:
+  - pm
+  - system_engineering
+  management_interest: carryover_risk
+  system_engineering_tracking_focus: closed_hw_window_and_next_generation_evidence
+  expected_weekly_activity_load: medium
+  evidence_basis:
+  - evidence_v_hw_window_architecture_note
+  - evidence_v_hw_window_lab_trace_planned
+  missing_evidence:
+  - post_silicon_8k30_trace
+  milestone_refs:
+  - project_v_hw_change_window_close_q3
+  linked_focus_ids:
+  - focus_v_pipeline_regression
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: eight_k30_recording_kpi
+  project_spans:
+  - project_id: project_v
+    start_week: 35
+    end_week: 42
+    lifecycle_stage: post_hw_window
+    impact_direction: sw_workaround
+    posture: sw_only_and_measure
+    evidence_status: missing_measurement
+    confidence: low
+    note: New HW change is closed; collect evidence and review SW mitigation.
+  - project_id: project_w
+    start_week: 36
+    end_week: 46
+    lifecycle_stage: design_progress
+    impact_direction: architecture_lesson
+    posture: carryover_review
+    evidence_status: missing_measurement
+    confidence: low
+    note: Project W receives the unresolved evidence requirement.
+  propagation:
+  - propagation_id: prop_v_hw_window_to_w_w37
+    from_project_id: project_v
+    to_project_id: project_w
+    at_week: 37
+    propagation_type: carry_over_issue
+    trigger_role: pm
+    relation_summary: Closed Project V HW window routes unresolved evidence to Project W review.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#eight_k30_recording_kpi
+  - synthetic_data/project_milestones.yaml#project_v_hw_change_window_close_q3
+  - synthetic_data/evidence_catalog.yaml#evidence_v_hw_window_architecture_note
+- id: req_w_low_light_arch_w5
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_w_low_light_arch_w5
+  title: Project W low-light video recording AI architecture review
+  request_type: architecture_option_review
+  status: spec_discussion
+  priority: P1
+  confidence: medium
+  origin_project_id: project_w
+  scenario_id: low_light_video_recording_ai
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: soc_architecture
+  requested_week: 5
+  review_cadence: monthly
+  domains:
+  - camera
+  - ai
+  - quality
+  - power
+  role_relevance:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  - management
+  trigger_roles:
+  - soc_architecture
+  - product_planning
+  - system_engineering
+  management_interest: feature_value_vs_power
+  system_engineering_tracking_focus: ai_partition_quality_and_sustain_evidence
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_w_low_light_architecture_note
+  - evidence_w_low_light_previous_measurement
+  missing_evidence:
+  - project_w_partition_measurement
+  - matched_quality_power_trace
+  milestone_refs:
+  - project_w_customer_spec_discussion_q1_q2
+  linked_focus_ids:
+  - focus_w_camera_ppa_iq
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: low_light_video_recording_ai
+  project_spans:
+  - project_id: project_w
+    start_week: 5
+    end_week: 12
+    lifecycle_stage: customer_spec_discussion
+    impact_direction: option_review
+    posture: architecture_exploration
+    evidence_status: partial
+    confidence: medium
+    note: Previous evidence guides option review but cannot prove Project W behavior.
+  propagation: []
+  source_refs:
+  - synthetic_data/scenarios.yaml#low_light_video_recording_ai
+  - synthetic_data/project_milestones.yaml#project_w_customer_spec_discussion_q1_q2
+  - synthetic_data/evidence_catalog.yaml#evidence_w_low_light_architecture_note
+- id: req_w_apv_arch_w14
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_w_apv_arch_w14
+  title: Project W APV high-bandwidth recording architecture option
+  request_type: architecture_option_review
+  status: pre_spec_freeze_review
+  priority: P1
+  confidence: low
+  origin_project_id: project_w
+  scenario_id: apv_recording_high_bw
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: soc_architecture
+  requested_week: 14
+  review_cadence: monthly
+  domains:
+  - camera
+  - codec
+  - memory
+  - thermal
+  role_relevance:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - management
+  trigger_roles:
+  - soc_architecture
+  - system_engineering
+  - management
+  management_interest: bandwidth_power_area_tradeoff
+  system_engineering_tracking_focus: bandwidth_path_and_sustain_evidence
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_w_apv_bandwidth_estimation
+  - evidence_w_apv_thermal_log_missing
+  missing_evidence:
+  - matched_bandwidth_trace
+  - matched_thermal_log
+  milestone_refs:
+  - project_w_spec_freeze_q2
+  linked_focus_ids:
+  - focus_w_camera_ppa_iq
+  - focus_w_video_codec
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: apv_recording_high_bw
+  project_spans:
+  - project_id: project_w
+    start_week: 14
+    end_week: 24
+    lifecycle_stage: spec_freeze_preparation
+    impact_direction: architecture_tradeoff
+    posture: option_review
+    evidence_status: missing_measurement
+    confidence: low
+    note: Estimation and missing thermal evidence keep the option conditional.
+  propagation: []
+  source_refs:
+  - synthetic_data/scenarios.yaml#apv_recording_high_bw
+  - synthetic_data/project_milestones.yaml#project_w_spec_freeze_q2
+  - synthetic_data/evidence_catalog.yaml#evidence_w_apv_bandwidth_estimation
+- id: req_w_mmip_area_tradeoff_w21
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_w_mmip_area_tradeoff_w21
+  title: Project W multimedia IP area reduction trade-off
+  request_type: architecture_option_review
+  status: spec_freeze_review
+  priority: P1
+  confidence: medium
+  origin_project_id: project_w
+  scenario_id: mfc_mfd_parallel_4k8k_recording
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: management
+  requested_week: 21
+  review_cadence: weekly
+  domains:
+  - camera
+  - codec
+  - display
+  - area
+  - power
+  role_relevance:
+  - management
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  trigger_roles:
+  - management
+  - soc_architecture
+  - system_engineering
+  management_interest: area_power_feature_value
+  system_engineering_tracking_focus: scenario_coverage_and_area_evidence
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_w_mmip_rtl_area_estimate
+  - evidence_w_mmip_confluence_note
+  missing_evidence:
+  - detailed_rtl_area
+  - scenario_coverage_regression
+  milestone_refs:
+  - project_w_spec_freeze_q2
+  - project_w_architecture_review_q2_q3
+  linked_focus_ids:
+  - focus_w_video_codec
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: mfc_mfd_parallel_4k8k_recording
+  project_spans:
+  - project_id: project_w
+    start_week: 21
+    end_week: 31
+    lifecycle_stage: spec_freeze_architecture
+    impact_direction: drop_or_defer
+    posture: tradeoff_review
+    evidence_status: partial
+    confidence: medium
+    note: Area estimate supports review but does not authorize a final drop or approval.
+  propagation: []
+  source_refs:
+  - synthetic_data/scenarios.yaml#mfc_mfd_parallel_4k8k_recording
+  - synthetic_data/project_milestones.yaml#project_w_spec_freeze_q2
+  - synthetic_data/evidence_catalog.yaml#evidence_w_mmip_rtl_area_estimate
+- id: req_w_audio_ai_latency_w25
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_w_audio_ai_latency_w25
+  title: Project W audio AI latency SRAM and accelerator review
+  request_type: architecture_option_review
+  status: architecture_review
+  priority: P2
+  confidence: medium
+  origin_project_id: project_w
+  scenario_id: voice_call_audio_ai_latency
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: soc_architecture
+  requested_week: 25
+  review_cadence: weekly
+  domains:
+  - audio
+  - ai
+  - latency
+  - memory
+  role_relevance:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  - sw_development
+  trigger_roles:
+  - soc_architecture
+  - system_engineering
+  - product_planning
+  management_interest: feature_value_latency_area_tradeoff
+  system_engineering_tracking_focus: end_to_end_call_latency_and_memory_path
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_w_audio_architecture_note
+  - evidence_w_audio_latency_trace_planned
+  missing_evidence:
+  - matched_call_path_latency_trace
+  - sram_contention_trace
+  milestone_refs:
+  - project_w_architecture_review_q2_q3
+  linked_focus_ids:
+  - focus_w_audio_ai
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: voice_call_audio_ai_latency
+  project_spans:
+  - project_id: project_w
+    start_week: 25
+    end_week: 34
+    lifecycle_stage: architecture_review
+    impact_direction: architecture_tradeoff
+    posture: option_review
+    evidence_status: missing_measurement
+    confidence: medium
+    note: Architecture context exists while matched latency and memory traces remain open.
+  propagation: []
+  source_refs:
+  - synthetic_data/scenarios.yaml#voice_call_audio_ai_latency
+  - synthetic_data/project_milestones.yaml#project_w_architecture_review_q2_q3
+  - synthetic_data/evidence_catalog.yaml#evidence_w_audio_architecture_note
+- id: req_w_display_lesson_w30
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_w_display_lesson_w30
+  title: Project W display underrun architecture lesson review
+  request_type: display_rt_risk
+  status: architecture_document_input
+  priority: P1
+  confidence: high
+  origin_project_id: project_w
+  scenario_id: video_mode_panel_underrun_prevention
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 30
+  review_cadence: weekly
+  domains:
+  - display
+  - noc
+  - real_time
+  - architecture
+  role_relevance:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  trigger_roles:
+  - system_engineering
+  - soc_architecture
+  management_interest: customer_visible_rt_risk
+  system_engineering_tracking_focus: rt_guarantee_and_fallback_traceability
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_w_display_architecture_lesson
+  - evidence_w_display_previous_dump
+  missing_evidence:
+  - project_w_rt_margin_trace
+  milestone_refs:
+  - project_w_architecture_doc_complete_q3
+  linked_focus_ids:
+  - focus_w_display_rt
+  linked_review_pack_ids:
+  - pack_project_w_multimedia_review
+  linked_review_report_scenario_id: video_mode_panel_underrun_prevention
+  project_spans:
+  - project_id: project_w
+    start_week: 30
+    end_week: 38
+    lifecycle_stage: architecture_document_to_design
+    impact_direction: rt_requirement
+    posture: architecture_lesson
+    evidence_status: partial
+    confidence: high
+    note: Previous matched dump supports the lesson; Project W RT margin still requires evidence.
+  propagation: []
+  source_refs:
+  - synthetic_data/scenarios.yaml#video_mode_panel_underrun_prevention
+  - synthetic_data/project_milestones.yaml#project_w_architecture_doc_complete_q3
+  - synthetic_data/evidence_catalog.yaml#evidence_w_display_previous_dump
+- id: req_w_dou_arch_support_w39
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_w_dou_arch_support_w39
+  title: Project W DoU SW optimization architecture support review
+  request_type: dou_optimization_request
+  status: design_support_review
+  priority: P2
+  confidence: medium
+  origin_project_id: project_w
+  scenario_id: youtube_video_playback_dou
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 39
+  review_cadence: monthly
+  domains:
+  - codec
+  - display
+  - software
+  - power
+  role_relevance:
+  - soc_architecture
+  - system_engineering
+  - sw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - soc_architecture
+  - pm
+  management_interest: reuse_and_dou_efficiency
+  system_engineering_tracking_focus: control_path_support_and_measurement_plan
+  expected_weekly_activity_load: medium
+  evidence_basis:
+  - evidence_w_dou_architecture_note
+  - evidence_w_dou_power_prediction
+  missing_evidence:
+  - project_w_playback_measurement
+  milestone_refs:
+  - project_w_evt0_design_progress
+  linked_focus_ids:
+  - focus_w_video_codec
+  linked_review_pack_ids: []
+  linked_review_report_scenario_id: youtube_video_playback_dou
+  project_spans:
+  - project_id: project_w
+    start_week: 39
+    end_week: 48
+    lifecycle_stage: evt0_design_progress
+    impact_direction: architecture_support
+    posture: sw_architecture_support
+    evidence_status: partial
+    confidence: medium
+    note: Architecture support remains qualitative until Project W playback measurement.
+  propagation: []
+  source_refs:
+  - synthetic_data/scenarios.yaml#youtube_video_playback_dou
+  - synthetic_data/project_milestones.yaml#project_w_evt0_design_progress
+  - synthetic_data/evidence_catalog.yaml#evidence_w_dou_architecture_note
+- id: req_u_apv_power_w21
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_u_apv_power_w21
+  title: Project U APV recording power optimization
+  request_type: power_kpi_review
+  status: evidence_open
+  priority: P1
+  confidence: low
+  origin_project_id: project_u
+  scenario_id: apv_recording_high_bw
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: system_engineering
+  requested_week: 21
+  review_cadence: weekly
+  domains:
+  - camera
+  - codec
+  - memory
+  - power
+  - thermal
+  role_relevance:
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - pm
+  management_interest: apv_power_and_bandwidth
+  system_engineering_tracking_focus: matched_apv_power_bandwidth_and_thermal
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_u_apv_bw_trace_partial
+  - evidence_u_apv_power_trace_missing
+  missing_evidence:
+  - matched_apv_power_trace
+  - matched_apv_thermal_trace
+  milestone_refs:
+  - project_u_fc_release_w20
+  linked_focus_ids:
+  - focus_u_heavy_customer_camera
+  linked_review_pack_ids:
+  - pack_project_w_multimedia_review
+  linked_review_report_scenario_id: apv_recording_high_bw
+  project_spans:
+  - project_id: project_u
+    start_week: 21
+    end_week: 28
+    lifecycle_stage: fc_to_cs_kpi
+    impact_direction: kpi_measurement
+    posture: power_optimization
+    evidence_status: missing_measurement
+    confidence: low
+    note: APV bandwidth context is partial while matched power and thermal traces remain missing.
+  - project_id: project_v
+    start_week: 23
+    end_week: 28
+    lifecycle_stage: evt1_design_fix
+    impact_direction: hw_improvement
+    posture: hw_feasibility_review
+    evidence_status: partial
+    confidence: low
+    note: Review a bounded HW candidate before EVT1 without claiming feasibility.
+  - project_id: project_w
+    start_week: 24
+    end_week: 32
+    lifecycle_stage: architecture_review
+    impact_direction: architecture_lesson
+    posture: architecture_option_review
+    evidence_status: partial
+    confidence: low
+    note: Preserve APV pressure as architecture input after specification freeze.
+  propagation:
+  - propagation_id: prop_u_apv_to_v_w23
+    from_project_id: project_u
+    to_project_id: project_v
+    at_week: 23
+    propagation_type: hw_improvement_review
+    trigger_role: system_engineering
+    relation_summary: Project U APV evidence gaps enter the remaining Project V EVT1 HW review window.
+    not_causal_proof: true
+  - propagation_id: prop_u_apv_to_w_w24
+    from_project_id: project_u
+    to_project_id: project_w
+    at_week: 24
+    propagation_type: architecture_lesson
+    trigger_role: soc_architecture
+    relation_summary: Project U APV pressure is retained as Project W architecture trade-off input.
+    not_causal_proof: true
+  source_refs:
+  - synthetic_data/scenarios.yaml#apv_recording_high_bw
+  - synthetic_data/project_milestones.yaml#project_u_fc_release_w20
+  - synthetic_data/evidence_catalog.yaml#evidence_u_apv_bw_trace_partial
+- id: req_w_camera_pipeline_area_w18
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_w_camera_pipeline_area_w18
+  title: Project W Camera pipeline area optimization
+  request_type: architecture_option_review
+  status: pre_spec_freeze_review
+  priority: P1
+  confidence: low
+  origin_project_id: project_w
+  scenario_id: ai_isp_capture_tap_in_out
+  scenario_ids: []
+  scenario_group_ids: []
+  requested_by_role: soc_architecture
+  requested_week: 18
+  review_cadence: weekly
+  domains:
+  - camera
+  - isp
+  - ai
+  - area
+  - power
+  role_relevance:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - management
+  trigger_roles:
+  - soc_architecture
+  - system_engineering
+  - management
+  management_interest: camera_area_profitability
+  system_engineering_tracking_focus: camera_feature_coverage_area_and_iq_tradeoff
+  expected_weekly_activity_load: high
+  evidence_basis:
+  - evidence_w_camera_pipeline_rtl_area_breakdown
+  - evidence_w_camera_sram_buffer_requirement
+  missing_evidence:
+  - detailed_camera_rtl_area
+  - camera_iq_area_tradeoff_regression
+  milestone_refs:
+  - project_w_spec_freeze_q2
+  - project_w_architecture_review_q2_q3
+  linked_focus_ids:
+  - focus_w_camera_ppa_iq
+  linked_review_pack_ids:
+  - pack_project_w_multimedia_review
+  linked_review_report_scenario_id: ai_isp_capture_tap_in_out
+  project_spans:
+  - project_id: project_w
+    start_week: 18
+    end_week: 32
+    lifecycle_stage: spec_freeze_to_microarchitecture
+    impact_direction: area_quality_tradeoff
+    posture: architecture_tradeoff_review
+    evidence_status: partial
+    confidence: low
+    note: Partial area and resource estimates support screening but not a design commitment.
+  propagation: []
+  source_refs:
+  - synthetic_data/scenarios.yaml#ai_isp_capture_tap_in_out
+  - synthetic_data/project_milestones.yaml#project_w_spec_freeze_q2
+  - synthetic_data/evidence_catalog.yaml#evidence_w_camera_pipeline_rtl_area_breakdown
+- id: req_u_scenario_measurement_plan_w1
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_u_scenario_measurement_plan_w1
+  title: Project U Camera KPI measurement plan
+  request_type: evidence_update_request
+  status: pre_es_measurement_planning
+  priority: P1
+  confidence: low
+  origin_project_id: project_u
+  scenario_ids:
+  - fhd30_recording_kpi
+  - fhd60_recording_kpi
+  - uhd30_recording_kpi
+  - uhd60_recording_kpi
+  - eight_k30_recording_kpi
+  scenario_group_ids:
+  - camera_recording_kpi
+  request_scope: scenario_portfolio
+  requested_by_role: system_engineering
+  requested_week: 1
+  review_cadence: weekly
+  domains:
+  - camera
+  - kpi
+  - evidence
+  role_relevance:
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - pm
+  management_interest: monitor
+  system_engineering_tracking_focus: pre_es_test_readiness_and_post_es_measurement_gate
+  expected_weekly_activity_load: medium
+  evidence_basis: []
+  missing_evidence:
+  - current_project_silicon_not_available_before_es
+  - post_es_measurement_results
+  milestone_refs:
+  - project_u_es_release_w12
+  linked_focus_ids:
+  - focus_u_camera_kpi
+  linked_review_pack_ids: []
+  project_spans:
+  - project_id: project_u
+    start_week: 1
+    end_week: 11
+    lifecycle_stage: pre_es_preparation
+    impact_direction: evidence_readiness
+    posture: measurement_planning_only
+    evidence_status: current_project_measurement_not_allowed
+    confidence: low
+    note: No current Project U KPI measurement is claimed before W12 ES.
+  propagation: []
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-u
+  - synthetic_data/project_scenario_focuses.yaml#focus_u_camera_kpi
+- id: req_v_evt0_regression_scope_w1
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_v_evt0_regression_scope_w1
+  title: Project V EVT0 regression and emulator scope
+  request_type: sw_predevelopment_risk
+  status: evt0_regression_scope_open
+  priority: P1
+  confidence: low
+  origin_project_id: project_v
+  scenario_ids:
+  - fhd30_recording_kpi
+  - fhd60_recording_kpi
+  - uhd30_recording_kpi
+  - uhd60_recording_kpi
+  - multi_camera_zoom_sensor_mode_switch
+  scenario_group_ids:
+  - camera_recording_kpi
+  - camera_multi_camera_control
+  request_scope: scenario_portfolio
+  requested_by_role: system_engineering
+  requested_week: 1
+  review_cadence: weekly
+  domains:
+  - camera
+  - hw
+  - sw
+  - emulator
+  role_relevance:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  trigger_roles:
+  - system_engineering
+  - soc_architecture
+  - pm
+  management_interest: evt0_readiness
+  system_engineering_tracking_focus: hw_change_and_emulator_functional_scope
+  expected_weekly_activity_load: high
+  evidence_basis: []
+  missing_evidence:
+  - evt_pipeline_regression_results
+  - silicon_ppa_measurement
+  milestone_refs:
+  - project_v_evt0_fix_q1
+  linked_focus_ids:
+  - focus_v_pipeline_regression
+  - focus_v_emulator_sw
+  linked_review_pack_ids: []
+  project_spans:
+  - project_id: project_v
+    start_week: 1
+    end_week: 13
+    lifecycle_stage: evt0_regression_scope
+    impact_direction: regression_planning
+    posture: functional_and_hw_review
+    evidence_status: emulator_functional_only
+    confidence: low
+    note: Emulator evidence supports functional scope and does not establish silicon PPA.
+  propagation: []
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-v
+  - synthetic_data/project_scenario_focuses.yaml#focus_v_pipeline_regression
+- id: req_w_multimedia_spec_portfolio_w1
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/scenario_requests.yaml#req_w_multimedia_spec_portfolio_w1
+  title: Project W Multimedia specification portfolio
+  request_type: architecture_option_review
+  status: customer_spec_intake
+  priority: P1
+  confidence: low
+  origin_project_id: project_w
+  scenario_ids:
+  - uhd60_recording_kpi
+  - high_speed_uhd120_recording
+  - low_light_video_recording_ai
+  - video_mode_panel_underrun_prevention
+  - video_playback_dou
+  - voice_call_audio_ai_latency
+  scenario_group_ids:
+  - camera_recording_kpi
+  - camera_recording_heavy
+  - camera_low_light_recording
+  - display_rt_bus
+  - codec_display_dou
+  - audio_ai_latency
+  request_scope: scenario_portfolio
+  requested_by_role: product_planning
+  requested_week: 1
+  review_cadence: weekly
+  domains:
+  - camera
+  - display
+  - video
+  - audio
+  - architecture
+  role_relevance:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  - pm
+  - management
+  trigger_roles:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  - management
+  management_interest: multimedia_portfolio_value_and_cost
+  system_engineering_tracking_focus: scenario_portfolio_traceability_and_evidence_gaps
+  expected_weekly_activity_load: high
+  evidence_basis: []
+  missing_evidence:
+  - customer_requirement_priority
+  - architecture_option_estimates
+  - silicon_measurement_not_available
+  milestone_refs:
+  - project_w_customer_spec_discussion_q1_q2
+  linked_focus_ids:
+  - focus_w_multimedia_portfolio
+  - focus_w_camera_ppa_iq
+  - focus_w_display_rt
+  - focus_w_video_codec
+  - focus_w_audio_ai
+  linked_review_pack_ids:
+  - pack_project_w_multimedia_review
+  project_spans:
+  - project_id: project_w
+    start_week: 1
+    end_week: 13
+    lifecycle_stage: customer_spec_intake
+    impact_direction: architecture_option_intake
+    posture: portfolio_screening
+    evidence_status: estimation_and_simulation_only
+    confidence: low
+    note: Project W begins with W1 multimedia specification intake; low-light is one portfolio item.
+  propagation: []
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-w
+  - synthetic_data/project_scenario_focuses.yaml#focus_w_multimedia_portfolio

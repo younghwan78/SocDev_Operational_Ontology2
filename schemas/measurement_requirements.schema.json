@@ -1,0 +1,164 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "측정 요구 — 어떤 측정이 무엇을 위해 필요한지.",
+  "properties": {
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "measurement_type": {
+      "title": "Measurement Type",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "related_evidence_gap_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Evidence Gap Ids",
+      "type": "array"
+    },
+    "related_ip_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Ip Ids",
+      "type": "array"
+    },
+    "related_knob_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Knob Ids",
+      "type": "array"
+    },
+    "related_kpi_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Kpi Ids",
+      "type": "array"
+    },
+    "related_resource_profile_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Resource Profile Ids",
+      "type": "array"
+    },
+    "related_risk_basis_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Risk Basis Ids",
+      "type": "array"
+    },
+    "required_for": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required For",
+      "type": "array"
+    },
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_ref": {
+      "title": "Source Ref",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "variant_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Variant Id"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "title",
+    "description",
+    "measurement_type",
+    "event_id",
+    "scenario_id",
+    "source_ref"
+  ],
+  "title": "MeasurementRequirement",
+  "type": "object"
+}

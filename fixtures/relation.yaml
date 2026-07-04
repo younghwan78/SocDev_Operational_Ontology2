@@ -1,0 +1,120 @@
+# GENERATED — tools/convert_56_fixtures.py가 56 synthetic_data에서 변환함.
+# 직접 편집 금지. 재생성: uv run python tools/convert_56_fixtures.py
+relations:
+- id: rel_evt_u_heavy_affects_heavy_group
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_evt_u_heavy_affects_heavy_group
+  source_id: evt_u_heavy_power_request
+  source_type: Event
+  relation_type: affects
+  target_id: camera_recording_heavy
+  target_type: ScenarioGroup
+  confidence: high
+  basis:
+  - evd_u_customer_eis_power_request
+- id: rel_scenario_uhd60_uses_isp
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_uses_isp
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: uses
+  target_id: ip_isp
+  target_type: IPBlock
+  confidence: high
+  basis:
+  - camera_recording_kpi
+- id: rel_scenario_uhd60_depends_mif
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_depends_mif
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: depends_on
+  target_id: sys_mif
+  target_type: SystemInfluenceBlock
+  confidence: medium
+  basis:
+  - evd_synthetic_missing_power_breakdown
+- id: rel_issue_display_impacts_underrun
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_issue_display_impacts_underrun
+  source_id: issue_u_display_video_mode_underrun
+  source_type: Issue
+  relation_type: impacts
+  target_id: underrun_count
+  target_type: KPI
+  confidence: high
+  basis:
+  - evd_u_display_video_mode_context
+  - evd_synthetic_rt_rule
+- id: rel_issue_w_area_drives_decision
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_issue_w_area_drives_decision
+  source_id: issue_w_mmip_area_tradeoff
+  source_type: Issue
+  relation_type: drives
+  target_id: dec_w_area_exploration_initial
+  target_type: Decision
+  confidence: high
+  basis:
+  - evd_w_business_area_pressure
+  - evd_project_w_spec_uncertainty
+- id: rel_decision_creates_action
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_decision_creates_action
+  source_id: dec_w_area_exploration_initial
+  source_type: Decision
+  relation_type: creates
+  target_id: act_w_collect_feature_area_evidence
+  target_type: ActionItem
+  confidence: high
+  basis:
+  - evd_w_business_area_pressure
+simulation_runs:
+- id: sim_w_area_exploration_draft
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/simulation_runs.yaml#sim_w_area_exploration_draft
+  project_id: project_w
+  event_id: evt_w_mmip_area_exploration
+  status: draft_expected_output
+  expected_outputs:
+    affected_scope:
+      scenario_groups:
+      - camera_recording_kpi
+      - codec_display_dou
+      - display_rt_bus
+      ip_blocks:
+      - ip_isp
+      - ip_mfc
+      - ip_dpu
+      - ip_gpu
+      - ip_npu
+      system_blocks:
+      - sys_mif
+      - sys_noc
+      - sys_smmu
+      kpis:
+      - area_cost
+      - power
+      - sustained_power
+      - codec_throughput
+      - underrun_count
+    role_outputs_required:
+    - product_planning
+    - soc_architecture
+    - system_engineering
+    - hw_development
+    - sw_development
+    - pm
+    - management
+    decision_options:
+    - opt_reuse_previous_mmip
+    - opt_add_new_mmip_features
+    - opt_selective_feature_addition
+    required_traceability: true

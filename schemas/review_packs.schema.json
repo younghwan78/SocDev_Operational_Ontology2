@@ -1,0 +1,123 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "DocRef": {
+      "additionalProperties": false,
+      "description": "문서 참조.",
+      "properties": {
+        "document": {
+          "title": "Document",
+          "type": "string"
+        },
+        "section": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Section"
+        }
+      },
+      "required": [
+        "document"
+      ],
+      "title": "DocRef",
+      "type": "object"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "리뷰 팩 — 함께 검토할 프로젝트/시나리오 묶음 정의.",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "project_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Project Ids",
+      "type": "array"
+    },
+    "purpose": {
+      "title": "Purpose",
+      "type": "string"
+    },
+    "scenario_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Scenario Ids",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_ref": {
+      "$ref": "#/$defs/DocRef"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "purpose",
+    "source_ref"
+  ],
+  "title": "ReviewPack",
+  "type": "object"
+}

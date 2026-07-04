@@ -1,0 +1,105 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "액션 아이템 — 결정에서 파생된 후속 작업.",
+  "properties": {
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "due_phase": {
+      "title": "Due Phase",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "owner_role": {
+      "title": "Owner Role",
+      "type": "string"
+    },
+    "required_evidence": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Evidence",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_decision_id": {
+      "title": "Source Decision Id",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "source_decision_id",
+    "title",
+    "description",
+    "owner_role",
+    "due_phase",
+    "status"
+  ],
+  "title": "ActionItem",
+  "type": "object"
+}

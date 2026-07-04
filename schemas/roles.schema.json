@@ -1,0 +1,148 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    },
+    "UIIdentity": {
+      "additionalProperties": false,
+      "description": "역할의 UI 표현 정체성.",
+      "properties": {
+        "icon_keywords": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Icon Keywords",
+          "type": "array"
+        },
+        "visual_concept": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visual Concept"
+        }
+      },
+      "title": "UIIdentity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Role agent 정의 — 7개 고정 역할 (CLAUDE.md §2.2).",
+  "properties": {
+    "feedback_targets": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Feedback Targets",
+      "type": "array"
+    },
+    "goals": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Goals",
+      "type": "array"
+    },
+    "guardrails": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Guardrails",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "includes_verification": {
+      "default": false,
+      "title": "Includes Verification",
+      "type": "boolean"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "primary_concerns": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Primary Concerns",
+      "type": "array"
+    },
+    "responsibilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Responsibilities",
+      "type": "array"
+    },
+    "role_type": {
+      "title": "Role Type",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "ui_identity": {
+      "$ref": "#/$defs/UIIdentity"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "role_type"
+  ],
+  "title": "RoleAgent",
+  "type": "object"
+}

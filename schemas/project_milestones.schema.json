@@ -1,0 +1,160 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "프로젝트 마일스톤 — 주차/분기 기반 개발 일정 앵커.",
+  "properties": {
+    "decision_window": {
+      "title": "Decision Window",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "historical_relation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Historical Relation"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "lifecycle_stage": {
+      "title": "Lifecycle Stage",
+      "type": "string"
+    },
+    "milestone_type": {
+      "title": "Milestone Type",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "quarter": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quarter"
+    },
+    "relevant_roles": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Relevant Roles",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_basis": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Basis",
+      "type": "array"
+    },
+    "timeline_scope": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Timeline Scope"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "week": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Week"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "title",
+    "description",
+    "milestone_type",
+    "lifecycle_stage",
+    "decision_window"
+  ],
+  "title": "ProjectMilestone",
+  "type": "object"
+}

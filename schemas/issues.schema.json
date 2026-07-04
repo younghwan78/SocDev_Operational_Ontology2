@@ -1,0 +1,160 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "AffectedScope": {
+      "additionalProperties": false,
+      "description": "이슈 영향 범위.",
+      "properties": {
+        "ip_blocks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Ip Blocks",
+          "type": "array"
+        },
+        "kpis": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Kpis",
+          "type": "array"
+        },
+        "scenarios": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Scenarios",
+          "type": "array"
+        },
+        "system_blocks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "System Blocks",
+          "type": "array"
+        }
+      },
+      "title": "AffectedScope",
+      "type": "object"
+    },
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "개발 이슈 — 증상/근본원인 후보/영향 범위.",
+  "properties": {
+    "affected_scope": {
+      "$ref": "#/$defs/AffectedScope"
+    },
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "evidence_refs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "issue_type": {
+      "title": "Issue Type",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "root_cause_candidates": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Root Cause Candidates",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "symptom": {
+      "title": "Symptom",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "title",
+    "issue_type",
+    "status",
+    "symptom",
+    "confidence"
+  ],
+  "title": "Issue",
+  "type": "object"
+}

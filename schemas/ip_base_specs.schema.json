@@ -1,0 +1,145 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "IP 기본 스펙 — 커널 드라이버 유래의 구조화 스펙.",
+  "properties": {
+    "capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Capabilities",
+      "type": "array"
+    },
+    "display_name": {
+      "title": "Display Name",
+      "type": "string"
+    },
+    "domain": {
+      "title": "Domain",
+      "type": "string"
+    },
+    "driver_name": {
+      "title": "Driver Name",
+      "type": "string"
+    },
+    "driver_path": {
+      "title": "Driver Path",
+      "type": "string"
+    },
+    "dvfs_or_control_domains": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Dvfs Or Control Domains",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "internal_blocks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Internal Blocks",
+      "type": "array"
+    },
+    "ip_id": {
+      "title": "Ip Id",
+      "type": "string"
+    },
+    "knobs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Knobs",
+      "type": "array"
+    },
+    "notes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Notes",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_ref": {
+      "title": "Source Ref",
+      "type": "string"
+    },
+    "spec_id": {
+      "title": "Spec Id",
+      "type": "string"
+    },
+    "supported_modes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Modes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "ip_id",
+    "spec_id",
+    "display_name",
+    "domain",
+    "driver_name",
+    "driver_path",
+    "source_ref"
+  ],
+  "title": "IPBaseSpec",
+  "type": "object"
+}

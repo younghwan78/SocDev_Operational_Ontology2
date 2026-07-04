@@ -1,0 +1,213 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "개발 시나리오 — IP/시스템 블록/KPI와 연결되는 기술 단위.",
+  "properties": {
+    "base_from_previous_project": {
+      "default": false,
+      "title": "Base From Previous Project",
+      "type": "boolean"
+    },
+    "catalog_status": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Catalog Status"
+    },
+    "customer_request_relevance": {
+      "title": "Customer Request Relevance",
+      "type": "string"
+    },
+    "depends_on_system_blocks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Depends On System Blocks",
+      "type": "array"
+    },
+    "derived_from_scenario_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Derived From Scenario Id"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "development_relevance": {
+      "title": "Development Relevance",
+      "type": "string"
+    },
+    "domain": {
+      "title": "Domain",
+      "type": "string"
+    },
+    "dou_relevance": {
+      "title": "Dou Relevance",
+      "type": "string"
+    },
+    "generation_path": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Generation Path",
+      "type": "array"
+    },
+    "hw_pipeline_change_sensitivity": {
+      "title": "Hw Pipeline Change Sensitivity",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "iq_relevance": {
+      "title": "Iq Relevance",
+      "type": "string"
+    },
+    "legacy_aliases": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Legacy Aliases",
+      "type": "array"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "primary_kpis": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Primary Kpis",
+      "type": "array"
+    },
+    "project_relevance": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Project Relevance",
+      "type": "array"
+    },
+    "scenario_class": {
+      "title": "Scenario Class",
+      "type": "string"
+    },
+    "scenario_group_id": {
+      "title": "Scenario Group Id",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_basis": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Basis",
+      "type": "array"
+    },
+    "sustain_power_relevance": {
+      "title": "Sustain Power Relevance",
+      "type": "string"
+    },
+    "sw_control_complexity": {
+      "title": "Sw Control Complexity",
+      "type": "string"
+    },
+    "uses_ip_blocks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Uses Ip Blocks",
+      "type": "array"
+    },
+    "variants": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Variants",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "description",
+    "domain",
+    "scenario_class",
+    "scenario_group_id",
+    "customer_request_relevance",
+    "development_relevance",
+    "dou_relevance",
+    "iq_relevance",
+    "sustain_power_relevance",
+    "hw_pipeline_change_sensitivity",
+    "sw_control_complexity"
+  ],
+  "title": "Scenario",
+  "type": "object"
+}

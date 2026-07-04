@@ -1,0 +1,1664 @@
+# GENERATED — tools/convert_56_fixtures.py가 56 synthetic_data에서 변환함.
+# 직접 편집 금지. 재생성: uv run python tools/convert_56_fixtures.py
+evidence:
+- id: evd_u_customer_eis_power_request
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence.yaml#evd_u_customer_eis_power_request
+  statement: Customer requests UHD60 EIS on/off power gap reduction compared with previous generation.
+  evidence_type: customer_feedback
+  source_type: synthetic_context
+  confidence: high
+  confidence_level: L1_context_statement
+  project_id: project_u
+- id: evd_synthetic_missing_power_breakdown
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence.yaml#evd_synthetic_missing_power_breakdown
+  statement: Per-IP power breakdown for UHD60 EIS on/off is not yet available in the fixture.
+  evidence_type: missing_information
+  source_type: synthetic_assumption
+  confidence: medium
+  confidence_level: L0_synthetic_assumption
+  project_id: project_u
+- id: evd_u_display_video_mode_context
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence.yaml#evd_u_display_video_mode_context
+  statement: Display panel moved to video mode, increasing importance of underrun prevention while lowering
+    DPU clock for power.
+  evidence_type: project_context
+  source_type: synthetic_context
+  confidence: high
+  confidence_level: L1_context_statement
+  project_id: project_u
+- id: evd_synthetic_rt_rule
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence.yaml#evd_synthetic_rt_rule
+  statement: Real-time IPs such as camera, display, and audio require latency/underrun/jitter guarantees
+    under bus and clock constraints.
+  evidence_type: rule
+  source_type: derived_rule
+  confidence: high
+  confidence_level: L1_context_statement
+- id: evd_u_video_editor_customer_context
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence.yaml#evd_u_video_editor_customer_context
+  statement: Codec HW/MFC video editor feature is perceived as behind competitor and requires performance
+    improvement.
+  evidence_type: customer_feedback
+  source_type: synthetic_context
+  confidence: high
+  confidence_level: L1_context_statement
+  project_id: project_u
+- id: evd_w_business_area_pressure
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence.yaml#evd_w_business_area_pressure
+  statement: Project W has strong business pressure to reduce MMIP area while maintaining power/performance
+    competitiveness.
+  evidence_type: business_context
+  source_type: synthetic_context
+  confidence: high
+  confidence_level: L1_context_statement
+  project_id: project_w
+- id: evd_project_w_spec_uncertainty
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence.yaml#evd_project_w_spec_uncertainty
+  statement: Project W is in N+2 spec selection and architecture exploration stage, so spec changes are
+    likely and feature additions require explicit evidence.
+  evidence_type: project_context
+  source_type: synthetic_context
+  confidence: high
+  confidence_level: L1_context_statement
+  project_id: project_w
+evidence_catalog:
+- id: evidence_u_uhd60_previous_measurement
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_uhd60_previous_measurement
+  project_id: project_u
+  scenario_id: uhd60_recording_eis_on
+  title: Previous-project UHD60 EIS matched measurement
+  evidence_type: previous_project_measurement
+  availability: available
+  confidence_contribution: high
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Previous-project data does not replace current silicon measurement.
+  measurement_stage: previous_project
+  scenario_match: strong
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_uhd60_previous_measurement
+  week: 14
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_uhd60_current_power_dashboard
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_uhd60_current_power_dashboard
+  project_id: project_u
+  scenario_id: uhd60_recording_eis_on
+  title: Project U UHD60 power dashboard coverage
+  evidence_type: power_dashboard
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: true
+  is_prediction: false
+  known_limitation: HDR and EIS combinations are not fully separated.
+  measurement_stage: current_silicon
+  scenario_match: partial
+  source_system: power_dashboard
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_uhd60_current_power_dashboard
+  week: 14
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_8k_prediction
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_8k_prediction
+  project_id: project_u
+  scenario_id: eight_k30_recording_kpi
+  title: Project U 8K30 sustain prediction
+  evidence_type: prediction_model
+  availability: available
+  confidence_contribution: low
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Prediction is not current-project thermal or power proof.
+  measurement_stage: planned
+  scenario_match: partial
+  source_system: synthetic_model
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_8k_prediction
+  week: 18
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_8k_thermal_report
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_8k_thermal_report
+  project_id: project_u
+  scenario_id: eight_k30_recording_kpi
+  title: Project U 8K30 thermal review report
+  evidence_type: thermal_report
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Sustained customer configuration coverage is incomplete.
+  measurement_stage: current_silicon
+  scenario_match: partial
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_8k_thermal_report
+  week: 19
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_dual_previous_measurement
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_dual_previous_measurement
+  project_id: project_u
+  scenario_id: dual_video_recording
+  title: Previous-project dual recording measurement
+  evidence_type: previous_project_measurement
+  availability: available
+  confidence_contribution: medium
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Stream combination differs from the current customer configuration.
+  measurement_stage: previous_project
+  scenario_match: partial
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_dual_previous_measurement
+  week: 22
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_dual_field_log
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_dual_field_log
+  project_id: project_u
+  scenario_id: dual_video_recording
+  title: Reproducible dual recording field log
+  evidence_type: field_log
+  availability: available
+  confidence_contribution: high
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Log proves the matched issue occurrence, not its final root cause.
+  measurement_stage: field
+  scenario_match: strong
+  source_system: field
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_dual_field_log
+  week: 23
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_portrait_customer_feedback
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_portrait_customer_feedback
+  project_id: project_u
+  scenario_id: editable_portrait_video_recording
+  title: Editable portrait video customer solution request
+  evidence_type: customer_feedback
+  availability: available
+  confidence_contribution: low
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Customer request contains no measured power or bandwidth evidence.
+  measurement_stage: customer_project
+  scenario_match: strong
+  source_system: customer
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_portrait_customer_feedback
+  week: 29
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_portrait_sw_power_unknown
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_portrait_sw_power_unknown
+  project_id: project_u
+  scenario_id: editable_portrait_video_recording
+  title: Editable portrait video SW power unknown
+  evidence_type: sw_power_unknown
+  availability: missing
+  confidence_contribution: low
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Added SW feature power cannot be upgraded without measurement.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: synthetic_model
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_portrait_sw_power_unknown
+  week: 29
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_display_field_log
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_display_field_log
+  project_id: project_u
+  scenario_id: video_mode_panel_underrun_prevention
+  title: Project U display underrun field log
+  evidence_type: field_log
+  availability: available
+  confidence_contribution: high
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Field reproduction does not prove which mitigation is sufficient.
+  measurement_stage: field
+  scenario_match: strong
+  source_system: field
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_display_field_log
+  week: 33
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_display_dump
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_display_dump
+  project_id: project_u
+  scenario_id: video_mode_panel_underrun_prevention
+  title: Project U display underrun matched dump
+  evidence_type: dump
+  availability: available
+  confidence_contribution: high
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Dump supports issue reproduction but not causal proof.
+  measurement_stage: field
+  scenario_match: strong
+  source_system: field
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_display_dump
+  week: 33
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_editor_competitor_measurement
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_editor_competitor_measurement
+  project_id: project_u
+  scenario_id: video_editor_export
+  title: Competitor video editor export comparison
+  evidence_type: competitor_measurement
+  availability: available
+  confidence_contribution: medium
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Competitor implementation and thermal policy are not fully observable.
+  measurement_stage: customer_project
+  scenario_match: partial
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_editor_competitor_measurement
+  week: 37
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_editor_regression_missing
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_editor_regression_missing
+  project_id: project_u
+  scenario_id: video_editor_export
+  title: Project U video editor scenario regression result
+  evidence_type: regression_result
+  availability: missing
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Scenario-specific regression result is not yet available.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: regression
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_editor_regression_missing
+  week: 37
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_youtube_power_dashboard
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_youtube_power_dashboard
+  project_id: project_u
+  scenario_id: youtube_video_playback_dou
+  title: Project U YouTube playback power dashboard
+  evidence_type: power_dashboard
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Playback content and network conditions are only partially matched.
+  measurement_stage: customer_project
+  scenario_match: partial
+  source_system: power_dashboard
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_youtube_power_dashboard
+  week: 43
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_youtube_lab_trace_missing
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_youtube_lab_trace_missing
+  project_id: project_u
+  scenario_id: youtube_video_playback_dou
+  title: Project U YouTube matched lab trace
+  evidence_type: lab_trace
+  availability: planned
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Matched playback trace has not been collected.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_youtube_lab_trace_missing
+  week: 44
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_low_light_customer_feedback
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_low_light_customer_feedback
+  project_id: project_u
+  scenario_id: low_light_video_recording_ai
+  title: Project U low-light video quality feedback
+  evidence_type: customer_feedback
+  availability: available
+  confidence_contribution: low
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Customer quality feedback has no matched power trace.
+  measurement_stage: customer_project
+  scenario_match: strong
+  source_system: customer
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_low_light_customer_feedback
+  week: 50
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_low_light_regression_missing
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_low_light_regression_missing
+  project_id: project_u
+  scenario_id: low_light_video_recording_ai
+  title: Project U low-light video regression coverage
+  evidence_type: regression_result
+  availability: missing
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Scenario-specific quality and sustain regression is missing.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: regression
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_low_light_regression_missing
+  week: 50
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_isp_architecture_note
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_isp_architecture_note
+  project_id: project_v
+  scenario_id: ai_isp_capture_tap_in_out
+  title: Project V ISP pipeline change review note
+  evidence_type: architecture_review_note
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Architecture review note is not silicon evidence.
+  measurement_stage: architecture
+  scenario_match: strong
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_isp_architecture_note
+  week: 15
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_isp_emulator_result
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_isp_emulator_result
+  project_id: project_v
+  scenario_id: ai_isp_capture_tap_in_out
+  title: Project V ISP pipeline emulator functional result
+  evidence_type: emulator_functional_result
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Emulator confirms function only and cannot establish power.
+  measurement_stage: emulator
+  scenario_match: partial
+  source_system: emulator
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_isp_emulator_result
+  week: 16
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_multi_camera_emulator_result
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_multi_camera_emulator_result
+  project_id: project_v
+  scenario_id: multi_camera_zoom_sensor_mode_switch
+  title: Project V multi-camera control emulator result
+  evidence_type: emulator_functional_result
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Sensor timing and silicon contention are not reproduced fully.
+  measurement_stage: emulator
+  scenario_match: partial
+  source_system: emulator
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_multi_camera_emulator_result
+  week: 19
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_multi_camera_regression_missing
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_multi_camera_regression_missing
+  project_id: project_v
+  scenario_id: multi_camera_zoom_sensor_mode_switch
+  title: Project V sensor-mode switch regression result
+  evidence_type: regression_result
+  availability: missing
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Scenario-specific control regression is not available.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: regression
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_multi_camera_regression_missing
+  week: 20
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_emulator_functional_result
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_emulator_functional_result
+  project_id: project_v
+  scenario_id: uhd60_recording_eis_on
+  title: Project V emulator feature-complete result
+  evidence_type: emulator_functional_result
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Functional completion does not establish power or thermal behavior.
+  measurement_stage: emulator
+  scenario_match: strong
+  source_system: emulator
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_emulator_functional_result
+  week: 24
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_emulator_sw_power_unknown
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_emulator_sw_power_unknown
+  project_id: project_v
+  scenario_id: uhd60_recording_eis_on
+  title: Project V emulator feature power unknown
+  evidence_type: sw_power_unknown
+  availability: missing
+  confidence_contribution: low
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Emulator cannot provide matched silicon power evidence.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: synthetic_model
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_emulator_sw_power_unknown
+  week: 24
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_mfc_bandwidth_estimation
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_mfc_bandwidth_estimation
+  project_id: project_v
+  scenario_id: mfc_mfd_parallel_4k8k_recording
+  title: Project V parallel codec bandwidth estimation
+  evidence_type: bandwidth_estimation
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Estimation is candidate retrieval input, not measured bandwidth proof.
+  measurement_stage: architecture
+  scenario_match: partial
+  source_system: synthetic_model
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_mfc_bandwidth_estimation
+  week: 28
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_mfc_power_unknown
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_mfc_power_unknown
+  project_id: project_v
+  scenario_id: mfc_mfd_parallel_4k8k_recording
+  title: Project V parallel codec power unknown
+  evidence_type: sw_power_unknown
+  availability: missing
+  confidence_contribution: low
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Parallel codec power awaits silicon measurement.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: synthetic_model
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_mfc_power_unknown
+  week: 28
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_dpu_rtl_area_estimate
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_dpu_rtl_area_estimate
+  project_id: project_v
+  scenario_id: ai_scaler_display_scale_up
+  title: Project V DPU and AI scaler RTL area estimate
+  evidence_type: rtl_area_estimate
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Area is not fixed before RTL detail and implementation closure.
+  measurement_stage: architecture
+  scenario_match: partial
+  source_system: rtl
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_dpu_rtl_area_estimate
+  week: 31
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_dpu_emulator_result
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_dpu_emulator_result
+  project_id: project_v
+  scenario_id: ai_scaler_display_scale_up
+  title: Project V DPU fallback emulator result
+  evidence_type: emulator_functional_result
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Emulator does not reproduce final RT bandwidth pressure.
+  measurement_stage: emulator
+  scenario_match: partial
+  source_system: emulator
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_dpu_emulator_result
+  week: 31
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_hw_window_architecture_note
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_hw_window_architecture_note
+  project_id: project_v
+  scenario_id: eight_k30_recording_kpi
+  title: Project V HW change-window closure note
+  evidence_type: architecture_review_note
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Note records review posture but does not close evidence gaps.
+  measurement_stage: architecture
+  scenario_match: partial
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_hw_window_architecture_note
+  week: 35
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_v_hw_window_lab_trace_planned
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_hw_window_lab_trace_planned
+  project_id: project_v
+  scenario_id: eight_k30_recording_kpi
+  title: Project V post-window matched lab trace
+  evidence_type: lab_trace
+  availability: planned
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Silicon trace is planned after the HW decision window.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_hw_window_lab_trace_planned
+  week: 35
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_low_light_architecture_note
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_low_light_architecture_note
+  project_id: project_w
+  scenario_id: low_light_video_recording_ai
+  title: Project W low-light AI architecture note
+  evidence_type: architecture_review_note
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Architecture note does not prove quality or sustain improvement.
+  measurement_stage: architecture
+  scenario_match: strong
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_low_light_architecture_note
+  week: 5
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_low_light_previous_measurement
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_low_light_previous_measurement
+  project_id: project_w
+  scenario_id: low_light_video_recording_ai
+  title: Previous-project low-light video measurement
+  evidence_type: previous_project_measurement
+  availability: available
+  confidence_contribution: medium
+  is_measurement: true
+  is_prediction: false
+  known_limitation: AI partition and sensor mode differ from the Project W option.
+  measurement_stage: previous_project
+  scenario_match: partial
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_low_light_previous_measurement
+  week: 5
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_apv_bandwidth_estimation
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_apv_bandwidth_estimation
+  project_id: project_w
+  scenario_id: apv_recording_high_bw
+  title: Project W APV recording bandwidth estimation
+  evidence_type: bandwidth_estimation
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Estimation is qualitative architecture input without silicon trace.
+  measurement_stage: architecture
+  scenario_match: partial
+  source_system: synthetic_model
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_apv_bandwidth_estimation
+  week: 14
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_apv_thermal_log_missing
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_apv_thermal_log_missing
+  project_id: project_w
+  scenario_id: apv_recording_high_bw
+  title: Project W APV recording thermal report
+  evidence_type: thermal_report
+  availability: missing
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: No matched thermal log exists for the architecture option.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_apv_thermal_log_missing
+  week: 14
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_mmip_rtl_area_estimate
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_mmip_rtl_area_estimate
+  project_id: project_w
+  scenario_id: mfc_mfd_parallel_4k8k_recording
+  title: Project W multimedia IP area estimate
+  evidence_type: rtl_area_estimate
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Area estimate is not fixed before detailed RTL.
+  measurement_stage: architecture
+  scenario_match: partial
+  source_system: rtl
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_mmip_rtl_area_estimate
+  week: 21
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_mmip_confluence_note
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_mmip_confluence_note
+  project_id: project_w
+  scenario_id: mfc_mfd_parallel_4k8k_recording
+  title: Project W multimedia area trade-off note
+  evidence_type: confluence_decision_note
+  availability: available
+  confidence_contribution: low
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Note records options and does not represent final approval.
+  measurement_stage: architecture
+  scenario_match: partial
+  source_system: confluence
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_mmip_confluence_note
+  week: 21
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_audio_architecture_note
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_audio_architecture_note
+  project_id: project_w
+  scenario_id: voice_call_audio_ai_latency
+  title: Project W audio AI latency architecture note
+  evidence_type: architecture_review_note
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: SRAM and accelerator options remain qualitative candidates.
+  measurement_stage: architecture
+  scenario_match: strong
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_audio_architecture_note
+  week: 25
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_audio_latency_trace_planned
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_audio_latency_trace_planned
+  project_id: project_w
+  scenario_id: voice_call_audio_ai_latency
+  title: Project W audio AI latency trace
+  evidence_type: lab_trace
+  availability: planned
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Matched call-path latency trace is not available.
+  measurement_stage: planned
+  scenario_match: none
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_audio_latency_trace_planned
+  week: 25
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_display_architecture_lesson
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_display_architecture_lesson
+  project_id: project_w
+  scenario_id: video_mode_panel_underrun_prevention
+  title: Project W display underrun architecture lesson
+  evidence_type: architecture_review_note
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Lesson preserves review context and is not causal proof.
+  measurement_stage: architecture
+  scenario_match: strong
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_display_architecture_lesson
+  week: 30
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_display_previous_dump
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_display_previous_dump
+  project_id: project_w
+  scenario_id: video_mode_panel_underrun_prevention
+  title: Previous-project display underrun matched dump
+  evidence_type: dump
+  availability: available
+  confidence_contribution: high
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Previous-project dump supports the lesson but not a guaranteed fix.
+  measurement_stage: previous_project
+  scenario_match: strong
+  source_system: field
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_display_previous_dump
+  week: 30
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_dou_architecture_note
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_dou_architecture_note
+  project_id: project_w
+  scenario_id: youtube_video_playback_dou
+  title: Project W DoU SW optimization support note
+  evidence_type: architecture_review_note
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Note does not predict customer playback power.
+  measurement_stage: architecture
+  scenario_match: strong
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_dou_architecture_note
+  week: 39
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_w_dou_power_prediction
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_dou_power_prediction
+  project_id: project_w
+  scenario_id: youtube_video_playback_dou
+  title: Project W DoU power direction prediction
+  evidence_type: prediction_model
+  availability: available
+  confidence_contribution: low
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Prediction is qualitative and cannot upgrade confidence.
+  measurement_stage: architecture
+  scenario_match: partial
+  source_system: synthetic_model
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_dou_power_prediction
+  week: 39
+  related_milestone_ids: []
+  related_request_ids: []
+- id: evidence_u_kpi_matched_scope_note
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_kpi_matched_scope_note
+  project_id: project_u
+  scenario_id: uhd60_recording_eis_on
+  title: Project U recording KPI matched workload scope
+  evidence_type: architecture_review_note
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Scope definition does not provide measured power or bandwidth.
+  measurement_stage: current_silicon
+  scenario_match: strong
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_kpi_matched_scope_note
+  week: 14
+  related_milestone_ids:
+  - project_u_customer_project_setup_after_es
+  related_request_ids:
+  - req_uhd60_eis_u_w12
+- id: evidence_u_editable_control_flow_delta
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_editable_control_flow_delta
+  project_id: project_u
+  scenario_id: editable_portrait_video_recording
+  title: Editable Portrait control-flow delta review
+  evidence_type: architecture_review_note
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: The control-flow delta does not establish power or bandwidth cost.
+  measurement_stage: customer_project
+  scenario_match: partial
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_editable_control_flow_delta
+  week: 30
+  related_milestone_ids:
+  - project_u_kpi_evaluation_q3
+  related_request_ids:
+  - req_u_editable_portrait_w29
+- id: evidence_u_editable_power_trace_missing
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_editable_power_trace_missing
+  project_id: project_u
+  scenario_id: editable_portrait_video_recording
+  title: Editable Portrait matched power trace
+  evidence_type: current_project_measurement
+  availability: missing
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: No matched current-project power trace is available.
+  measurement_stage: planned
+  scenario_match: strong
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_editable_power_trace_missing
+  week: 30
+  related_milestone_ids:
+  - project_u_kpi_evaluation_q3
+  related_request_ids:
+  - req_u_editable_portrait_w29
+- id: evidence_u_apv_bw_trace_partial
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_apv_bw_trace_partial
+  project_id: project_u
+  scenario_id: apv_recording_high_bw
+  title: Project U APV bandwidth trace coverage
+  evidence_type: lab_trace
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: true
+  is_prediction: false
+  known_limitation: The trace does not cover the full sustained APV workload.
+  measurement_stage: current_silicon
+  scenario_match: strong
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_apv_bw_trace_partial
+  week: 21
+  related_milestone_ids:
+  - project_u_fc_release_w20
+  related_request_ids:
+  - req_u_apv_power_w21
+- id: evidence_u_apv_power_trace_missing
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_apv_power_trace_missing
+  project_id: project_u
+  scenario_id: apv_recording_high_bw
+  title: Project U APV matched power trace
+  evidence_type: current_project_measurement
+  availability: missing
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Matched APV power evidence is unavailable.
+  measurement_stage: planned
+  scenario_match: strong
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_apv_power_trace_missing
+  week: 21
+  related_milestone_ids:
+  - project_u_fc_release_w20
+  related_request_ids:
+  - req_u_apv_power_w21
+- id: evidence_u_apv_thermal_trace_missing
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_u_apv_thermal_trace_missing
+  project_id: project_u
+  scenario_id: apv_recording_high_bw
+  title: Project U APV sustained thermal trace
+  evidence_type: thermal_report
+  availability: missing
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Sustained APV thermal evidence is unavailable.
+  measurement_stage: planned
+  scenario_match: strong
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_u_apv_thermal_trace_missing
+  week: 22
+  related_milestone_ids:
+  - project_u_fc_release_w20
+  related_request_ids:
+  - req_u_apv_power_w21
+- id: evidence_v_carryover_hw_feasibility_note
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_carryover_hw_feasibility_note
+  project_id: project_v
+  scenario_id: apv_recording_high_bw
+  title: Project V carry-over HW feasibility review note
+  evidence_type: architecture_review_note
+  availability: available
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: The note records option screening without RTL timing proof.
+  measurement_stage: architecture
+  scenario_match: partial
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_carryover_hw_feasibility_note
+  week: 26
+  related_milestone_ids:
+  - project_v_evt1_design_fix_q3
+  related_request_ids:
+  - req_u_apv_power_w21
+- id: evidence_v_camera_regression_matrix
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_camera_regression_matrix
+  project_id: project_v
+  scenario_id: ai_isp_capture_tap_in_out
+  title: Project V Camera emulator regression matrix
+  evidence_type: regression_result
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Emulator regression covers function but not silicon power or timing.
+  measurement_stage: emulator
+  scenario_match: strong
+  source_system: regression
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_camera_regression_matrix
+  week: 20
+  related_milestone_ids:
+  - project_v_sw_predev_start_q2
+  related_request_ids:
+  - req_v_isp_pipeline_predev_w15
+- id: evidence_v_display_rt_margin_missing
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_display_rt_margin_missing
+  project_id: project_v
+  scenario_id: video_mode_panel_underrun_prevention
+  title: Project V Display real-time margin trace
+  evidence_type: lab_trace
+  availability: missing
+  confidence_contribution: none
+  is_measurement: false
+  is_prediction: false
+  known_limitation: No Project V silicon RT margin trace is available.
+  measurement_stage: planned
+  scenario_match: strong
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_display_rt_margin_missing
+  week: 34
+  related_milestone_ids:
+  - project_v_hw_change_window_close_q3
+  related_request_ids:
+  - req_display_underrun_u_w10
+- id: evidence_v_codec_regression_matrix
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_codec_regression_matrix
+  project_id: project_v
+  scenario_id: mfc_mfd_parallel_4k8k_recording
+  title: Project V parallel codec regression matrix
+  evidence_type: regression_result
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Functional coverage does not establish parallel codec power.
+  measurement_stage: emulator
+  scenario_match: strong
+  source_system: regression
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_codec_regression_matrix
+  week: 29
+  related_milestone_ids:
+  - project_v_evt1_design_fix_q3
+  related_request_ids:
+  - req_v_mfc_parallel_power_w28
+- id: evidence_v_silicon_correlation_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_v_silicon_correlation_gap
+  project_id: project_v
+  scenario_id: uhd60_recording_eis_on
+  title: Project V emulator to silicon power correlation gap
+  evidence_type: sw_power_unknown
+  availability: missing
+  confidence_contribution: low
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Emulator functional results cannot establish silicon power behavior.
+  measurement_stage: planned
+  scenario_match: partial
+  source_system: emulator
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_v_silicon_correlation_gap
+  week: 24
+  related_milestone_ids:
+  - project_v_emulator_fc_target
+  related_request_ids:
+  - req_v_emulator_power_unknown_w24
+- id: evidence_w_camera_iq_previous_comparison
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_camera_iq_previous_comparison
+  project_id: project_w
+  scenario_id: low_light_video_recording_ai
+  title: Project W Camera IQ previous-project comparison
+  evidence_type: previous_project_measurement
+  availability: available
+  confidence_contribution: medium
+  is_measurement: true
+  is_prediction: false
+  known_limitation: Pipeline partition and sensor behavior differ from Project W candidates.
+  measurement_stage: previous_project
+  scenario_match: partial
+  source_system: lab
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_camera_iq_previous_comparison
+  week: 7
+  related_milestone_ids:
+  - project_w_customer_spec_discussion_q1_q2
+  related_request_ids:
+  - req_w_low_light_arch_w5
+- id: evidence_w_camera_pipeline_rtl_area_breakdown
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_camera_pipeline_rtl_area_breakdown
+  project_id: project_w
+  scenario_id: ai_isp_capture_tap_in_out
+  title: Project W Camera pipeline RTL area breakdown
+  evidence_type: rtl_area_estimate
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: true
+  known_limitation: Early RTL estimate lacks final block detail and implementation closure.
+  measurement_stage: architecture
+  scenario_match: strong
+  source_system: rtl
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_camera_pipeline_rtl_area_breakdown
+  week: 18
+  related_milestone_ids:
+  - project_w_spec_freeze_q2
+  related_request_ids:
+  - req_w_camera_pipeline_area_w18
+- id: evidence_w_camera_sram_buffer_requirement
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/evidence_catalog.yaml#evidence_w_camera_sram_buffer_requirement
+  project_id: project_w
+  scenario_id: ai_isp_capture_tap_in_out
+  title: Project W Camera SRAM and buffer requirement review
+  evidence_type: architecture_review_note
+  availability: partial
+  confidence_contribution: medium
+  is_measurement: false
+  is_prediction: false
+  known_limitation: Resource direction is known but implementation detail is incomplete.
+  measurement_stage: architecture
+  scenario_match: strong
+  source_system: architecture_review
+  source_ref: synthetic_data/evidence_catalog.yaml#evidence_w_camera_sram_buffer_requirement
+  week: 19
+  related_milestone_ids:
+  - project_w_architecture_review_q2_q3
+  related_request_ids:
+  - req_w_camera_pipeline_area_w18
+measurement_evidence:
+- id: meas_placeholder_uhd60_gpu_bandwidth_direction
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/measurement_evidence.yaml#meas_placeholder_uhd60_gpu_bandwidth_direction
+  project_id: project_w
+  title: Placeholder GPU bandwidth direction measurement for UHD60 EIS
+  evidence_type: placeholder_measurement
+  measurement_type: bandwidth_direction_measurement
+  event_id: evt_w_mmip_area_exploration
+  evidence_id: meas_placeholder_uhd60_gpu_bandwidth_direction
+  scenario_id: uhd60_recording_eis_on
+  unit: unknown
+  value_status: not_measured
+  qualitative_result: unknown
+  confidence: low
+  source_kind: placeholder_fixture
+  source_ref: synthetic_data/measurement_requirements.yaml#req_meas_uhd60_gpu_bandwidth_direction
+  limitations:
+  - Placeholder fixture only; it does not provide full evidence coverage.
+  notes:
+  - Created to make the evidence gap actionable without ingesting real lab data.
+  related_ip_ids:
+  - ip_gpu
+  - sys_mif
+  related_knob_ids:
+  - knob_gpu_clock_gating
+  - knob_gpu_ifpo_mode
+  related_kpi_ids:
+  - fps_stability
+  - scenario_power
+  - thermal
+  related_measurement_requirement_ids:
+  - req_meas_uhd60_gpu_bandwidth_direction
+  related_resource_profile_ids: []
+  related_risk_basis_ids:
+  - knob_risk_basis.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_pressure
+- id: meas_placeholder_uhd60_gpu_counter_trace
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/measurement_evidence.yaml#meas_placeholder_uhd60_gpu_counter_trace
+  project_id: project_w
+  title: Placeholder GPU counter trace evidence for UHD60 EIS
+  evidence_type: placeholder_measurement
+  measurement_type: ip_gpu_counter_or_trace
+  event_id: evt_w_mmip_area_exploration
+  evidence_id: meas_placeholder_uhd60_gpu_counter_trace
+  scenario_id: uhd60_recording_eis_on
+  unit: unknown
+  value_status: not_measured
+  qualitative_result: unknown
+  confidence: low
+  source_kind: placeholder_fixture
+  source_ref: synthetic_data/measurement_requirements.yaml#req_meas_uhd60_gpu_counter_trace
+  limitations:
+  - Placeholder fixture only; it does not provide full evidence coverage.
+  notes:
+  - Runtime fixture data intentionally contains no lab measurement value.
+  related_ip_ids:
+  - ip_gpu
+  related_knob_ids:
+  - knob_gpu_clock_gating
+  - knob_gpu_ifpo_mode
+  related_kpi_ids:
+  - fps_stability
+  - scenario_power
+  - thermal
+  related_measurement_requirement_ids:
+  - req_meas_uhd60_gpu_counter_trace
+  related_resource_profile_ids: []
+  related_risk_basis_ids:
+  - knob_risk_basis.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_pressure
+measurement_requirements:
+- id: req_meas_uhd60_gpu_bandwidth_direction
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/measurement_requirements.yaml#req_meas_uhd60_gpu_bandwidth_direction
+  project_id: project_w
+  title: GPU bandwidth direction evidence for UHD60 EIS review
+  description: Requires explicit review evidence for the unknown GPU bandwidth direction that appears
+    in the UHD60 EIS-on resource profile evidence gap.
+  measurement_type: bandwidth_direction_measurement
+  event_id: evt_w_mmip_area_exploration
+  scenario_id: uhd60_recording_eis_on
+  required_for:
+  - knob_risk_gap.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_direction_bandwidth
+  related_evidence_gap_ids:
+  - knob_risk_gap.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_direction_bandwidth
+  related_ip_ids:
+  - ip_gpu
+  - sys_mif
+  related_knob_ids:
+  - knob_gpu_clock_gating
+  - knob_gpu_ifpo_mode
+  related_kpi_ids:
+  - fps_stability
+  - scenario_power
+  - thermal
+  related_resource_profile_ids: []
+  related_risk_basis_ids:
+  - knob_risk_basis.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_pressure
+  source_ref: synthetic_data/ip_knobs.yaml#knob_gpu_ifpo_mode
+- id: req_meas_uhd60_gpu_counter_trace
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/measurement_requirements.yaml#req_meas_uhd60_gpu_counter_trace
+  project_id: project_w
+  title: GPU counter or trace evidence for UHD60 EIS review
+  description: Requires GPU counter or trace evidence before treating the unknown GPU bandwidth direction
+    as covered.
+  measurement_type: ip_gpu_counter_or_trace
+  event_id: evt_w_mmip_area_exploration
+  scenario_id: uhd60_recording_eis_on
+  required_for:
+  - knob_risk_gap.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_direction_bandwidth
+  related_evidence_gap_ids:
+  - knob_risk_gap.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_direction_bandwidth
+  related_ip_ids:
+  - ip_gpu
+  related_knob_ids:
+  - knob_gpu_clock_gating
+  - knob_gpu_ifpo_mode
+  related_kpi_ids:
+  - fps_stability
+  - scenario_power
+  - thermal
+  related_resource_profile_ids: []
+  related_risk_basis_ids:
+  - knob_risk_basis.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_pressure
+  source_ref: synthetic_data/ip_knobs.yaml#knob_gpu_clock_gating
+- id: req_meas_uhd60_mif_counter_trace
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/measurement_requirements.yaml#req_meas_uhd60_mif_counter_trace
+  project_id: project_w
+  title: MIF counter or trace evidence for UHD60 EIS review
+  description: Requires MIF counter or trace evidence for the memory-side portion of the UHD60 EIS-on
+    bandwidth evidence gap.
+  measurement_type: sys_mif_counter_or_trace
+  event_id: evt_w_mmip_area_exploration
+  scenario_id: uhd60_recording_eis_on
+  required_for:
+  - knob_risk_gap.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_direction_bandwidth
+  related_evidence_gap_ids:
+  - knob_risk_gap.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_direction_bandwidth
+  related_ip_ids:
+  - sys_mif
+  related_knob_ids:
+  - knob_gpu_clock_gating
+  - knob_gpu_ifpo_mode
+  related_kpi_ids:
+  - fps_stability
+  - scenario_power
+  - thermal
+  related_resource_profile_ids: []
+  related_risk_basis_ids:
+  - knob_risk_basis.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_pressure
+  source_ref: synthetic_data/ip_dependency_rules.yaml#dep_gpu_llc_contention
+semantic_chunks:
+- id: sem_issue_u_uhd60_eis_power_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_chunks.yaml#sem_issue_u_uhd60_eis_power_gap
+  chunk_text: Project U has an open synthetic issue for UHD60 EIS on/off power gap. Customer requests
+    reduced power delta versus previous generation. Candidate causes include increased ISP/GPU utilization,
+    additional MIF/NoC traffic, and reduced thermal margin under codec/display concurrency.
+  source_id: issue_u_uhd60_eis_power_gap
+  source_type: issue
+  project_id: project_u
+  embedding_status: not_embedded
+  evidence_confidence: medium
+  ip_ids:
+  - ip_isp
+  - ip_gpu
+  - ip_mfc
+  kpi_ids:
+  - power
+  - eis_power_gap
+  - ddr_bw
+  - thermal
+  scenario_ids:
+  - uhd60_recording_eis_on
+  scenario_group_ids:
+  - camera_recording_kpi
+  system_block_ids:
+  - sys_mif
+  - sys_noc
+  - sys_power_clock_thermal
+  metadata:
+    retrieval_use:
+    - similar_issue_search
+    - agent_supporting_basis
+    source_confidence: synthetic_open_issue
+- id: sem_issue_u_display_video_mode_underrun
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_chunks.yaml#sem_issue_u_display_video_mode_underrun
+  chunk_text: Project U display scenario has video mode panel underrun risk. Power optimization pushes
+    DPU clock lower, but real-time display guarantee must hold under bus stress, scale, rotation, composition,
+    and camera/display concurrency. NoC QoS and SystemMMU behavior are relevant system influence factors.
+  source_id: issue_u_display_video_mode_underrun
+  source_type: issue
+  project_id: project_u
+  embedding_status: not_embedded
+  evidence_confidence: medium
+  ip_ids:
+  - ip_dpu
+  kpi_ids:
+  - underrun_count
+  - dpu_clock
+  - noc_qos_margin
+  - display_latency
+  scenario_ids:
+  - video_mode_panel_underrun_prevention
+  scenario_group_ids:
+  - display_rt_bus
+  system_block_ids:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  - sys_power_clock_thermal
+  metadata:
+    retrieval_use:
+    - display_rt_risk_search
+    - agent_supporting_basis
+    source_confidence: synthetic_open_issue
+- id: sem_issue_w_mmip_area_tradeoff
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_chunks.yaml#sem_issue_w_mmip_area_tradeoff
+  chunk_text: Project W requires explicit evidence for MMIP area trade-off decisions. Reusing previous
+    IP can reduce area and development cost but may limit feature competitiveness, while adding new capabilities
+    can improve performance or power but increases area and development duration.
+  source_id: issue_w_mmip_area_tradeoff
+  source_type: issue
+  project_id: project_w
+  embedding_status: not_embedded
+  evidence_confidence: high
+  ip_ids:
+  - ip_isp
+  - ip_mfc
+  - ip_dpu
+  - ip_gpu
+  - ip_npu
+  kpi_ids:
+  - area_cost
+  - power
+  - sustained_power
+  - codec_throughput
+  - underrun_count
+  scenario_ids:
+  - uhd60_recording_eis_on
+  - video_editor_export
+  - video_mode_panel_underrun_prevention
+  scenario_group_ids:
+  - camera_recording_kpi
+  - codec_display_dou
+  - display_rt_bus
+  system_block_ids:
+  - sys_mif
+  - sys_noc
+  - sys_smmu
+  metadata:
+    retrieval_use:
+    - architecture_lesson_retrieval
+    - management_tradeoff_support
+    source_confidence: synthetic_architecture_tradeoff
+- id: sem_evd_u_customer_eis_power_request
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_chunks.yaml#sem_evd_u_customer_eis_power_request
+  chunk_text: Customer feedback for Project U requests reduction of UHD60 EIS on/off power gap compared
+    with previous generation. The request should ground feature and power optimization discussions but
+    does not by itself identify the technical root cause.
+  source_id: evd_u_customer_eis_power_request
+  source_type: evidence
+  project_id: project_u
+  embedding_status: not_embedded
+  evidence_confidence: high
+  ip_ids:
+  - ip_isp
+  - ip_gpu
+  - ip_mfc
+  kpi_ids:
+  - power
+  - eis_power_gap
+  scenario_ids:
+  - uhd60_recording_eis_on
+  scenario_group_ids:
+  - camera_recording_kpi
+  system_block_ids:
+  - sys_mif
+  - sys_noc
+  metadata:
+    evidence_level: L1_context_statement
+    retrieval_use:
+    - evidence_grounding
+- id: sem_dec_w_area_exploration_initial
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_chunks.yaml#sem_dec_w_area_exploration_initial
+  chunk_text: Project W initial architecture decision keeps both IP reuse and selective new feature addition
+    as options. Management requires explicit evidence for area increase, development duration, power/performance
+    benefit, and business value before selecting a final MMIP architecture option.
+  source_id: dec_w_area_exploration_initial
+  source_type: decision
+  project_id: project_w
+  embedding_status: not_embedded
+  evidence_confidence: medium
+  ip_ids:
+  - ip_isp
+  - ip_mfc
+  - ip_gpu
+  - ip_npu
+  kpi_ids:
+  - area_cost
+  - power
+  - codec_throughput
+  scenario_ids:
+  - uhd60_recording_eis_on
+  - video_editor_export
+  scenario_group_ids:
+  - camera_recording_kpi
+  - codec_display_dou
+  system_block_ids:
+  - sys_mif
+  - sys_noc
+  metadata:
+    decision_stage: exploration
+    retrieval_use:
+    - decision_reuse
+    - management_tradeoff_support
+semantic_vectors:
+- id: vec_sem_issue_u_uhd60_eis_power_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_vectors.yaml#vec_sem_issue_u_uhd60_eis_power_gap
+  chunk_id: sem_issue_u_uhd60_eis_power_gap
+  embedding:
+  - 0.52
+  - 0.52
+  - 0.52
+  - 0.38
+  - 0.0
+  - 0.0
+  - 0.12
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.08
+  - 0.0
+  - 0.12
+  - 0.28
+  - 0.0
+  - 0.0
+  vector_model: deterministic_keyword_v1
+  vector_dimension: 16
+  source_ref: synthetic_data/semantic_chunks.yaml#sem_issue_u_uhd60_eis_power_gap
+  metadata:
+    confidence_upgrade_allowed: false
+    not_evidence_proof: true
+    retrieval_role: candidate_retrieval_only
+- id: vec_sem_issue_u_display_video_mode_underrun
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_vectors.yaml#vec_sem_issue_u_display_video_mode_underrun
+  chunk_id: sem_issue_u_display_video_mode_underrun
+  embedding:
+  - 0.0
+  - 0.0
+  - 0.12
+  - 0.0
+  - 0.5
+  - 0.5
+  - 0.45
+  - 0.38
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.14
+  - 0.24
+  - 0.0
+  - 0.0
+  vector_model: deterministic_keyword_v1
+  vector_dimension: 16
+  source_ref: synthetic_data/semantic_chunks.yaml#sem_issue_u_display_video_mode_underrun
+  metadata:
+    confidence_upgrade_allowed: false
+    not_evidence_proof: true
+    retrieval_role: candidate_retrieval_only
+- id: vec_sem_issue_w_mmip_area_tradeoff
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_vectors.yaml#vec_sem_issue_w_mmip_area_tradeoff
+  chunk_id: sem_issue_w_mmip_area_tradeoff
+  embedding:
+  - 0.0
+  - 0.0
+  - 0.28
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.12
+  - 0.0
+  - 0.58
+  - 0.58
+  - 0.0
+  - 0.0
+  - 0.18
+  - 0.0
+  - 0.38
+  - 0.18
+  vector_model: deterministic_keyword_v1
+  vector_dimension: 16
+  source_ref: synthetic_data/semantic_chunks.yaml#sem_issue_w_mmip_area_tradeoff
+  metadata:
+    confidence_upgrade_allowed: false
+    not_evidence_proof: true
+    retrieval_role: candidate_retrieval_only
+- id: vec_sem_evd_u_customer_eis_power_request
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_vectors.yaml#vec_sem_evd_u_customer_eis_power_request
+  chunk_id: sem_evd_u_customer_eis_power_request
+  embedding:
+  - 0.42
+  - 0.45
+  - 0.45
+  - 0.34
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.48
+  - 0.48
+  - 0.0
+  - 0.18
+  - 0.0
+  - 0.28
+  vector_model: deterministic_keyword_v1
+  vector_dimension: 16
+  source_ref: synthetic_data/semantic_chunks.yaml#sem_evd_u_customer_eis_power_request
+  metadata:
+    confidence_upgrade_allowed: false
+    not_evidence_proof: true
+    retrieval_role: candidate_retrieval_only
+- id: vec_sem_dec_w_area_exploration_initial
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/semantic_vectors.yaml#vec_sem_dec_w_area_exploration_initial
+  chunk_id: sem_dec_w_area_exploration_initial
+  embedding:
+  - 0.28
+  - 0.0
+  - 0.28
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.12
+  - 0.0
+  - 0.48
+  - 0.38
+  - 0.0
+  - 0.0
+  - 0.34
+  - 0.0
+  - 0.48
+  - 0.34
+  vector_model: deterministic_keyword_v1
+  vector_dimension: 16
+  source_ref: synthetic_data/semantic_chunks.yaml#sem_dec_w_area_exploration_initial
+  metadata:
+    confidence_upgrade_allowed: false
+    not_evidence_proof: true
+    retrieval_role: candidate_retrieval_only

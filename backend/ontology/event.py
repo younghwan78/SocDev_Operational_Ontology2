@@ -1,0 +1,141 @@
+"""event 모듈: 개발 이벤트(구 event + development_event 통합 계약), 이슈."""
+
+from __future__ import annotations
+
+from pydantic import Field
+
+from backend.ontology.common import Confidence, OntologyModel, OntologyObject
+
+
+class ConfidenceSignal(OntologyModel):
+    """이벤트가 주는 확신도 신호 — 방향과 근거."""
+
+    direction: str
+    reason: str
+    basis: str | None = None
+
+
+class CandidateOption(OntologyModel):
+    """검토 후보 옵션 — 결정이 아닌 검토 대상."""
+
+    option_id: str
+    title: str
+    description: str | None = None
+    option_type: str | None = None
+    current_posture: str | None = None
+    feasibility: str | None = None
+    known_risks: list[str] = Field(default_factory=list)
+    qualitative_impact: dict[str, str] = Field(default_factory=dict)
+    related_ip_ids: list[str] = Field(default_factory=list)
+    related_scenario_ids: list[str] = Field(default_factory=list)
+    required_evidence_need_ids: list[str] = Field(default_factory=list)
+    source_refs: list[str] = Field(default_factory=list)
+    target_project_id: str | None = None
+
+
+class DecisionQuestion(OntologyModel):
+    """이벤트가 제기하는 결정 질문 — 최종 결정이 아님."""
+
+    question_id: str
+    question: str
+    scopes: list[str] = Field(default_factory=list)
+    required_by_week: int | None = None
+    not_final_decision: bool = True
+    source_refs: list[str] = Field(default_factory=list)
+
+
+class EventRelations(OntologyModel):
+    """이벤트 간 관계 — 인과 증명이 아닌 유래/전파/검증 연결."""
+
+    predecessor_event_ids: list[str] = Field(default_factory=list)
+    derived_from_event_ids: list[str] = Field(default_factory=list)
+    propagation_event_ids: list[str] = Field(default_factory=list)
+    supersedes_event_ids: list[str] = Field(default_factory=list)
+    validation_event_ids: list[str] = Field(default_factory=list)
+    not_causal_proof: bool = True
+
+
+class ExpectedReviewOutput(OntologyModel):
+    """이벤트 검토의 기대 산출물."""
+
+    output_type: str
+    description: str
+    not_final_decision: bool = True
+
+
+class RequiredEvidenceNeed(OntologyModel):
+    """검토에 필요한 근거 요구 — 가용성과 확신도 상한을 명시."""
+
+    evidence_need_id: str
+    evidence_type: str
+    reason: str
+    availability: str
+    blocks_confidence_above: str | None = None
+    linked_evidence_ids: list[str] = Field(default_factory=list)
+    related_option_ids: list[str] = Field(default_factory=list)
+    required_by_week: int | None = None
+    review_impact: str | None = None
+    source_refs: list[str] = Field(default_factory=list)
+
+
+class DevelopmentEvent(OntologyObject):
+    """개발 이벤트 — 마일스톤/이슈/검토/전파 등 개발 과정의 사건 단위.
+
+    56의 event(구 MVP)와 development_event(Stage36) 계약을 통합했다.
+    구 event는 week/quarter가 없으므로 해당 필드는 optional이다.
+    """
+
+    project_id: str
+    title: str
+    description: str
+    event_type: str
+    event_category: str
+    lifecycle_stage: str | None = None
+    week: int | None = None
+    quarter: str | None = None
+    severity: str = "info"
+    status: str = "recorded"
+    schedule_signal: str | None = None
+    roles_involved: list[str] = Field(default_factory=list)
+    affected_domains: list[str] = Field(default_factory=list)
+    linked_scenario_ids: list[str] = Field(default_factory=list)
+    linked_evidence_ids: list[str] = Field(default_factory=list)
+    linked_milestone_ids: list[str] = Field(default_factory=list)
+    linked_request_ids: list[str] = Field(default_factory=list)
+    linked_propagation_ids: list[str] = Field(default_factory=list)
+    missing_data: list[str] = Field(default_factory=list)
+    resource_signal: list[str] = Field(default_factory=list)
+    confidence_signal: ConfidenceSignal | None = None
+    source_basis: list[str] = Field(default_factory=list)
+    requested_by: str | None = None
+    candidate_options: list[CandidateOption] = Field(default_factory=list)
+    decision_question: DecisionQuestion | None = None
+    event_relations: EventRelations | None = None
+    expected_review_output: ExpectedReviewOutput | None = None
+    required_evidence: list[RequiredEvidenceNeed] = Field(default_factory=list)
+    review_posture: str | None = None
+    not_final_decision: bool = True
+    read_only: bool = True
+
+
+class AffectedScope(OntologyModel):
+    """이슈 영향 범위."""
+
+    scenarios: list[str] = Field(default_factory=list)
+    ip_blocks: list[str] = Field(default_factory=list)
+    system_blocks: list[str] = Field(default_factory=list)
+    kpis: list[str] = Field(default_factory=list)
+
+
+class Issue(OntologyObject):
+    """개발 이슈 — 증상/근본원인 후보/영향 범위."""
+
+    project_id: str
+    title: str
+    issue_type: str
+    status: str
+    symptom: str
+    confidence: Confidence
+    evidence_refs: list[str] = Field(default_factory=list)
+    root_cause_candidates: list[str] = Field(default_factory=list)
+    affected_scope: AffectedScope = Field(default_factory=AffectedScope)

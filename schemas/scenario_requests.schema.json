@@ -1,0 +1,375 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "ProjectSpan": {
+      "additionalProperties": false,
+      "description": "시나리오 요청이 각 프로젝트에 걸치는 주차 구간과 영향 방향.",
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "end_week": {
+          "title": "End Week",
+          "type": "integer"
+        },
+        "evidence_status": {
+          "title": "Evidence Status",
+          "type": "string"
+        },
+        "impact_direction": {
+          "title": "Impact Direction",
+          "type": "string"
+        },
+        "lifecycle_stage": {
+          "title": "Lifecycle Stage",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "posture": {
+          "title": "Posture",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "start_week": {
+          "title": "Start Week",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "project_id",
+        "start_week",
+        "end_week",
+        "lifecycle_stage",
+        "impact_direction",
+        "posture",
+        "evidence_status",
+        "confidence"
+      ],
+      "title": "ProjectSpan",
+      "type": "object"
+    },
+    "Propagation": {
+      "additionalProperties": false,
+      "description": "프로젝트 간 전파 — 인과 증명이 아닌 검토 연관(not_causal_proof).",
+      "properties": {
+        "at_week": {
+          "title": "At Week",
+          "type": "integer"
+        },
+        "from_project_id": {
+          "title": "From Project Id",
+          "type": "string"
+        },
+        "not_causal_proof": {
+          "default": true,
+          "title": "Not Causal Proof",
+          "type": "boolean"
+        },
+        "propagation_id": {
+          "title": "Propagation Id",
+          "type": "string"
+        },
+        "propagation_type": {
+          "title": "Propagation Type",
+          "type": "string"
+        },
+        "relation_summary": {
+          "title": "Relation Summary",
+          "type": "string"
+        },
+        "to_project_id": {
+          "title": "To Project Id",
+          "type": "string"
+        },
+        "trigger_role": {
+          "title": "Trigger Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "propagation_id",
+        "from_project_id",
+        "to_project_id",
+        "at_week",
+        "propagation_type",
+        "trigger_role",
+        "relation_summary"
+      ],
+      "title": "Propagation",
+      "type": "object"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "시나리오 요청 — 주간 검토 활동을 구동하는 요구 단위.",
+  "properties": {
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "domains": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Domains",
+      "type": "array"
+    },
+    "evidence_basis": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Basis",
+      "type": "array"
+    },
+    "expected_weekly_activity_load": {
+      "title": "Expected Weekly Activity Load",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "linked_focus_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Focus Ids",
+      "type": "array"
+    },
+    "linked_review_pack_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Review Pack Ids",
+      "type": "array"
+    },
+    "linked_review_report_scenario_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Linked Review Report Scenario Id"
+    },
+    "management_interest": {
+      "title": "Management Interest",
+      "type": "string"
+    },
+    "milestone_refs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Milestone Refs",
+      "type": "array"
+    },
+    "missing_evidence": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Evidence",
+      "type": "array"
+    },
+    "origin_project_id": {
+      "title": "Origin Project Id",
+      "type": "string"
+    },
+    "priority": {
+      "title": "Priority",
+      "type": "string"
+    },
+    "project_spans": {
+      "items": {
+        "$ref": "#/$defs/ProjectSpan"
+      },
+      "title": "Project Spans",
+      "type": "array"
+    },
+    "propagation": {
+      "items": {
+        "$ref": "#/$defs/Propagation"
+      },
+      "title": "Propagation",
+      "type": "array"
+    },
+    "request_scope": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Request Scope"
+    },
+    "request_type": {
+      "title": "Request Type",
+      "type": "string"
+    },
+    "requested_by_role": {
+      "title": "Requested By Role",
+      "type": "string"
+    },
+    "requested_week": {
+      "title": "Requested Week",
+      "type": "integer"
+    },
+    "review_cadence": {
+      "title": "Review Cadence",
+      "type": "string"
+    },
+    "role_relevance": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Role Relevance",
+      "type": "array"
+    },
+    "scenario_group_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Scenario Group Ids",
+      "type": "array"
+    },
+    "scenario_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scenario Id"
+    },
+    "scenario_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Scenario Ids",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_refs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Refs",
+      "type": "array"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "system_engineering_tracking_focus": {
+      "title": "System Engineering Tracking Focus",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "trigger_roles": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Trigger Roles",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "request_type",
+    "status",
+    "priority",
+    "confidence",
+    "origin_project_id",
+    "requested_by_role",
+    "requested_week",
+    "review_cadence",
+    "management_interest",
+    "system_engineering_tracking_focus",
+    "expected_weekly_activity_load"
+  ],
+  "title": "ScenarioRequest",
+  "type": "object"
+}

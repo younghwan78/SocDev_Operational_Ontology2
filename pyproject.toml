@@ -1,0 +1,53 @@
+[project]
+name = "soc-operational-ontology"
+version = "0.1.0"
+description = "SoC 개발 운영 온톨로지 — evidence-grounded 분석·조언 시스템"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.8",
+  "PyYAML>=6.0",
+  "rich>=13.7",
+  "typer>=0.12",
+]
+
+[project.scripts]
+soc-ontology = "backend.cli.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.2",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "types-PyYAML>=6.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+  "postgres: PostgreSQL 통합 테스트 (POSTGRES_TEST_DSN 게이트)",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["backend", "tests", "tools"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# E501: 포매터 미사용으로 라인 길이 비강제. B008: Typer 기본값 패턴 허용.
+ignore = ["E501", "B008"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["backend"]
+ignore_missing_imports = true
+check_untyped_defs = true

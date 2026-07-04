@@ -1,0 +1,1201 @@
+# GENERATED — tools/convert_56_fixtures.py가 56 synthetic_data에서 변환함.
+# 직접 편집 금지. 재생성: uv run python tools/convert_56_fixtures.py
+projects:
+- id: project_u
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/projects.yaml#project_u
+  name: Project U
+  type: mobile_soc
+  phase: commercial_early
+  key_themes:
+  - power_improvement
+  - heavy_scenario_thermal
+  - dou_optimization
+  - display_underrun
+  - video_editor_performance
+  - ai_camera_expansion
+  - low_light_video_quality
+  - qualitative_camera_quality
+  - rt_guarantee
+  notes:
+  - silicon is available
+  - commercial project is in early phase
+  - customer requests performance/power improvement vs previous product
+  - actual commercial issues are expected later in the year
+  silicon_status: available
+  customer_stage: commercial_project_ongoing
+- id: project_v
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/projects.yaml#project_v
+  name: Project V
+  type: mobile_soc
+  phase: evt_development
+  key_themes:
+  - isp_pipeline_change
+  - early_sw_development
+  - power_improvement
+  - low_light_video_quality
+  - mmip_area_reduction
+  - codec_display_improvement
+  - hw_sw_mismatch_risk
+  - rt_guarantee
+  notes:
+  - ISP pipeline changes from Project V
+  - HW EVT1 fixes and SW EVT0 early development run in parallel
+  silicon_status: expected_end_of_year
+  hw_status: evt1_fixing
+  sw_status: evt0_early_development
+- id: project_w
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/projects.yaml#project_w
+  name: Project W
+  type: mobile_soc
+  phase: spec_selection_architecture_exploration
+  key_themes:
+  - mmip_area_reduction
+  - architecture_exploration
+  - ip_reuse_vs_new_ip
+  - power_performance_area_tradeoff
+  - customer_requirement_uncertainty
+  - feature_justification
+  - business_profitability
+  notes:
+  - N+2 project rather than vague long-term research
+  - spec selection and development start around N
+  - feature addition requires clear evidence and business justification
+  spec_status: volatile
+  target_product_generation: N+2
+project_milestones:
+- id: project_u_package_out_done
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_package_out_done
+  project_id: project_u
+  title: Project U package out complete
+  description: Package out is already complete when the annual review horizon begins.
+  milestone_type: package_out
+  lifecycle_stage: package
+  decision_window: closed
+  relevant_roles:
+  - pm
+  - system_engineering
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+  historical_relation: completed_before_w1
+  timeline_scope: prior_year_context
+- id: project_u_evt1_h1
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_evt1_h1
+  project_id: project_u
+  title: Project U EVT1 availability
+  description: EVT1 silicon becomes available during the first half review window.
+  milestone_type: silicon_fix
+  lifecycle_stage: evt
+  decision_window: characterization_input_open
+  week: 7
+  quarter: Q1
+  relevant_roles:
+  - hw_development
+  - sw_development
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+- id: project_u_dvfs_characterization
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_dvfs_characterization
+  project_id: project_u
+  title: Project U DVFS characterization
+  description: DVFS characterization follows EVT1 and prepares ES power evidence.
+  milestone_type: characterization
+  lifecycle_stage: characterization
+  decision_window: power_characterization_open
+  week: 9
+  quarter: Q1
+  relevant_roles:
+  - system_engineering
+  - hw_development
+  - sw_development
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+- id: project_u_es_release_w12
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_es_release_w12
+  project_id: project_u
+  title: Project U ES release
+  description: ES release opens customer project setup and scenario-specific evaluation.
+  milestone_type: release
+  lifecycle_stage: es
+  decision_window: customer_setup_opens
+  week: 12
+  quarter: Q1
+  relevant_roles:
+  - pm
+  - product_planning
+  - system_engineering
+  - sw_development
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+- id: project_u_customer_project_setup_after_es
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_customer_project_setup_after_es
+  project_id: project_u
+  title: Project U customer project setup
+  description: Customer solution setup begins after ES and starts feature feedback intake.
+  milestone_type: customer_setup
+  lifecycle_stage: customer_setup
+  decision_window: customer_solution_review_open
+  week: 14
+  quarter: Q2
+  relevant_roles:
+  - product_planning
+  - sw_development
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+- id: project_u_fc_release_w20
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_fc_release_w20
+  project_id: project_u
+  title: Project U FC release
+  description: FC release increases customer workload coverage and issue visibility.
+  milestone_type: release
+  lifecycle_stage: fc
+  decision_window: feature_completion_review
+  week: 20
+  quarter: Q2
+  relevant_roles:
+  - pm
+  - system_engineering
+  - hw_development
+  - sw_development
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+- id: project_u_cs_release_w27
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_cs_release_w27
+  project_id: project_u
+  title: Project U CS release
+  description: CS release shifts attention toward customer features and commercial issues.
+  milestone_type: release
+  lifecycle_stage: cs
+  decision_window: commercial_issue_tracking_opens
+  week: 27
+  quarter: Q3
+  relevant_roles:
+  - pm
+  - product_planning
+  - system_engineering
+  - sw_development
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+- id: project_u_kpi_evaluation_q3
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_kpi_evaluation_q3
+  project_id: project_u
+  title: Project U KPI evaluation
+  description: Scenario-specific power, quality, and real-time evidence is reviewed in Q3.
+  milestone_type: kpi_evaluation
+  lifecycle_stage: kpi_evaluation
+  decision_window: kpi_evidence_review
+  week: 32
+  quarter: Q3
+  relevant_roles:
+  - system_engineering
+  - soc_architecture
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+- id: project_u_customer_issue_peak_q3_q4
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_customer_issue_peak_q3_q4
+  project_id: project_u
+  title: Project U customer issue peak
+  description: Customer feature and quality issue load peaks across late Q3 and Q4.
+  milestone_type: issue_window
+  lifecycle_stage: commercial_issue
+  decision_window: issue_triage_high_load
+  week: 38
+  quarter: Q3
+  relevant_roles:
+  - system_engineering
+  - sw_development
+  - pm
+  - product_planning
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+- id: project_u_mass_production_q4
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_u_mass_production_q4
+  project_id: project_u
+  title: Project U mass production
+  description: Mass production constrains HW changes and emphasizes SW mitigation and evidence closure.
+  milestone_type: mass_production
+  lifecycle_stage: mass_production
+  decision_window: hw_closed_sw_mitigation_only
+  week: 44
+  quarter: Q4
+  relevant_roles:
+  - management
+  - pm
+  - system_engineering
+  - sw_development
+  source_basis:
+  - CURRENT_TASK.md#project-u-milestones
+- id: project_v_evt0_fix_q1
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_v_evt0_fix_q1
+  project_id: project_v
+  title: Project V EVT0 design fix
+  description: EVT0 design fixes establish the initial Project V HW review baseline.
+  milestone_type: silicon_fix
+  lifecycle_stage: evt
+  decision_window: evt0_fix_open
+  week: 8
+  quarter: Q1
+  relevant_roles:
+  - hw_development
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-v-milestones
+- id: project_v_sw_predev_start_q2
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_v_sw_predev_start_q2
+  project_id: project_v
+  title: Project V emulator SW pre-development starts
+  description: SW pre-development begins on emulator before Project V silicon is available.
+  milestone_type: sw_predevelopment
+  lifecycle_stage: sw_predevelopment
+  decision_window: emulator_sw_predevelopment_open
+  week: 15
+  quarter: Q2
+  relevant_roles:
+  - sw_development
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-v-milestones
+- id: project_v_emulator_fc_target
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_v_emulator_fc_target
+  project_id: project_v
+  title: Project V emulator feature-complete target
+  description: Emulator functional completion is targeted before silicon power evidence exists.
+  milestone_type: feature_target
+  lifecycle_stage: sw_predevelopment
+  decision_window: functional_complete_power_unknown
+  week: 24
+  quarter: Q2
+  relevant_roles:
+  - sw_development
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-v-milestones
+- id: project_v_evt1_design_fix_q3
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_v_evt1_design_fix_q3
+  project_id: project_v
+  title: Project V EVT1 design fix
+  description: EVT1 design fix is the primary Q3 HW improvement review window.
+  milestone_type: design_fix
+  lifecycle_stage: evt
+  decision_window: final_hw_improvement_review
+  week: 28
+  quarter: Q3
+  relevant_roles:
+  - hw_development
+  - soc_architecture
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-v-milestones
+- id: project_v_hw_change_window_close_q3
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_v_hw_change_window_close_q3
+  project_id: project_v
+  title: Project V HW change window closes
+  description: New HW changes after this point are redirected to Project W lessons unless critical.
+  milestone_type: design_window_close
+  lifecycle_stage: design
+  decision_window: hw_change_window_closed
+  week: 31
+  quarter: Q3
+  relevant_roles:
+  - hw_development
+  - soc_architecture
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-v-milestones
+- id: project_v_evt0_package_out_q4
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_v_evt0_package_out_q4
+  project_id: project_v
+  title: Project V EVT0 package out
+  description: Project V EVT0 package out closes the annual synthetic schedule.
+  milestone_type: package_out
+  lifecycle_stage: package
+  decision_window: package_out_preparation
+  week: 50
+  quarter: Q4
+  relevant_roles:
+  - hw_development
+  - sw_development
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-v-milestones
+- id: project_w_customer_spec_discussion_q1_q2
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_w_customer_spec_discussion_q1_q2
+  project_id: project_w
+  title: Project W customer specification discussion
+  description: Customer and product requirements are explored before spec freeze.
+  milestone_type: spec_discussion
+  lifecycle_stage: spec
+  decision_window: requirement_intake_open
+  week: 5
+  quarter: Q1
+  relevant_roles:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  source_basis:
+  - CURRENT_TASK.md#project-w-milestones
+- id: project_w_spec_freeze_q2
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_w_spec_freeze_q2
+  project_id: project_w
+  title: Project W specification freeze
+  description: Candidate features require explicit evidence or deferral at spec freeze.
+  milestone_type: spec_freeze
+  lifecycle_stage: spec
+  decision_window: spec_freeze
+  week: 21
+  quarter: Q2
+  relevant_roles:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  - management
+  source_basis:
+  - CURRENT_TASK.md#project-w-milestones
+- id: project_w_architecture_review_q2_q3
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_w_architecture_review_q2_q3
+  project_id: project_w
+  title: Project W architecture review
+  description: Multimedia architecture options are reviewed across late Q2 and early Q3.
+  milestone_type: architecture_review
+  lifecycle_stage: architecture
+  decision_window: architecture_tradeoff_review
+  week: 24
+  quarter: Q2
+  relevant_roles:
+  - soc_architecture
+  - system_engineering
+  - management
+  source_basis:
+  - CURRENT_TASK.md#project-w-milestones
+- id: project_w_architecture_doc_complete_q3
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_w_architecture_doc_complete_q3
+  project_id: project_w
+  title: Project W architecture document complete
+  description: Architecture documentation captures accepted review inputs and open evidence gaps.
+  milestone_type: architecture_complete
+  lifecycle_stage: architecture
+  decision_window: architecture_document_baseline
+  week: 30
+  quarter: Q3
+  relevant_roles:
+  - soc_architecture
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-w-milestones
+- id: project_w_evt0_design_progress
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_w_evt0_design_progress
+  project_id: project_w
+  title: Project W EVT0 design progress
+  description: EVT0 design proceeds using the architecture document and remaining evidence actions.
+  milestone_type: design_progress
+  lifecycle_stage: design
+  decision_window: implementation_feedback_only
+  week: 36
+  quarter: Q3
+  relevant_roles:
+  - hw_development
+  - sw_development
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-w-milestones
+- id: project_w_alpha_beta_q4
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_milestones.yaml#project_w_alpha_beta_q4
+  project_id: project_w
+  title: Project W alpha and beta release window
+  description: Alpha and beta release preparation validates architecture assumptions qualitatively.
+  milestone_type: alpha_beta_release
+  lifecycle_stage: release
+  decision_window: release_readiness_review
+  week: 46
+  quarter: Q4
+  relevant_roles:
+  - hw_development
+  - sw_development
+  - system_engineering
+  - pm
+  source_basis:
+  - CURRENT_TASK.md#project-w-milestones
+customer_requests:
+- id: req_u_heavy_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/customer_requests.yaml#req_u_heavy_power
+  project_id: project_u
+  title: Heavy recording scenario power improvement
+  request_type: power_improvement
+  evidence_level: 0
+  related_scenario_groups:
+  - camera_recording_heavy
+  target_improvement: previous_generation_power_minus_10_percent_or_better
+  target_kpis: []
+- id: req_u_kpi_10_percent
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/customer_requests.yaml#req_u_kpi_10_percent
+  project_id: project_u
+  title: KPI scenario 10 percent improvement vs previous generation
+  request_type: kpi_improvement
+  evidence_level: 0
+  related_scenario_groups:
+  - camera_recording_kpi
+  target_improvement: 10_percent
+  target_kpis: []
+- id: req_u_uhd60_eis_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/customer_requests.yaml#req_u_uhd60_eis_gap
+  project_id: project_u
+  title: Reduce UHD60 EIS on/off power gap
+  request_type: power_gap_reduction
+  evidence_level: 0
+  related_scenario_groups:
+  - camera_recording_kpi
+  target_kpis:
+  - eis_power_gap
+- id: req_u_display_underrun
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/customer_requests.yaml#req_u_display_underrun
+  project_id: project_u
+  title: Prevent underrun with video mode panel while lowering DPU clock
+  request_type: rt_display_reliability
+  evidence_level: 0
+  related_scenario_groups:
+  - display_rt_bus
+  target_kpis:
+  - underrun_count
+  - dpu_clock
+  - noc_qos_margin
+- id: req_u_video_editor
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/customer_requests.yaml#req_u_video_editor
+  project_id: project_u
+  title: Improve MFC video editor performance vs competitor
+  request_type: performance_improvement
+  evidence_level: 0
+  related_scenario_groups:
+  - codec_display_dou
+  target_kpis:
+  - video_editor_latency
+  - encoder_throughput
+project_links:
+- id: link_u_to_v_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_links.yaml#link_u_to_v_power
+  from_project: project_u
+  to_project: project_v
+  link_type: issue_pattern_flow
+  title: Heavy scenario thermal/power issue pattern should be reflected in Project V.
+  related_scenario_groups:
+  - camera_recording_heavy
+  - camera_recording_kpi
+- id: link_u_to_v_display
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_links.yaml#link_u_to_v_display
+  from_project: project_u
+  to_project: project_v
+  link_type: customer_request_flow
+  title: Video mode display underrun prevention should influence Project V DPU/NoC validation.
+  related_scenario_groups:
+  - display_rt_bus
+- id: link_v_to_w_area
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_links.yaml#link_v_to_w_area
+  from_project: project_v
+  to_project: project_w
+  link_type: architecture_lesson_flow
+  title: Project V MMIP area reduction trade-off should be used for Project W architecture exploration.
+  related_scenario_groups:
+  - camera_recording_kpi
+  - codec_display_dou
+  - display_rt_bus
+project_scenario_focuses:
+- id: focus_u_camera_kpi
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_u_camera_kpi
+  project_id: project_u
+  title: Project U Camera KPI
+  priority: high
+  objectives:
+  - Prepare pre-ES evidence and measure Camera KPI on current silicon only after W12 ES.
+  relevant_roles:
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  scenario_group_ids:
+  - camera_recording_kpi
+  scenario_ids:
+  - fhd30_recording_kpi
+  - fhd60_recording_kpi
+  - uhd30_recording_kpi
+  - uhd60_recording_kpi
+  - eight_k30_recording_kpi
+  - uhd60_recording_eis_on
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-u
+  - docs/domain/multimedia_priority_scenario_baseline.md#camera
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: pre_es_preparation
+    start_week: 1
+    end_week: 11
+    focus_types:
+    - measurement_planning
+    - evidence_readiness
+    measurement_policy: no_current_project_measurement
+  - stage: es_kpi_measurement
+    start_week: 12
+    end_week: 31
+    focus_types:
+    - current_silicon_measurement
+    - regression_review
+    measurement_policy: current_project_measurement_allowed
+  - stage: commercial_kpi_follow_up
+    start_week: 32
+    end_week: 52
+    focus_types:
+    - customer_comparison
+    - issue_follow_up
+    measurement_policy: current_project_measurement_allowed
+- id: focus_u_heavy_customer_camera
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_u_heavy_customer_camera
+  project_id: project_u
+  title: Project U Heavy and customer Camera
+  priority: high
+  objectives:
+  - Prepare customer scenario evidence before ES and characterize heavy Camera behavior after ES.
+  relevant_roles:
+  - product_planning
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  scenario_group_ids:
+  - camera_recording_heavy
+  - camera_capture
+  - camera_low_light_recording
+  - camera_multi_camera_control
+  scenario_ids:
+  - dual_video_recording
+  - editable_portrait_video_recording
+  - high_speed_fhd120_recording
+  - high_speed_uhd120_recording
+  - high_speed_fhd240_recording
+  - low_light_ai_capture
+  - low_light_video_recording_ai
+  - multi_camera_zoom_sensor_mode_switch
+  - ai_isp_capture_tap_in_out
+  - apv_recording_high_bw
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-u
+  - docs/domain/multimedia_priority_scenario_baseline.md#camera
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: pre_es_scenario_readiness
+    start_week: 1
+    end_week: 11
+    focus_types:
+    - test_definition
+    - evidence_planning
+    measurement_policy: no_current_project_measurement
+  - stage: es_customer_scenario_characterization
+    start_week: 12
+    end_week: 37
+    focus_types:
+    - current_silicon_measurement
+    - customer_feature_review
+    measurement_policy: current_project_measurement_allowed
+  - stage: commercial_issue_follow_up
+    start_week: 38
+    end_week: 52
+    focus_types:
+    - issue_reproduction
+    - mitigation_review
+    measurement_policy: current_project_measurement_allowed
+- id: focus_u_customer_issue_response
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_u_customer_issue_response
+  project_id: project_u
+  title: Project U Customer issue response
+  priority: medium
+  objectives:
+  - Maintain cross-domain issue readiness and current-silicon evidence after ES.
+  relevant_roles:
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  - management
+  scenario_group_ids:
+  - display_rt_bus
+  - video_codec_heavy
+  - audio_ai_latency
+  scenario_ids:
+  - video_mode_panel_underrun_prevention
+  - ai_scaler_display_scale_up
+  - mfc_mfd_parallel_4k8k_recording
+  - voice_call_audio_ai_latency
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-u
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: pre_es_issue_readiness
+    start_week: 1
+    end_week: 11
+    focus_types:
+    - issue_taxonomy
+    - reproduction_planning
+    measurement_policy: no_current_project_measurement
+  - stage: es_to_customer_setup
+    start_week: 12
+    end_week: 37
+    focus_types:
+    - current_silicon_measurement
+    - risk_review
+    measurement_policy: current_project_measurement_allowed
+  - stage: commercial_issue_window
+    start_week: 38
+    end_week: 52
+    focus_types:
+    - customer_issue_response
+    - closure_tracking
+    measurement_policy: current_project_measurement_allowed
+- id: focus_u_dou
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_u_dou
+  project_id: project_u
+  title: Project U Video playback DoU
+  priority: medium
+  objectives:
+  - Prepare playback workloads before ES and optimize measured DoU after ES.
+  relevant_roles:
+  - product_planning
+  - system_engineering
+  - sw_development
+  - pm
+  scenario_group_ids:
+  - codec_display_dou
+  scenario_ids:
+  - video_playback_dou
+  - youtube_video_playback_dou
+  - video_editor_export
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-u
+  - docs/domain/multimedia_priority_scenario_baseline.md#dou
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: pre_es_dou_planning
+    start_week: 1
+    end_week: 11
+    focus_types:
+    - workload_definition
+    - evidence_planning
+    measurement_policy: no_current_project_measurement
+  - stage: es_dou_measurement
+    start_week: 12
+    end_week: 31
+    focus_types:
+    - current_silicon_measurement
+    - optimization
+    measurement_policy: current_project_measurement_allowed
+  - stage: commercial_dou_optimization
+    start_week: 32
+    end_week: 52
+    focus_types:
+    - customer_comparison
+    - sw_optimization
+    measurement_policy: current_project_measurement_allowed
+- id: focus_v_pipeline_regression
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_v_pipeline_regression
+  project_id: project_v
+  title: Project V Multimedia pipeline regression
+  priority: high
+  objectives:
+  - Review EVT pipeline changes and regression risk without treating emulator results as silicon PPA.
+  relevant_roles:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  scenario_group_ids:
+  - camera_recording_kpi
+  - camera_recording_heavy
+  - display_rt_bus
+  - video_codec_heavy
+  scenario_ids:
+  - fhd30_recording_kpi
+  - fhd60_recording_kpi
+  - uhd30_recording_kpi
+  - uhd60_recording_kpi
+  - uhd60_recording_eis_on
+  - eight_k30_recording_kpi
+  - high_speed_fhd120_recording
+  - high_speed_uhd120_recording
+  - mfc_mfd_parallel_4k8k_recording
+  - video_mode_panel_underrun_prevention
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-v
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: evt_hw_pipeline_review
+    start_week: 1
+    end_week: 13
+    focus_types:
+    - hw_change_review
+    - regression_scope
+    measurement_policy: estimation_and_simulation_only
+  - stage: emulator_sw_predevelopment
+    start_week: 14
+    end_week: 39
+    focus_types:
+    - functional_regression
+    - sw_control_readiness
+    measurement_policy: emulator_functional_only
+  - stage: evt_closure_preparation
+    start_week: 40
+    end_week: 52
+    focus_types:
+    - closure_review
+    - silicon_evidence_planning
+    measurement_policy: estimation_and_simulation_only
+- id: focus_v_emulator_sw
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_v_emulator_sw
+  project_id: project_v
+  title: Project V Emulator SW predevelopment
+  priority: high
+  objectives:
+  - Validate functional control paths on emulator and retain silicon PPA as an explicit evidence gap.
+  relevant_roles:
+  - system_engineering
+  - hw_development
+  - sw_development
+  scenario_group_ids:
+  - camera_multi_camera_control
+  - camera_capture
+  - audio_ai_latency
+  scenario_ids:
+  - multi_camera_zoom_sensor_mode_switch
+  - ai_isp_capture_tap_in_out
+  - voice_call_audio_ai_latency
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-v
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: emulator_sw_predevelopment
+    start_week: 1
+    end_week: 52
+    focus_types:
+    - functional_validation
+    - control_flow_review
+    measurement_policy: emulator_functional_only
+- id: focus_v_carry_over_issues
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_v_carry_over_issues
+  project_id: project_v
+  title: Project V Carry-over issue review
+  priority: medium
+  objectives:
+  - Assess Project U carry-over lessons against Project V HW and SW readiness.
+  relevant_roles:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  - pm
+  scenario_group_ids:
+  - camera_low_light_recording
+  - display_rt_bus
+  - codec_display_dou
+  scenario_ids:
+  - low_light_video_recording_ai
+  - video_mode_panel_underrun_prevention
+  - ai_scaler_display_scale_up
+  - video_editor_export
+  - video_playback_dou
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-v
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: carry_over_triage
+    start_week: 1
+    end_week: 13
+    focus_types:
+    - lesson_intake
+    - applicability_review
+    measurement_policy: estimation_and_simulation_only
+  - stage: emulator_sw_predevelopment
+    start_week: 14
+    end_week: 39
+    focus_types:
+    - functional_validation
+    - workaround_review
+    measurement_policy: emulator_functional_only
+  - stage: carry_over_closure
+    start_week: 40
+    end_week: 52
+    focus_types:
+    - architecture_feedback
+    - closure_tracking
+    measurement_policy: estimation_and_simulation_only
+- id: focus_w_multimedia_portfolio
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_w_multimedia_portfolio
+  project_id: project_w
+  title: Project W Multimedia specification portfolio
+  priority: high
+  objectives:
+  - Start W1 customer specification intake and screen the complete multimedia scenario portfolio.
+  relevant_roles:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  - pm
+  - management
+  scenario_group_ids:
+  - camera_recording_kpi
+  - camera_recording_heavy
+  - camera_capture
+  - display_rt_bus
+  - codec_display_dou
+  - audio_call
+  - camera_low_light_recording
+  - camera_multi_camera_control
+  - video_codec_heavy
+  - audio_ai_latency
+  scenario_ids:
+  - fhd30_recording_kpi
+  - fhd60_recording_kpi
+  - uhd30_recording_kpi
+  - uhd60_recording_kpi
+  - eight_k30_recording_kpi
+  - high_speed_fhd120_recording
+  - high_speed_uhd120_recording
+  - low_light_video_recording_ai
+  - video_mode_panel_underrun_prevention
+  - video_playback_dou
+  - voice_call_audio_ai_latency
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-w
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: customer_spec_intake
+    start_week: 1
+    end_week: 13
+    focus_types:
+    - customer_requirement_intake
+    - portfolio_screening
+    measurement_policy: estimation_and_simulation_only
+  - stage: architecture_option_review
+    start_week: 14
+    end_week: 39
+    focus_types:
+    - option_assessment
+    - ppa_estimation
+    measurement_policy: estimation_and_simulation_only
+  - stage: architecture_baseline_preparation
+    start_week: 40
+    end_week: 52
+    focus_types:
+    - baseline_convergence
+    - evidence_gap_review
+    measurement_policy: estimation_and_simulation_only
+- id: focus_w_camera_ppa_iq
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_w_camera_ppa_iq
+  project_id: project_w
+  title: Project W Camera PPA and IQ architecture
+  priority: high
+  objectives:
+  - Compare Camera feature value, estimated PPA, IQ risk, and reuse options.
+  relevant_roles:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - management
+  scenario_group_ids:
+  - camera_recording_kpi
+  - camera_recording_heavy
+  - camera_capture
+  - camera_low_light_recording
+  - camera_multi_camera_control
+  scenario_ids:
+  - uhd60_recording_kpi
+  - uhd60_recording_eis_on
+  - high_speed_uhd120_recording
+  - low_light_ai_capture
+  - low_light_video_recording_ai
+  - multi_camera_zoom_sensor_mode_switch
+  - ai_isp_capture_tap_in_out
+  - apv_recording_high_bw
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-w
+  - docs/domain/multimedia_priority_scenario_baseline.md#camera
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: camera_requirement_screening
+    start_week: 1
+    end_week: 13
+    focus_types:
+    - feature_value
+    - prior_project_evidence
+    measurement_policy: estimation_and_simulation_only
+  - stage: camera_architecture_review
+    start_week: 14
+    end_week: 39
+    focus_types:
+    - ppa_estimation
+    - iq_option_review
+    measurement_policy: estimation_and_simulation_only
+  - stage: camera_architecture_convergence
+    start_week: 40
+    end_week: 52
+    focus_types:
+    - trade_off_review
+    - evidence_gap_closure
+    measurement_policy: estimation_and_simulation_only
+- id: focus_w_display_rt
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_w_display_rt
+  project_id: project_w
+  title: Project W Display RT architecture
+  priority: high
+  objectives:
+  - Review Display RT guarantee, low-clock behavior, and bus architecture options.
+  relevant_roles:
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  scenario_group_ids:
+  - display_rt_bus
+  scenario_ids:
+  - video_mode_panel_underrun_prevention
+  - ai_scaler_display_scale_up
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-w
+  - docs/domain/multimedia_priority_scenario_baseline.md#display
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: display_requirement_screening
+    start_week: 1
+    end_week: 13
+    focus_types:
+    - rt_requirement
+    - prior_issue_intake
+    measurement_policy: estimation_and_simulation_only
+  - stage: display_architecture_review
+    start_week: 14
+    end_week: 39
+    focus_types:
+    - qos_option_review
+    - ppa_estimation
+    measurement_policy: estimation_and_simulation_only
+  - stage: display_architecture_convergence
+    start_week: 40
+    end_week: 52
+    focus_types:
+    - trade_off_review
+    - baseline_convergence
+    measurement_policy: estimation_and_simulation_only
+- id: focus_w_video_codec
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_w_video_codec
+  project_id: project_w
+  title: Project W Video and codec architecture
+  priority: medium
+  objectives:
+  - Review codec throughput, memory pressure, DoU, and reuse options.
+  relevant_roles:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - management
+  scenario_group_ids:
+  - video_codec_heavy
+  - codec_display_dou
+  scenario_ids:
+  - mfc_mfd_parallel_4k8k_recording
+  - video_editor_export
+  - video_playback_dou
+  - youtube_video_playback_dou
+  - apv_recording_high_bw
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-w
+  - docs/domain/multimedia_priority_scenario_baseline.md#video-and-codec
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: video_requirement_screening
+    start_week: 1
+    end_week: 13
+    focus_types:
+    - workload_intake
+    - prior_project_evidence
+    measurement_policy: estimation_and_simulation_only
+  - stage: video_architecture_review
+    start_week: 14
+    end_week: 39
+    focus_types:
+    - throughput_estimation
+    - reuse_option_review
+    measurement_policy: estimation_and_simulation_only
+  - stage: video_architecture_convergence
+    start_week: 40
+    end_week: 52
+    focus_types:
+    - trade_off_review
+    - baseline_convergence
+    measurement_policy: estimation_and_simulation_only
+- id: focus_w_audio_ai
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/project_scenario_focuses.yaml#focus_w_audio_ai
+  project_id: project_w
+  title: Project W Audio AI latency architecture
+  priority: medium
+  objectives:
+  - Review call-path AI latency, low-power audio, and accelerator architecture options.
+  relevant_roles:
+  - product_planning
+  - soc_architecture
+  - system_engineering
+  - hw_development
+  - sw_development
+  scenario_group_ids:
+  - audio_call
+  - audio_ai_latency
+  scenario_ids:
+  - voice_call_audio_ai_latency
+  source_refs:
+  - docs/domain/uvw_development_stage_baseline.md#project-w
+  - docs/domain/multimedia_priority_scenario_baseline.md#audio
+  annual_horizon:
+    start_week: 1
+    end_week: 52
+  development_stage_windows:
+  - stage: audio_requirement_screening
+    start_week: 1
+    end_week: 13
+    focus_types:
+    - customer_requirement_intake
+    - functional_budget
+    measurement_policy: estimation_and_simulation_only
+  - stage: audio_architecture_review
+    start_week: 14
+    end_week: 39
+    focus_types:
+    - latency_estimation
+    - accelerator_option_review
+    measurement_policy: estimation_and_simulation_only
+  - stage: audio_architecture_convergence
+    start_week: 40
+    end_week: 52
+    focus_types:
+    - trade_off_review
+    - baseline_convergence
+    measurement_policy: estimation_and_simulation_only

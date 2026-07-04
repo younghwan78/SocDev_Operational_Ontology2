@@ -1,0 +1,102 @@
+# GENERATED — tools/convert_56_fixtures.py가 56 synthetic_data에서 변환함.
+# 직접 편집 금지. 재생성: uv run python tools/convert_56_fixtures.py
+decisions:
+- id: dec_w_area_exploration_initial
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/decisions.yaml#dec_w_area_exploration_initial
+  project_id: project_w
+  event_id: evt_w_mmip_area_exploration
+  decision_type: architecture_exploration_direction
+  options:
+  - id: opt_reuse_previous_mmip
+    label: Reuse previous MMIP where possible
+    benefits:
+    - area_reduction
+    - development_time_reduction
+    - lower_schedule_risk
+    risks:
+    - feature_competitiveness_gap
+    - performance_limit
+    cost_impact:
+      area: low
+      development_time: low
+      resource: low
+      schedule: low
+      business: medium
+  - id: opt_add_new_mmip_features
+    label: Add new MMIP features for competitiveness
+    benefits:
+    - feature_competitiveness
+    - performance_headroom
+    risks:
+    - area_increase
+    - development_time_increase
+    - validation_scope_increase
+    cost_impact:
+      area: high
+      development_time: high
+      resource: high
+      schedule: medium
+      business: uncertain
+  - id: opt_selective_feature_addition
+    label: Selective feature addition with evidence gate
+    benefits:
+    - balanced_tradeoff
+    - evidence_based_feature_selection
+    risks:
+    - requires_strong_traceability
+    - decision_delay_if_evidence_missing
+    cost_impact:
+      area: medium
+      development_time: medium
+      resource: medium
+      schedule: medium
+      business: medium
+  selected_option: opt_selective_feature_addition
+  tradeoff_summary: Selective feature addition is preferred because Project W requires MMIP area reduction
+    while new feature additions need explicit evidence for business justification.
+  supporting_basis:
+  - basis_type: evidence
+    ref_id: evd_w_business_area_pressure
+    statement: MMIP area reduction is a high-priority business requirement.
+    confidence: high
+  - basis_type: evidence
+    ref_id: evd_project_w_spec_uncertainty
+    statement: Project W is still in spec selection and architecture exploration stage.
+    confidence: high
+  unresolved_risks:
+  - issue_w_mmip_area_tradeoff
+  action_items:
+  - act_w_collect_feature_area_evidence
+action_items:
+- id: act_w_collect_feature_area_evidence
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/decisions.yaml#act_w_collect_feature_area_evidence
+  source_decision_id: dec_w_area_exploration_initial
+  title: Collect feature-by-feature area/performance/power evidence for Project W MMIP options
+  description: System Engineering should coordinate architecture and development feedback to create traceable
+    evidence for MMIP reuse versus selective feature addition.
+  owner_role: system_engineering
+  due_phase: architecture_exploration
+  status: open
+  required_evidence:
+  - evd_w_business_area_pressure
+  - evd_project_w_spec_uncertainty
+review_packs:
+- id: pack_project_w_multimedia_review
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/review_packs.yaml#pack_project_w_multimedia_review
+  title: Project W Multimedia Scenario Review Pack
+  purpose: Review common multimedia resource pressure candidates and evidence gaps across Project W scenarios.
+  project_ids:
+  - project_w
+  scenario_ids:
+  - uhd60_recording_eis_on
+  - video_mode_panel_underrun_prevention
+  - video_editor_export
+  source_ref:
+    document: synthetic_data/review_packs.yaml
+    section: pack_project_w_multimedia_review

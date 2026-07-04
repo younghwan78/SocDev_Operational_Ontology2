@@ -1,0 +1,129 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    },
+    "VectorMetadata": {
+      "additionalProperties": false,
+      "description": "시맨틱 벡터 메타데이터 — 검색 결과의 지위 제한.",
+      "properties": {
+        "confidence_upgrade_allowed": {
+          "default": false,
+          "title": "Confidence Upgrade Allowed",
+          "type": "boolean"
+        },
+        "not_evidence_proof": {
+          "default": true,
+          "title": "Not Evidence Proof",
+          "type": "boolean"
+        },
+        "retrieval_role": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieval Role"
+        }
+      },
+      "title": "VectorMetadata",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "시맨틱 벡터 — pgvector 적재 대상 (Stage 1에서는 fixture 보존만).",
+  "properties": {
+    "chunk_id": {
+      "title": "Chunk Id",
+      "type": "string"
+    },
+    "embedding": {
+      "items": {
+        "type": "number"
+      },
+      "title": "Embedding",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "metadata": {
+      "$ref": "#/$defs/VectorMetadata"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_ref": {
+      "title": "Source Ref",
+      "type": "string"
+    },
+    "vector_dimension": {
+      "title": "Vector Dimension",
+      "type": "integer"
+    },
+    "vector_model": {
+      "title": "Vector Model",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "chunk_id",
+    "embedding",
+    "vector_model",
+    "vector_dimension",
+    "source_ref"
+  ],
+  "title": "SemanticVector",
+  "type": "object"
+}

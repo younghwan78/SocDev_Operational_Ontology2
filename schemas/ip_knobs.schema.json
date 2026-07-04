@@ -1,0 +1,146 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "IP knob — 전력/지연/대역폭/리스크 방향성을 갖는 제어 항목.",
+  "properties": {
+    "affected_kpis": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Affected Kpis",
+      "type": "array"
+    },
+    "bandwidth_direction": {
+      "title": "Bandwidth Direction",
+      "type": "string"
+    },
+    "category": {
+      "title": "Category",
+      "type": "string"
+    },
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "control_domain": {
+      "title": "Control Domain",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "ip_id": {
+      "title": "Ip Id",
+      "type": "string"
+    },
+    "latency_direction": {
+      "title": "Latency Direction",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "power_direction": {
+      "title": "Power Direction",
+      "type": "string"
+    },
+    "related_scenarios": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Scenarios",
+      "type": "array"
+    },
+    "risk_direction": {
+      "title": "Risk Direction",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_ref": {
+      "title": "Source Ref",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "ip_id",
+    "name",
+    "category",
+    "description",
+    "control_domain",
+    "power_direction",
+    "latency_direction",
+    "bandwidth_direction",
+    "risk_direction",
+    "confidence",
+    "source_ref"
+  ],
+  "title": "IPKnob",
+  "type": "object"
+}

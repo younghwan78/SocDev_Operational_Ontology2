@@ -1,0 +1,535 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "ActivityInputContext": {
+      "additionalProperties": false,
+      "description": "활동 입력 컨텍스트 — 어떤 fixture 근거로 검토했는지.",
+      "properties": {
+        "candidate_option_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Candidate Option Ids",
+          "type": "array"
+        },
+        "decision_question_ref": {
+          "default": false,
+          "title": "Decision Question Ref",
+          "type": "boolean"
+        },
+        "event_id": {
+          "title": "Event Id",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "milestone_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Milestone Ids",
+          "type": "array"
+        },
+        "missing_data": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Data",
+          "type": "array"
+        },
+        "propagation_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Propagation Ids",
+          "type": "array"
+        },
+        "required_evidence_need_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Evidence Need Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "event_id"
+      ],
+      "title": "ActivityInputContext",
+      "type": "object"
+    },
+    "ActivityRecommendation": {
+      "additionalProperties": false,
+      "description": "활동 권고 — 최종 결정이 아닌 검토 권고.",
+      "properties": {
+        "not_final_decision": {
+          "default": true,
+          "title": "Not Final Decision",
+          "type": "boolean"
+        },
+        "recommendation_type": {
+          "title": "Recommendation Type",
+          "type": "string"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "target_roles": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Target Roles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "recommendation_type",
+        "summary"
+      ],
+      "title": "ActivityRecommendation",
+      "type": "object"
+    },
+    "ActivityTraceability": {
+      "additionalProperties": false,
+      "description": "활동 traceability — 출처와 도출 과정.",
+      "properties": {
+        "description_derivation": {
+          "title": "Description Derivation",
+          "type": "string"
+        },
+        "not_causal_proof": {
+          "default": true,
+          "title": "Not Causal Proof",
+          "type": "boolean"
+        },
+        "source_refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "description_derivation"
+      ],
+      "title": "ActivityTraceability",
+      "type": "object"
+    },
+    "Confidence": {
+      "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "ConfidencePosture": {
+      "additionalProperties": false,
+      "description": "확신도 자세 — 수준/방향/차단 요인.",
+      "properties": {
+        "blocked_by": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Blocked By",
+          "type": "array"
+        },
+        "direction": {
+          "title": "Direction",
+          "type": "string"
+        },
+        "level": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "level",
+        "direction",
+        "rationale"
+      ],
+      "title": "ConfidencePosture",
+      "type": "object"
+    },
+    "EvidenceAssessment": {
+      "additionalProperties": false,
+      "description": "근거 평가 — 개별 근거의 한계와 역할 해석.",
+      "properties": {
+        "assessment": {
+          "title": "Assessment",
+          "type": "string"
+        },
+        "evidence_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence Id"
+        },
+        "limitation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Limitation"
+        },
+        "missing_information_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Missing Information Ref"
+        },
+        "role_interpretation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role Interpretation"
+        }
+      },
+      "required": [
+        "assessment"
+      ],
+      "title": "EvidenceAssessment",
+      "type": "object"
+    },
+    "GroundedStatement": {
+      "additionalProperties": false,
+      "description": "근거 문장 — 서술/도출 과정/뒷받침 근거/확신도를 항상 함께 갖는다.",
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "description_derivation": {
+          "title": "Description Derivation",
+          "type": "string"
+        },
+        "supporting_basis": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supporting Basis",
+          "type": "array"
+        }
+      },
+      "required": [
+        "description",
+        "description_derivation",
+        "supporting_basis",
+        "confidence"
+      ],
+      "title": "GroundedStatement",
+      "type": "object"
+    },
+    "OptionAssessment": {
+      "additionalProperties": false,
+      "description": "옵션 평가 — 역할 관점의 후보 옵션 검토.",
+      "properties": {
+        "blockers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Blockers",
+          "type": "array"
+        },
+        "expected_impact": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Expected Impact",
+          "type": "object"
+        },
+        "option_id": {
+          "title": "Option Id",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "role_posture": {
+          "title": "Role Posture",
+          "type": "string"
+        }
+      },
+      "required": [
+        "option_id",
+        "role_posture",
+        "rationale"
+      ],
+      "title": "OptionAssessment",
+      "type": "object"
+    },
+    "SafetyFlags": {
+      "additionalProperties": false,
+      "description": "활동의 안전 플래그 — 자동 결정/실행이 아님을 명시.",
+      "properties": {
+        "fixture_derived": {
+          "default": true,
+          "title": "Fixture Derived",
+          "type": "boolean"
+        },
+        "not_agent_execution": {
+          "default": true,
+          "title": "Not Agent Execution",
+          "type": "boolean"
+        },
+        "not_final_decision": {
+          "default": true,
+          "title": "Not Final Decision",
+          "type": "boolean"
+        },
+        "read_only": {
+          "default": true,
+          "title": "Read Only",
+          "type": "boolean"
+        }
+      },
+      "title": "SafetyFlags",
+      "type": "object"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "역할 주간 활동 — 이벤트 검토의 역할별 기록.",
+  "properties": {
+    "activity_type": {
+      "title": "Activity Type",
+      "type": "string"
+    },
+    "concerns": {
+      "items": {
+        "$ref": "#/$defs/GroundedStatement"
+      },
+      "title": "Concerns",
+      "type": "array"
+    },
+    "confidence_posture": {
+      "$ref": "#/$defs/ConfidencePosture"
+    },
+    "evidence_assessment": {
+      "items": {
+        "$ref": "#/$defs/EvidenceAssessment"
+      },
+      "title": "Evidence Assessment",
+      "type": "array"
+    },
+    "expected_output": {
+      "title": "Expected Output",
+      "type": "string"
+    },
+    "follow_up_actions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Follow Up Actions",
+      "type": "array"
+    },
+    "handoff_to_roles": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Handoff To Roles",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "input_context": {
+      "$ref": "#/$defs/ActivityInputContext"
+    },
+    "linked_event_id": {
+      "title": "Linked Event Id",
+      "type": "string"
+    },
+    "linked_evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Evidence Ids",
+      "type": "array"
+    },
+    "linked_milestone_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Milestone Ids",
+      "type": "array"
+    },
+    "linked_propagation_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Propagation Ids",
+      "type": "array"
+    },
+    "linked_request_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Request Ids",
+      "type": "array"
+    },
+    "linked_scenario_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Scenario Ids",
+      "type": "array"
+    },
+    "missing_information": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Information",
+      "type": "array"
+    },
+    "observations": {
+      "items": {
+        "$ref": "#/$defs/GroundedStatement"
+      },
+      "title": "Observations",
+      "type": "array"
+    },
+    "option_assessments": {
+      "items": {
+        "$ref": "#/$defs/OptionAssessment"
+      },
+      "title": "Option Assessments",
+      "type": "array"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "recommendation": {
+      "$ref": "#/$defs/ActivityRecommendation"
+    },
+    "role_id": {
+      "title": "Role Id",
+      "type": "string"
+    },
+    "safety": {
+      "$ref": "#/$defs/SafetyFlags"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "traceability": {
+      "$ref": "#/$defs/ActivityTraceability"
+    },
+    "week": {
+      "title": "Week",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "role_id",
+    "project_id",
+    "week",
+    "title",
+    "summary",
+    "activity_type",
+    "expected_output",
+    "linked_event_id",
+    "input_context",
+    "confidence_posture",
+    "recommendation",
+    "traceability"
+  ],
+  "title": "RoleActivity",
+  "type": "object"
+}

@@ -1,0 +1,194 @@
+{
+  "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
+  "$defs": {
+    "ChunkMetadata": {
+      "additionalProperties": false,
+      "description": "시맨틱 청크 메타데이터.",
+      "properties": {
+        "decision_stage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Decision Stage"
+        },
+        "evidence_level": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence Level"
+        },
+        "retrieval_use": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Retrieval Use",
+          "type": "array"
+        },
+        "source_confidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Confidence"
+        }
+      },
+      "title": "ChunkMetadata",
+      "type": "object"
+    },
+    "SourceMeta": {
+      "additionalProperties": false,
+      "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+      "properties": {
+        "ingested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ingested At"
+        },
+        "origin": {
+          "$ref": "#/$defs/SourceOrigin",
+          "default": "synthetic"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        }
+      },
+      "title": "SourceMeta",
+      "type": "object"
+    },
+    "SourceOrigin": {
+      "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+      "enum": [
+        "synthetic",
+        "imported",
+        "integrated"
+      ],
+      "title": "SourceOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "시맨틱 청크 — 검색 후보 텍스트. 증거가 아니라 supporting_basis 후보.",
+  "properties": {
+    "chunk_text": {
+      "title": "Chunk Text",
+      "type": "string"
+    },
+    "embedding_status": {
+      "title": "Embedding Status",
+      "type": "string"
+    },
+    "evidence_confidence": {
+      "title": "Evidence Confidence",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "ip_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Ip Ids",
+      "type": "array"
+    },
+    "kpi_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Kpi Ids",
+      "type": "array"
+    },
+    "metadata": {
+      "$ref": "#/$defs/ChunkMetadata"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Project Id"
+    },
+    "scenario_group_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Scenario Group Ids",
+      "type": "array"
+    },
+    "scenario_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Scenario Ids",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceMeta"
+    },
+    "source_id": {
+      "title": "Source Id",
+      "type": "string"
+    },
+    "source_type": {
+      "title": "Source Type",
+      "type": "string"
+    },
+    "system_block_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "System Block Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "chunk_text",
+    "source_id",
+    "source_type",
+    "embedding_status",
+    "evidence_confidence"
+  ],
+  "title": "SemanticChunk",
+  "type": "object"
+}
