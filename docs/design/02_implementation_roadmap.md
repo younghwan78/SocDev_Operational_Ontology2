@@ -222,9 +222,52 @@ Stage 3 (서비스/API), Stage 4 (표시 화면) 권장.
 - [ ] 오류 행 보고서가 어떤 행이 왜 실패했는지 한국어로 설명.
 - [ ] 반입 rollback 동작.
 
-## Stage 8+ — 사내 연동 고도화 [규모: L, 사내 일정 종속]
+## Stage 8~12 — 원점 목표 복원 (2026-07-05 개정, 사용자 승인)
 
-방향만 고정하고 상세 계획은 Stage 7 경험 후 수립:
+> **설계 기준: `docs/design/03_course_correction.md`** (원점 문서 대비 괴리 진단과 교정 설계).
+> Stage 1~7 검증 결과 원점의 TAT 단축 유스케이스 4종이 부재하여 Stage 8+를 아래로 대체한다.
+> UI를 "데이터 종류별 화면"에서 "질문이 곧 메뉴인 코크핏"으로 재편한다.
+
+### Stage 8 — 홈 개편 + 위험 지도 [규모: L]
+
+- In-scope: `backend/services/risk.py` 정성 위험 판정 룰(높음/중간/낮음 + 근거 목록, 수치 점수 없음) + 테스트,
+  `GET /api/v1/risk/heatmap`, 코크핏 홈(heatmap + 근거 패널 + 이번 주 주목 3~5건),
+  내비 재편(위험 지도/변경 영향/이슈 분석/Ask SoC — 미구현 메뉴는 비활성),
+  UI 공통 원칙 적용(ID 숨김·색 의미 통일·접기 기본).
+- 수용 기준: 홈 진입 10초 내 위험 시나리오 식별 가능(heatmap), 모든 등급이 근거 패널로 drill-down,
+  등급 판정이 결정론 테스트로 고정, 기존 화면은 하위 층에서 접근 가능.
+
+### Stage 9 — 변경 영향 [규모: M]
+
+- In-scope: `backend/services/change_impact.py` 그래프 순회 엔진
+  (scenario_ip_requirements/ip_knobs/ip_dependency_rules/과거 이슈), `GET /api/v1/change-impact`,
+  변경 영향 화면(IP·knob 선택 → 영향 시나리오/KPI/연쇄 IP/역할별 검토 체크리스트/과거 유사 사례),
+  체크리스트 내보내기. LLM은 문장화에만 선택 사용.
+- 수용 기준: ISP knob 변경 예시로 4분면 출력 완결, 체크리스트가 역할 책임 경계와 일치, 결정론 테스트.
+
+### Stage 10 — RCA 체인 [규모: L]
+
+- In-scope: 온톨로지 확장(Test 객체, RootCause 유형 enum 6종, Issue 확장:
+  fix_type/workaround/verifying_test_ids/residual_risk/reusable_lesson),
+  원점 문서 §7 archetype 기반 fixture 보강(이슈 30~50건·테스트 30건·RCA 완결 체인),
+  RCA 그래프 화면(증상→원인→조치→검증→잔존 리스크→교훈, 근거 뱃지).
+- 수용 기준: "검증 테스트 없는 close 이슈"가 시각적으로 드러남, 변경 규율 6단계 준수, schema/openapi 재생성.
+
+### Stage 11 — Ask SoC [규모: M]
+
+- In-scope: 질의 서비스(온톨로지 검색→객체 수집→LLM 근거 인용 답변, 기존 체인·validator 재사용),
+  `POST /api/v1/ask`, 홈 검색창 활성화 + 프리셋 질문 5종, 인용 클릭 시 객체 이동.
+- 수용 기준: 원점 데모 질문 5종에 근거 인용 답변, validator 미통과 답변 미표시, LLM 미가용 시 검색 결과만으로 동작.
+
+### Stage 12 — 데모 패키지 + 효과 측정 [규모: M]
+
+- In-scope: 데모 스토리 모드(위험 발견→원인→변경 영향→결정 근거 4장면),
+  TAT 측정 체계(데모 질문별 질문→근거 도달 시간 기록/비교표), 사내 검증 워크숍 자료(fixture 가설 목록).
+- 수용 기준: 4장면 데모가 클릭만으로 진행, TAT before/after 비교표 산출.
+
+## Stage 13+ — 사내 연동 고도화 (이연)
+
+Stage 12 이후 상세 계획 수립 (원점 문서: "ingestion 자동화보다 연결 모델 검증이 먼저"):
 
 - JIRA/Confluence read-only 커넥터 (사내 계정/보안 승인 선행).
 - 사내 임베딩 API + pgvector 한국어 시맨틱 검색 (키워드 retriever 대체).

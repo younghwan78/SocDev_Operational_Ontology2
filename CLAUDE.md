@@ -137,9 +137,10 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
 
 ### 6.3 구현 원칙
 
-- 조회·현황·traceability는 항상 결정론. LLM은 advisory 생성에만 관여하며 provider chain + validator + 감사 기록을 우회할 수 없다.
+- 조회·현황·traceability는 항상 결정론. LLM은 advisory/질의 응답 생성에만 관여하며 provider chain + validator + 감사 기록을 우회할 수 없다.
 - 온톨로지 데이터의 수정/삭제 API 금지 — 데이터는 ingest 계층으로만 진입, 삭제는 반입 단위 rollback만.
-- 수치 리스크/우선순위 자동 스코어링, owner/task 자동 할당, 자율 멀티에이전트 토론 금지 (Stage scope가 명시적으로 도입하지 않는 한).
+- **수치** 리스크/우선순위 스코어링, owner/task 자동 할당, 자율 멀티에이전트 토론 금지.
+  단 **정성 위험 등급(높음/중간/낮음) + 판정 근거 목록 명시**는 허용 (2026-07-05 승인 — 원점 문서의 Milestone Risk Early Warning 복원, `docs/design/03_course_correction.md` §4.1).
 - 읽기 좋은 boring Python. 도메인 로직과 CLI/API 표현 분리. 비즈니스 로직에 synthetic ID 하드코딩 금지.
 - 모든 비자명한 loader/validator/resolver/service 동작에 테스트.
 - 설계 먼저, 코드 나중: 구현 전에 제안/설계를 확정한다.
@@ -148,6 +149,8 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
 
 | 필요 | 위치 |
 |---|---|
+| **원점 비전 (프로젝트의 최상위 기준)** | `D:\YHJOO\100_SoC_Operational_Ontology\01_Brainstorming\26.06.18 SoC ontology (ChatGPT).md` (read-only) |
+| **교정 설계 — Stage 8~12 기준** | `docs/design/03_course_correction.md` |
 | 58 시스템 아키텍처 (확정) | `docs/design/01_system_architecture.md` |
 | 58 전체 Stage 상세 계획 | `docs/design/02_implementation_roadmap.md` |
 | 활성 Stage 범위 | `CURRENT_TASK.md` |
@@ -161,7 +164,10 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
 
 ## 8. 현재 상태
 
-Stage 1~7 구현 완료 (2026-07-04): 온톨로지 계약, PostgreSQL 계층, 결정론 서비스+API,
-한국어 frontend 4화면, LLM 3단 체인 advisory, Excel/CSV 반입 파일럿.
-Stage 8(사내 연동 고도화)은 `CURRENT_TASK.md`에 승인 대기 상태 — 승인 전 구현 착수 금지.
-진행 이력은 `CHANGELOG.md`, 원격은 github.com/younghwan78/SocDev_Operational_Ontology2.
+- Stage 1~7 구현 완료 (2026-07-04): 온톨로지 계약, PostgreSQL 계층, 결정론 서비스+API,
+  한국어 frontend, LLM 3단 체인 advisory, Excel/CSV 반입. **이는 기반(foundation)이다.**
+- **방향 교정 확정 (2026-07-05)**: 원점 문서 대비 검증 결과 TAT 단축 유스케이스 4종
+  (위험 지도/변경 영향/RCA/Ask SoC)이 부재 → Stage 8~12로 복원한다.
+  UI를 "질문이 곧 메뉴인 코크핏"으로 재편한다. 기준: `docs/design/03_course_correction.md`.
+- 활성: **Stage 8 (홈 개편 + 위험 지도)** — `CURRENT_TASK.md` 참조, 사용자 승인 완료·착수 대기.
+- 진행 이력은 `CHANGELOG.md`, 원격은 github.com/younghwan78/SocDev_Operational_Ontology2.
