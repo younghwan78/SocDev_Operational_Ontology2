@@ -3,6 +3,13 @@
 > Multimedia SoC 개발 운영 온톨로지 — 사내 실사용을 목표로 하는 evidence-grounded 분석·조언 시스템.
 > 56 PoC의 온톨로지를 승계하되, PoC가 아니라 **운영 시스템**으로 설계한다. 일반 챗봇이 아니다.
 
+## 0-a. 로컬 실행 포트 규칙 (이 머신)
+
+- **58 전용 포트: frontend `127.0.0.1:5273` / backend API `127.0.0.1:8155`.**
+- 8000, 5173, 5174, 8100 등 다른 포트의 프로세스는 **다른 Claude Code 세션/프로젝트 소유** — 절대 종료하거나 사용하지 않는다.
+- frontend 실행: `VITE_API_TARGET=http://127.0.0.1:8155 npx vite --port 5273 --strictPort`
+- backend 실행: `uv run uvicorn backend.api.app:create_app --factory --port 8155`
+
 ## 0. Reference Directory (READ-ONLY)
 
 ```text
