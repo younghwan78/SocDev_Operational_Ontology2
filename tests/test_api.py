@@ -95,6 +95,21 @@ def test_weekly_review(client: TestClient) -> None:
     assert snapshot["week"] == week
 
 
+def test_evidence_list_and_filters(client: TestClient) -> None:
+    all_entries = client.get("/api/v1/evidence").json()
+    assert len(all_entries) == 54
+    partial = client.get("/api/v1/evidence", params={"availability": "partial"}).json()
+    assert partial and all(e["availability"] == "partial" for e in partial)
+    by_project = client.get("/api/v1/evidence", params={"project_id": "project_u"}).json()
+    assert by_project and all(e["project_id"] == "project_u" for e in by_project)
+
+
+def test_portfolio_attention_scenario_links(client: TestClient) -> None:
+    body = client.get("/api/v1/portfolio/overview").json()
+    linked = [item for item in body["attention"] if item.get("scenario_ids")]
+    assert linked, "시나리오 링크를 가진 주의 항목이 있어야 한다"
+
+
 def test_advisory_post_and_get(client: TestClient) -> None:
     response = client.post(
         f"/api/v1/scenarios/{SCENARIO}/advisory", json={"roles": ["pm", "management"]}

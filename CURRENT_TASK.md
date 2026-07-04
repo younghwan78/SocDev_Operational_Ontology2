@@ -2,7 +2,7 @@
 
 ## 활성 Stage
 
-**Stage 6 — 나머지 화면: 포트폴리오 현황 · 리뷰 센터 · 근거 탐색** (진행 중 — 연속 Stage 진행 사전 승인 세션)
+**Stage 7 — Excel/CSV 실데이터 반입 파일럿** (준비됨 — 사용자 승인 대기)
 
 ## 작업 디렉토리
 
@@ -18,49 +18,43 @@ E:\56_Codex_SoC_Operational_Ontology
 
 ---
 
-## Stage 1~5 완료 기준선
+## Stage 1~6 완료 기준선
 
 ```text
-온톨로지 v1.0 계약 + glossary + fixture 465건 + PostgreSQL 계층
-결정론 서비스 + FastAPI (GET 13개 + advisory POST/GET) + openapi.json
-한국어 frontend: 시나리오 목록/상세 5탭 (개요·타임라인·이벤트·조언·추적)
-LLM 3단 체인 (claude_cli → openai_compat → 결정론) + validator + 감사 기록
-실 E2E: Claude CLI 출력이 validator에 거부→결정론 fallback 동작 확인
-backend 71 테스트 / frontend 4 테스트 / ruff / mypy / lint 통과
+Stage 1: 온톨로지 v1.0 계약 8모듈 + 한국어 glossary + 56 fixture 465건 변환 (무결성 오류 0)
+Stage 2: PostgreSQL 계층 (마이그레이션/멱등 시드/repository, 실DB 패리티 검증)
+Stage 3: 결정론 서비스 (시나리오 분석/포트폴리오/리뷰/traceability) + read-only API
+Stage 4: 한국어 frontend — 시나리오 목록/상세 5탭 + traceability drill-down 패턴
+Stage 5: LLM 3단 체인 (claude_cli→openai_compat→결정론) + validator + 감사 기록 + 조언 탭
+        실 E2E: validator가 부적합 LLM 출력 거부 → 프롬프트 강화 후 claude_cli 통과
+Stage 6: 4화면 체계 완성 — 포트폴리오 현황 / 리뷰 센터 / 근거 탐색
+
+검증: backend 73 테스트 (+PG 통합) / frontend 5 테스트 / ruff / mypy / lint 전부 통과
+테스트 DB: postgresql://warroom:warroom@localhost:55432/soc58_test (56의 warroom DB 접근 금지)
 ```
 
 ---
 
-## Stage 6 목표
+## Stage 7 목표
 
-4화면 체계를 완성한다: ① 포트폴리오 현황, ③ 리뷰 센터, ④ 근거 탐색.
-상세: `docs/design/02_implementation_roadmap.md` Stage 6 절.
+첫 실데이터를 Excel/CSV로 반입해 synthetic과 병존시키고, 반입 워크플로를 검증한다.
+상세: `docs/design/02_implementation_roadmap.md` Stage 7 절.
 
-## 기준 가정
-
-- Stage 3의 결정론 서비스(포트폴리오/리뷰)와 기존 GET API를 소비한다 — 새 저장 계약 없음.
-- 모든 화면은 시나리오 상세의 traceability 패턴과 스타일 시스템을 재사용한다.
-- 화면 간 이동은 URL 기반 (공유/북마크 가능).
-- 필요한 신규 GET 엔드포인트는 read-only 원칙 내에서만 추가한다.
-
-## In-scope
+## In-scope (승인 후)
 
 ```text
-① 포트폴리오 현황 (/portfolio): U/V/W 요약, 주의 lane 6종, 시나리오×프로젝트 매트릭스
-   → 셀/항목 클릭 시 시나리오 상세로 이동
-③ 리뷰 센터 (/review): 주간 인덱스 → 주차 선택 → 이벤트/활동/요청 스냅샷
-④ 근거 탐색 (/evidence): 근거 카탈로그 목록/필터(가용성·프로젝트), traceability drill-down
-헤더 내비게이션 4화면 체계 완성
-필요 시 evidence 목록 GET API 추가
-컴포넌트 테스트
+backend/ingest/excel_csv.py: 열→온톨로지 필드 매핑 정의 기반 반입, 실패 행 한국어 보고서
+우선 대상: 프로젝트/마일스톤, KPI 관측치/측정 근거
+POST /api/v1/ingest/excel + CLI ingest-excel
+UI: source_origin 뱃지(가상/반입/연동) 전 화면 표시, 반입 이력 조회
+반입 단위 rollback (개별 객체 수정 API 없음 유지)
 ```
 
-## Out-of-scope (Stage 6에서 구현 금지)
+## Out-of-scope
 
 ```text
-Excel/CSV 반입 (Stage 7)
-임베딩 검색 / JIRA/Confluence 커넥터 (Stage 8+)
-쓰기 API, 수치 스코어링, 결정 자동화
+JIRA/Confluence 커넥터, 임베딩 검색 (Stage 8+)
+개별 객체 수정/삭제 API
 ```
 
 ## 필수 검증 명령
@@ -72,4 +66,4 @@ cd frontend && npm run build && npm run test && npm run lint
 
 ## Scope Lock
 
-Stage 7 이후의 어떤 동작도 구현하지 않는다. Stage 6 완료 시: changelog 갱신 → commit/push → Stage 7 scope lock 갱신 후 계속 진행.
+Stage 7은 사용자가 명시적으로 승인해야 시작한다 (연속 진행 세션은 Stage 6에서 종료됨).

@@ -20,6 +20,7 @@ from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.repository import InMemoryRepository
 from backend.ontology import COLLECTIONS, RUNTIME_CONTRACTS
 from backend.ontology.event import DevelopmentEvent
+from backend.ontology.evidence import EvidenceCatalogEntry
 from backend.ontology.glossary import export_glossary
 from backend.ontology.project import Project
 from backend.ontology.relation import AgentRun
@@ -174,6 +175,25 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         if not isinstance(obj, DevelopmentEvent):
             raise HTTPException(status_code=404, detail=f"이벤트 없음: {event_id}")
         return obj
+
+    @app.get(f"{prefix}/evidence", response_model=list[EvidenceCatalogEntry])
+    def list_evidence(
+        project_id: str | None = Query(default=None),
+        scenario_id: str | None = Query(default=None),
+        availability: str | None = Query(default=None),
+    ) -> list[EvidenceCatalogEntry]:
+        entries = [
+            e
+            for e in services.repo.list("evidence_catalog")
+            if isinstance(e, EvidenceCatalogEntry)
+        ]
+        if project_id:
+            entries = [e for e in entries if e.project_id == project_id]
+        if scenario_id:
+            entries = [e for e in entries if e.scenario_id == scenario_id]
+        if availability:
+            entries = [e for e in entries if e.availability == availability]
+        return entries
 
     @app.get(f"{prefix}/traceability/{{object_id}}", response_model=TraceabilityResult)
     def traceability(object_id: str) -> TraceabilityResult:

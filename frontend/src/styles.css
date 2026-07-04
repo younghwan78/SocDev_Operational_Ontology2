@@ -106,3 +106,5 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 
 .status-msg { padding: 24px; text-align: center; color: var(--text-dim); font-size: 14px; }
 .section-note { font-size: 12.5px; color: var(--text-dim); margin: 0 0 8px; }
+.app-nav { display: flex; gap: 16px; }
+.app-nav a.active { color: var(--accent); font-weight: 700; }

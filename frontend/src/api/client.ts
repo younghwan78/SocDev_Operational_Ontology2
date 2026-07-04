@@ -60,6 +60,48 @@ export async function fetchTraceability(objectId: string): Promise<TraceabilityR
 
 export type AgentRun = components["schemas"]["AgentRun"];
 export type RoleAdvisory = components["schemas"]["RoleAdvisory"];
+export type PortfolioOverview = components["schemas"]["PortfolioOverview"];
+export type AttentionItem = components["schemas"]["AttentionItem"];
+export type ScenarioCell = components["schemas"]["ScenarioCell"];
+export type WeeklyIndex = components["schemas"]["WeeklyIndex"];
+export type WeeklySnapshot = components["schemas"]["WeeklySnapshot"];
+export type EvidenceCatalogEntry = components["schemas"]["EvidenceCatalogEntry"];
+
+export async function fetchPortfolio(): Promise<PortfolioOverview> {
+  const { data, error } = await client.GET("/api/v1/portfolio/overview");
+  if (error || !data) throw new Error("portfolio 조회 실패");
+  return data;
+}
+
+export async function fetchWeeklyIndex(): Promise<WeeklyIndex> {
+  const { data, error } = await client.GET("/api/v1/review/weekly");
+  if (error || !data) throw new Error("weekly index 조회 실패");
+  return data;
+}
+
+export async function fetchWeeklySnapshot(week: number): Promise<WeeklySnapshot> {
+  const { data, error } = await client.GET("/api/v1/review/weekly/{week}", {
+    params: { path: { week } },
+  });
+  if (error || !data) throw new Error("weekly snapshot 조회 실패");
+  return data;
+}
+
+export async function fetchEvidence(filters: {
+  projectId?: string;
+  availability?: string;
+}): Promise<EvidenceCatalogEntry[]> {
+  const { data, error } = await client.GET("/api/v1/evidence", {
+    params: {
+      query: {
+        ...(filters.projectId ? { project_id: filters.projectId } : {}),
+        ...(filters.availability ? { availability: filters.availability } : {}),
+      },
+    },
+  });
+  if (error || !data) throw new Error("evidence 조회 실패");
+  return data;
+}
 
 export async function fetchAdvisoryRuns(scenarioId: string): Promise<AgentRun[]> {
   const { data, error } = await client.GET("/api/v1/scenarios/{scenario_id}/advisory", {

@@ -26,6 +26,7 @@ class AttentionItem(BaseModel):
     title: str
     description: str
     project_ids: list[str] = []
+    scenario_ids: list[str] = []
     suggested_review_roles: list[str] = []
     source_refs: list[str] = []
 
@@ -76,6 +77,14 @@ LANE_LABELS: dict[str, str] = {
 }
 
 
+def _request_scenarios(request: ScenarioRequest) -> list[str]:
+    """요청이 가리키는 시나리오 ID 목록."""
+    result = list(request.scenario_ids)
+    if request.scenario_id and request.scenario_id not in result:
+        result.insert(0, request.scenario_id)
+    return result
+
+
 class PortfolioService:
     def __init__(self, repo: RepositoryProtocol) -> None:
         self._repo = repo
@@ -98,6 +107,7 @@ class PortfolioService:
                         title=request.title,
                         description=f"누락 근거: {missing}",
                         project_ids=[request.origin_project_id],
+                        scenario_ids=_request_scenarios(request),
                         suggested_review_roles=request.role_relevance,
                         source_refs=request.source_refs,
                     )
@@ -136,6 +146,7 @@ class PortfolioService:
                                 f"확신도 상한 {need.blocks_confidence_above}: {need.reason}"
                             ),
                             project_ids=[event.project_id],
+                            scenario_ids=event.linked_scenario_ids,
                             suggested_review_roles=event.roles_involved,
                             source_refs=need.source_refs,
                         )
@@ -154,6 +165,7 @@ class PortfolioService:
                             + (f" — 자세: {option.current_posture}" if option.current_posture else "")
                         ),
                         project_ids=[event.project_id],
+                        scenario_ids=event.linked_scenario_ids,
                         suggested_review_roles=event.roles_involved,
                         source_refs=option.source_refs,
                     )
@@ -175,6 +187,7 @@ class PortfolioService:
                             f"{propagation.relation_summary}"
                         ),
                         project_ids=[propagation.from_project_id, propagation.to_project_id],
+                        scenario_ids=_request_scenarios(request),
                         suggested_review_roles=[propagation.trigger_role],
                         source_refs=request.source_refs,
                     )
@@ -192,6 +205,7 @@ class PortfolioService:
                         title=request.title,
                         description=f"경영 관심사: {request.management_interest} (P1, {request.status})",
                         project_ids=[request.origin_project_id],
+                        scenario_ids=_request_scenarios(request),
                         suggested_review_roles=["management", *request.trigger_roles],
                         source_refs=request.source_refs,
                     )

@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## Stage 6 — 포트폴리오 현황 · 리뷰 센터 · 근거 탐색 (2026-07-04)
+
+### 추가
+
+- 4화면 체계 완성 (헤더 내비게이션: 포트폴리오/시나리오/리뷰 센터/근거 탐색).
+- **① 포트폴리오 현황** (`/portfolio`): U/V/W 프로젝트 요약 카드, 주의 lane 6종
+  (근거 부족/정의 필요/확신도 차단/전파 검토/리스크 해소 후보/경영 주의),
+  시나리오×프로젝트 매트릭스 (요청/이벤트/근거 공백 카운트) — 셀 클릭 시 시나리오 상세.
+  "참여 권장이며 담당 지정 아님 · 수치 점수 없음 · 결정 아님" 원칙을 화면에 명시.
+- **③ 리뷰 센터** (`/review/:week?`): 주차 선택 → 이벤트/역할 활동/요청 스냅샷.
+- **④ 근거 탐색** (`/evidence`): 근거 카탈로그 목록, 프로젝트/가용성 필터,
+  측정/예측 구분, 시나리오 링크.
+- `AttentionItem.scenario_ids` 추가 — 주의 항목에서 시나리오 상세로 직접 이동.
+- API: `GET /api/v1/evidence` (project_id/scenario_id/availability 필터).
+
+### 검증
+
+```text
+backend 73 passed (+ PG) / ruff / mypy pass
+frontend build / test(5) / lint pass
+```
+
 ## Stage 5 — LLM Provider Chain + Scenario Advisory (2026-07-04)
 
 ### 추가

@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Evidence */
+        get: operations["list_evidence_api_v1_evidence_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -401,6 +418,11 @@ export interface components {
             ref_collection: string;
             /** Ref Id */
             ref_id: string;
+            /**
+             * Scenario Ids
+             * @default []
+             */
+            scenario_ids: string[];
             /**
              * Source Refs
              * @default []
@@ -1595,6 +1617,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DevelopmentEvent"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_evidence_api_v1_evidence_get: {
+        parameters: {
+            query?: {
+                project_id?: string | null;
+                scenario_id?: string | null;
+                availability?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceCatalogEntry"][];
                 };
             };
             /** @description Validation Error */
