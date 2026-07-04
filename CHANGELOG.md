@@ -1,5 +1,45 @@
 # CHANGELOG
 
+## Stage 5 — LLM Provider Chain + Scenario Advisory (2026-07-04)
+
+### 추가
+
+- `backend/agents/providers/`: `LLMProvider` 프로토콜 + 3단 체인.
+  - `claude_cli`(1차, 외부): headless 실행 `claude -p --output-format json`, 타임아웃/오류 처리.
+  - `openai_compat`(2차, 사내): chat/completions 호환, `SOC_ONPREM_BASE_URL/MODEL/API_KEY`.
+  - 결정론 어드바이저(3차, 내장): 근거 공백/일정 신호/측정 요구 규칙 기반 — 항상 가용.
+- `backend/agents/validators.py`: evidence-grounded 검증 관문 (provider 무관 필수 통과) —
+  supporting_basis 필수·미해석 근거 거부·일반론 거부·근거 약한 high confidence 금지.
+- `backend/agents/runner.py`: 컨텍스트 조립(분석 결과 → 압축 JSON) → 역할별 프롬프트(한국어
+  출력 강제, 역할 책임 경계 반영) → 체인 실행 → 검증 → `RoleAdvisory` 채택.
+- 감사 기록 `AgentRun`: provider/모델/입력 해시/검증 기록/소요시간.
+  `InMemoryRunStore` + `PostgresRunStore`(마이그레이션 `0002_agent_runs.sql`).
+- 정책 스위치 `SOC_ALLOW_EXTERNAL_LLM=false` → 외부(사외) LLM 건너뜀 (실데이터 보안 대비).
+  체인 구성은 `SOC_ADVISORY_PROVIDERS` 환경변수.
+- API: `POST /api/v1/scenarios/{id}/advisory`(생성), `GET`(기록 조회).
+  데이터 수정 엔드포인트는 여전히 없음 (PUT/PATCH/DELETE 부재를 테스트로 강제).
+- 런타임 계약 `RoleAdvisory` 추가 + JSON Schema/openapi/frontend 타입 재생성.
+- Frontend: 시나리오 상세에 "조언" 탭 — 생성 버튼, 역할별 조언 카드
+  (생성 엔진/확신도 뱃지, 근거 문장, 검증 기록 표시).
+
+### 실 E2E 검증 기록
+
+실제 Claude CLI(haiku)로 PM 역할 advisory를 2회 실행:
+
+1. 1차: LLM이 근거 공백 9건 상황에서 high confidence 출력 → **validator가 거부하고
+   결정론 fallback 채택** (감사 기록에 거부 사유 보존). 검증 관문이 설계대로 동작.
+2. 프롬프트에 "근거 공백 존재 시 high 금지" 규칙 명시 후 2차: **claude_cli 출력이
+   validator 통과** — medium confidence, 해석 가능한 근거 ID 인용
+   (req_v_emulator_power_unknown_w24 등), 한국어 조언, 검증 기록 0건.
+
+### 검증
+
+```text
+uv run pytest (+ POSTGRES_TEST_DSN) → 71 passed (agents 16건, PG run store 왕복 포함)
+frontend build / test / lint → pass
+uv run ruff check / mypy → pass (45 files)
+```
+
 ## Stage 4 — 한국어 Frontend: 시나리오 상세 화면 (2026-07-04)
 
 ### 추가

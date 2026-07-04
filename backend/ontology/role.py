@@ -141,8 +141,29 @@ class FeedbackItem(OntologyModel):
     confidence: Confidence
 
 
+class RoleAdvisory(OntologyModel):
+    """시나리오 조언 — role agent 관점의 evidence-grounded 검토 의견 (런타임 계약).
+
+    validator를 통과한 출력만 이 계약으로 채택된다. 최종 결정이 아니다.
+    """
+
+    run_id: str
+    scenario_id: str
+    role_id: str
+    provider: str
+    model_name: str | None = None
+    summary: str
+    concerns: list[GroundedStatement] = Field(default_factory=list)
+    required_evidence: list[str] = Field(default_factory=list)
+    recommendation: str
+    confidence: Confidence
+    missing_information: list[str] = Field(default_factory=list)
+    derivation_summary: str | None = None
+    not_final_decision: bool = True
+
+
 class RoleOutput(OntologyModel):
-    """Role agent 런타임 출력 계약 — Stage 5 advisory의 스키마 (fixture 없음)."""
+    """Role agent 런타임 출력 계약 — 이벤트 시뮬레이션용 스키마 (fixture 없음)."""
 
     run_id: str
     event_id: str

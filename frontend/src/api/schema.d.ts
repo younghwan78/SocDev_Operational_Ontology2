@@ -191,6 +191,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/scenarios/{scenario_id}/advisory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Advisory
+         * @description 해당 시나리오의 advisory 실행 기록 (최신순).
+         */
+        get: operations["list_advisory_api_v1_scenarios__scenario_id__advisory_get"];
+        put?: never;
+        /**
+         * Run Advisory
+         * @description 역할 조언 생성 — provider 체인 실행, 감사 기록 저장 (데이터 수정 아님).
+         */
+        post: operations["run_advisory_api_v1_scenarios__scenario_id__advisory_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/scenarios/{scenario_id}/analysis": {
         parameters: {
             query?: never;
@@ -304,6 +328,17 @@ export interface components {
             source_refs?: string[];
         };
         /**
+         * AdvisoryRequest
+         * @description advisory 실행 요청 — 역할 미지정 시 7개 역할 전체.
+         */
+        AdvisoryRequest: {
+            /**
+             * Roles
+             * @description role_id 목록 (기본: 전체)
+             */
+            roles?: string[] | null;
+        };
+        /**
          * AffectedScope
          * @description 이슈 영향 범위.
          */
@@ -316,6 +351,35 @@ export interface components {
             scenarios?: string[];
             /** System Blocks */
             system_blocks?: string[];
+        };
+        /**
+         * AgentRun
+         * @description Advisory 실행 감사 기록 — 누가 언제 어떤 근거로 조언을 받았는지 (런타임 계약).
+         *
+         *     provider/모델/입력 해시/검증 기록을 남긴다. 온톨로지 데이터가 아니라 감사 데이터다.
+         */
+        AgentRun: {
+            /** Advisories */
+            advisories?: components["schemas"]["RoleAdvisory"][];
+            /** Created At */
+            created_at: string;
+            /**
+             * Duration Ms
+             * @default 0
+             */
+            duration_ms: number;
+            /** Id */
+            id: string;
+            /** Input Hash */
+            input_hash: string;
+            /** Requested Roles */
+            requested_roles?: string[];
+            /** Scenario Id */
+            scenario_id: string;
+            /** Status */
+            status: string;
+            /** Validation Notes */
+            validation_notes?: string[];
         };
         /**
          * AttentionItem
@@ -1012,6 +1076,42 @@ export interface components {
             traceability: components["schemas"]["ActivityTraceability"];
             /** Week */
             week: number;
+        };
+        /**
+         * RoleAdvisory
+         * @description 시나리오 조언 — role agent 관점의 evidence-grounded 검토 의견 (런타임 계약).
+         *
+         *     validator를 통과한 출력만 이 계약으로 채택된다. 최종 결정이 아니다.
+         */
+        RoleAdvisory: {
+            /** Concerns */
+            concerns?: components["schemas"]["GroundedStatement"][];
+            confidence: components["schemas"]["Confidence"];
+            /** Derivation Summary */
+            derivation_summary?: string | null;
+            /** Missing Information */
+            missing_information?: string[];
+            /** Model Name */
+            model_name?: string | null;
+            /**
+             * Not Final Decision
+             * @default true
+             */
+            not_final_decision: boolean;
+            /** Provider */
+            provider: string;
+            /** Recommendation */
+            recommendation: string;
+            /** Required Evidence */
+            required_evidence?: string[];
+            /** Role Id */
+            role_id: string;
+            /** Run Id */
+            run_id: string;
+            /** Scenario Id */
+            scenario_id: string;
+            /** Summary */
+            summary: string;
         };
         /**
          * SafetyFlags
@@ -1715,6 +1815,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Scenario"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_advisory_api_v1_scenarios__scenario_id__advisory_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentRun"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_advisory_api_v1_scenarios__scenario_id__advisory_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AdvisoryRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentRun"];
                 };
             };
             /** @description Validation Error */

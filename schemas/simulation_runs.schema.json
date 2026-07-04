@@ -50,7 +50,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "시뮬레이션 실행 기록 — 56 PoC 산출물 보존용 (Stage 5에서 AgentRun으로 대체 예정).",
+  "description": "시뮬레이션 실행 기록 — 56 PoC 산출물 보존용.",
   "properties": {
     "event_id": {
       "title": "Event Id",

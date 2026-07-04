@@ -8,7 +8,17 @@ SCENARIO = "uhd60_recording_eis_on"
 
 
 @pytest.fixture(scope="module")
-def client() -> TestClient:
+def client(request: pytest.FixtureRequest) -> TestClient:
+    # 테스트에서 LLM provider 체인 비활성화 — advisory는 결정론 경로만 사용
+    import os
+
+    original = os.environ.get("SOC_ADVISORY_PROVIDERS")
+    os.environ["SOC_ADVISORY_PROVIDERS"] = ""
+    request.addfinalizer(
+        lambda: os.environ.update({"SOC_ADVISORY_PROVIDERS": original})
+        if original is not None
+        else os.environ.pop("SOC_ADVISORY_PROVIDERS", None)
+    )
     return TestClient(create_app())
 
 
@@ -85,8 +95,32 @@ def test_weekly_review(client: TestClient) -> None:
     assert snapshot["week"] == week
 
 
+def test_advisory_post_and_get(client: TestClient) -> None:
+    response = client.post(
+        f"/api/v1/scenarios/{SCENARIO}/advisory", json={"roles": ["pm", "management"]}
+    )
+    assert response.status_code == 200
+    run = response.json()
+    assert run["status"] == "completed"
+    assert len(run["advisories"]) == 2
+    assert {a["role_id"] for a in run["advisories"]} == {"pm", "management"}
+    assert all(a["provider"] == "deterministic" for a in run["advisories"])
+    assert all(a["not_final_decision"] for a in run["advisories"])
+
+    listed = client.get(f"/api/v1/scenarios/{SCENARIO}/advisory").json()
+    assert listed and listed[0]["id"] == run["id"]
+
+    assert client.post("/api/v1/scenarios/nope/advisory", json={}).status_code == 404
+
+
 def test_no_write_endpoints(client: TestClient) -> None:
-    """read-only 계약 — GET 외 메서드는 존재하지 않아야 한다."""
+    """read-only 계약 — advisory 실행(연산)을 제외하면 GET만 존재해야 한다.
+
+    advisory POST는 데이터 수정이 아니라 조언 생성 연산이며, 온톨로지 데이터의
+    수정/삭제 엔드포인트는 어떤 경로에도 없어야 한다.
+    """
     openapi = client.get("/openapi.json").json()
     for path, operations in openapi["paths"].items():
-        assert set(operations.keys()) <= {"get"}, f"{path}에 GET 외 메서드 존재"
+        allowed = {"get", "post"} if path.endswith("/advisory") else {"get"}
+        assert set(operations.keys()) <= allowed, f"{path}에 허용 외 메서드 존재"
+        assert not {"put", "patch", "delete"} & set(operations.keys()), path

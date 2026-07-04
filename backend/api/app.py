@@ -12,14 +12,17 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
+from backend.agents.runner import AdvisoryRunner
 from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.repository import InMemoryRepository
 from backend.ontology import COLLECTIONS, RUNTIME_CONTRACTS
 from backend.ontology.event import DevelopmentEvent
 from backend.ontology.glossary import export_glossary
 from backend.ontology.project import Project
+from backend.ontology.relation import AgentRun
 from backend.ontology.scenario import Scenario
 from backend.resolve.object_index import ObjectIndex
 from backend.resolve.traceability import TraceabilityResult, TraceabilityService
@@ -47,21 +50,26 @@ class AppServices:
     portfolio: PortfolioService
     review: ReviewService
     traceability: TraceabilityService
+    advisory: AdvisoryRunner
+    run_store: RunStoreProtocol
 
 
 def build_services(
     repo: RepositoryProtocol | None = None, fixtures_dir: Path = DEFAULT_FIXTURES
 ) -> AppServices:
     backend_kind = "memory"
+    run_store: RunStoreProtocol = InMemoryRunStore()
     if repo is None:
         dsn = os.environ.get("SOC_ONTOLOGY_DSN")
         if dsn:
             import psycopg
 
+            from backend.agents.run_store import PostgresRunStore
             from backend.db.repository import PostgresRepository
 
             conn = psycopg.connect(dsn)
             repo = PostgresRepository(conn)
+            run_store = PostgresRunStore(conn)
             backend_kind = "postgres"
         else:
             repo = InMemoryRepository.from_fixtures(fixtures_dir)
@@ -73,7 +81,15 @@ def build_services(
         portfolio=PortfolioService(repo),
         review=ReviewService(repo),
         traceability=TraceabilityService(repo, index),
+        advisory=AdvisoryRunner(repo, run_store),
+        run_store=run_store,
     )
+
+
+class AdvisoryRequest(BaseModel):
+    """advisory 실행 요청 — 역할 미지정 시 7개 역할 전체."""
+
+    roles: list[str] | None = Field(default=None, description="role_id 목록 (기본: 전체)")
 
 
 def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
@@ -177,5 +193,20 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     @app.get(f"{prefix}/review/weekly/{{week}}", response_model=WeeklySnapshot)
     def weekly_snapshot(week: int) -> WeeklySnapshot:
         return services.review.snapshot(week)
+
+    @app.post(f"{prefix}/scenarios/{{scenario_id}}/advisory", response_model=AgentRun)
+    def run_advisory(scenario_id: str, request: AdvisoryRequest | None = None) -> AgentRun:
+        """역할 조언 생성 — provider 체인 실행, 감사 기록 저장 (데이터 수정 아님)."""
+        try:
+            return services.advisory.run(
+                scenario_id, role_ids=request.roles if request else None
+            )
+        except ScenarioNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get(f"{prefix}/scenarios/{{scenario_id}}/advisory", response_model=list[AgentRun])
+    def list_advisory(scenario_id: str) -> list[AgentRun]:
+        """해당 시나리오의 advisory 실행 기록 (최신순)."""
+        return services.run_store.list_for_scenario(scenario_id)
 
     return app

@@ -79,6 +79,8 @@ OBJECT_LABELS: dict[str, str] = {
     # relation
     "Relation": "관계",
     "SimulationRun": "시뮬레이션 실행",
+    "AgentRun": "조언 실행 기록",
+    "RoleAdvisory": "역할 조언",
     # common
     "GroundedStatement": "근거 문장",
     "SourceMeta": "출처 메타데이터",
@@ -501,6 +503,20 @@ MODEL_FIELD_LABELS: dict[str, dict[str, str]] = {
         "risk_assessment": "리스크 평가",
         "feedback_items": "피드백 항목",
         "derivation_summary": "도출 요약",
+    },
+    "RoleAdvisory": {
+        "run_id": "실행 ID",
+        "provider": "생성 엔진",
+        "model_name": "모델",
+        "derivation_summary": "도출 요약",
+    },
+    "AgentRun": {
+        "input_hash": "입력 해시",
+        "requested_roles": "요청 역할",
+        "advisories": "조언 목록",
+        "validation_notes": "검증 기록",
+        "duration_ms": "소요 시간(ms)",
+        "created_at": "생성 시각",
     },
     "DecisionOption": {
         "label": "표시명",

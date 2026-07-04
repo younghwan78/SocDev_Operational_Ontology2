@@ -11,42 +11,6 @@
       "title": "Confidence",
       "type": "string"
     },
-    "FeedbackItem": {
-      "additionalProperties": false,
-      "description": "HW/SW 개발 → System Engineering/SoC Architecture 피드백 (런타임 계약).",
-      "properties": {
-        "confidence": {
-          "$ref": "#/$defs/Confidence"
-        },
-        "description": {
-          "title": "Description",
-          "type": "string"
-        },
-        "description_derivation": {
-          "title": "Description Derivation",
-          "type": "string"
-        },
-        "supporting_basis": {
-          "items": {
-            "type": "string"
-          },
-          "title": "Supporting Basis",
-          "type": "array"
-        },
-        "target_role": {
-          "title": "Target Role",
-          "type": "string"
-        }
-      },
-      "required": [
-        "target_role",
-        "description",
-        "description_derivation",
-        "confidence"
-      ],
-      "title": "FeedbackItem",
-      "type": "object"
-    },
     "GroundedStatement": {
       "additionalProperties": false,
       "description": "근거 문장 — 서술/도출 과정/뒷받침 근거/확신도를 항상 함께 갖는다.",
@@ -81,7 +45,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Role agent 런타임 출력 계약 — 이벤트 시뮬레이션용 스키마 (fixture 없음).",
+  "description": "시나리오 조언 — role agent 관점의 evidence-grounded 검토 의견 (런타임 계약).\n\nvalidator를 통과한 출력만 이 계약으로 채택된다. 최종 결정이 아니다.",
   "properties": {
     "concerns": {
       "items": {
@@ -92,13 +56,6 @@
     },
     "confidence": {
       "$ref": "#/$defs/Confidence"
-    },
-    "cost_impact": {
-      "additionalProperties": {
-        "type": "string"
-      },
-      "title": "Cost Impact",
-      "type": "object"
     },
     "derivation_summary": {
       "anyOf": [
@@ -112,23 +69,33 @@
       "default": null,
       "title": "Derivation Summary"
     },
-    "event_id": {
-      "title": "Event Id",
-      "type": "string"
-    },
-    "feedback_items": {
-      "items": {
-        "$ref": "#/$defs/FeedbackItem"
-      },
-      "title": "Feedback Items",
-      "type": "array"
-    },
     "missing_information": {
       "items": {
         "type": "string"
       },
       "title": "Missing Information",
       "type": "array"
+    },
+    "model_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Name"
+    },
+    "not_final_decision": {
+      "default": true,
+      "title": "Not Final Decision",
+      "type": "boolean"
+    },
+    "provider": {
+      "title": "Provider",
+      "type": "string"
     },
     "recommendation": {
       "title": "Recommendation",
@@ -141,24 +108,16 @@
       "title": "Required Evidence",
       "type": "array"
     },
-    "risk_assessment": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Risk Assessment"
-    },
     "role_id": {
       "title": "Role Id",
       "type": "string"
     },
     "run_id": {
       "title": "Run Id",
+      "type": "string"
+    },
+    "scenario_id": {
+      "title": "Scenario Id",
       "type": "string"
     },
     "summary": {
@@ -168,12 +127,13 @@
   },
   "required": [
     "run_id",
-    "event_id",
+    "scenario_id",
     "role_id",
+    "provider",
     "summary",
     "recommendation",
     "confidence"
   ],
-  "title": "RoleOutput",
+  "title": "RoleAdvisory",
   "type": "object"
 }

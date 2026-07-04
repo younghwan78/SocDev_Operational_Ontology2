@@ -57,3 +57,23 @@ export async function fetchTraceability(objectId: string): Promise<TraceabilityR
   if (error || !data) throw new Error("traceability 조회 실패");
   return data;
 }
+
+export type AgentRun = components["schemas"]["AgentRun"];
+export type RoleAdvisory = components["schemas"]["RoleAdvisory"];
+
+export async function fetchAdvisoryRuns(scenarioId: string): Promise<AgentRun[]> {
+  const { data, error } = await client.GET("/api/v1/scenarios/{scenario_id}/advisory", {
+    params: { path: { scenario_id: scenarioId } },
+  });
+  if (error || !data) throw new Error("advisory 조회 실패");
+  return data;
+}
+
+export async function runAdvisory(scenarioId: string, roles?: string[]): Promise<AgentRun> {
+  const { data, error } = await client.POST("/api/v1/scenarios/{scenario_id}/advisory", {
+    params: { path: { scenario_id: scenarioId } },
+    body: { roles: roles ?? null },
+  });
+  if (error || !data) throw new Error("advisory 실행 실패");
+  return data;
+}

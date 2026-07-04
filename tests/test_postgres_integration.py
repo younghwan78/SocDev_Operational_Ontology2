@@ -93,6 +93,33 @@ def test_semantic_chunks_projection_populated(pg_conn, seeded) -> None:
     assert count == seeded["semantic_chunks"]
 
 
+def test_postgres_run_store_roundtrip(pg_conn) -> None:
+    """agent_runs 감사 기록의 PostgreSQL 저장/조회 왕복."""
+    from datetime import UTC, datetime
+
+    from backend.agents.run_store import PostgresRunStore
+    from backend.ontology.relation import AgentRun
+
+    store = PostgresRunStore(pg_conn)
+    run = AgentRun(
+        id="run_test_pg_0001",
+        scenario_id="uhd60_recording_eis_on",
+        status="completed",
+        input_hash="abc123",
+        requested_roles=["pm"],
+        advisories=[],
+        validation_notes=["테스트 기록"],
+        duration_ms=12,
+        created_at=datetime.now(UTC).isoformat(),
+    )
+    store.save(run)
+    store.save(run)  # 멱등
+    stored = store.list_for_scenario("uhd60_recording_eis_on")
+    assert any(r.id == "run_test_pg_0001" for r in stored)
+    match = next(r for r in stored if r.id == "run_test_pg_0001")
+    assert match.validation_notes == ["테스트 기록"]
+
+
 def test_api_parity_memory_vs_postgres(pg_conn, seeded) -> None:
     """API 응답은 저장소 백엔드(메모리/PostgreSQL)와 무관하게 동일해야 한다."""
     from backend.api.app import create_app

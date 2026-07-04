@@ -122,6 +122,28 @@
         "title": "ActivityTraceability",
         "type": "object"
       },
+      "AdvisoryRequest": {
+        "description": "advisory 실행 요청 — 역할 미지정 시 7개 역할 전체.",
+        "properties": {
+          "roles": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "role_id 목록 (기본: 전체)",
+            "title": "Roles"
+          }
+        },
+        "title": "AdvisoryRequest",
+        "type": "object"
+      },
       "AffectedScope": {
         "additionalProperties": false,
         "description": "이슈 영향 범위.",
@@ -156,6 +178,67 @@
           }
         },
         "title": "AffectedScope",
+        "type": "object"
+      },
+      "AgentRun": {
+        "additionalProperties": false,
+        "description": "Advisory 실행 감사 기록 — 누가 언제 어떤 근거로 조언을 받았는지 (런타임 계약).\n\nprovider/모델/입력 해시/검증 기록을 남긴다. 온톨로지 데이터가 아니라 감사 데이터다.",
+        "properties": {
+          "advisories": {
+            "items": {
+              "$ref": "#/components/schemas/RoleAdvisory"
+            },
+            "title": "Advisories",
+            "type": "array"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "duration_ms": {
+            "default": 0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "input_hash": {
+            "title": "Input Hash",
+            "type": "string"
+          },
+          "requested_roles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Requested Roles",
+            "type": "array"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "validation_notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Validation Notes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "scenario_id",
+          "status",
+          "input_hash",
+          "created_at"
+        ],
+        "title": "AgentRun",
         "type": "object"
       },
       "AttentionItem": {
@@ -2067,6 +2150,98 @@
         "title": "RoleActivity",
         "type": "object"
       },
+      "RoleAdvisory": {
+        "additionalProperties": false,
+        "description": "시나리오 조언 — role agent 관점의 evidence-grounded 검토 의견 (런타임 계약).\n\nvalidator를 통과한 출력만 이 계약으로 채택된다. 최종 결정이 아니다.",
+        "properties": {
+          "concerns": {
+            "items": {
+              "$ref": "#/components/schemas/GroundedStatement"
+            },
+            "title": "Concerns",
+            "type": "array"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "derivation_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derivation Summary"
+          },
+          "missing_information": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Information",
+            "type": "array"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "not_final_decision": {
+            "default": true,
+            "title": "Not Final Decision",
+            "type": "boolean"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "recommendation": {
+            "title": "Recommendation",
+            "type": "string"
+          },
+          "required_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Required Evidence",
+            "type": "array"
+          },
+          "role_id": {
+            "title": "Role Id",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "scenario_id",
+          "role_id",
+          "provider",
+          "summary",
+          "recommendation",
+          "confidence"
+        ],
+        "title": "RoleAdvisory",
+        "type": "object"
+      },
       "SafetyFlags": {
         "additionalProperties": false,
         "description": "활동의 안전 플래그 — 자동 결정/실행이 아님을 명시.",
@@ -3615,6 +3790,105 @@
           }
         },
         "summary": "List Scenarios"
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/advisory": {
+      "get": {
+        "description": "해당 시나리오의 advisory 실행 기록 (최신순).",
+        "operationId": "list_advisory_api_v1_scenarios__scenario_id__advisory_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AgentRun"
+                  },
+                  "title": "Response List Advisory Api V1 Scenarios  Scenario Id  Advisory Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Advisory"
+      },
+      "post": {
+        "description": "역할 조언 생성 — provider 체인 실행, 감사 기록 저장 (데이터 수정 아님).",
+        "operationId": "run_advisory_api_v1_scenarios__scenario_id__advisory_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/AdvisoryRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentRun"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Advisory"
       }
     },
     "/api/v1/scenarios/{scenario_id}/analysis": {

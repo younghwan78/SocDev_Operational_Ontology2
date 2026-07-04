@@ -32,8 +32,8 @@ from backend.ontology.project import (
     ProjectMilestone,
     ProjectScenarioFocus,
 )
-from backend.ontology.relation import Relation, SimulationRun
-from backend.ontology.role import RoleActivity, RoleAgent, RoleOutput
+from backend.ontology.relation import AgentRun, Relation, SimulationRun
+from backend.ontology.role import RoleActivity, RoleAdvisory, RoleAgent, RoleOutput
 from backend.ontology.scenario import (
     KPIDefinition,
     Scenario,
@@ -82,6 +82,8 @@ COLLECTIONS: dict[str, tuple[str, type[OntologyObject]]] = {
 RUNTIME_CONTRACTS: dict[str, type[OntologyModel]] = {
     "role_output": RoleOutput,
     "grounded_statement": GroundedStatement,
+    "role_advisory": RoleAdvisory,
+    "agent_run": AgentRun,
 }
 
 __all__ = [
