@@ -5,9 +5,9 @@
 
 ## 0-a. 로컬 실행 포트 규칙 (이 머신)
 
-- **58 전용 포트: frontend `127.0.0.1:5273` / backend API `127.0.0.1:8155`.**
+- **58 전용 포트: frontend `127.0.0.1:5275` / backend API `127.0.0.1:8155`.**
 - 8000, 5173, 5174, 8100 등 다른 포트의 프로세스는 **다른 Claude Code 세션/프로젝트 소유** — 절대 종료하거나 사용하지 않는다.
-- frontend 실행: `VITE_API_TARGET=http://127.0.0.1:8155 npx vite --port 5273 --strictPort`
+- frontend 실행: `VITE_API_TARGET=http://127.0.0.1:8155 npx vite --port 5275 --strictPort`
 - backend 실행: `uv run uvicorn backend.api.app:create_app --factory --port 8155`
 
 ## 0. Reference Directory (READ-ONLY)

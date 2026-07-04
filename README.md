@@ -17,7 +17,7 @@ uv run python -m backend.cli.main validate-data        # fixture 검증
 uv run uvicorn backend.api.app:create_app --factory --port 8155
 ```
 
-> 이 머신의 포트 규칙: 58은 **8155(API) / 5273(frontend)** 전용.
+> 이 머신의 포트 규칙: 58은 **8155(API) / 5275(frontend)** 전용.
 > 8000/5173 등은 다른 프로젝트(56 등)가 사용하므로 건드리지 않는다.
 
 PostgreSQL 사용 시 (선택):
@@ -33,8 +33,8 @@ SOC_ONTOLOGY_DSN=postgresql://... uv run uvicorn backend.api.app:create_app --fa
 ```bash
 cd frontend
 npm install
-VITE_API_TARGET=http://127.0.0.1:8155 npx vite --host 127.0.0.1 --port 5273 --strictPort
-# → http://127.0.0.1:5273 (API는 /api proxy → VITE_API_TARGET)
+VITE_API_TARGET=http://127.0.0.1:8155 npx vite --host 127.0.0.1 --port 5275 --strictPort
+# → http://127.0.0.1:5275 (API는 /api proxy → VITE_API_TARGET)
 ```
 
 ## 검증
