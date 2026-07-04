@@ -1,0 +1,3742 @@
+{
+  "components": {
+    "schemas": {
+      "ActivityInputContext": {
+        "additionalProperties": false,
+        "description": "활동 입력 컨텍스트 — 어떤 fixture 근거로 검토했는지.",
+        "properties": {
+          "candidate_option_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Candidate Option Ids",
+            "type": "array"
+          },
+          "decision_question_ref": {
+            "default": false,
+            "title": "Decision Question Ref",
+            "type": "boolean"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "milestone_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Milestone Ids",
+            "type": "array"
+          },
+          "missing_data": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Data",
+            "type": "array"
+          },
+          "propagation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Propagation Ids",
+            "type": "array"
+          },
+          "required_evidence_need_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Required Evidence Need Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "event_id"
+        ],
+        "title": "ActivityInputContext",
+        "type": "object"
+      },
+      "ActivityRecommendation": {
+        "additionalProperties": false,
+        "description": "활동 권고 — 최종 결정이 아닌 검토 권고.",
+        "properties": {
+          "not_final_decision": {
+            "default": true,
+            "title": "Not Final Decision",
+            "type": "boolean"
+          },
+          "recommendation_type": {
+            "title": "Recommendation Type",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "target_roles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Target Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "recommendation_type",
+          "summary"
+        ],
+        "title": "ActivityRecommendation",
+        "type": "object"
+      },
+      "ActivityTraceability": {
+        "additionalProperties": false,
+        "description": "활동 traceability — 출처와 도출 과정.",
+        "properties": {
+          "description_derivation": {
+            "title": "Description Derivation",
+            "type": "string"
+          },
+          "not_causal_proof": {
+            "default": true,
+            "title": "Not Causal Proof",
+            "type": "boolean"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "description_derivation"
+        ],
+        "title": "ActivityTraceability",
+        "type": "object"
+      },
+      "AffectedScope": {
+        "additionalProperties": false,
+        "description": "이슈 영향 범위.",
+        "properties": {
+          "ip_blocks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Ip Blocks",
+            "type": "array"
+          },
+          "kpis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Kpis",
+            "type": "array"
+          },
+          "scenarios": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "system_blocks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "System Blocks",
+            "type": "array"
+          }
+        },
+        "title": "AffectedScope",
+        "type": "object"
+      },
+      "AttentionItem": {
+        "additionalProperties": false,
+        "description": "주의 항목 — lane별 소스 연결 항목. 점수 없음, 결정 아님.",
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "lane": {
+            "title": "Lane",
+            "type": "string"
+          },
+          "lane_ko": {
+            "title": "Lane Ko",
+            "type": "string"
+          },
+          "project_ids": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Project Ids",
+            "type": "array"
+          },
+          "ref_collection": {
+            "title": "Ref Collection",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "source_refs": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "suggested_review_roles": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Suggested Review Roles",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lane",
+          "lane_ko",
+          "ref_id",
+          "ref_collection",
+          "title",
+          "description"
+        ],
+        "title": "AttentionItem",
+        "type": "object"
+      },
+      "CandidateOption": {
+        "additionalProperties": false,
+        "description": "검토 후보 옵션 — 결정이 아닌 검토 대상.",
+        "properties": {
+          "current_posture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Posture"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "feasibility": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feasibility"
+          },
+          "known_risks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Known Risks",
+            "type": "array"
+          },
+          "option_id": {
+            "title": "Option Id",
+            "type": "string"
+          },
+          "option_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Option Type"
+          },
+          "qualitative_impact": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Qualitative Impact",
+            "type": "object"
+          },
+          "related_ip_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Ip Ids",
+            "type": "array"
+          },
+          "related_scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Scenario Ids",
+            "type": "array"
+          },
+          "required_evidence_need_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Required Evidence Need Ids",
+            "type": "array"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "target_project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Project Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "option_id",
+          "title"
+        ],
+        "title": "CandidateOption",
+        "type": "object"
+      },
+      "Confidence": {
+        "description": "확신도 — evidence-grounded 출력의 공통 척도.",
+        "enum": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "title": "Confidence",
+        "type": "string"
+      },
+      "ConfidencePosture": {
+        "additionalProperties": false,
+        "description": "확신도 자세 — 수준/방향/차단 요인.",
+        "properties": {
+          "blocked_by": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Blocked By",
+            "type": "array"
+          },
+          "direction": {
+            "title": "Direction",
+            "type": "string"
+          },
+          "level": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "level",
+          "direction",
+          "rationale"
+        ],
+        "title": "ConfidencePosture",
+        "type": "object"
+      },
+      "ConfidenceSignal": {
+        "additionalProperties": false,
+        "description": "이벤트가 주는 확신도 신호 — 방향과 근거.",
+        "properties": {
+          "basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "direction": {
+            "title": "Direction",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "direction",
+          "reason"
+        ],
+        "title": "ConfidenceSignal",
+        "type": "object"
+      },
+      "DecisionQuestion": {
+        "additionalProperties": false,
+        "description": "이벤트가 제기하는 결정 질문 — 최종 결정이 아님.",
+        "properties": {
+          "not_final_decision": {
+            "default": true,
+            "title": "Not Final Decision",
+            "type": "boolean"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "question_id": {
+            "title": "Question Id",
+            "type": "string"
+          },
+          "required_by_week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required By Week"
+          },
+          "scopes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scopes",
+            "type": "array"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "question_id",
+          "question"
+        ],
+        "title": "DecisionQuestion",
+        "type": "object"
+      },
+      "DevelopmentEvent": {
+        "additionalProperties": false,
+        "description": "개발 이벤트 — 마일스톤/이슈/검토/전파 등 개발 과정의 사건 단위.\n\n56의 event(구 MVP)와 development_event(Stage36) 계약을 통합했다.\n구 event는 week/quarter가 없으므로 해당 필드는 optional이다.",
+        "properties": {
+          "affected_domains": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Affected Domains",
+            "type": "array"
+          },
+          "candidate_options": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateOption"
+            },
+            "title": "Candidate Options",
+            "type": "array"
+          },
+          "confidence_signal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConfidenceSignal"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decision_question": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DecisionQuestion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "event_category": {
+            "title": "Event Category",
+            "type": "string"
+          },
+          "event_relations": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventRelations"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "event_type": {
+            "title": "Event Type",
+            "type": "string"
+          },
+          "expected_review_output": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExpectedReviewOutput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "lifecycle_stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lifecycle Stage"
+          },
+          "linked_evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Evidence Ids",
+            "type": "array"
+          },
+          "linked_milestone_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Milestone Ids",
+            "type": "array"
+          },
+          "linked_propagation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Propagation Ids",
+            "type": "array"
+          },
+          "linked_request_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Request Ids",
+            "type": "array"
+          },
+          "linked_scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Scenario Ids",
+            "type": "array"
+          },
+          "missing_data": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Data",
+            "type": "array"
+          },
+          "not_final_decision": {
+            "default": true,
+            "title": "Not Final Decision",
+            "type": "boolean"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "quarter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quarter"
+          },
+          "read_only": {
+            "default": true,
+            "title": "Read Only",
+            "type": "boolean"
+          },
+          "requested_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested By"
+          },
+          "required_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/RequiredEvidenceNeed"
+            },
+            "title": "Required Evidence",
+            "type": "array"
+          },
+          "resource_signal": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Resource Signal",
+            "type": "array"
+          },
+          "review_posture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Posture"
+          },
+          "roles_involved": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Roles Involved",
+            "type": "array"
+          },
+          "schedule_signal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schedule Signal"
+          },
+          "severity": {
+            "default": "info",
+            "title": "Severity",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "source_basis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Basis",
+            "type": "array"
+          },
+          "status": {
+            "default": "recorded",
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "title",
+          "description",
+          "event_type",
+          "event_category"
+        ],
+        "title": "DevelopmentEvent",
+        "type": "object"
+      },
+      "EventRelations": {
+        "additionalProperties": false,
+        "description": "이벤트 간 관계 — 인과 증명이 아닌 유래/전파/검증 연결.",
+        "properties": {
+          "derived_from_event_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Derived From Event Ids",
+            "type": "array"
+          },
+          "not_causal_proof": {
+            "default": true,
+            "title": "Not Causal Proof",
+            "type": "boolean"
+          },
+          "predecessor_event_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Predecessor Event Ids",
+            "type": "array"
+          },
+          "propagation_event_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Propagation Event Ids",
+            "type": "array"
+          },
+          "supersedes_event_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supersedes Event Ids",
+            "type": "array"
+          },
+          "validation_event_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Validation Event Ids",
+            "type": "array"
+          }
+        },
+        "title": "EventRelations",
+        "type": "object"
+      },
+      "EvidenceAssessment": {
+        "additionalProperties": false,
+        "description": "근거 평가 — 개별 근거의 한계와 역할 해석.",
+        "properties": {
+          "assessment": {
+            "title": "Assessment",
+            "type": "string"
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "limitation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limitation"
+          },
+          "missing_information_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Information Ref"
+          },
+          "role_interpretation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role Interpretation"
+          }
+        },
+        "required": [
+          "assessment"
+        ],
+        "title": "EvidenceAssessment",
+        "type": "object"
+      },
+      "EvidenceCatalogEntry": {
+        "additionalProperties": false,
+        "description": "근거 카탈로그 — 시나리오별 근거의 가용성/한계/기여도 목록.",
+        "properties": {
+          "availability": {
+            "title": "Availability",
+            "type": "string"
+          },
+          "confidence_contribution": {
+            "title": "Confidence Contribution",
+            "type": "string"
+          },
+          "evidence_type": {
+            "title": "Evidence Type",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "is_measurement": {
+            "title": "Is Measurement",
+            "type": "boolean"
+          },
+          "is_prediction": {
+            "title": "Is Prediction",
+            "type": "boolean"
+          },
+          "known_limitation": {
+            "title": "Known Limitation",
+            "type": "string"
+          },
+          "measurement_stage": {
+            "title": "Measurement Stage",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "related_milestone_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Milestone Ids",
+            "type": "array"
+          },
+          "related_request_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Request Ids",
+            "type": "array"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_match": {
+            "title": "Scenario Match",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          },
+          "source_system": {
+            "title": "Source System",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "week": {
+            "title": "Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "scenario_id",
+          "title",
+          "evidence_type",
+          "availability",
+          "confidence_contribution",
+          "is_measurement",
+          "is_prediction",
+          "known_limitation",
+          "measurement_stage",
+          "scenario_match",
+          "source_system",
+          "source_ref",
+          "week"
+        ],
+        "title": "EvidenceCatalogEntry",
+        "type": "object"
+      },
+      "EvidenceGapItem": {
+        "additionalProperties": false,
+        "description": "근거 공백 항목 — 어떤 근거가 왜 부족한지.",
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "kind_ko": {
+            "title": "Kind Ko",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "source_refs": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "kind",
+          "kind_ko",
+          "ref_id",
+          "description"
+        ],
+        "title": "EvidenceGapItem",
+        "type": "object"
+      },
+      "ExpectedReviewOutput": {
+        "additionalProperties": false,
+        "description": "이벤트 검토의 기대 산출물.",
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "not_final_decision": {
+            "default": true,
+            "title": "Not Final Decision",
+            "type": "boolean"
+          },
+          "output_type": {
+            "title": "Output Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "output_type",
+          "description"
+        ],
+        "title": "ExpectedReviewOutput",
+        "type": "object"
+      },
+      "GroundedStatement": {
+        "additionalProperties": false,
+        "description": "근거 문장 — 서술/도출 과정/뒷받침 근거/확신도를 항상 함께 갖는다.",
+        "properties": {
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "description_derivation": {
+            "title": "Description Derivation",
+            "type": "string"
+          },
+          "supporting_basis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supporting Basis",
+            "type": "array"
+          }
+        },
+        "required": [
+          "description",
+          "description_derivation",
+          "supporting_basis",
+          "confidence"
+        ],
+        "title": "GroundedStatement",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Issue": {
+        "additionalProperties": false,
+        "description": "개발 이슈 — 증상/근본원인 후보/영향 범위.",
+        "properties": {
+          "affected_scope": {
+            "$ref": "#/components/schemas/AffectedScope"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Refs",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "issue_type": {
+            "title": "Issue Type",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "root_cause_candidates": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Root Cause Candidates",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "symptom": {
+            "title": "Symptom",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "title",
+          "issue_type",
+          "status",
+          "symptom",
+          "confidence"
+        ],
+        "title": "Issue",
+        "type": "object"
+      },
+      "KPIDefinition": {
+        "additionalProperties": false,
+        "description": "KPI 정의 — 방향(높을수록/낮을수록 좋음)과 단위를 갖는 지표.",
+        "properties": {
+          "direction": {
+            "title": "Direction",
+            "type": "string"
+          },
+          "group": {
+            "title": "Group",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "group",
+          "unit",
+          "direction"
+        ],
+        "title": "KPIDefinition",
+        "type": "object"
+      },
+      "MeasurementEvidence": {
+        "additionalProperties": false,
+        "description": "측정 근거 — 실측/예측 값과 한계를 갖는 근거.",
+        "properties": {
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "evidence_id": {
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "evidence_type": {
+            "title": "Evidence Type",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "measurement_type": {
+            "title": "Measurement Type",
+            "type": "string"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "observed_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed Value"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "qualitative_result": {
+            "title": "Qualitative Result",
+            "type": "string"
+          },
+          "related_ip_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Ip Ids",
+            "type": "array"
+          },
+          "related_knob_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Knob Ids",
+            "type": "array"
+          },
+          "related_kpi_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Kpi Ids",
+            "type": "array"
+          },
+          "related_measurement_requirement_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Measurement Requirement Ids",
+            "type": "array"
+          },
+          "related_resource_profile_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Resource Profile Ids",
+            "type": "array"
+          },
+          "related_risk_basis_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Risk Basis Ids",
+            "type": "array"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "source_kind": {
+            "title": "Source Kind",
+            "type": "string"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value_status": {
+            "title": "Value Status",
+            "type": "string"
+          },
+          "variant_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant Id"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "title",
+          "evidence_type",
+          "measurement_type",
+          "event_id",
+          "evidence_id",
+          "scenario_id",
+          "value_status",
+          "qualitative_result",
+          "confidence",
+          "source_kind",
+          "source_ref"
+        ],
+        "title": "MeasurementEvidence",
+        "type": "object"
+      },
+      "MeasurementRequirement": {
+        "additionalProperties": false,
+        "description": "측정 요구 — 어떤 측정이 무엇을 위해 필요한지.",
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "measurement_type": {
+            "title": "Measurement Type",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "related_evidence_gap_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Evidence Gap Ids",
+            "type": "array"
+          },
+          "related_ip_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Ip Ids",
+            "type": "array"
+          },
+          "related_knob_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Knob Ids",
+            "type": "array"
+          },
+          "related_kpi_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Kpi Ids",
+            "type": "array"
+          },
+          "related_resource_profile_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Resource Profile Ids",
+            "type": "array"
+          },
+          "related_risk_basis_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Risk Basis Ids",
+            "type": "array"
+          },
+          "required_for": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Required For",
+            "type": "array"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "variant_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant Id"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "title",
+          "description",
+          "measurement_type",
+          "event_id",
+          "scenario_id",
+          "source_ref"
+        ],
+        "title": "MeasurementRequirement",
+        "type": "object"
+      },
+      "OptionAssessment": {
+        "additionalProperties": false,
+        "description": "옵션 평가 — 역할 관점의 후보 옵션 검토.",
+        "properties": {
+          "blockers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
+          "expected_impact": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Expected Impact",
+            "type": "object"
+          },
+          "option_id": {
+            "title": "Option Id",
+            "type": "string"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "role_posture": {
+            "title": "Role Posture",
+            "type": "string"
+          }
+        },
+        "required": [
+          "option_id",
+          "role_posture",
+          "rationale"
+        ],
+        "title": "OptionAssessment",
+        "type": "object"
+      },
+      "PortfolioOverview": {
+        "additionalProperties": false,
+        "description": "포트폴리오 현황 파생 뷰.",
+        "properties": {
+          "attention": {
+            "items": {
+              "$ref": "#/components/schemas/AttentionItem"
+            },
+            "title": "Attention",
+            "type": "array"
+          },
+          "matrix": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioCell"
+            },
+            "title": "Matrix",
+            "type": "array"
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectSummary"
+            },
+            "title": "Projects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "projects",
+          "attention",
+          "matrix"
+        ],
+        "title": "PortfolioOverview",
+        "type": "object"
+      },
+      "Project": {
+        "additionalProperties": false,
+        "description": "SoC 개발 프로젝트 (U: 양산 N / V: N+1 / W: N+2 스펙 탐색).",
+        "properties": {
+          "customer_stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Stage"
+          },
+          "hw_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hw Status"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "key_themes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Key Themes",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "phase": {
+            "title": "Phase",
+            "type": "string"
+          },
+          "silicon_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Silicon Status"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "spec_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spec Status"
+          },
+          "sw_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sw Status"
+          },
+          "target_product_generation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Product Generation"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "phase"
+        ],
+        "title": "Project",
+        "type": "object"
+      },
+      "ProjectScenarioFocus": {
+        "additionalProperties": false,
+        "description": "프로젝트가 특정 시나리오 그룹에 두는 연간 포커스.",
+        "properties": {
+          "annual_horizon": {
+            "$ref": "#/components/schemas/WeekWindow"
+          },
+          "development_stage_windows": {
+            "items": {
+              "$ref": "#/components/schemas/StageWindow"
+            },
+            "title": "Development Stage Windows",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "objectives": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Objectives",
+            "type": "array"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "relevant_roles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Relevant Roles",
+            "type": "array"
+          },
+          "scenario_group_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Group Ids",
+            "type": "array"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "title",
+          "priority",
+          "annual_horizon"
+        ],
+        "title": "ProjectScenarioFocus",
+        "type": "object"
+      },
+      "ProjectSpan": {
+        "additionalProperties": false,
+        "description": "시나리오 요청이 각 프로젝트에 걸치는 주차 구간과 영향 방향.",
+        "properties": {
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "end_week": {
+            "title": "End Week",
+            "type": "integer"
+          },
+          "evidence_status": {
+            "title": "Evidence Status",
+            "type": "string"
+          },
+          "impact_direction": {
+            "title": "Impact Direction",
+            "type": "string"
+          },
+          "lifecycle_stage": {
+            "title": "Lifecycle Stage",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "posture": {
+            "title": "Posture",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "start_week": {
+            "title": "Start Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "project_id",
+          "start_week",
+          "end_week",
+          "lifecycle_stage",
+          "impact_direction",
+          "posture",
+          "evidence_status",
+          "confidence"
+        ],
+        "title": "ProjectSpan",
+        "type": "object"
+      },
+      "ProjectSummary": {
+        "additionalProperties": false,
+        "description": "프로젝트 요약.",
+        "properties": {
+          "event_count": {
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "focuses": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectScenarioFocus"
+            },
+            "title": "Focuses",
+            "type": "array"
+          },
+          "milestone_count": {
+            "title": "Milestone Count",
+            "type": "integer"
+          },
+          "open_request_count": {
+            "title": "Open Request Count",
+            "type": "integer"
+          },
+          "project": {
+            "$ref": "#/components/schemas/Project"
+          }
+        },
+        "required": [
+          "project",
+          "milestone_count",
+          "open_request_count",
+          "event_count",
+          "focuses"
+        ],
+        "title": "ProjectSummary",
+        "type": "object"
+      },
+      "Propagation": {
+        "additionalProperties": false,
+        "description": "프로젝트 간 전파 — 인과 증명이 아닌 검토 연관(not_causal_proof).",
+        "properties": {
+          "at_week": {
+            "title": "At Week",
+            "type": "integer"
+          },
+          "from_project_id": {
+            "title": "From Project Id",
+            "type": "string"
+          },
+          "not_causal_proof": {
+            "default": true,
+            "title": "Not Causal Proof",
+            "type": "boolean"
+          },
+          "propagation_id": {
+            "title": "Propagation Id",
+            "type": "string"
+          },
+          "propagation_type": {
+            "title": "Propagation Type",
+            "type": "string"
+          },
+          "relation_summary": {
+            "title": "Relation Summary",
+            "type": "string"
+          },
+          "to_project_id": {
+            "title": "To Project Id",
+            "type": "string"
+          },
+          "trigger_role": {
+            "title": "Trigger Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "propagation_id",
+          "from_project_id",
+          "to_project_id",
+          "at_week",
+          "propagation_type",
+          "trigger_role",
+          "relation_summary"
+        ],
+        "title": "Propagation",
+        "type": "object"
+      },
+      "RequiredEvidenceNeed": {
+        "additionalProperties": false,
+        "description": "검토에 필요한 근거 요구 — 가용성과 확신도 상한을 명시.",
+        "properties": {
+          "availability": {
+            "title": "Availability",
+            "type": "string"
+          },
+          "blocks_confidence_above": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blocks Confidence Above"
+          },
+          "evidence_need_id": {
+            "title": "Evidence Need Id",
+            "type": "string"
+          },
+          "evidence_type": {
+            "title": "Evidence Type",
+            "type": "string"
+          },
+          "linked_evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Evidence Ids",
+            "type": "array"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "related_option_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Option Ids",
+            "type": "array"
+          },
+          "required_by_week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required By Week"
+          },
+          "review_impact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Impact"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "evidence_need_id",
+          "evidence_type",
+          "reason",
+          "availability"
+        ],
+        "title": "RequiredEvidenceNeed",
+        "type": "object"
+      },
+      "RoleActivity": {
+        "additionalProperties": false,
+        "description": "역할 주간 활동 — 이벤트 검토의 역할별 기록.",
+        "properties": {
+          "activity_type": {
+            "title": "Activity Type",
+            "type": "string"
+          },
+          "concerns": {
+            "items": {
+              "$ref": "#/components/schemas/GroundedStatement"
+            },
+            "title": "Concerns",
+            "type": "array"
+          },
+          "confidence_posture": {
+            "$ref": "#/components/schemas/ConfidencePosture"
+          },
+          "evidence_assessment": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceAssessment"
+            },
+            "title": "Evidence Assessment",
+            "type": "array"
+          },
+          "expected_output": {
+            "title": "Expected Output",
+            "type": "string"
+          },
+          "follow_up_actions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Follow Up Actions",
+            "type": "array"
+          },
+          "handoff_to_roles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Handoff To Roles",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "input_context": {
+            "$ref": "#/components/schemas/ActivityInputContext"
+          },
+          "linked_event_id": {
+            "title": "Linked Event Id",
+            "type": "string"
+          },
+          "linked_evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Evidence Ids",
+            "type": "array"
+          },
+          "linked_milestone_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Milestone Ids",
+            "type": "array"
+          },
+          "linked_propagation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Propagation Ids",
+            "type": "array"
+          },
+          "linked_request_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Request Ids",
+            "type": "array"
+          },
+          "linked_scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Scenario Ids",
+            "type": "array"
+          },
+          "missing_information": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Information",
+            "type": "array"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/components/schemas/GroundedStatement"
+            },
+            "title": "Observations",
+            "type": "array"
+          },
+          "option_assessments": {
+            "items": {
+              "$ref": "#/components/schemas/OptionAssessment"
+            },
+            "title": "Option Assessments",
+            "type": "array"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/ActivityRecommendation"
+          },
+          "role_id": {
+            "title": "Role Id",
+            "type": "string"
+          },
+          "safety": {
+            "$ref": "#/components/schemas/SafetyFlags"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "traceability": {
+            "$ref": "#/components/schemas/ActivityTraceability"
+          },
+          "week": {
+            "title": "Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "role_id",
+          "project_id",
+          "week",
+          "title",
+          "summary",
+          "activity_type",
+          "expected_output",
+          "linked_event_id",
+          "input_context",
+          "confidence_posture",
+          "recommendation",
+          "traceability"
+        ],
+        "title": "RoleActivity",
+        "type": "object"
+      },
+      "SafetyFlags": {
+        "additionalProperties": false,
+        "description": "활동의 안전 플래그 — 자동 결정/실행이 아님을 명시.",
+        "properties": {
+          "fixture_derived": {
+            "default": true,
+            "title": "Fixture Derived",
+            "type": "boolean"
+          },
+          "not_agent_execution": {
+            "default": true,
+            "title": "Not Agent Execution",
+            "type": "boolean"
+          },
+          "not_final_decision": {
+            "default": true,
+            "title": "Not Final Decision",
+            "type": "boolean"
+          },
+          "read_only": {
+            "default": true,
+            "title": "Read Only",
+            "type": "boolean"
+          }
+        },
+        "title": "SafetyFlags",
+        "type": "object"
+      },
+      "Scenario": {
+        "additionalProperties": false,
+        "description": "개발 시나리오 — IP/시스템 블록/KPI와 연결되는 기술 단위.",
+        "properties": {
+          "base_from_previous_project": {
+            "default": false,
+            "title": "Base From Previous Project",
+            "type": "boolean"
+          },
+          "catalog_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catalog Status"
+          },
+          "customer_request_relevance": {
+            "title": "Customer Request Relevance",
+            "type": "string"
+          },
+          "depends_on_system_blocks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Depends On System Blocks",
+            "type": "array"
+          },
+          "derived_from_scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived From Scenario Id"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "development_relevance": {
+            "title": "Development Relevance",
+            "type": "string"
+          },
+          "domain": {
+            "title": "Domain",
+            "type": "string"
+          },
+          "dou_relevance": {
+            "title": "Dou Relevance",
+            "type": "string"
+          },
+          "generation_path": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Generation Path",
+            "type": "array"
+          },
+          "hw_pipeline_change_sensitivity": {
+            "title": "Hw Pipeline Change Sensitivity",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "iq_relevance": {
+            "title": "Iq Relevance",
+            "type": "string"
+          },
+          "legacy_aliases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Legacy Aliases",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "primary_kpis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Primary Kpis",
+            "type": "array"
+          },
+          "project_relevance": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Project Relevance",
+            "type": "array"
+          },
+          "scenario_class": {
+            "title": "Scenario Class",
+            "type": "string"
+          },
+          "scenario_group_id": {
+            "title": "Scenario Group Id",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "source_basis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Basis",
+            "type": "array"
+          },
+          "sustain_power_relevance": {
+            "title": "Sustain Power Relevance",
+            "type": "string"
+          },
+          "sw_control_complexity": {
+            "title": "Sw Control Complexity",
+            "type": "string"
+          },
+          "uses_ip_blocks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Uses Ip Blocks",
+            "type": "array"
+          },
+          "variants": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Variants",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "domain",
+          "scenario_class",
+          "scenario_group_id",
+          "customer_request_relevance",
+          "development_relevance",
+          "dou_relevance",
+          "iq_relevance",
+          "sustain_power_relevance",
+          "hw_pipeline_change_sensitivity",
+          "sw_control_complexity"
+        ],
+        "title": "Scenario",
+        "type": "object"
+      },
+      "ScenarioAnalysis": {
+        "additionalProperties": false,
+        "description": "시나리오 종합 분석 — 파생 뷰(저장하지 않음).",
+        "properties": {
+          "activities": {
+            "items": {
+              "$ref": "#/components/schemas/RoleActivity"
+            },
+            "title": "Activities",
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/DevelopmentEvent"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "evidence_catalog": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceCatalogEntry"
+            },
+            "title": "Evidence Catalog",
+            "type": "array"
+          },
+          "evidence_gaps": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceGapItem"
+            },
+            "title": "Evidence Gaps",
+            "type": "array"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/Issue"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "kpis": {
+            "items": {
+              "$ref": "#/components/schemas/KPIDefinition"
+            },
+            "title": "Kpis",
+            "type": "array"
+          },
+          "measurement_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/MeasurementEvidence"
+            },
+            "title": "Measurement Evidence",
+            "type": "array"
+          },
+          "measurement_requirements": {
+            "items": {
+              "$ref": "#/components/schemas/MeasurementRequirement"
+            },
+            "title": "Measurement Requirements",
+            "type": "array"
+          },
+          "requests": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioRequest"
+            },
+            "title": "Requests",
+            "type": "array"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          },
+          "scenario_group": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioGroup"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineItem"
+            },
+            "title": "Timeline",
+            "type": "array"
+          },
+          "variants": {
+            "items": {
+              "$ref": "#/components/schemas/Variant"
+            },
+            "title": "Variants",
+            "type": "array"
+          }
+        },
+        "required": [
+          "scenario",
+          "scenario_group",
+          "variants",
+          "kpis",
+          "requests",
+          "events",
+          "activities",
+          "issues",
+          "evidence_catalog",
+          "measurement_evidence",
+          "measurement_requirements",
+          "evidence_gaps",
+          "timeline"
+        ],
+        "title": "ScenarioAnalysis",
+        "type": "object"
+      },
+      "ScenarioCell": {
+        "additionalProperties": false,
+        "description": "시나리오 × 프로젝트 매트릭스 셀.",
+        "properties": {
+          "event_count": {
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "gap_count": {
+            "title": "Gap Count",
+            "type": "integer"
+          },
+          "project_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Project Ids",
+            "type": "array"
+          },
+          "request_count": {
+            "title": "Request Count",
+            "type": "integer"
+          },
+          "scenario_group_id": {
+            "title": "Scenario Group Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_name": {
+            "title": "Scenario Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "scenario_name",
+          "scenario_group_id",
+          "project_ids",
+          "request_count",
+          "event_count",
+          "gap_count"
+        ],
+        "title": "ScenarioCell",
+        "type": "object"
+      },
+      "ScenarioGroup": {
+        "additionalProperties": false,
+        "description": "시나리오 그룹 — 같은 목적/KPI 축을 공유하는 시나리오 묶음.",
+        "properties": {
+          "feature_toggles": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "boolean"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feature Toggles"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "primary_kpis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Primary Kpis",
+            "type": "array"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "scenarios": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "variants": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variants"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "purpose"
+        ],
+        "title": "ScenarioGroup",
+        "type": "object"
+      },
+      "ScenarioRequest": {
+        "additionalProperties": false,
+        "description": "시나리오 요청 — 주간 검토 활동을 구동하는 요구 단위.",
+        "properties": {
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "domains": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Domains",
+            "type": "array"
+          },
+          "evidence_basis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Basis",
+            "type": "array"
+          },
+          "expected_weekly_activity_load": {
+            "title": "Expected Weekly Activity Load",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "linked_focus_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Focus Ids",
+            "type": "array"
+          },
+          "linked_review_pack_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Review Pack Ids",
+            "type": "array"
+          },
+          "linked_review_report_scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linked Review Report Scenario Id"
+          },
+          "management_interest": {
+            "title": "Management Interest",
+            "type": "string"
+          },
+          "milestone_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Milestone Refs",
+            "type": "array"
+          },
+          "missing_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Evidence",
+            "type": "array"
+          },
+          "origin_project_id": {
+            "title": "Origin Project Id",
+            "type": "string"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "string"
+          },
+          "project_spans": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectSpan"
+            },
+            "title": "Project Spans",
+            "type": "array"
+          },
+          "propagation": {
+            "items": {
+              "$ref": "#/components/schemas/Propagation"
+            },
+            "title": "Propagation",
+            "type": "array"
+          },
+          "request_scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Scope"
+          },
+          "request_type": {
+            "title": "Request Type",
+            "type": "string"
+          },
+          "requested_by_role": {
+            "title": "Requested By Role",
+            "type": "string"
+          },
+          "requested_week": {
+            "title": "Requested Week",
+            "type": "integer"
+          },
+          "review_cadence": {
+            "title": "Review Cadence",
+            "type": "string"
+          },
+          "role_relevance": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Role Relevance",
+            "type": "array"
+          },
+          "scenario_group_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Group Ids",
+            "type": "array"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "system_engineering_tracking_focus": {
+            "title": "System Engineering Tracking Focus",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "trigger_roles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Trigger Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "request_type",
+          "status",
+          "priority",
+          "confidence",
+          "origin_project_id",
+          "requested_by_role",
+          "requested_week",
+          "review_cadence",
+          "management_interest",
+          "system_engineering_tracking_focus",
+          "expected_weekly_activity_load"
+        ],
+        "title": "ScenarioRequest",
+        "type": "object"
+      },
+      "SourceMeta": {
+        "additionalProperties": false,
+        "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
+        "properties": {
+          "ingested_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ingested At"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/SourceOrigin",
+            "default": "synthetic"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref"
+          }
+        },
+        "title": "SourceMeta",
+        "type": "object"
+      },
+      "SourceOrigin": {
+        "description": "데이터 출처 구분 — 모든 저장 객체의 필수 속성.",
+        "enum": [
+          "synthetic",
+          "imported",
+          "integrated"
+        ],
+        "title": "SourceOrigin",
+        "type": "string"
+      },
+      "StageWindow": {
+        "additionalProperties": false,
+        "description": "개발 단계별 주차 구간과 측정 정책.",
+        "properties": {
+          "end_week": {
+            "title": "End Week",
+            "type": "integer"
+          },
+          "focus_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Focus Types",
+            "type": "array"
+          },
+          "measurement_policy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measurement Policy"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          },
+          "start_week": {
+            "title": "Start Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "stage",
+          "start_week",
+          "end_week"
+        ],
+        "title": "StageWindow",
+        "type": "object"
+      },
+      "TimelineItem": {
+        "additionalProperties": false,
+        "description": "주차 기반 타임라인 항목.",
+        "properties": {
+          "item_type": {
+            "title": "Item Type",
+            "type": "string"
+          },
+          "item_type_ko": {
+            "title": "Item Type Ko",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "roles": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Roles",
+            "type": "array"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "week": {
+            "title": "Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "week",
+          "item_type",
+          "item_type_ko",
+          "ref_id",
+          "title"
+        ],
+        "title": "TimelineItem",
+        "type": "object"
+      },
+      "TraceLink": {
+        "additionalProperties": false,
+        "description": "traceability 링크 하나 — 방향/유형/상대 객체.",
+        "properties": {
+          "direction": {
+            "title": "Direction",
+            "type": "string"
+          },
+          "link_type": {
+            "title": "Link Type",
+            "type": "string"
+          },
+          "other_collection": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Other Collection"
+          },
+          "other_id": {
+            "title": "Other Id",
+            "type": "string"
+          },
+          "other_label_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Other Label Ko"
+          },
+          "other_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Other Title"
+          },
+          "resolved": {
+            "default": true,
+            "title": "Resolved",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "direction",
+          "link_type",
+          "other_id"
+        ],
+        "title": "TraceLink",
+        "type": "object"
+      },
+      "TraceabilityResult": {
+        "additionalProperties": false,
+        "description": "객체 하나의 traceability 조립 결과.",
+        "properties": {
+          "collection": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collection"
+          },
+          "label_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label Ko"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/TraceLink"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "object_id": {
+            "title": "Object Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "links"
+        ],
+        "title": "TraceabilityResult",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "Variant": {
+        "additionalProperties": false,
+        "description": "시나리오 변형 — 해상도/fps/토글 등 구체 동작 조건.",
+        "properties": {
+          "ai_solution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Solution"
+          },
+          "capture_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capture Mode"
+          },
+          "dpu_clock_policy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dpu Clock Policy"
+          },
+          "fps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fps"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "operation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operation"
+          },
+          "operations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Operations",
+            "type": "array"
+          },
+          "panel_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Panel Mode"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "streams": {
+            "items": {
+              "$ref": "#/components/schemas/VariantStream"
+            },
+            "title": "Streams",
+            "type": "array"
+          },
+          "toggles": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "title": "Toggles",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "scenario_id",
+          "mode"
+        ],
+        "title": "Variant",
+        "type": "object"
+      },
+      "VariantStream": {
+        "additionalProperties": false,
+        "description": "다중 스트림 변형의 개별 스트림 사양.",
+        "properties": {
+          "fps": {
+            "title": "Fps",
+            "type": "integer"
+          },
+          "resolution": {
+            "title": "Resolution",
+            "type": "string"
+          }
+        },
+        "required": [
+          "resolution",
+          "fps"
+        ],
+        "title": "VariantStream",
+        "type": "object"
+      },
+      "WeekWindow": {
+        "additionalProperties": false,
+        "description": "주차 구간.",
+        "properties": {
+          "end_week": {
+            "title": "End Week",
+            "type": "integer"
+          },
+          "start_week": {
+            "title": "Start Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "start_week",
+          "end_week"
+        ],
+        "title": "WeekWindow",
+        "type": "object"
+      },
+      "WeeklyIndex": {
+        "additionalProperties": false,
+        "description": "주차 목록과 주차별 건수 요약.",
+        "properties": {
+          "activity_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Activity Counts",
+            "type": "object"
+          },
+          "event_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Event Counts",
+            "type": "object"
+          },
+          "request_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Request Counts",
+            "type": "object"
+          },
+          "weeks": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Weeks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "weeks",
+          "event_counts",
+          "activity_counts",
+          "request_counts"
+        ],
+        "title": "WeeklyIndex",
+        "type": "object"
+      },
+      "WeeklySnapshot": {
+        "additionalProperties": false,
+        "description": "한 주의 이벤트/활동/요청 스냅샷.",
+        "properties": {
+          "activities": {
+            "items": {
+              "$ref": "#/components/schemas/RoleActivity"
+            },
+            "title": "Activities",
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/DevelopmentEvent"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "requests": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioRequest"
+            },
+            "title": "Requests",
+            "type": "array"
+          },
+          "week": {
+            "title": "Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "week",
+          "events",
+          "activities",
+          "requests"
+        ],
+        "title": "WeeklySnapshot",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Multimedia SoC 개발 운영 온톨로지 — read-only 조회 표면",
+    "title": "SoC 운영 온톨로지 API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/events": {
+      "get": {
+        "operationId": "list_events_api_v1_events_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "week",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Week"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DevelopmentEvent"
+                  },
+                  "title": "Response List Events Api V1 Events Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Events"
+      }
+    },
+    "/api/v1/events/{event_id}": {
+      "get": {
+        "operationId": "get_event_api_v1_events__event_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "title": "Event Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevelopmentEvent"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Event"
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Api V1 Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/api/v1/meta": {
+      "get": {
+        "operationId": "meta_api_v1_meta_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Meta Api V1 Meta Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Meta"
+      }
+    },
+    "/api/v1/meta/glossary": {
+      "get": {
+        "operationId": "glossary_api_v1_meta_glossary_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Glossary Api V1 Meta Glossary Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Glossary"
+      }
+    },
+    "/api/v1/portfolio/overview": {
+      "get": {
+        "operationId": "portfolio_overview_api_v1_portfolio_overview_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Portfolio Overview"
+      }
+    },
+    "/api/v1/projects": {
+      "get": {
+        "operationId": "list_projects_api_v1_projects_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Project"
+                  },
+                  "title": "Response List Projects Api V1 Projects Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Projects"
+      }
+    },
+    "/api/v1/projects/{project_id}": {
+      "get": {
+        "operationId": "get_project_api_v1_projects__project_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Project"
+      }
+    },
+    "/api/v1/review/weekly": {
+      "get": {
+        "operationId": "weekly_index_api_v1_review_weekly_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyIndex"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Weekly Index"
+      }
+    },
+    "/api/v1/review/weekly/{week}": {
+      "get": {
+        "operationId": "weekly_snapshot_api_v1_review_weekly__week__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "week",
+            "required": true,
+            "schema": {
+              "title": "Week",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklySnapshot"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Weekly Snapshot"
+      }
+    },
+    "/api/v1/scenarios": {
+      "get": {
+        "operationId": "list_scenarios_api_v1_scenarios_get",
+        "parameters": [
+          {
+            "description": "프로젝트 필터",
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "프로젝트 필터",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Scenario"
+                  },
+                  "title": "Response List Scenarios Api V1 Scenarios Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Scenarios"
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/analysis": {
+      "get": {
+        "operationId": "scenario_analysis_api_v1_scenarios__scenario_id__analysis_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioAnalysis"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Scenario Analysis"
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/timeline": {
+      "get": {
+        "operationId": "scenario_timeline_api_v1_scenarios__scenario_id__timeline_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TimelineItem"
+                  },
+                  "title": "Response Scenario Timeline Api V1 Scenarios  Scenario Id  Timeline Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Scenario Timeline"
+      }
+    },
+    "/api/v1/traceability/{object_id}": {
+      "get": {
+        "operationId": "traceability_api_v1_traceability__object_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "title": "Object Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceabilityResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Traceability"
+      }
+    }
+  }
+}

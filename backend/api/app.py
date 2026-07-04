@@ -1,0 +1,181 @@
+"""Read-only FastAPI 표면 — 결정론 서비스 위의 조회 API.
+
+데이터 수정 엔드포인트는 없다. 저장소는 환경에 따라 선택된다:
+SOC_ONTOLOGY_DSN 설정 시 PostgreSQL, 아니면 fixtures 기반 in-memory.
+"""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel
+
+from backend.loaders.protocols import RepositoryProtocol
+from backend.loaders.repository import InMemoryRepository
+from backend.ontology import COLLECTIONS, RUNTIME_CONTRACTS
+from backend.ontology.event import DevelopmentEvent
+from backend.ontology.glossary import export_glossary
+from backend.ontology.project import Project
+from backend.ontology.scenario import Scenario
+from backend.resolve.object_index import ObjectIndex
+from backend.resolve.traceability import TraceabilityResult, TraceabilityService
+from backend.services.portfolio import PortfolioOverview, PortfolioService
+from backend.services.review import ReviewService, WeeklyIndex, WeeklySnapshot
+from backend.services.scenario_analysis import (
+    ScenarioAnalysis,
+    ScenarioAnalysisService,
+    ScenarioNotFoundError,
+    TimelineItem,
+)
+
+API_VERSION = "v1"
+ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_FIXTURES = ROOT / "fixtures"
+
+
+@dataclass
+class AppServices:
+    """앱 수명 동안 공유되는 저장소·서비스 묶음."""
+
+    repo: RepositoryProtocol
+    backend_kind: str
+    analysis: ScenarioAnalysisService
+    portfolio: PortfolioService
+    review: ReviewService
+    traceability: TraceabilityService
+
+
+def build_services(
+    repo: RepositoryProtocol | None = None, fixtures_dir: Path = DEFAULT_FIXTURES
+) -> AppServices:
+    backend_kind = "memory"
+    if repo is None:
+        dsn = os.environ.get("SOC_ONTOLOGY_DSN")
+        if dsn:
+            import psycopg
+
+            from backend.db.repository import PostgresRepository
+
+            conn = psycopg.connect(dsn)
+            repo = PostgresRepository(conn)
+            backend_kind = "postgres"
+        else:
+            repo = InMemoryRepository.from_fixtures(fixtures_dir)
+    index = ObjectIndex(repo)
+    return AppServices(
+        repo=repo,
+        backend_kind=backend_kind,
+        analysis=ScenarioAnalysisService(repo),
+        portfolio=PortfolioService(repo),
+        review=ReviewService(repo),
+        traceability=TraceabilityService(repo, index),
+    )
+
+
+def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
+    app = FastAPI(
+        title="SoC 운영 온톨로지 API",
+        description="Multimedia SoC 개발 운영 온톨로지 — read-only 조회 표면",
+        version="0.1.0",
+    )
+    services = build_services(repo)
+    prefix = f"/api/{API_VERSION}"
+
+    @app.get(f"{prefix}/health")
+    def health() -> dict[str, str]:
+        return {"status": "ok", "backend": services.backend_kind}
+
+    @app.get(f"{prefix}/meta")
+    def meta() -> dict[str, Any]:
+        counts = {key: len(services.repo.list(key)) for key in COLLECTIONS}
+        return {
+            "version": app.version,
+            "backend": services.backend_kind,
+            "collections": counts,
+        }
+
+    @app.get(f"{prefix}/meta/glossary")
+    def glossary() -> dict[str, Any]:
+        models: list[type[BaseModel]] = [model for _, model in COLLECTIONS.values()]
+        models += list(RUNTIME_CONTRACTS.values())
+        return export_glossary(models)
+
+    @app.get(f"{prefix}/projects", response_model=list[Project])
+    def list_projects() -> list[Project]:
+        return [p for p in services.repo.list("projects") if isinstance(p, Project)]
+
+    @app.get(f"{prefix}/projects/{{project_id}}", response_model=Project)
+    def get_project(project_id: str) -> Project:
+        obj = services.repo.get("projects", project_id)
+        if not isinstance(obj, Project):
+            raise HTTPException(status_code=404, detail=f"프로젝트 없음: {project_id}")
+        return obj
+
+    @app.get(f"{prefix}/scenarios", response_model=list[Scenario])
+    def list_scenarios(
+        project_id: str | None = Query(default=None, description="프로젝트 필터"),
+    ) -> list[Scenario]:
+        scenarios = [s for s in services.repo.list("scenarios") if isinstance(s, Scenario)]
+        if project_id:
+            scenarios = [s for s in scenarios if project_id in s.project_relevance]
+        return scenarios
+
+    @app.get(f"{prefix}/scenarios/{{scenario_id}}/analysis", response_model=ScenarioAnalysis)
+    def scenario_analysis(scenario_id: str) -> ScenarioAnalysis:
+        try:
+            return services.analysis.analyze(scenario_id)
+        except ScenarioNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get(f"{prefix}/scenarios/{{scenario_id}}/timeline", response_model=list[TimelineItem])
+    def scenario_timeline(scenario_id: str) -> list[TimelineItem]:
+        try:
+            return services.analysis.analyze(scenario_id).timeline
+        except ScenarioNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get(f"{prefix}/events", response_model=list[DevelopmentEvent])
+    def list_events(
+        project_id: str | None = Query(default=None),
+        week: int | None = Query(default=None),
+    ) -> list[DevelopmentEvent]:
+        events = [
+            e for e in services.repo.list("development_events") if isinstance(e, DevelopmentEvent)
+        ]
+        if project_id:
+            events = [e for e in events if e.project_id == project_id]
+        if week is not None:
+            events = [e for e in events if e.week == week]
+        return events
+
+    @app.get(f"{prefix}/events/{{event_id}}", response_model=DevelopmentEvent)
+    def get_event(event_id: str) -> DevelopmentEvent:
+        obj = services.repo.get("development_events", event_id)
+        if not isinstance(obj, DevelopmentEvent):
+            raise HTTPException(status_code=404, detail=f"이벤트 없음: {event_id}")
+        return obj
+
+    @app.get(f"{prefix}/traceability/{{object_id}}", response_model=TraceabilityResult)
+    def traceability(object_id: str) -> TraceabilityResult:
+        result = services.traceability.trace(object_id)
+        if result.collection is None and not result.links:
+            raise HTTPException(status_code=404, detail=f"객체 없음: {object_id}")
+        return result
+
+    @app.get(f"{prefix}/portfolio/overview", response_model=PortfolioOverview)
+    def portfolio_overview() -> PortfolioOverview:
+        return services.portfolio.overview()
+
+    @app.get(f"{prefix}/review/weekly", response_model=WeeklyIndex)
+    def weekly_index() -> WeeklyIndex:
+        return services.review.index()
+
+    @app.get(f"{prefix}/review/weekly/{{week}}", response_model=WeeklySnapshot)
+    def weekly_snapshot(week: int) -> WeeklySnapshot:
+        return services.review.snapshot(week)
+
+    return app

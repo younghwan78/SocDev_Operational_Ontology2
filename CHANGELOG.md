@@ -1,5 +1,38 @@
 # CHANGELOG
 
+## Stage 3 — 결정론 서비스 + Read-only API (2026-07-04)
+
+### 추가
+
+- `backend/resolve/`: `ObjectIndex`(전역 ID 해석, 내장 전파 포함),
+  `TraceabilityService`(명시 relations + 암묵 참조 필드의 양방향 링크, 한국어 관계 유형).
+- `backend/services/scenario_analysis.py`: 시나리오 종합 — 그룹/변형/KPI/요청/이벤트/
+  역할 활동/이슈/근거 카탈로그/측정, 근거 공백 진단(누락·미가용·요구 미충족·확신도 차단),
+  주차 타임라인(이벤트·활동·요청·마일스톤).
+- `backend/services/portfolio.py`: U/V/W 요약 + 주의 lane 6종(근거 부족/정의 필요/
+  확신도 차단/전파 검토/리스크 해소 후보/경영 주의) + 시나리오×프로젝트 매트릭스.
+  수치 점수·결정 자동화·담당자 할당 없음 (56 원칙 유지).
+- `backend/services/review.py`: 주간 인덱스/스냅샷 파생 뷰.
+- `backend/api/`: FastAPI read-only 표면 13개 GET 엔드포인트
+  (health/meta/glossary/projects/scenarios/analysis/timeline/events/traceability/
+  portfolio/weekly). GET 외 메서드 부재를 테스트로 강제.
+- `openapi.json` 커밋 + 드리프트 테스트 — Stage 4 frontend 타입 생성 소스.
+- 저장소 백엔드 자동 선택: `SOC_ONTOLOGY_DSN` 설정 시 PostgreSQL, 아니면 in-memory.
+
+### 수정
+
+- `InMemoryRepository.list`가 미지 컬렉션에 KeyError — PostgresRepository와 계약 통일
+  (백엔드 간 API 패리티 테스트로 검증).
+
+### 검증
+
+```text
+uv run pytest (+ POSTGRES_TEST_DSN) → 53 passed
+  - API 패리티: 메모리/PostgreSQL 백엔드 응답 동일 (analysis/portfolio/weekly/traceability)
+uv run ruff check / mypy → pass (35 files)
+validate-data → 오류 0건 유지
+```
+
 ## Stage 2 — PostgreSQL 계층 (2026-07-04)
 
 ### 추가

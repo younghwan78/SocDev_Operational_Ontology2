@@ -2,7 +2,7 @@
 
 ## 활성 Stage
 
-**Stage 3 — 결정론 서비스 + Read-only API** (진행 중 — 연속 Stage 진행 사전 승인 세션)
+**Stage 4 — 한국어 Frontend: 시나리오 상세 화면** (진행 중 — 연속 Stage 진행 사전 승인 세션)
 
 ## 작업 디렉토리
 
@@ -18,62 +18,59 @@ E:\56_Codex_SoC_Operational_Ontology
 
 ---
 
-## Stage 1~2 완료 기준선
+## Stage 1~3 완료 기준선
 
 ```text
-온톨로지 v1.0 계약 8모듈 + 한국어 glossary + JSON Schema 자동 export
-56 fixture 전량 변환 465건 (무결성 오류 0)
-PostgreSQL 계층: 마이그레이션 / 멱등 시드 / PostgresRepository (in-memory 패리티 검증 완료)
-RepositoryProtocol — 저장소 교체 가능
-CLI: validate-data, db-init, db-seed, db-check
-테스트 24건 + DSN 게이트 6건 / ruff / mypy 통과
+온톨로지 v1.0 계약 + 한국어 glossary + fixture 465건 (무결성 오류 0)
+PostgreSQL 계층 (마이그레이션/시드/repository, 실DB 패리티 검증)
+결정론 서비스: 시나리오 분석 / 포트폴리오 lane 6종 / 주간 리뷰 / traceability
+FastAPI read-only 13 엔드포인트 + openapi.json (드리프트 테스트)
+테스트 53건 (PG 통합 포함) / ruff / mypy 통과
 ```
-
-테스트 DB: `postgresql://warroom:warroom@localhost:55432/soc58_test`
-(56의 warroom-pg 컨테이너 공유 — 56의 warroom DB는 절대 접근 금지)
 
 ---
 
-## Stage 3 목표
+## Stage 4 목표
 
-실무 리더의 시나리오 분석에 필요한 결정론 서비스와 read-only API를 제공한다.
-LLM 없이 완결되는 조회 표면. 상세: `docs/design/02_implementation_roadmap.md` Stage 3 절.
+1차 페르소나(실무 리더)의 핵심 화면 — **시나리오 상세** — 를 한국어 기본으로 신규 구축한다.
+상세: `docs/design/02_implementation_roadmap.md` Stage 4 절.
 
 ## 기준 가정
 
-- 응답은 RepositoryProtocol 위에서 결정론적으로 계산된다 (메모리/DB 교체 무관 동일).
-- 파생 뷰(포트폴리오/리뷰)는 저장하지 않고 서비스 계층에서 계산한다.
-- 응답 모델에는 glossary 기반 한국어 라벨 메타데이터를 동봉한다.
-- openapi.json은 커밋한다 — Stage 4 frontend 타입 생성 소스.
+- API 계약은 openapi.json이 단일 소스 — 타입은 openapi-typescript로 자동 생성한다.
+- 화면은 4개 상한 체계(포트폴리오 현황/시나리오 상세/리뷰 센터/근거 탐색)의 ②부터 만든다.
+- traceability drill-down 패턴 1종을 만들고 이후 모든 화면이 재사용한다.
+- UI 문자열은 한국어 기본. glossary API(/api/v1/meta/glossary)를 라벨 소스로 쓸 수 있다.
+- 56 frontend는 참조만 한다 — 코드 복사 금지.
 
 ## In-scope
 
 ```text
-backend/resolve/: relation resolver (양방향), traceability 조립
-backend/services/: scenario_analysis(시나리오 종합/근거 공백/타임라인), portfolio, review
-backend/api/: FastAPI GET 엔드포인트 + openapi.json export
-httpx TestClient 기반 API 테스트, 저장소 패리티 테스트
+frontend/ 스캐폴드: Vite + React 19 + TypeScript + react-router + TanStack Query + Vitest + ESLint
+openapi-typescript 타입 자동 생성 (수동 API 타입 금지)
+시나리오 목록 화면 (프로젝트 필터)
+시나리오 상세 화면: 개요 / 타임라인 / 이벤트·이슈 / 추적 탭 (URL: /scenarios/:id/:tab)
+공통 traceability drill-down 패널
+한국어 라벨 (glossary 연동), 하드코딩 영어 금지
+컴포넌트 테스트 (Vitest + Testing Library)
 ```
 
-## Out-of-scope (Stage 3에서 구현 금지)
+## Out-of-scope (Stage 4에서 구현 금지)
 
 ```text
-POST 엔드포인트 (advisory 포함)
-LLM provider / 프롬프트
-frontend
-임베딩 / semantic 검색
-쓰기 API / 데이터 수정
+포트폴리오 현황 / 리뷰 센터 / 근거 탐색 화면 (Stage 6)
+advisory UI (Stage 5)
+디자인 시스템 과잉 투자, 다크모드 등 부가 기능
+i18n 다국어 전환 UI (구조만 허용)
 ```
 
 ## 필수 검증 명령
 
 ```bash
-uv run pytest -p no:cacheprovider
-uv run ruff check backend tests tools
-uv run mypy
-uv run python -m backend.cli.main validate-data
+uv run pytest -p no:cacheprovider && uv run ruff check backend tests tools && uv run mypy
+cd frontend && npm run build && npm run test && npm run lint
 ```
 
 ## Scope Lock
 
-Stage 4 이후의 어떤 동작도 구현하지 않는다. Stage 3 완료 시: changelog 갱신 → commit/push → Stage 4 scope lock 갱신 후 계속 진행.
+Stage 5 이후의 어떤 동작도 구현하지 않는다. Stage 4 완료 시: changelog 갱신 → commit/push → Stage 5 scope lock 갱신 후 계속 진행.

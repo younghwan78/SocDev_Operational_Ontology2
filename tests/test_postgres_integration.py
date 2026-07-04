@@ -91,3 +91,23 @@ def test_relations_projection_populated(pg_conn, seeded) -> None:
 def test_semantic_chunks_projection_populated(pg_conn, seeded) -> None:
     count = pg_conn.execute("SELECT count(*) FROM semantic_chunks").fetchone()[0]
     assert count == seeded["semantic_chunks"]
+
+
+def test_api_parity_memory_vs_postgres(pg_conn, seeded) -> None:
+    """API 응답은 저장소 백엔드(메모리/PostgreSQL)와 무관하게 동일해야 한다."""
+    from backend.api.app import create_app
+    from backend.db.repository import PostgresRepository
+    from fastapi.testclient import TestClient
+
+    memory_client = TestClient(create_app())
+    pg_client = TestClient(create_app(repo=PostgresRepository(pg_conn)))
+
+    for path in (
+        "/api/v1/scenarios/uhd60_recording_eis_on/analysis",
+        "/api/v1/portfolio/overview",
+        "/api/v1/review/weekly",
+        "/api/v1/traceability/uhd60_recording_eis_on",
+    ):
+        memory_body = memory_client.get(path).json()
+        pg_body = pg_client.get(path).json()
+        assert memory_body == pg_body, f"{path}: 백엔드 간 응답 불일치"

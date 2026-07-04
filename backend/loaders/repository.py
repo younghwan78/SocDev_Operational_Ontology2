@@ -28,6 +28,11 @@ class InMemoryRepository:
         return self._collections
 
     def list(self, collection: str) -> list[OntologyObject]:
+        # 미지 컬렉션은 예외 — PostgresRepository와 동일 계약 (패리티 보장)
+        from backend.ontology import COLLECTIONS
+
+        if collection not in COLLECTIONS:
+            raise KeyError(f"알 수 없는 컬렉션: {collection}")
         return self._collections.get(collection, [])
 
     def get(self, collection: str, object_id: str) -> OntologyObject | None:
