@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.yaml_loader import load_fixtures
 from backend.ontology import OntologyObject
 from backend.ontology.scenario import ScenarioRequest
@@ -55,7 +56,7 @@ class Finding:
     message: str
 
 
-def check_integrity(repo: InMemoryRepository) -> list[Finding]:
+def check_integrity(repo: RepositoryProtocol) -> list[Finding]:
     """참조 무결성 검사.
 
     error: 반드시 해석되어야 하는 hard 참조.

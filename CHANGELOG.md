@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## Stage 2 — PostgreSQL 계층 (2026-07-04)
+
+### 추가
+
+- `backend/db/`: psycopg3 연결 관리(`SOC_ONTOLOGY_DSN`), 버전드 SQL 마이그레이션 + 경량 러너.
+- `migrations/0001_core.sql`: Phase3-lite 패턴 —
+  `ontology_objects`(collection+id PK, 필터 컬럼, JSONB payload, source 추적, GIN 인덱스),
+  `relations` 그래프 투영, pgvector-ready `semantic_chunks` 투영.
+- `backend/ingest/yaml_seed.py`: fixture 전량 멱등 반입 (ON CONFLICT upsert).
+- `backend/db/repository.py`: `PostgresRepository` — payload에서 모델 재구성, 적재 순서 보존.
+- `backend/loaders/protocols.py`: `RepositoryProtocol` — in-memory/PostgreSQL 공용 계약.
+  `check_integrity`가 protocol 기반으로 일반화됨.
+- CLI: `db-init` / `db-seed` / `db-check` (한국어 출력).
+- 테스트: DSN 없이 도는 단위 테스트 6건 + `POSTGRES_TEST_DSN` 게이트 통합 테스트 6건
+  (시드 건수, in-memory 패리티, 멱등성, PG 위 무결성 0오류, 투영 테이블).
+
+### 검증
+
+```text
+uv run pytest -p no:cacheprovider → 24 passed, 6 skipped (DSN 게이트)
+POSTGRES_TEST_DSN=... uv run pytest -m postgres → 6 passed (pgvector/pg16, soc58_test DB)
+uv run ruff check / mypy → pass
+validate-data → 오류 0건 유지
+```
+
 ## Stage 1 — 온톨로지 v1.0 계약 + 프로젝트 스캐폴드 (2026-07-04)
 
 ### 추가

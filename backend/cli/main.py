@@ -68,6 +68,60 @@ def validate_data(
         raise typer.Exit(code=1)
 
 
+@app.command("db-init")
+def db_init(
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (기본: SOC_ONTOLOGY_DSN)"),
+) -> None:
+    """마이그레이션을 적용해 DB 스키마를 초기화한다."""
+    from backend.db.connection import get_connection
+    from backend.db.migrate import run_migrations
+
+    with get_connection(dsn) as conn:
+        applied = run_migrations(conn)
+    if applied:
+        for name in applied:
+            console.print(f"적용: {name}")
+    else:
+        console.print("적용할 마이그레이션 없음 — 스키마 최신 상태")
+
+
+@app.command("db-seed")
+def db_seed(
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (기본: SOC_ONTOLOGY_DSN)"),
+    fixtures_dir: Path = typer.Option(DEFAULT_FIXTURES, "--fixtures-dir"),
+) -> None:
+    """fixture 전량을 DB에 반입한다 (멱등)."""
+    from backend.db.connection import get_connection
+    from backend.ingest.yaml_seed import seed_fixtures
+
+    with get_connection(dsn) as conn:
+        counts = seed_fixtures(conn, fixtures_dir)
+    total = sum(counts.values())
+    console.print(f"반입 완료: {len(counts)}개 컬렉션, {total}건")
+
+
+@app.command("db-check")
+def db_check(
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (기본: SOC_ONTOLOGY_DSN)"),
+) -> None:
+    """DB 상태 점검 — 마이그레이션 버전과 컬렉션별 건수."""
+    from backend.db.connection import get_connection
+    from backend.db.migrate import applied_versions
+    from backend.db.repository import PostgresRepository
+
+    with get_connection(dsn) as conn:
+        versions = sorted(applied_versions(conn))
+        counts = PostgresRepository(conn).counts()
+
+    console.print(f"적용된 마이그레이션: {versions or '없음'}")
+    table = Table(title="DB 컬렉션 건수")
+    table.add_column("컬렉션")
+    table.add_column("건수", justify="right")
+    for key in COLLECTIONS:
+        table.add_row(key, str(counts.get(key, 0)))
+    console.print(table)
+
+
 def main() -> None:
     app()
 

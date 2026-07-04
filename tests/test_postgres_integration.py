@@ -1,0 +1,93 @@
+"""PostgreSQL 통합 테스트 — POSTGRES_TEST_DSN 설정 시에만 실행된다.
+
+실행 예:
+    POSTGRES_TEST_DSN=postgresql://user:pw@localhost:5432/soc_test \
+        uv run pytest -m postgres -p no:cacheprovider
+"""
+
+import os
+from pathlib import Path
+
+import pytest
+from backend.loaders.repository import InMemoryRepository, check_integrity
+
+FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
+DSN = os.environ.get("POSTGRES_TEST_DSN")
+
+pytestmark = [
+    pytest.mark.postgres,
+    pytest.mark.skipif(not DSN, reason="POSTGRES_TEST_DSN 미설정"),
+]
+
+
+@pytest.fixture(scope="module")
+def pg_conn():
+    import psycopg
+    from backend.db.migrate import run_migrations
+
+    conn = psycopg.connect(DSN)
+    try:
+        run_migrations(conn)
+        conn.commit()
+        yield conn
+    finally:
+        conn.rollback()
+        conn.close()
+
+
+@pytest.fixture(scope="module")
+def seeded(pg_conn):
+    from backend.ingest.yaml_seed import seed_fixtures
+
+    counts = seed_fixtures(pg_conn, FIXTURES)
+    pg_conn.commit()
+    return counts
+
+
+def test_seed_counts_match_fixtures(seeded) -> None:
+    memory = InMemoryRepository.from_fixtures(FIXTURES)
+    for collection, count in seeded.items():
+        assert count == len(memory.list(collection))
+
+
+def test_repository_parity_with_memory(pg_conn, seeded) -> None:
+    """PostgreSQL repository는 in-memory와 동일한 객체를 돌려줘야 한다."""
+    from backend.db.repository import PostgresRepository
+
+    memory = InMemoryRepository.from_fixtures(FIXTURES)
+    pg = PostgresRepository(pg_conn)
+    for collection in seeded:
+        memory_objects = memory.list(collection)
+        pg_objects = pg.list(collection)
+        assert [o.id for o in pg_objects] == [o.id for o in memory_objects], collection
+        assert pg_objects == memory_objects, f"{collection}: 모델 불일치"
+
+
+def test_seed_is_idempotent(pg_conn, seeded) -> None:
+    from backend.db.repository import PostgresRepository
+    from backend.ingest.yaml_seed import seed_fixtures
+
+    before = PostgresRepository(pg_conn).counts()
+    seed_fixtures(pg_conn, FIXTURES)
+    pg_conn.commit()
+    after = PostgresRepository(pg_conn).counts()
+    assert before == after
+
+
+def test_integrity_on_postgres_repository(pg_conn, seeded) -> None:
+    """무결성 검사가 PostgreSQL repository 위에서도 오류 0건이어야 한다."""
+    from backend.db.repository import PostgresRepository
+
+    findings = check_integrity(PostgresRepository(pg_conn))
+    errors = [f for f in findings if f.level == "error"]
+    assert errors == [], "\n".join(f.message for f in errors)
+
+
+def test_relations_projection_populated(pg_conn, seeded) -> None:
+    count = pg_conn.execute("SELECT count(*) FROM relations").fetchone()[0]
+    assert count == seeded["relations"]
+
+
+def test_semantic_chunks_projection_populated(pg_conn, seeded) -> None:
+    count = pg_conn.execute("SELECT count(*) FROM semantic_chunks").fetchone()[0]
+    assert count == seeded["semantic_chunks"]
