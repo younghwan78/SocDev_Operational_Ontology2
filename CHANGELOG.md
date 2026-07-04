@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## Stage 4 — 한국어 Frontend: 시나리오 상세 화면 (2026-07-04)
+
+### 추가
+
+- `frontend/` 신규 구축: Vite + React 19 + TypeScript + react-router v7 + TanStack Query v5.
+- API 타입 자동 생성: openapi-typescript(`npm run gen:api`) + openapi-fetch 타입 클라이언트.
+  수동 API 타입 없음 (56의 1,463줄 수동 types.ts 방식 폐기).
+- 화면:
+  - 시나리오 목록 (`/scenarios`): 프로젝트 필터, 그룹/KPI 표시.
+  - 시나리오 상세 (`/scenarios/:id/:tab`): 개요(기본 정보·근거 공백·KPI·IP·요청·이슈·
+    변형·측정) / 타임라인(주차 그룹) / 이벤트·활동(근거 문장 표시) / 추적.
+- 공통 traceability drill-down 패널 (`TraceabilityPanel`): breadcrumb 스택 기반 —
+  이후 모든 화면이 재사용할 단일 패턴.
+- 한국어 전용 UI: `src/i18n/ko.ts` 단일 소스 + JSX 영어 하드코딩 금지 가드 테스트.
+- uvicorn 추가 — `uv run uvicorn backend.api.app:create_app --factory`로 API 구동.
+- README: 실행/검증/계약 재생성 가이드.
+
+### 검증
+
+```text
+npm run build / test(4 passed) / lint → pass
+uvicorn 스모크: health ok, analysis 응답 (gaps 9, timeline 21)
+backend 회귀 유지: pytest / ruff / mypy pass
+```
+
 ## Stage 3 — 결정론 서비스 + Read-only API (2026-07-04)
 
 ### 추가
