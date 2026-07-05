@@ -1,5 +1,6 @@
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { ko } from "./i18n/ko";
+import { ChangeImpactPage } from "./pages/ChangeImpactPage";
 import { EvidencePage } from "./pages/EvidencePage";
 import { PortfolioPage } from "./pages/PortfolioPage";
 import { ReviewPage } from "./pages/ReviewPage";
@@ -7,9 +8,12 @@ import { RiskMapPage } from "./pages/RiskMapPage";
 import { ScenarioDetailPage } from "./pages/ScenarioDetailPage";
 import { ScenarioListPage } from "./pages/ScenarioListPage";
 
-// 질문이 곧 메뉴 — 위험 지도만 활성, 나머지는 Stage 9~11에서 활성화된다.
-const QUESTION_NAV = [{ to: "/", label: ko.app.nav_risk }];
-const PLANNED_NAV = [ko.app.nav_change_impact, ko.app.nav_issue_analysis, ko.app.nav_ask];
+// 질문이 곧 메뉴 — 위험 지도·변경 영향 활성, 나머지는 Stage 10~11에서 활성화된다.
+const QUESTION_NAV = [
+  { to: "/", label: ko.app.nav_risk },
+  { to: "/change-impact", label: ko.app.nav_change_impact },
+];
+const PLANNED_NAV = [ko.app.nav_issue_analysis, ko.app.nav_ask];
 
 // 기존 데이터 화면 — 답의 근거를 보여주는 하위 층으로 유지.
 const EXPLORE_NAV = [
@@ -53,6 +57,7 @@ export default function App() {
       <main className="app-main">
         <Routes>
           <Route path="/" element={<RiskMapPage />} />
+          <Route path="/change-impact" element={<ChangeImpactPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/scenarios" element={<ScenarioListPage />} />
           <Route path="/scenarios/:scenarioId" element={<Navigate to="overview" replace />} />

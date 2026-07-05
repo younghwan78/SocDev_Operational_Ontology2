@@ -156,3 +156,24 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
   font: inherit; font-size: 12.5px; padding: 6px 0 0;
 }
 .link-btn:hover { text-decoration: underline; }
+
+/* --- Stage 9: 변경 영향 --- */
+.quadrant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+@media (max-width: 1100px) { .quadrant-grid { grid-template-columns: 1fr; } }
+
+.filter-row select {
+  padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface); color: var(--text); font: inherit; font-size: 13px;
+  max-width: 220px;
+}
+.filter-row select:disabled { opacity: 0.45; }
+
+.run-btn {
+  padding: 7px 18px; border: none; border-radius: 8px; cursor: pointer;
+  background: var(--accent); color: #fff; font: inherit; font-size: 13.5px; font-weight: 600;
+}
+.run-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.run-btn:not(:disabled):hover { filter: brightness(1.08); }
+
+.chip-knob { background: var(--warn-soft); color: var(--warn); font-weight: 700; }
+.basis-line { margin-top: 2px; }

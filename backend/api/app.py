@@ -34,6 +34,13 @@ from backend.ontology.relation import AgentRun
 from backend.ontology.scenario import Scenario
 from backend.resolve.object_index import ObjectIndex
 from backend.resolve.traceability import TraceabilityResult, TraceabilityService
+from backend.services.change_impact import (
+    ChangeImpactOptions,
+    ChangeImpactResult,
+    ChangeImpactService,
+    InvalidSelectionError,
+    UnknownIPError,
+)
 from backend.services.portfolio import PortfolioOverview, PortfolioService
 from backend.services.review import ReviewService, WeeklyIndex, WeeklySnapshot
 from backend.services.risk import RiskHeatmap, RiskService
@@ -59,6 +66,7 @@ class AppServices:
     portfolio: PortfolioService
     review: ReviewService
     risk: RiskService
+    change_impact: ChangeImpactService
     traceability: TraceabilityService
     advisory: AdvisoryRunner
     run_store: RunStoreProtocol
@@ -100,6 +108,7 @@ def build_services(
         portfolio=PortfolioService(repo),
         review=ReviewService(repo),
         risk=RiskService(repo),
+        change_impact=ChangeImpactService(repo),
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
         run_store=run_store,
@@ -243,6 +252,28 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     ) -> RiskHeatmap:
         """위험 지도 — 시나리오×IP 정성 등급 + 판정 근거 (수치 점수 없음)."""
         return services.risk.heatmap(project_id)
+
+    @app.get(f"{prefix}/change-impact/options", response_model=ChangeImpactOptions)
+    def change_impact_options() -> ChangeImpactOptions:
+        """변경 영향 폼 옵션 — IP별 knob/capability/모드."""
+        return services.change_impact.options()
+
+    @app.get(f"{prefix}/change-impact", response_model=ChangeImpactResult)
+    def change_impact(
+        ip_id: str = Query(description="변경 대상 IP 블록"),
+        knob_id: str | None = Query(default=None),
+        capability_id: str | None = Query(default=None),
+        mode: str | None = Query(default=None),
+    ) -> ChangeImpactResult:
+        """변경 영향 분석 — 결정론 그래프 순회 (모든 항목에 근거 ref)."""
+        try:
+            return services.change_impact.analyze(
+                ip_id, knob_id=knob_id, capability_id=capability_id, mode=mode
+            )
+        except UnknownIPError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except InvalidSelectionError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.get(f"{prefix}/review/weekly", response_model=WeeklyIndex)
     def weekly_index() -> WeeklyIndex:

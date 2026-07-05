@@ -15,6 +15,7 @@ from backend.ontology.event import DevelopmentEvent, Issue
 from backend.ontology.evidence import EvidenceCatalogEntry
 from backend.ontology.ip import IPBlock
 from backend.ontology.scenario import Scenario, ScenarioRequest
+from backend.services.common import BasisItem
 
 GRADE_LABELS: dict[str, str] = {"high": "높음", "medium": "중간", "low": "낮음"}
 _GRADE_RANK: dict[str, int] = {"high": 0, "medium": 1, "low": 2}
@@ -48,17 +49,8 @@ _CATEGORY_ORDER: dict[str, int] = {
 }
 
 
-class RiskBasisItem(BaseModel):
-    """등급 판정 근거 — 어떤 룰이 어떤 원본 객체 때문에 발화했는가."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    rule: str
-    rule_ko: str
-    ref_id: str
-    ref_collection: str
-    description: str
-    source_refs: list[str] = Field(default_factory=list)
+# 등급 판정 근거 — 파생 뷰 공용 계약(services/common.py) 재사용.
+RiskBasisItem = BasisItem
 
 
 class RiskCell(BaseModel):
@@ -136,7 +128,7 @@ def _confidence_cap(raw: str) -> str:
     return _CONFIDENCE_CAP_NORMALIZE.get(lowered, lowered)
 
 
-def _ip_match_tokens(ip: IPBlock) -> set[str]:
+def ip_match_tokens(ip: IPBlock) -> set[str]:
     """이벤트 affected_domains와 대조할 IP 토큰 — 데이터(도메인/별칭)에서 파생."""
     tokens = {ip.domain.lower(), ip.name.lower()}
     tokens.update(part for part in ip.domain.lower().split("_") if part)
@@ -144,15 +136,15 @@ def _ip_match_tokens(ip: IPBlock) -> set[str]:
     return tokens
 
 
-def _event_ips(event: DevelopmentEvent, columns: list[IPBlock]) -> set[str]:
+def event_related_ips(event: DevelopmentEvent, blocks: list[IPBlock]) -> set[str]:
     """이벤트가 관련되는 IP 판별 — 도메인/별칭 일치 또는 후보 옵션의 명시 참조."""
     option_ips = {
         ip_id for option in event.candidate_options for ip_id in option.related_ip_ids
     }
     domains = {d.lower() for d in event.affected_domains}
     matched: set[str] = set()
-    for ip in columns:
-        if ip.id in option_ips or domains & _ip_match_tokens(ip):
+    for ip in blocks:
+        if ip.id in option_ips or domains & ip_match_tokens(ip):
             matched.add(ip.id)
     return matched
 
@@ -540,7 +532,7 @@ class RiskService:
         catalog = self._catalog()
 
         event_ip_cache: dict[str, set[str]] = {
-            e.id: _event_ips(e, columns) for e in events
+            e.id: event_related_ips(e, columns) for e in events
         }
 
         rows: list[ScenarioRiskRow] = []

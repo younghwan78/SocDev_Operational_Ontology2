@@ -4,6 +4,46 @@
  */
 
 export interface paths {
+    "/api/v1/change-impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Change Impact
+         * @description 변경 영향 분석 — 결정론 그래프 순회 (모든 항목에 근거 ref).
+         */
+        get: operations["change_impact_api_v1_change_impact_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/change-impact/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Change Impact Options
+         * @description 변경 영향 폼 옵션 — IP별 knob/capability/모드.
+         */
+        get: operations["change_impact_options_api_v1_change_impact_options_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/events": {
         parameters: {
             query?: never;
@@ -536,6 +576,24 @@ export interface components {
             /** Title */
             title: string;
         };
+        /**
+         * BasisItem
+         * @description 판정/영향 근거 — 어떤 룰이 어떤 원본 객체 때문에 발화했는가.
+         */
+        BasisItem: {
+            /** Description */
+            description: string;
+            /** Ref Collection */
+            ref_collection: string;
+            /** Ref Id */
+            ref_id: string;
+            /** Rule */
+            rule: string;
+            /** Rule Ko */
+            rule_ko: string;
+            /** Source Refs */
+            source_refs?: string[];
+        };
         /** Body_ingest_file_api_v1_ingest_file_post */
         Body_ingest_file_api_v1_ingest_file_post: {
             /**
@@ -577,6 +635,95 @@ export interface components {
             target_project_id?: string | null;
             /** Title */
             title: string;
+        };
+        /**
+         * CapabilityInfo
+         * @description 선택 capability 요약.
+         */
+        CapabilityInfo: {
+            /** Capability Id */
+            capability_id: string;
+            /** Category */
+            category: string;
+            /** Condition */
+            condition?: string | null;
+            /** Confidence */
+            confidence: string;
+            /** Name */
+            name: string;
+            /** Source Ref */
+            source_ref: string;
+            /** Support Status */
+            support_status: string;
+        };
+        /**
+         * ChainedIP
+         * @description 연쇄 IP — ip_dependency_rules 기반, 조건 표시.
+         */
+        ChainedIP: {
+            /** Condition */
+            condition: string;
+            /** Confidence */
+            confidence: string;
+            /** Direction */
+            direction: string;
+            /** Direction Ko */
+            direction_ko: string;
+            /** Ip Id */
+            ip_id: string;
+            /** Ip Name */
+            ip_name: string;
+            /** Rationale */
+            rationale: string;
+            /** Relationship */
+            relationship: string;
+            /** Rule Id */
+            rule_id: string;
+            /** Source Ref */
+            source_ref: string;
+        };
+        /** ChangeImpactOptions */
+        ChangeImpactOptions: {
+            /** Ips */
+            ips: components["schemas"]["IPOption"][];
+        };
+        /**
+         * ChangeImpactResult
+         * @description 변경 영향 분석 — 4분면 + 유사 사례 파생 뷰 (저장하지 않음).
+         */
+        ChangeImpactResult: {
+            /** Chained Ips */
+            chained_ips: components["schemas"]["ChainedIP"][];
+            /** Checklist */
+            checklist: components["schemas"]["ChecklistItem"][];
+            /** Export Text */
+            export_text: string;
+            /** Impacted Kpis */
+            impacted_kpis: components["schemas"]["ImpactedKPI"][];
+            /** Impacted Scenarios */
+            impacted_scenarios: components["schemas"]["ImpactedScenario"][];
+            /**
+             * Note Ko
+             * @default 결정이 아닌 검토 안내입니다 · 수치 점수 없음
+             */
+            note_ko: string;
+            /** Similar Cases */
+            similar_cases: components["schemas"]["SimilarCase"][];
+            subject: components["schemas"]["ImpactSubject"];
+        };
+        /**
+         * ChecklistItem
+         * @description 역할 관점 검토 항목 — 트리거 근거가 있을 때만 생성 (일반론 금지).
+         */
+        ChecklistItem: {
+            /** Basis */
+            basis: components["schemas"]["BasisItem"][];
+            /** Perspective */
+            perspective: string;
+            /** Role Id */
+            role_id: string;
+            /** Role Name */
+            role_name: string;
         };
         /**
          * Confidence
@@ -855,6 +1002,81 @@ export interface components {
             ip_name: string;
         };
         /**
+         * IPOption
+         * @description 변경 영향 폼 옵션 — IP별 선택 가능한 knob/capability/모드.
+         */
+        IPOption: {
+            /** Capabilities */
+            capabilities?: {
+                [key: string]: string;
+            }[];
+            /** Category */
+            category: string;
+            /** Ip Id */
+            ip_id: string;
+            /** Ip Name */
+            ip_name: string;
+            /** Knobs */
+            knobs?: {
+                [key: string]: string;
+            }[];
+            /** Modes */
+            modes?: string[];
+        };
+        /**
+         * ImpactSubject
+         * @description 무엇을 바꾸는가 — 분석 대상.
+         */
+        ImpactSubject: {
+            capability?: components["schemas"]["CapabilityInfo"] | null;
+            /** Ip Category */
+            ip_category: string;
+            /** Ip Id */
+            ip_id: string;
+            /** Ip Name */
+            ip_name: string;
+            knob?: components["schemas"]["KnobEffect"] | null;
+            /** Mode */
+            mode?: string | null;
+            /** Summary */
+            summary: string;
+        };
+        /**
+         * ImpactedKPI
+         * @description 영향 KPI — 유래(knob/시나리오) 표시.
+         */
+        ImpactedKPI: {
+            /** Direction */
+            direction?: string | null;
+            /** Kpi Id */
+            kpi_id: string;
+            /** Scenario Ids */
+            scenario_ids?: string[];
+            /** Unit */
+            unit?: string | null;
+            /**
+             * Via Knob
+             * @default false
+             */
+            via_knob: boolean;
+        };
+        /**
+         * ImpactedScenario
+         * @description 영향 시나리오 — 근거 목록 동반.
+         */
+        ImpactedScenario: {
+            /** Kpi Ids */
+            kpi_ids?: string[];
+            /** Project Ids */
+            project_ids?: string[];
+            /** Reasons */
+            reasons: components["schemas"]["BasisItem"][];
+            /** Scenario Id */
+            scenario_id: string;
+            /** Scenario Name */
+            scenario_name: string;
+        };
+        /**
          * IngestBatch
          * @description 반입 배치 기록.
          */
@@ -924,6 +1146,38 @@ export interface components {
             source?: components["schemas"]["SourceMeta"];
             /** Unit */
             unit: string;
+        };
+        /**
+         * KnobEffect
+         * @description 선택 knob의 방향성 요약 — ip_knobs 원본 그대로.
+         */
+        KnobEffect: {
+            /** Affected Kpis */
+            affected_kpis?: string[];
+            /** Bandwidth Direction */
+            bandwidth_direction: string;
+            /** Category */
+            category: string;
+            /** Confidence */
+            confidence: string;
+            /** Control Domain */
+            control_domain: string;
+            /** Description */
+            description: string;
+            /** Knob Id */
+            knob_id: string;
+            /** Latency Direction */
+            latency_direction: string;
+            /** Name */
+            name: string;
+            /** Power Direction */
+            power_direction: string;
+            /** Related Scenarios */
+            related_scenarios?: string[];
+            /** Risk Direction */
+            risk_direction: string;
+            /** Source Ref */
+            source_ref: string;
         };
         /**
          * MeasurementEvidence
@@ -1204,30 +1458,12 @@ export interface components {
             source_refs?: string[];
         };
         /**
-         * RiskBasisItem
-         * @description 등급 판정 근거 — 어떤 룰이 어떤 원본 객체 때문에 발화했는가.
-         */
-        RiskBasisItem: {
-            /** Description */
-            description: string;
-            /** Ref Collection */
-            ref_collection: string;
-            /** Ref Id */
-            ref_id: string;
-            /** Rule */
-            rule: string;
-            /** Rule Ko */
-            rule_ko: string;
-            /** Source Refs */
-            source_refs?: string[];
-        };
-        /**
          * RiskCell
          * @description 시나리오×IP 셀 — 정성 등급 + 판정 근거. 수치 점수 없음.
          */
         RiskCell: {
             /** Basis */
-            basis: components["schemas"]["RiskBasisItem"][];
+            basis: components["schemas"]["BasisItem"][];
             /** Grade */
             grade: string;
             /** Grade Ko */
@@ -1570,7 +1806,7 @@ export interface components {
             /** Cells */
             cells: components["schemas"]["RiskCell"][];
             /** Overall Basis */
-            overall_basis: components["schemas"]["RiskBasisItem"][];
+            overall_basis: components["schemas"]["BasisItem"][];
             /** Overall Grade */
             overall_grade: string;
             /** Overall Grade Ko */
@@ -1581,6 +1817,28 @@ export interface components {
             scenario_id: string;
             /** Scenario Name */
             scenario_name: string;
+        };
+        /**
+         * SimilarCase
+         * @description 과거 유사 사례 — 같은 IP 조합의 이슈/이벤트.
+         */
+        SimilarCase: {
+            /** Kind */
+            kind: string;
+            /** Kind Ko */
+            kind_ko: string;
+            /** Ref Id */
+            ref_id: string;
+            /** Scenario Ids */
+            scenario_ids?: string[];
+            /** Source Refs */
+            source_refs?: string[];
+            /** Status */
+            status: string;
+            /** Title */
+            title: string;
+            /** Why Similar */
+            why_similar: string;
         };
         /**
          * SourceMeta
@@ -1817,6 +2075,61 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    change_impact_api_v1_change_impact_get: {
+        parameters: {
+            query: {
+                /** @description 변경 대상 IP 블록 */
+                ip_id: string;
+                knob_id?: string | null;
+                capability_id?: string | null;
+                mode?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeImpactResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_impact_options_api_v1_change_impact_options_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeImpactOptions"];
+                };
+            };
+        };
+    };
     list_events_api_v1_events_get: {
         parameters: {
             query?: {

@@ -1,5 +1,42 @@
 # CHANGELOG
 
+## Stage 9 — 변경 영향 (Change Impact) (2026-07-05)
+
+> "이 IP/knob을 바꾸면 어디에 영향이 가나?" — TAT 효과 1위 유스케이스 복원
+> (`docs/design/03_course_correction.md` §4.2). 결정론 그래프 순회만 사용, LLM 불개입.
+
+### 추가
+
+- `backend/services/change_impact.py`: 결정론 그래프 순회 엔진 (파생 뷰, 저장 없음).
+  - 입력: IP 필수 + knob/capability/모드 선택. knob·capability·모드가 구체 링크를 만들면
+    그 시나리오로 한정, 아니면 IP 수준(사용/의존+전체 요구)으로 확장.
+  - 순회: scenario_ip_requirements → 영향 시나리오 → primary_kpis /
+    ip_dependency_rules → 연쇄 IP(양방향: 선택 IP가 의존 ↔ 선택 IP에 의존, 조건 표시) /
+    ip_knobs → 방향성(전력·지연·대역폭·리스크)·affected_kpis·related_scenarios /
+    같은 IP 조합의 과거 이슈·이벤트 → 유사 사례(겹침 시나리오 명시).
+  - **역할별 검토 체크리스트**: 역할 책임 경계(CLAUDE.md §2.2) 반영 — HW/SW는
+    "feedback_items로 전달" 명시, Management는 "구현 세부 결정 아님". 트리거 근거가 있을
+    때만 항목 생성 (일반론 금지, 테스트로 강제). 체크리스트 내보내기 텍스트 조립.
+  - capability↔요구 매칭은 보수적 토큰 부분집합 일치만 — 근거 없는 연결 금지.
+  - `services/common.py` `BasisItem` 신설 — risk 파생 뷰와 근거 항목 계약 공용화
+    (`ip_match_tokens`/`event_related_ips`도 공용 승격).
+- API: `GET /api/v1/change-impact`(ip_id/knob_id/capability_id/mode, 404/400 검증),
+  `GET /api/v1/change-impact/options`(폼 옵션 — IP별 knob/capability/모드).
+- Frontend `ChangeImpactPage`(`/change-impact`, 내비 활성화):
+  IP→knob/capability/모드 셀렉트 → [분석 실행] → knob 방향성 뱃지 + 4분면
+  (영향 시나리오/영향 KPI(knob 직접 ★ 우선)/연쇄 IP/역할별 체크리스트) + 과거 유사 사례.
+  체크리스트 클립보드 복사. UI 공통 원칙(ID 숨김·색 의미·접기) 준수.
+
+### 검증
+
+```text
+backend 103 passed(+change_impact 15, api 1) / 1 failed(기존 56 드리프트 — Stage 8 기록 참조)
+ruff / mypy pass · frontend build / test(12) / lint pass
+validate-data → 오류 0건 유지
+E2E: ISP×pixel_mode 실구동 — 4분면 완결, 역할 경계 문구, 유사 사례 10건(이슈 우선),
+  체크리스트 복사 "복사됨" 확인. API 프로브: 미지 IP 404 / knob-IP 불일치 400.
+```
+
 ## Stage 8 — 홈 개편 + 위험 지도 (2026-07-05)
 
 > 방향 교정(`docs/design/03_course_correction.md`) 첫 구현 — 원점 문서의

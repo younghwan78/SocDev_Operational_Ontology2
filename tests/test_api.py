@@ -108,6 +108,28 @@ def test_risk_heatmap(client: TestClient) -> None:
     assert filtered["columns"] == body["columns"], "열은 프로젝트 필터와 무관하게 고정"
 
 
+def test_change_impact(client: TestClient) -> None:
+    body = client.get(
+        "/api/v1/change-impact",
+        params={"ip_id": "ip_isp", "knob_id": "knob_isp_pixel_mode"},
+    ).json()
+    assert body["subject"]["ip_id"] == "ip_isp"
+    assert body["impacted_scenarios"] and body["impacted_kpis"]
+    assert body["chained_ips"] and body["checklist"]
+    assert body["export_text"].startswith("[변경 영향 분석]")
+    assert client.get("/api/v1/change-impact", params={"ip_id": "없음"}).status_code == 404
+    assert (
+        client.get(
+            "/api/v1/change-impact",
+            params={"ip_id": "ip_isp", "knob_id": "knob_dpu_bts_fps"},
+        ).status_code
+        == 400
+    )
+
+    options = client.get("/api/v1/change-impact/options").json()
+    assert len(options["ips"]) == 11
+
+
 def test_weekly_review(client: TestClient) -> None:
     index = client.get("/api/v1/review/weekly").json()
     assert index["weeks"]

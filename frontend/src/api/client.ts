@@ -90,9 +90,45 @@ export async function fetchWeeklySnapshot(week: number): Promise<WeeklySnapshot>
 export type RiskHeatmap = components["schemas"]["RiskHeatmap"];
 export type ScenarioRiskRow = components["schemas"]["ScenarioRiskRow"];
 export type RiskCell = components["schemas"]["RiskCell"];
-export type RiskBasisItem = components["schemas"]["RiskBasisItem"];
+export type BasisItem = components["schemas"]["BasisItem"];
 export type HeatmapColumn = components["schemas"]["HeatmapColumn"];
 export type WeeklyFocusItem = components["schemas"]["WeeklyFocusItem"];
+export type ChangeImpactResult = components["schemas"]["ChangeImpactResult"];
+export type ChangeImpactOptions = components["schemas"]["ChangeImpactOptions"];
+export type IPOption = components["schemas"]["IPOption"];
+export type ImpactedScenario = components["schemas"]["ImpactedScenario"];
+export type ImpactedKPI = components["schemas"]["ImpactedKPI"];
+export type ChainedIP = components["schemas"]["ChainedIP"];
+export type ChecklistItem = components["schemas"]["ChecklistItem"];
+export type SimilarCase = components["schemas"]["SimilarCase"];
+
+export interface ChangeImpactParams {
+  ipId: string;
+  knobId?: string;
+  capabilityId?: string;
+  mode?: string;
+}
+
+export async function fetchChangeImpactOptions(): Promise<ChangeImpactOptions> {
+  const { data, error } = await client.GET("/api/v1/change-impact/options");
+  if (error || !data) throw new Error("change-impact options 조회 실패");
+  return data;
+}
+
+export async function fetchChangeImpact(params: ChangeImpactParams): Promise<ChangeImpactResult> {
+  const { data, error } = await client.GET("/api/v1/change-impact", {
+    params: {
+      query: {
+        ip_id: params.ipId,
+        ...(params.knobId ? { knob_id: params.knobId } : {}),
+        ...(params.capabilityId ? { capability_id: params.capabilityId } : {}),
+        ...(params.mode ? { mode: params.mode } : {}),
+      },
+    },
+  });
+  if (error || !data) throw new Error("change-impact 분석 실패");
+  return data;
+}
 
 export async function fetchRiskHeatmap(projectId?: string): Promise<RiskHeatmap> {
   const { data, error } = await client.GET("/api/v1/risk/heatmap", {

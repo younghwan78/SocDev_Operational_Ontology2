@@ -313,6 +313,48 @@
         "title": "AttentionItem",
         "type": "object"
       },
+      "BasisItem": {
+        "additionalProperties": false,
+        "description": "판정/영향 근거 — 어떤 룰이 어떤 원본 객체 때문에 발화했는가.",
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "ref_collection": {
+            "title": "Ref Collection",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "rule_ko": {
+            "title": "Rule Ko",
+            "type": "string"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rule",
+          "rule_ko",
+          "ref_id",
+          "ref_collection",
+          "description"
+        ],
+        "title": "BasisItem",
+        "type": "object"
+      },
       "Body_ingest_file_api_v1_ingest_file_post": {
         "properties": {
           "file": {
@@ -443,6 +485,231 @@
           "title"
         ],
         "title": "CandidateOption",
+        "type": "object"
+      },
+      "CapabilityInfo": {
+        "additionalProperties": false,
+        "description": "선택 capability 요약.",
+        "properties": {
+          "capability_id": {
+            "title": "Capability Id",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          },
+          "support_status": {
+            "title": "Support Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "capability_id",
+          "name",
+          "category",
+          "support_status",
+          "confidence",
+          "source_ref"
+        ],
+        "title": "CapabilityInfo",
+        "type": "object"
+      },
+      "ChainedIP": {
+        "additionalProperties": false,
+        "description": "연쇄 IP — ip_dependency_rules 기반, 조건 표시.",
+        "properties": {
+          "condition": {
+            "title": "Condition",
+            "type": "string"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "direction": {
+            "title": "Direction",
+            "type": "string"
+          },
+          "direction_ko": {
+            "title": "Direction Ko",
+            "type": "string"
+          },
+          "ip_id": {
+            "title": "Ip Id",
+            "type": "string"
+          },
+          "ip_name": {
+            "title": "Ip Name",
+            "type": "string"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "relationship": {
+            "title": "Relationship",
+            "type": "string"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_id",
+          "ip_id",
+          "ip_name",
+          "direction",
+          "direction_ko",
+          "relationship",
+          "condition",
+          "rationale",
+          "confidence",
+          "source_ref"
+        ],
+        "title": "ChainedIP",
+        "type": "object"
+      },
+      "ChangeImpactOptions": {
+        "additionalProperties": false,
+        "properties": {
+          "ips": {
+            "items": {
+              "$ref": "#/components/schemas/IPOption"
+            },
+            "title": "Ips",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ips"
+        ],
+        "title": "ChangeImpactOptions",
+        "type": "object"
+      },
+      "ChangeImpactResult": {
+        "additionalProperties": false,
+        "description": "변경 영향 분석 — 4분면 + 유사 사례 파생 뷰 (저장하지 않음).",
+        "properties": {
+          "chained_ips": {
+            "items": {
+              "$ref": "#/components/schemas/ChainedIP"
+            },
+            "title": "Chained Ips",
+            "type": "array"
+          },
+          "checklist": {
+            "items": {
+              "$ref": "#/components/schemas/ChecklistItem"
+            },
+            "title": "Checklist",
+            "type": "array"
+          },
+          "export_text": {
+            "title": "Export Text",
+            "type": "string"
+          },
+          "impacted_kpis": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactedKPI"
+            },
+            "title": "Impacted Kpis",
+            "type": "array"
+          },
+          "impacted_scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactedScenario"
+            },
+            "title": "Impacted Scenarios",
+            "type": "array"
+          },
+          "note_ko": {
+            "default": "결정이 아닌 검토 안내입니다 · 수치 점수 없음",
+            "title": "Note Ko",
+            "type": "string"
+          },
+          "similar_cases": {
+            "items": {
+              "$ref": "#/components/schemas/SimilarCase"
+            },
+            "title": "Similar Cases",
+            "type": "array"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/ImpactSubject"
+          }
+        },
+        "required": [
+          "subject",
+          "impacted_scenarios",
+          "impacted_kpis",
+          "chained_ips",
+          "checklist",
+          "similar_cases",
+          "export_text"
+        ],
+        "title": "ChangeImpactResult",
+        "type": "object"
+      },
+      "ChecklistItem": {
+        "additionalProperties": false,
+        "description": "역할 관점 검토 항목 — 트리거 근거가 있을 때만 생성 (일반론 금지).",
+        "properties": {
+          "basis": {
+            "items": {
+              "$ref": "#/components/schemas/BasisItem"
+            },
+            "title": "Basis",
+            "type": "array"
+          },
+          "perspective": {
+            "title": "Perspective",
+            "type": "string"
+          },
+          "role_id": {
+            "title": "Role Id",
+            "type": "string"
+          },
+          "role_name": {
+            "title": "Role Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role_id",
+          "role_name",
+          "perspective",
+          "basis"
+        ],
+        "title": "ChecklistItem",
         "type": "object"
       },
       "Confidence": {
@@ -1162,6 +1429,210 @@
         "title": "HeatmapColumn",
         "type": "object"
       },
+      "IPOption": {
+        "additionalProperties": false,
+        "description": "변경 영향 폼 옵션 — IP별 선택 가능한 knob/capability/모드.",
+        "properties": {
+          "capabilities": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Capabilities",
+            "type": "array"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "ip_id": {
+            "title": "Ip Id",
+            "type": "string"
+          },
+          "ip_name": {
+            "title": "Ip Name",
+            "type": "string"
+          },
+          "knobs": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Knobs",
+            "type": "array"
+          },
+          "modes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Modes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ip_id",
+          "ip_name",
+          "category"
+        ],
+        "title": "IPOption",
+        "type": "object"
+      },
+      "ImpactSubject": {
+        "additionalProperties": false,
+        "description": "무엇을 바꾸는가 — 분석 대상.",
+        "properties": {
+          "capability": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CapabilityInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ip_category": {
+            "title": "Ip Category",
+            "type": "string"
+          },
+          "ip_id": {
+            "title": "Ip Id",
+            "type": "string"
+          },
+          "ip_name": {
+            "title": "Ip Name",
+            "type": "string"
+          },
+          "knob": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KnobEffect"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ip_id",
+          "ip_name",
+          "ip_category",
+          "summary"
+        ],
+        "title": "ImpactSubject",
+        "type": "object"
+      },
+      "ImpactedKPI": {
+        "additionalProperties": false,
+        "description": "영향 KPI — 유래(knob/시나리오) 표시.",
+        "properties": {
+          "direction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          },
+          "kpi_id": {
+            "title": "Kpi Id",
+            "type": "string"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "via_knob": {
+            "default": false,
+            "title": "Via Knob",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "kpi_id"
+        ],
+        "title": "ImpactedKPI",
+        "type": "object"
+      },
+      "ImpactedScenario": {
+        "additionalProperties": false,
+        "description": "영향 시나리오 — 근거 목록 동반.",
+        "properties": {
+          "kpi_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Kpi Ids",
+            "type": "array"
+          },
+          "project_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Project Ids",
+            "type": "array"
+          },
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/BasisItem"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_name": {
+            "title": "Scenario Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "scenario_name",
+          "reasons"
+        ],
+        "title": "ImpactedScenario",
+        "type": "object"
+      },
       "IngestBatch": {
         "additionalProperties": false,
         "description": "반입 배치 기록.",
@@ -1328,6 +1799,85 @@
           "direction"
         ],
         "title": "KPIDefinition",
+        "type": "object"
+      },
+      "KnobEffect": {
+        "additionalProperties": false,
+        "description": "선택 knob의 방향성 요약 — ip_knobs 원본 그대로.",
+        "properties": {
+          "affected_kpis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Affected Kpis",
+            "type": "array"
+          },
+          "bandwidth_direction": {
+            "title": "Bandwidth Direction",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "control_domain": {
+            "title": "Control Domain",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "knob_id": {
+            "title": "Knob Id",
+            "type": "string"
+          },
+          "latency_direction": {
+            "title": "Latency Direction",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "power_direction": {
+            "title": "Power Direction",
+            "type": "string"
+          },
+          "related_scenarios": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Scenarios",
+            "type": "array"
+          },
+          "risk_direction": {
+            "title": "Risk Direction",
+            "type": "string"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "knob_id",
+          "name",
+          "category",
+          "control_domain",
+          "description",
+          "power_direction",
+          "latency_direction",
+          "bandwidth_direction",
+          "risk_direction",
+          "confidence",
+          "source_ref"
+        ],
+        "title": "KnobEffect",
         "type": "object"
       },
       "MeasurementEvidence": {
@@ -2127,55 +2677,13 @@
         "title": "RequiredEvidenceNeed",
         "type": "object"
       },
-      "RiskBasisItem": {
-        "additionalProperties": false,
-        "description": "등급 판정 근거 — 어떤 룰이 어떤 원본 객체 때문에 발화했는가.",
-        "properties": {
-          "description": {
-            "title": "Description",
-            "type": "string"
-          },
-          "ref_collection": {
-            "title": "Ref Collection",
-            "type": "string"
-          },
-          "ref_id": {
-            "title": "Ref Id",
-            "type": "string"
-          },
-          "rule": {
-            "title": "Rule",
-            "type": "string"
-          },
-          "rule_ko": {
-            "title": "Rule Ko",
-            "type": "string"
-          },
-          "source_refs": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Source Refs",
-            "type": "array"
-          }
-        },
-        "required": [
-          "rule",
-          "rule_ko",
-          "ref_id",
-          "ref_collection",
-          "description"
-        ],
-        "title": "RiskBasisItem",
-        "type": "object"
-      },
       "RiskCell": {
         "additionalProperties": false,
         "description": "시나리오×IP 셀 — 정성 등급 + 판정 근거. 수치 점수 없음.",
         "properties": {
           "basis": {
             "items": {
-              "$ref": "#/components/schemas/RiskBasisItem"
+              "$ref": "#/components/schemas/BasisItem"
             },
             "title": "Basis",
             "type": "array"
@@ -3134,7 +3642,7 @@
           },
           "overall_basis": {
             "items": {
-              "$ref": "#/components/schemas/RiskBasisItem"
+              "$ref": "#/components/schemas/BasisItem"
             },
             "title": "Overall Basis",
             "type": "array"
@@ -3173,6 +3681,60 @@
           "cells"
         ],
         "title": "ScenarioRiskRow",
+        "type": "object"
+      },
+      "SimilarCase": {
+        "additionalProperties": false,
+        "description": "과거 유사 사례 — 같은 IP 조합의 이슈/이벤트.",
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "kind_ko": {
+            "title": "Kind Ko",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "why_similar": {
+            "title": "Why Similar",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "kind_ko",
+          "ref_id",
+          "title",
+          "status",
+          "why_similar"
+        ],
+        "title": "SimilarCase",
         "type": "object"
       },
       "SourceMeta": {
@@ -3815,6 +4377,115 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/change-impact": {
+      "get": {
+        "description": "변경 영향 분석 — 결정론 그래프 순회 (모든 항목에 근거 ref).",
+        "operationId": "change_impact_api_v1_change_impact_get",
+        "parameters": [
+          {
+            "description": "변경 대상 IP 블록",
+            "in": "query",
+            "name": "ip_id",
+            "required": true,
+            "schema": {
+              "description": "변경 대상 IP 블록",
+              "title": "Ip Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "knob_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Knob Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "capability_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Capability Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeImpactResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change Impact"
+      }
+    },
+    "/api/v1/change-impact/options": {
+      "get": {
+        "description": "변경 영향 폼 옵션 — IP별 knob/capability/모드.",
+        "operationId": "change_impact_options_api_v1_change_impact_options_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeImpactOptions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Change Impact Options"
+      }
+    },
     "/api/v1/events": {
       "get": {
         "operationId": "list_events_api_v1_events_get",

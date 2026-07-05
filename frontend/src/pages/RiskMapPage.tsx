@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import {
   fetchProjects,
   fetchRiskHeatmap,
-  type RiskBasisItem,
+  type BasisItem,
   type ScenarioRiskRow,
   type WeeklyFocusItem,
 } from "../api/client";
@@ -223,7 +223,7 @@ function BasisPanel({
       <CollapsibleList
         items={basis}
         limit={5}
-        render={(item: RiskBasisItem, index: number) => (
+        render={(item: BasisItem, index: number) => (
           <div key={`${item.rule}-${item.ref_id}-${index}`} className="list-item">
             <div className="head">
               <span className="badge badge-info">{item.rule_ko}</span>
