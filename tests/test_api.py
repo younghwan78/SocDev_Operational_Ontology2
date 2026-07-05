@@ -108,6 +108,19 @@ def test_risk_heatmap(client: TestClient) -> None:
     assert filtered["columns"] == body["columns"], "열은 프로젝트 필터와 무관하게 고정"
 
 
+def test_ask_presets_and_query(client: TestClient) -> None:
+    presets = client.get("/api/v1/ask/presets").json()
+    assert len(presets) == 5
+
+    body = client.post(
+        "/api/v1/ask", json={"question": "UHD60 recording에서 현재 가장 위험한 IP는 무엇인가?"}
+    ).json()
+    assert body["provider"] == "deterministic", "테스트 환경은 LLM 미가용 — 검색 요약으로 동작"
+    assert body["cards"] and body["citations"]
+    assert body["cards"][0]["ref_id"] == "uhd60_recording_eis_on"
+    assert client.post("/api/v1/ask", json={"question": ""}).status_code == 422
+
+
 def test_issues_and_rca(client: TestClient) -> None:
     issues = client.get("/api/v1/issues").json()
     assert len(issues) >= 36
@@ -195,7 +208,9 @@ def test_no_write_endpoints(client: TestClient) -> None:
     """
     openapi = client.get("/openapi.json").json()
     for path, operations in openapi["paths"].items():
-        is_operation = path.endswith("/advisory") or "/ingest/" in path
+        is_operation = (
+            path.endswith("/advisory") or path.endswith("/ask") or "/ingest/" in path
+        )
         allowed = {"get", "post"} if is_operation else {"get"}
         assert set(operations.keys()) <= allowed, f"{path}에 허용 외 메서드 존재"
         assert not {"put", "patch", "delete"} & set(operations.keys()), path

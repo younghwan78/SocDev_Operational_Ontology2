@@ -241,6 +241,153 @@
         "title": "AgentRun",
         "type": "object"
       },
+      "AskCard": {
+        "additionalProperties": false,
+        "description": "질의 관련 객체 카드 — 답변 인용의 대상.",
+        "properties": {
+          "collection": {
+            "title": "Collection",
+            "type": "string"
+          },
+          "collection_ko": {
+            "title": "Collection Ko",
+            "type": "string"
+          },
+          "matched_terms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Matched Terms",
+            "type": "array"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "snippet": {
+            "title": "Snippet",
+            "type": "string"
+          },
+          "status_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Ko"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ref_id",
+          "collection",
+          "collection_ko",
+          "title",
+          "snippet"
+        ],
+        "title": "AskCard",
+        "type": "object"
+      },
+      "AskRequest": {
+        "description": "Ask SoC 질의 요청.",
+        "properties": {
+          "question": {
+            "description": "한국어/영어 혼용 자연어 질의",
+            "minLength": 2,
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question"
+        ],
+        "title": "AskRequest",
+        "type": "object"
+      },
+      "AskResult": {
+        "additionalProperties": false,
+        "description": "질의 응답 파생 뷰 — 저장하지 않음 (감사 노트 포함).",
+        "properties": {
+          "answer": {
+            "title": "Answer",
+            "type": "string"
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/AskCard"
+            },
+            "title": "Cards",
+            "type": "array"
+          },
+          "citations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "derivation": {
+            "title": "Derivation",
+            "type": "string"
+          },
+          "duration_ms": {
+            "default": 0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "note_ko": {
+            "default": "근거 인용 답변이며 결정이 아닙니다 · 인용은 수집된 객체로 한정",
+            "title": "Note Ko",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "validation_notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Validation Notes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "question",
+          "provider",
+          "answer",
+          "confidence",
+          "derivation",
+          "cards"
+        ],
+        "title": "AskResult",
+        "type": "object"
+      },
       "AttentionItem": {
         "additionalProperties": false,
         "description": "주의 항목 — lane별 소스 연결 항목. 점수 없음, 결정 아님.",
@@ -4740,6 +4887,71 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/ask": {
+      "post": {
+        "description": "Ask SoC 질의 — 검색(결정론) → LLM 근거 인용 답변 (데이터 수정 아님).\n\nLLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.",
+        "operationId": "ask_api_v1_ask_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask"
+      }
+    },
+    "/api/v1/ask/presets": {
+      "get": {
+        "description": "프리셋 질문 5종 — 원점 문서 데모 질문.",
+        "operationId": "ask_presets_api_v1_ask_presets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "type": "object"
+                  },
+                  "title": "Response Ask Presets Api V1 Ask Presets Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ask Presets"
+      }
+    },
     "/api/v1/change-impact": {
       "get": {
         "description": "변경 영향 분석 — 결정론 그래프 순회 (모든 항목에 근거 ref).",

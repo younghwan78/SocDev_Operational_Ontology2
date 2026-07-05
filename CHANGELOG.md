@@ -1,5 +1,45 @@
 # CHANGELOG
 
+## Stage 11 — Ask SoC 자연어 질의 (2026-07-06)
+
+> "과거 과제에서 비슷한 문제가 있었나?" — 원점 5대 질문 메뉴의 마지막 조각
+> (`internal_docs/design/03_course_correction.md` §4.4). 이로써 코크핏 내비의
+> 질문 메뉴 4종(위험 지도/변경 영향/이슈 분석/Ask SoC)이 전부 활성화됐다.
+
+### 추가
+
+- `backend/agents/ask_runner.py`: 질의 러너 —
+  - **검색(결정론)**: 혼합 스크립트 토큰화(한국어 문장+영어 키워드), 해상도 표기 확장
+    (4K→UHD, 8k30→8k/k30), IPBlock 별칭 매칭. 카드마다 결정론 상태 요약 부착
+    (시나리오=위험 등급+최악 셀, 이슈=검증 상태, 테스트=결과, 이벤트=일정 신호).
+    risk/위험 의도 질의는 구체 시나리오 매치가 없을 때 위험 지도 상위를 편입.
+  - **LLM 답변**: 기존 provider 체인(claude_cli→on-prem) 재사용. **인용은 수집된 카드
+    ID로 한정** — 검증 관문이 빈 인용/미수집 인용/근거 약한 high confidence를 거부하고
+    다음 엔진으로 넘어간다.
+  - **LLM 미가용/전부 거부 시**: 검색 결과+상태 요약만으로 결정론 답변 (수용 기준).
+- API: `GET /api/v1/ask/presets`(원점 데모 질문 5종), `POST /api/v1/ask`
+  (질의 연산 — 데이터 수정 아님, read-only 가드 테스트에 등록).
+- Frontend `AskPage`(`/ask`, 내비 활성화 — 비활성 placeholder 전부 소진):
+  검색창+프리셋 5종 → 답변(엔진/확신도 뱃지, 도출 과정, **인용 칩 클릭 시 카드로 스크롤**,
+  검증 기록 접기) + 관련 객체 카드(시나리오→상세, 이슈→RCA 딥링크 `?issue=`).
+  홈(위험 지도) 상단에 Ask SoC 검색창 추가 (§4.1 홈 구성 ① 완성).
+- `docs/ask.md` 가이드 (동작 원리/확신도 해석/질문 팁/한계).
+
+### 실 E2E 검증 기록 (Claude CLI)
+
+- "UHD60 recording에서 현재 가장 위험한 IP는 무엇인가?" → claude_cli, medium,
+  인용 4건 전부 카드 내, 검증 기록 0건. 위험 지도 셀 등급을 근거로 MFC를 지목하되
+  "DPU·ISP도 함께 높음 셀에 있어 단정 불가"라는 유보까지 명시.
+- "UHD60 thermal issue가 해결됐다고 판단할 evidence는 무엇인가?" → claude_cli, **low**,
+  "해결됐다고 판단할 evidence가 확인되지 않는다"는 정직한 답 + 부족한 근거 3종 인용.
+
+### 검증
+
+```text
+backend 127 passed(+ask 9, api 1) / ruff / mypy pass
+frontend build / test(18, +AskPage 3) / lint pass · validate-data 오류 0
+```
+
 ## Stage 10 — 이슈 분석: RCA 체인 + Test 온톨로지 확장 (2026-07-06)
 
 > "이 이슈의 원인은? 정말 해결됐나?" — **close됐지만 검증 테스트가 없는 이슈가

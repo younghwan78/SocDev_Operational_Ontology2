@@ -4,6 +4,48 @@
  */
 
 export interface paths {
+    "/api/v1/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask
+         * @description Ask SoC 질의 — 검색(결정론) → LLM 근거 인용 답변 (데이터 수정 아님).
+         *
+         *     LLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.
+         */
+        post: operations["ask_api_v1_ask_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ask/presets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ask Presets
+         * @description 프리셋 질문 5종 — 원점 문서 데모 질문.
+         */
+        get: operations["ask_presets_api_v1_ask_presets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/change-impact": {
         parameters: {
             query?: never;
@@ -575,6 +617,71 @@ export interface components {
             scenario_id: string;
             /** Status */
             status: string;
+            /** Validation Notes */
+            validation_notes?: string[];
+        };
+        /**
+         * AskCard
+         * @description 질의 관련 객체 카드 — 답변 인용의 대상.
+         */
+        AskCard: {
+            /** Collection */
+            collection: string;
+            /** Collection Ko */
+            collection_ko: string;
+            /** Matched Terms */
+            matched_terms?: string[];
+            /** Ref Id */
+            ref_id: string;
+            /** Snippet */
+            snippet: string;
+            /** Status Ko */
+            status_ko?: string | null;
+            /** Title */
+            title: string;
+        };
+        /**
+         * AskRequest
+         * @description Ask SoC 질의 요청.
+         */
+        AskRequest: {
+            /**
+             * Question
+             * @description 한국어/영어 혼용 자연어 질의
+             */
+            question: string;
+        };
+        /**
+         * AskResult
+         * @description 질의 응답 파생 뷰 — 저장하지 않음 (감사 노트 포함).
+         */
+        AskResult: {
+            /** Answer */
+            answer: string;
+            /** Cards */
+            cards: components["schemas"]["AskCard"][];
+            /** Citations */
+            citations?: string[];
+            /** Confidence */
+            confidence: string;
+            /** Derivation */
+            derivation: string;
+            /**
+             * Duration Ms
+             * @default 0
+             */
+            duration_ms: number;
+            /** Model Name */
+            model_name?: string | null;
+            /**
+             * Note Ko
+             * @default 근거 인용 답변이며 결정이 아닙니다 · 인용은 수집된 객체로 한정
+             */
+            note_ko: string;
+            /** Provider */
+            provider: string;
+            /** Question */
+            question: string;
             /** Validation Notes */
             validation_notes?: string[];
         };
@@ -2239,6 +2346,61 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    ask_api_v1_ask_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AskRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AskResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ask_presets_api_v1_ask_presets_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    }[];
+                };
+            };
+        };
+    };
     change_impact_api_v1_change_impact_get: {
         parameters: {
             query: {

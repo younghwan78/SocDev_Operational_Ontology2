@@ -4,7 +4,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   fetchProjects,
   fetchRiskHeatmap,
@@ -42,6 +42,8 @@ export function RiskMapPage() {
     enabled: Boolean(projectId),
   });
   const [selection, setSelection] = useState<Selection | null>(null);
+  const [askDraft, setAskDraft] = useState("");
+  const navigate = useNavigate();
   const label = useLabels();
 
   if (projects.isPending || heatmap.isPending)
@@ -60,6 +62,25 @@ export function RiskMapPage() {
       <p className="section-note">
         {t.subtitle} · {t.note}
       </p>
+
+      <form
+        className="ask-form home-ask"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (askDraft.trim()) navigate(`/ask?q=${encodeURIComponent(askDraft.trim())}`);
+        }}
+      >
+        <input
+          type="text"
+          className="ask-input"
+          value={askDraft}
+          placeholder={ko.ask.placeholder}
+          onChange={(event) => setAskDraft(event.target.value)}
+        />
+        <button type="submit" className="run-btn" disabled={!askDraft.trim()}>
+          {ko.ask.home_search_hint}
+        </button>
+      </form>
 
       <div className="filter-row">
         {(projects.data ?? []).map((project) => (

@@ -14,6 +14,7 @@ from typing import Any
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 
+from backend.agents.ask_runner import PRESET_QUESTIONS, AskResult, AskRunner
 from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
 from backend.agents.runner import AdvisoryRunner
 from backend.ingest.service import (
@@ -76,6 +77,7 @@ class AppServices:
     rca: RCAService
     traceability: TraceabilityService
     advisory: AdvisoryRunner
+    ask: AskRunner
     run_store: RunStoreProtocol
     ingest: IngestService
 
@@ -119,6 +121,7 @@ def build_services(
         rca=RCAService(repo),
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
+        ask=AskRunner(repo),
         run_store=run_store,
         ingest=ingest_service,
     )
@@ -128,6 +131,12 @@ class AdvisoryRequest(BaseModel):
     """advisory 실행 요청 — 역할 미지정 시 7개 역할 전체."""
 
     roles: list[str] | None = Field(default=None, description="role_id 목록 (기본: 전체)")
+
+
+class AskRequest(BaseModel):
+    """Ask SoC 질의 요청."""
+
+    question: str = Field(min_length=2, description="한국어/영어 혼용 자연어 질의")
 
 
 def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
@@ -323,6 +332,19 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     def list_advisory(scenario_id: str) -> list[AgentRun]:
         """해당 시나리오의 advisory 실행 기록 (최신순)."""
         return services.run_store.list_for_scenario(scenario_id)
+
+    @app.get(f"{prefix}/ask/presets")
+    def ask_presets() -> list[dict[str, str]]:
+        """프리셋 질문 5종 — 원점 문서 데모 질문."""
+        return PRESET_QUESTIONS
+
+    @app.post(f"{prefix}/ask", response_model=AskResult)
+    def ask(request: AskRequest) -> AskResult:
+        """Ask SoC 질의 — 검색(결정론) → LLM 근거 인용 답변 (데이터 수정 아님).
+
+        LLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.
+        """
+        return services.ask.ask(request.question)
 
     @app.post(f"{prefix}/ingest/file", response_model=IngestReport)
     async def ingest_file(

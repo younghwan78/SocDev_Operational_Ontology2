@@ -131,6 +131,21 @@ export async function fetchIssueRCA(issueId: string): Promise<RCAChain> {
   return data;
 }
 
+export type AskResult = components["schemas"]["AskResult"];
+export type AskCard = components["schemas"]["AskCard"];
+
+export async function fetchAskPresets(): Promise<Record<string, string>[]> {
+  const { data, error } = await client.GET("/api/v1/ask/presets");
+  if (error || !data) throw new Error("ask presets 조회 실패");
+  return data;
+}
+
+export async function postAsk(question: string): Promise<AskResult> {
+  const { data, error } = await client.POST("/api/v1/ask", { body: { question } });
+  if (error || !data) throw new Error("ask 질의 실패");
+  return data;
+}
+
 export interface ChangeImpactParams {
   ipId: string;
   knobId?: string;

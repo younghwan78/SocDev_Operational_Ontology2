@@ -6,7 +6,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   fetchIssueRCA,
   fetchIssues,
@@ -43,9 +43,13 @@ const VERIFICATION_FILTERS: { value: string; label: string }[] = [
 ];
 
 export function IssueAnalysisPage() {
+  const [searchParams] = useSearchParams();
   const [projectFilter, setProjectFilter] = useState<string | undefined>();
   const [verificationFilter, setVerificationFilter] = useState<string | undefined>();
-  const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
+  // Ask SoC 등 외부에서 ?issue=<id>로 딥링크 진입을 지원한다.
+  const [selectedIssue, setSelectedIssue] = useState<string | null>(
+    searchParams.get("issue"),
+  );
 
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
   const issues = useQuery({
