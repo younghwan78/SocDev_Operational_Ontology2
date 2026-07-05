@@ -42,33 +42,59 @@ const overview = {
   ],
 };
 
+const labels = {
+  project_u: "Project U",
+  uhd60_recording_eis_on: "UHD60 녹화",
+  pm: "PM Agent",
+};
+
+function jsonResponse(body: unknown): Promise<Response> {
+  return Promise.resolve(
+    new Response(JSON.stringify(body), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }),
+  );
+}
+
 beforeEach(() => {
   vi.stubGlobal(
     "fetch",
-    vi.fn(() =>
-      Promise.resolve(
-        new Response(JSON.stringify(overview), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
-      ),
-    ),
+    vi.fn((input: RequestInfo | URL) => {
+      const url = input instanceof Request ? input.url : String(input);
+      if (url.includes("/api/v1/meta/labels")) return jsonResponse(labels);
+      return jsonResponse(overview);
+    }),
   );
 });
 
+function renderPage() {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <PortfolioPage />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
+
 describe("PortfolioPage", () => {
   it("프로젝트 요약·주의 lane·매트릭스를 렌더링한다", async () => {
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter>
-          <PortfolioPage />
-        </MemoryRouter>
-      </QueryClientProvider>,
-    );
-    expect(await screen.findByText("Project U")).toBeInTheDocument();
+    renderPage();
+    expect((await screen.findAllByText("Project U")).length).toBeGreaterThan(0);
     expect(screen.getAllByText("근거 부족").length).toBeGreaterThan(0);
-    expect(screen.getByText("UHD60 녹화")).toBeInTheDocument();
+    expect(screen.getAllByText("UHD60 녹화").length).toBeGreaterThan(0);
     expect(screen.getByText(ko.portfolio.title)).toBeInTheDocument();
+  });
+
+  it("내부 ID를 화면 텍스트로 노출하지 않는다 (hover 제외)", async () => {
+    renderPage();
+    await screen.findAllByText("Project U");
+    // 라벨 로드 완료(=역할 표시명 등장)를 기다린 뒤 ID 부재를 확인한다.
+    expect(await screen.findByText(/PM Agent/)).toBeInTheDocument();
+    expect(screen.queryByText("project_u")).not.toBeInTheDocument();
+    expect(screen.queryByText("uhd60_recording_eis_on")).not.toBeInTheDocument();
+    expect(screen.queryByText("req_1")).not.toBeInTheDocument();
   });
 });

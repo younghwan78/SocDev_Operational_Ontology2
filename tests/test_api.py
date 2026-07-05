@@ -40,6 +40,14 @@ def test_glossary_endpoint(client: TestClient) -> None:
     assert body["enums"]["Confidence"]["low"] == "낮음"
 
 
+def test_meta_labels(client: TestClient) -> None:
+    body = client.get("/api/v1/meta/labels").json()
+    assert body["project_u"] == "Project U"
+    assert body["ip_isp"] == "ISP"
+    assert body["pm"] == "PM Agent"
+    assert "uhd60_recording_eis_on" in body
+
+
 def test_projects(client: TestClient) -> None:
     assert len(client.get("/api/v1/projects").json()) == 3
     assert client.get("/api/v1/projects/project_u").json()["id"] == "project_u"
@@ -85,6 +93,19 @@ def test_portfolio_overview(client: TestClient) -> None:
     assert len(body["projects"]) == 3
     assert body["attention"]
     assert body["matrix"]
+
+
+def test_risk_heatmap(client: TestClient) -> None:
+    body = client.get("/api/v1/risk/heatmap").json()
+    assert body["columns"]
+    assert body["rows"]
+    assert 3 <= len(body["focus"]) <= 5
+    for row in body["rows"]:
+        assert row["overall_grade_ko"] in ("높음", "중간", "낮음")
+        assert row["overall_basis"], "근거 없는 등급은 API로 나가지 않는다"
+    filtered = client.get("/api/v1/risk/heatmap", params={"project_id": "project_u"}).json()
+    assert 0 < len(filtered["rows"]) <= len(body["rows"])
+    assert filtered["columns"] == body["columns"], "열은 프로젝트 필터와 무관하게 고정"
 
 
 def test_weekly_review(client: TestClient) -> None:

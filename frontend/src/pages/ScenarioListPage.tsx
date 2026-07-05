@@ -2,10 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchProjects, fetchScenarios } from "../api/client";
+import { useLabels } from "../hooks/useLabels";
 import { ko } from "../i18n/ko";
 
 export function ScenarioListPage() {
   const [projectFilter, setProjectFilter] = useState<string | undefined>(undefined);
+  const label = useLabels();
 
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
   const scenarios = useQuery({
@@ -56,8 +58,8 @@ export function ScenarioListPage() {
               className="card scenario-card"
             >
               <div className="name">{scenario.name}</div>
-              <div className="meta">
-                {ko.scenario_list.group_prefix}: {scenario.scenario_group_id} ·{" "}
+              <div className="meta" title={scenario.scenario_group_id}>
+                {ko.scenario_list.group_prefix}: {label(scenario.scenario_group_id)} ·{" "}
                 {scenario.domain}
               </div>
               <div className="chip-row">

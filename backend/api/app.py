@@ -36,6 +36,7 @@ from backend.resolve.object_index import ObjectIndex
 from backend.resolve.traceability import TraceabilityResult, TraceabilityService
 from backend.services.portfolio import PortfolioOverview, PortfolioService
 from backend.services.review import ReviewService, WeeklyIndex, WeeklySnapshot
+from backend.services.risk import RiskHeatmap, RiskService
 from backend.services.scenario_analysis import (
     ScenarioAnalysis,
     ScenarioAnalysisService,
@@ -57,6 +58,7 @@ class AppServices:
     analysis: ScenarioAnalysisService
     portfolio: PortfolioService
     review: ReviewService
+    risk: RiskService
     traceability: TraceabilityService
     advisory: AdvisoryRunner
     run_store: RunStoreProtocol
@@ -97,6 +99,7 @@ def build_services(
         analysis=ScenarioAnalysisService(repo),
         portfolio=PortfolioService(repo),
         review=ReviewService(repo),
+        risk=RiskService(repo),
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
         run_store=run_store,
@@ -137,6 +140,17 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         models: list[type[BaseModel]] = [model for _, model in COLLECTIONS.values()]
         models += list(RUNTIME_CONTRACTS.values())
         return export_glossary(models)
+
+    @app.get(f"{prefix}/meta/labels")
+    def labels() -> dict[str, str]:
+        """내부 ID → 표시명 매핑 — ID 숨김 원칙(ID는 hover/상세만 노출) 지원."""
+        result: dict[str, str] = {}
+        for collection in ("projects", "scenarios", "scenario_groups", "ip_blocks", "roles"):
+            for obj in services.repo.list(collection):
+                name = getattr(obj, "name", None)
+                if isinstance(name, str) and name:
+                    result[obj.id] = name
+        return result
 
     @app.get(f"{prefix}/projects", response_model=list[Project])
     def list_projects() -> list[Project]:
@@ -222,6 +236,13 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     @app.get(f"{prefix}/portfolio/overview", response_model=PortfolioOverview)
     def portfolio_overview() -> PortfolioOverview:
         return services.portfolio.overview()
+
+    @app.get(f"{prefix}/risk/heatmap", response_model=RiskHeatmap)
+    def risk_heatmap(
+        project_id: str | None = Query(default=None, description="프로젝트 필터"),
+    ) -> RiskHeatmap:
+        """위험 지도 — 시나리오×IP 정성 등급 + 판정 근거 (수치 점수 없음)."""
+        return services.risk.heatmap(project_id)
 
     @app.get(f"{prefix}/review/weekly", response_model=WeeklyIndex)
     def weekly_index() -> WeeklyIndex:

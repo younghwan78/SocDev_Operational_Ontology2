@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdvisoryRuns, runAdvisory, type RoleAdvisory } from "../../api/client";
+import { useLabels } from "../../hooks/useLabels";
 import { ko } from "../../i18n/ko";
 
 const t = ko.advisory;
@@ -74,11 +75,14 @@ export function AdvisoryTab({ scenarioId }: { scenarioId: string }) {
 }
 
 function AdvisoryCard({ advisory }: { advisory: RoleAdvisory }) {
+  const label = useLabels();
   return (
     <div className="card">
       <div className="list-item" style={{ borderBottom: "none", padding: 0 }}>
         <div className="head">
-          <span className="badge badge-info">{advisory.role_id}</span>
+          <span className="badge badge-info" title={advisory.role_id}>
+            {label(advisory.role_id)}
+          </span>
           <span className="badge badge-ok">
             {t.provider}: {PROVIDER_LABELS[advisory.provider] ?? advisory.provider}
           </span>

@@ -2,11 +2,11 @@
 
 ## 활성 Stage
 
-**Stage 8 — 홈 개편 + 위험 지도 (Risk Heatmap)** (사용자 승인 완료 2026-07-05 — 착수 대기)
+**Stage 9 — 변경 영향 (Change Impact)** (준비 완료 — **사용자 승인 대기, 착수 금지**)
 
 > 새 세션 시작 시 이 파일과 함께 반드시 읽을 것:
-> 1. `docs/design/03_course_correction.md` — **교정 설계 (Stage 8~12의 기준 문서)**
-> 2. `docs/design/02_implementation_roadmap.md` — Stage 8~12 수용 기준
+> 1. `docs/design/03_course_correction.md` §4.2 — **교정 설계 (Stage 8~12의 기준 문서)**
+> 2. `docs/design/02_implementation_roadmap.md` — Stage 9 수용 기준
 > 3. 원점 문서(read-only): `D:\YHJOO\100_SoC_Operational_Ontology\01_Brainstorming\26.06.18 SoC ontology (ChatGPT).md`
 
 ## 작업 디렉토리
@@ -28,54 +28,61 @@ cd frontend && VITE_API_TARGET=http://127.0.0.1:8155 npx vite --host 127.0.0.1 -
 
 ---
 
-## Stage 1~7 완료 기준선 (기반 — 유지)
+## Stage 1~8 완료 기준선 (기반 — 유지)
 
 ```text
 온톨로지 v1.0 계약 8모듈 + 한국어 glossary + fixture 465건 (무결성 오류 0)
-PostgreSQL 계층 (마이그레이션 3개/시드/repository 패리티) — 테스트 DB: soc58_test@warroom-pg:55432
-결정론 서비스(시나리오 분석·포트폴리오·리뷰·traceability) + FastAPI + openapi.json
-한국어 frontend 4화면 + traceability drill-down 패턴
-LLM 3단 체인(claude_cli→openai_compat→결정론) + evidence-grounded validator + 감사 기록
-Excel/CSV 반입 (한국어 헤더 매핑, 배치 rollback)
-backend 82 테스트 / frontend 5 테스트 / ruff / mypy / lint 전부 통과
+PostgreSQL 계층 / 결정론 서비스 + FastAPI / 한국어 frontend / LLM 3단 체인 + validator / Excel·CSV 반입
+Stage 8 (2026-07-05): 위험 지도 홈 — backend/services/risk.py 정성 등급 룰(등급마다 근거 ref,
+  수치 점수 금지), GET /api/v1/risk/heatmap, GET /api/v1/meta/labels,
+  코크핏 내비(위험 지도 활성 / 변경 영향·이슈 분석·Ask SoC 비활성 placeholder),
+  UI 공통 원칙(ID 숨김 useLabels / 색 의미 통일 / CollapsibleList 접기)
+backend 87 테스트 / frontend 9 테스트 / ruff / mypy / lint 통과
 ```
+
+### 알려진 문제 (승계)
+
+- `test_converter_roundtrip` 1건 실패 — 56 참조 데이터가 2026-07-05에 갱신되어
+  (variants+1건, Variant `source_basis` 필드 등) Stage 1 변환 스냅샷과 드리프트.
+  재동기화는 온톨로지 계약+fixture 변경(변경 규율 6단계) → **사용자 결정 필요**.
+  Stage 10 fixture 보강과 묶어 처리하는 것도 후보.
 
 ---
 
-## Stage 8 목표
+## Stage 9 목표
 
-UI를 "질문이 곧 메뉴인 코크핏"으로 재편하는 첫 단계. 홈을 **위험 지도(Risk Heatmap)**로
-바꾸고 UI 공통 원칙을 도입한다. 상세 설계: `03_course_correction.md` §4.1, §3.
+"이 IP/spec을 바꾸면 어디에 영향이 가나?"에 결정론으로 답하는 변경 영향 화면.
+TAT 효과 1위 유스케이스. 상세 설계: `03_course_correction.md` §4.2.
 
 ## 기준 가정
 
-- Stage 1~7 계약·서비스는 기반으로 재사용한다. 온톨로지 저장 계약 변경 없음(위험 등급은 파생 뷰).
-- **Guardrail 조정(승인됨)**: 수치 리스크 점수는 여전히 금지. 단 **정성 위험 등급(높음/중간/낮음)
-  + 판정 근거 목록 명시**는 허용 — CLAUDE.md §6.3에 반영됨.
-- 위험 판정은 결정론 룰: 근거 공백 수·종류(확신도 차단 가중), 이슈 심각도, schedule_signal,
-  P1 요청 상태, 과거 유사 패턴. 모든 등급은 근거 객체 ref 목록을 동반한다.
-- 기존 화면(포트폴리오 lane/리뷰/근거 탐색/시나리오 상세)은 삭제하지 않고 하위 층으로 재배치.
+- 온톨로지 저장 계약 변경 없음 — 기존 데이터 그래프(scenario_ip_requirements /
+  ip_knobs / ip_dependency_rules / issues / events) 순회만으로 계산.
+- LLM은 결정론 결과의 문장화/요약에만 선택 사용 (기존 체인 + validator 재사용).
+- 수치 점수·자동 결정·쓰기 API 금지 유지.
 
 ## In-scope
 
 ```text
-backend/services/risk.py — 시나리오×IP 정성 위험 판정 룰 + 단위 테스트
-GET /api/v1/risk/heatmap — 프로젝트 필터, 셀별 등급+근거 refs
-frontend 홈 개편:
-  - 내비: 위험 지도 / 변경 영향(비활성) / 이슈 분석(비활성) / Ask SoC(비활성) / 기존 화면(하위 메뉴)
-  - heatmap (행=시나리오, 열=주요 IP, 셀=●◐○ 등급, 프로젝트 탭 U/V/W)
-  - 셀/행 클릭 → 근거 패널 → 기존 시나리오 상세로 drill-down
-  - "이번 주 주목" 3~5건 (P1 요청·새 공백·확신도 차단 우선)
-UI 공통 원칙 적용: 내부 ID 숨김(hover/상세만), 색 의미 통일(빨강=위험/노랑=주의/초록=정상), 접기 기본
+backend/services/change_impact.py — 그래프 순회 엔진 + 단위 테스트:
+  선택 IP → scenario_ip_requirements → 영향 시나리오 → primary_kpis
+  선택 IP → ip_dependency_rules → 연쇄 IP (조건 표시)
+  선택 knob → ip_knobs.affected_kpis / related_scenarios / 방향성(전력·지연·대역폭·리스크)
+  영향 시나리오 → 과거 이슈/이벤트 (같은 IP·KPI 조합) → 유사 사례
+  영향 도메인 → 역할 책임 경계(CLAUDE.md §2.2) → 검토 관점 체크리스트
+GET /api/v1/change-impact (IP/knob 파라미터)
+frontend 변경 영향 화면: 내비 활성화, IP 선택 → knob/capability/모드 선택 → [분석 실행]
+  → 4분면 출력(영향 시나리오/영향 KPI/연쇄 IP/역할별 검토 체크리스트) + 과거 유사 사례
+  → 체크리스트 텍스트 복사 내보내기
 openapi 재생성 + 타입 생성 + 테스트 (backend/frontend)
 ```
 
-## Out-of-scope (Stage 8에서 구현 금지)
+## Out-of-scope (Stage 9에서 구현 금지)
 
 ```text
-변경 영향 엔진 (Stage 9) / RCA·Test 온톨로지 확장 (Stage 10) / Ask SoC 질의 (Stage 11)
-수치 리스크 점수, owner 할당, 결정 자동화, 쓰기 API
-JIRA/임베딩 (Stage 13+)
+RCA·Test 온톨로지 확장 (Stage 10) / Ask SoC 질의 (Stage 11) / 데모 스토리 모드 (Stage 12)
+자유 서술 입력의 LLM 해석 (knob/capability 선택 입력만 — 자유 서술은 Stage 11 검토)
+수치 영향 점수, owner 할당, 쓰기 API, JIRA/임베딩 (Stage 13+)
 ```
 
 ## 필수 검증 명령
@@ -86,16 +93,15 @@ uv run python -m backend.cli.main validate-data
 cd frontend && npm run build && npm run test && npm run lint
 ```
 
-## 수용 기준
+## 수용 기준 (roadmap Stage 9)
 
-- [ ] 홈 진입 10초 내 위험 시나리오 식별 가능 (heatmap이 첫 화면)
-- [ ] 모든 등급이 근거 패널로 drill-down (근거 없는 등급 없음)
-- [ ] 등급 판정이 결정론 테스트로 고정 (동일 fixture → 동일 등급)
-- [ ] 화면에 내부 ID 직접 노출 없음 (hover/상세 제외 — 기존 가드 테스트 확장)
-- [ ] 기존 4화면은 하위 메뉴에서 계속 접근 가능
+- [ ] ISP knob 변경 예시로 4분면 출력 완결 (영향 시나리오/KPI/연쇄 IP/검토 체크리스트)
+- [ ] 체크리스트가 역할 책임 경계와 일치 (HW/SW는 feedback, Management는 트레이드오프 등)
+- [ ] 모든 영향 항목이 근거 객체 ref 동반 (traceability drill-down 연결)
+- [ ] 등급/영향 판정이 결정론 테스트로 고정
 - [ ] backend/frontend 전체 회귀 통과
 
 ## Scope Lock
 
-Stage 9 이후의 어떤 동작도 구현하지 않는다. Stage 8 완료 시: changelog 갱신 → commit/push →
-Stage 9 scope lock 갱신 후 정지 (사용자 승인 후 진행).
+Stage 10 이후의 어떤 동작도 구현하지 않는다. Stage 9 완료 시: changelog 갱신 → commit/push →
+Stage 10 scope lock 갱신 후 정지 (사용자 승인 후 진행).

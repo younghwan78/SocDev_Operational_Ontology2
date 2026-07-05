@@ -1,4 +1,5 @@
 import type { DevelopmentEvent, RoleActivity } from "../../api/client";
+import { useLabels } from "../../hooks/useLabels";
 import { ko } from "../../i18n/ko";
 
 const t = ko.scenario_detail;
@@ -18,6 +19,7 @@ export function EventsTab({
   events: DevelopmentEvent[];
   activities: RoleActivity[];
 }) {
+  const label = useLabels();
   return (
     <div>
       <div className="card">
@@ -41,7 +43,7 @@ export function EventsTab({
             <p className="desc">{event.description}</p>
             {(event.roles_involved ?? []).length > 0 && (
               <p className="desc">
-                {t.roles}: {(event.roles_involved ?? []).join(", ")}
+                {t.roles}: {(event.roles_involved ?? []).map((roleId) => label(roleId)).join(", ")}
               </p>
             )}
           </div>
@@ -58,7 +60,9 @@ export function EventsTab({
                 {t.week_prefix}
                 {activity.week}
               </span>
-              <span className="badge badge-info">{activity.role_id}</span>
+              <span className="badge badge-info" title={activity.role_id}>
+                {label(activity.role_id)}
+              </span>
               <span className="title">{activity.title}</span>
             </div>
             <p className="desc">{activity.summary}</p>

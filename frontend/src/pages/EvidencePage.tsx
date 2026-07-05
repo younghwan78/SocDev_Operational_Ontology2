@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchEvidence, fetchIngestBatches, fetchProjects } from "../api/client";
 import { SourceBadge } from "../components/SourceBadge";
+import { useLabels } from "../hooks/useLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.evidence;
@@ -26,6 +27,7 @@ export function EvidencePage() {
     queryFn: () => fetchEvidence({ projectId: projectFilter, availability: availabilityFilter }),
   });
   const batches = useQuery({ queryKey: ["ingest-batches"], queryFn: fetchIngestBatches });
+  const label = useLabels();
 
   if (evidence.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (evidence.isError) return <p className="status-msg">{ko.app.error}</p>;
@@ -105,14 +107,20 @@ export function EvidencePage() {
               <span className="title">{entry.title}</span>
               {entry.is_measurement && <span className="badge badge-ok">{t.measurement}</span>}
               {entry.is_prediction && <span className="badge badge-warn">{t.prediction}</span>}
-              <span className="chip">{entry.project_id}</span>
+              <span className="chip" title={entry.project_id}>
+                {label(entry.project_id)}
+              </span>
             </div>
             <p className="desc">
               {t.limitation}: {entry.known_limitation} · {t.source_system}: {entry.source_system}
             </p>
             <p className="desc">
-              <Link to={`/scenarios/${entry.scenario_id}/overview`} className="chip-link">
-                {t.scenario_link}: {entry.scenario_id}
+              <Link
+                to={`/scenarios/${entry.scenario_id}/overview`}
+                className="chip-link"
+                title={entry.scenario_id}
+              >
+                {t.scenario_link}: {label(entry.scenario_id)}
               </Link>
             </p>
           </div>

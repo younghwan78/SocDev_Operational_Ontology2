@@ -87,6 +87,27 @@ export async function fetchWeeklySnapshot(week: number): Promise<WeeklySnapshot>
   return data;
 }
 
+export type RiskHeatmap = components["schemas"]["RiskHeatmap"];
+export type ScenarioRiskRow = components["schemas"]["ScenarioRiskRow"];
+export type RiskCell = components["schemas"]["RiskCell"];
+export type RiskBasisItem = components["schemas"]["RiskBasisItem"];
+export type HeatmapColumn = components["schemas"]["HeatmapColumn"];
+export type WeeklyFocusItem = components["schemas"]["WeeklyFocusItem"];
+
+export async function fetchRiskHeatmap(projectId?: string): Promise<RiskHeatmap> {
+  const { data, error } = await client.GET("/api/v1/risk/heatmap", {
+    params: { query: projectId ? { project_id: projectId } : {} },
+  });
+  if (error || !data) throw new Error("risk heatmap 조회 실패");
+  return data;
+}
+
+export async function fetchLabels(): Promise<Record<string, string>> {
+  const { data, error } = await client.GET("/api/v1/meta/labels");
+  if (error || !data) throw new Error("labels 조회 실패");
+  return data;
+}
+
 export type IngestBatch = components["schemas"]["IngestBatch"];
 
 export async function fetchIngestBatches(): Promise<IngestBatch[]> {

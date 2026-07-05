@@ -1,5 +1,6 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { TimelineItem } from "../api/client";
 import { TimelineTab } from "../pages/tabs/TimelineTab";
 
@@ -28,13 +29,37 @@ const items: TimelineItem[] = [
   },
 ];
 
+const labels = { project_u: "Project U", pm: "PM Agent" };
+
+beforeEach(() => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() =>
+      Promise.resolve(
+        new Response(JSON.stringify(labels), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      ),
+    ),
+  );
+});
+
 describe("TimelineTab", () => {
-  it("주차별로 그룹핑해 렌더링한다", () => {
-    render(<TimelineTab items={items} />);
+  it("주차별로 그룹핑해 렌더링한다", async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <TimelineTab items={items} />
+      </QueryClientProvider>,
+    );
     expect(screen.getByText("W2")).toBeInTheDocument();
     expect(screen.getByText("W14")).toBeInTheDocument();
     expect(screen.getByText("개발 이벤트")).toBeInTheDocument();
     expect(screen.getByText("시나리오 요청")).toBeInTheDocument();
     expect(screen.getByText("패키지 아웃 체크포인트")).toBeInTheDocument();
+    // 내부 ID 숨김 — 라벨 로드 후 role id가 표시명으로 대체된다.
+    expect(await screen.findAllByText(/PM Agent/)).not.toHaveLength(0);
+    expect(screen.queryByText(/·.*pm(,|$)/)).not.toBeInTheDocument();
   });
 });

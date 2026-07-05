@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchWeeklyIndex, fetchWeeklySnapshot } from "../api/client";
+import { useLabels } from "../hooks/useLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.review;
@@ -8,6 +9,7 @@ const t = ko.review;
 export function ReviewPage() {
   const { week } = useParams<{ week: string }>();
   const navigate = useNavigate();
+  const label = useLabels();
 
   const index = useQuery({ queryKey: ["weekly-index"], queryFn: fetchWeeklyIndex });
   const selectedWeek = week ? Number(week) : undefined;
@@ -76,7 +78,9 @@ export function ReviewPage() {
             {snapshot.data.activities.map((activity) => (
               <div key={activity.id} className="list-item">
                 <div className="head">
-                  <span className="badge badge-warn">{activity.role_id}</span>
+                  <span className="badge badge-warn" title={activity.role_id}>
+                    {label(activity.role_id)}
+                  </span>
                   <span className="title">{activity.title}</span>
                 </div>
                 <p className="desc">{activity.summary}</p>

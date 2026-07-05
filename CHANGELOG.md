@@ -1,5 +1,52 @@
 # CHANGELOG
 
+## Stage 8 — 홈 개편 + 위험 지도 (2026-07-05)
+
+> 방향 교정(`docs/design/03_course_correction.md`) 첫 구현 — 원점 문서의
+> Milestone Risk Early Warning 복원. UI를 "질문이 곧 메뉴인 코크핏"으로 재편 시작.
+
+### 추가
+
+- `backend/services/risk.py`: 시나리오×IP **정성 위험 등급** 결정론 룰 (파생 뷰, 저장 없음).
+  - 셀 룰: 미해결 이슈(높음) / 확신도 차단 근거(상한 low=높음, medium=중간 — 가중 차등) /
+    일정 위험 신호 at_risk·delayed·window_closing(고심각도 결합 시 높음) / 고심각도 이벤트(중간) /
+    요구 근거 미충족(중간) / 과거 유사 이슈(중간). 신호 없으면 낮음 + `no_signal` 근거.
+  - 시나리오 종합 룰: 셀 최고 등급 + P0 요청 근거 부족(높음) / P1 요청(중간) / 근거 공백 누적 ≥3(중간).
+  - **모든 등급은 판정 근거 목록(원본 객체 ref) 동반 — 근거 없는 등급 없음. 수치 점수 산출·표시 없음**
+    (CLAUDE.md §6.3 승인 범위, 테스트로 강제).
+  - 이벤트→IP 귀속은 IPBlock의 domain/aliases 토큰과 candidate option의 명시 참조로만 판별
+    (synthetic ID 하드코딩 없음). heatmap 열도 시나리오가 참조하는 블록에서 파생 (10열, ip_cpu 제외).
+  - "이번 주 주목" 3~5건: P0/P1 요청 근거 부족 → 확신도 차단 → 일정 위험 순, 최근 주차 우선.
+- API: `GET /api/v1/risk/heatmap`(project_id 필터, 열은 필터와 무관하게 고정),
+  `GET /api/v1/meta/labels`(내부 ID→표시명 — ID 숨김 원칙 지원).
+- Frontend 홈 개편:
+  - 내비 재편 — 위험 지도(홈) / 변경 영향·이슈 분석·Ask SoC(비활성, Stage 9~11 예정) /
+    "데이터 탐색" 하위 그룹(기존 4화면 유지).
+  - `RiskMapPage`: 프로젝트 탭 U/V/W, ●◐○ heatmap(위험 시나리오 우선 정렬), 셀/행 클릭 →
+    판정 근거 패널 → 기존 시나리오 상세로 drill-down (3클릭 내 원본 근거 도달).
+- UI 공통 원칙 전 화면 적용:
+  - 내부 ID 숨김 — `useLabels` 훅으로 프로젝트/시나리오/그룹/IP/역할 ID를 표시명으로 렌더
+    (ID는 hover title에만). 컴포넌트 가드 테스트로 강제.
+  - 색 의미 통일 — 빨강=위험, 노랑=주의, 초록=정상 (`risk-high/medium/low`).
+  - 접기 기본 — `CollapsibleList`(상위 5건+더 보기), 포트폴리오 주의 lane 44건 나열 문제 해소.
+
+### 알려진 문제 (Stage 8 범위 밖 — 사용자 결정 필요)
+
+- `test_converter_roundtrip` 1건 실패: 56 참조 데이터가 2026-07-05 15:23에 갱신됨
+  (variants 5→6건, Variant에 `source_basis` 필드 추가, scenarios/relations/measurement_requirements 변경)
+  — Stage 1 변환 스냅샷과 드리프트. 동기화는 온톨로지 계약·fixture 변경(변경 규율 6단계)이라
+  별도 승인 필요. Stage 8 코드와 무관.
+
+### 검증
+
+```text
+backend 87 passed / 1 failed(위 드리프트) / ruff / mypy pass
+frontend build / test(9) / lint pass — RiskMapPage 3건 + ID 숨김 가드 포함
+validate-data → 오류 0건 유지
+E2E: uvicorn 8155 + vite 5275 실구동 — heatmap 렌더/셀 drill-down/프로젝트 탭 전환/
+  주목 5건/포트폴리오 접기·표시명 브라우저 확인. 미지 project_id→빈 결과 200, DELETE→405.
+```
+
 ## Stage 7 — Excel/CSV 실데이터 반입 파일럿 (2026-07-04)
 
 ### 추가

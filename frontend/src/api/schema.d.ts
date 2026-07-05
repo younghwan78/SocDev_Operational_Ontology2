@@ -166,6 +166,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/meta/labels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Labels
+         * @description 내부 ID → 표시명 매핑 — ID 숨김 원칙(ID는 hover/상세만 노출) 지원.
+         */
+        get: operations["labels_api_v1_meta_labels_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/portfolio/overview": {
         parameters: {
             query?: never;
@@ -243,6 +263,26 @@ export interface paths {
         };
         /** Weekly Snapshot */
         get: operations["weekly_snapshot_api_v1_review_weekly__week__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/risk/heatmap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Risk Heatmap
+         * @description 위험 지도 — 시나리오×IP 정성 등급 + 판정 근거 (수치 점수 없음).
+         */
+        get: operations["risk_heatmap_api_v1_risk_heatmap_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -803,6 +843,18 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * HeatmapColumn
+         * @description heatmap 열 — 시나리오가 참조하는 IP/시스템 블록.
+         */
+        HeatmapColumn: {
+            /** Category */
+            category: string;
+            /** Ip Id */
+            ip_id: string;
+            /** Ip Name */
+            ip_name: string;
+        };
+        /**
          * IngestBatch
          * @description 반입 배치 기록.
          */
@@ -1152,6 +1204,52 @@ export interface components {
             source_refs?: string[];
         };
         /**
+         * RiskBasisItem
+         * @description 등급 판정 근거 — 어떤 룰이 어떤 원본 객체 때문에 발화했는가.
+         */
+        RiskBasisItem: {
+            /** Description */
+            description: string;
+            /** Ref Collection */
+            ref_collection: string;
+            /** Ref Id */
+            ref_id: string;
+            /** Rule */
+            rule: string;
+            /** Rule Ko */
+            rule_ko: string;
+            /** Source Refs */
+            source_refs?: string[];
+        };
+        /**
+         * RiskCell
+         * @description 시나리오×IP 셀 — 정성 등급 + 판정 근거. 수치 점수 없음.
+         */
+        RiskCell: {
+            /** Basis */
+            basis: components["schemas"]["RiskBasisItem"][];
+            /** Grade */
+            grade: string;
+            /** Grade Ko */
+            grade_ko: string;
+            /** Ip Id */
+            ip_id: string;
+            /** Scenario Id */
+            scenario_id: string;
+        };
+        /**
+         * RiskHeatmap
+         * @description 위험 지도 파생 뷰 — 홈 화면의 첫 응답.
+         */
+        RiskHeatmap: {
+            /** Columns */
+            columns: components["schemas"]["HeatmapColumn"][];
+            /** Focus */
+            focus: components["schemas"]["WeeklyFocusItem"][];
+            /** Rows */
+            rows: components["schemas"]["ScenarioRiskRow"][];
+        };
+        /**
          * RoleActivity
          * @description 역할 주간 활동 — 이벤트 검토의 역할별 기록.
          */
@@ -1465,6 +1563,26 @@ export interface components {
             trigger_roles?: string[];
         };
         /**
+         * ScenarioRiskRow
+         * @description heatmap 행 — 시나리오 종합 등급 + 관련 IP 셀.
+         */
+        ScenarioRiskRow: {
+            /** Cells */
+            cells: components["schemas"]["RiskCell"][];
+            /** Overall Basis */
+            overall_basis: components["schemas"]["RiskBasisItem"][];
+            /** Overall Grade */
+            overall_grade: string;
+            /** Overall Grade Ko */
+            overall_grade_ko: string;
+            /** Project Ids */
+            project_ids: string[];
+            /** Scenario Id */
+            scenario_id: string;
+            /** Scenario Name */
+            scenario_name: string;
+        };
+        /**
          * SourceMeta
          * @description 객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.
          */
@@ -1629,6 +1747,32 @@ export interface components {
             end_week: number;
             /** Start Week */
             start_week: number;
+        };
+        /**
+         * WeeklyFocusItem
+         * @description 이번 주 주목 항목 — P1 요청·확신도 차단·근거 공백 우선.
+         */
+        WeeklyFocusItem: {
+            /** Description */
+            description: string;
+            /** Kind */
+            kind: string;
+            /** Kind Ko */
+            kind_ko: string;
+            /** Project Ids */
+            project_ids?: string[];
+            /** Ref Collection */
+            ref_collection: string;
+            /** Ref Id */
+            ref_id: string;
+            /** Scenario Ids */
+            scenario_ids?: string[];
+            /** Source Refs */
+            source_refs?: string[];
+            /** Title */
+            title: string;
+            /** Week */
+            week?: number | null;
         };
         /**
          * WeeklyIndex
@@ -1924,6 +2068,28 @@ export interface operations {
             };
         };
     };
+    labels_api_v1_meta_labels_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
     portfolio_overview_api_v1_portfolio_overview_get: {
         parameters: {
             query?: never;
@@ -2033,6 +2199,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WeeklySnapshot"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    risk_heatmap_api_v1_risk_heatmap_get: {
+        parameters: {
+            query?: {
+                /** @description 프로젝트 필터 */
+                project_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskHeatmap"];
                 };
             };
             /** @description Validation Error */

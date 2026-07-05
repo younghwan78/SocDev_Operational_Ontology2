@@ -1,4 +1,5 @@
 import type { ScenarioAnalysis } from "../../api/client";
+import { useLabels } from "../../hooks/useLabels";
 import { ko } from "../../i18n/ko";
 
 const t = ko.scenario_detail;
@@ -12,6 +13,7 @@ const GAP_BADGE: Record<string, string> = {
 
 export function OverviewTab({ analysis }: { analysis: ScenarioAnalysis }) {
   const { scenario } = analysis;
+  const label = useLabels();
   return (
     <div>
       <div className="card">
@@ -29,8 +31,8 @@ export function OverviewTab({ analysis }: { analysis: ScenarioAnalysis }) {
           <dd>
             <span className="chip-row">
               {(scenario.project_relevance ?? []).map((projectId) => (
-                <span key={projectId} className="chip">
-                  {projectId}
+                <span key={projectId} className="chip" title={projectId}>
+                  {label(projectId)}
                 </span>
               ))}
             </span>
@@ -72,13 +74,13 @@ export function OverviewTab({ analysis }: { analysis: ScenarioAnalysis }) {
         <h2 className="card-title">{t.section_ip}</h2>
         <div className="chip-row">
           {(scenario.uses_ip_blocks ?? []).map((ipId) => (
-            <span key={ipId} className="chip">
-              {ipId}
+            <span key={ipId} className="chip" title={ipId}>
+              {label(ipId)}
             </span>
           ))}
           {(scenario.depends_on_system_blocks ?? []).map((blockId) => (
-            <span key={blockId} className="chip">
-              {blockId}
+            <span key={blockId} className="chip" title={blockId}>
+              {label(blockId)}
             </span>
           ))}
         </div>

@@ -1,4 +1,5 @@
 import type { TimelineItem } from "../../api/client";
+import { useLabels } from "../../hooks/useLabels";
 import { ko } from "../../i18n/ko";
 
 const TYPE_BADGE: Record<string, string> = {
@@ -9,6 +10,7 @@ const TYPE_BADGE: Record<string, string> = {
 };
 
 export function TimelineTab({ items }: { items: TimelineItem[] }) {
+  const label = useLabels();
   if (items.length === 0) return <p className="status-msg">{ko.app.empty}</p>;
 
   const weeks = [...new Set(items.map((item) => item.week))].sort((a, b) => a - b);
@@ -33,8 +35,9 @@ export function TimelineTab({ items }: { items: TimelineItem[] }) {
                   {item.status && <span className="badge badge-info">{item.status}</span>}
                 </div>
                 <p className="desc">
-                  {item.project_id ?? ""}
-                  {item.roles.length > 0 && ` · ${ko.scenario_detail.roles}: ${item.roles.join(", ")}`}
+                  {item.project_id ? label(item.project_id) : ""}
+                  {item.roles.length > 0 &&
+                    ` · ${ko.scenario_detail.roles}: ${item.roles.map((roleId) => label(roleId)).join(", ")}`}
                 </p>
               </div>
             ))}

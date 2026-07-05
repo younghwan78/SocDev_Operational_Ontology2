@@ -108,3 +108,51 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .section-note { font-size: 12.5px; color: var(--text-dim); margin: 0 0 8px; }
 .app-nav { display: flex; gap: 16px; }
 .app-nav a.active { color: var(--accent); font-weight: 700; }
+
+/* --- Stage 8: 위험 지도 + 내비 재편 --- */
+.nav-disabled { color: var(--text-dim); opacity: 0.45; font-size: 14px; cursor: not-allowed; }
+.nav-group-label {
+  color: var(--text-dim); font-size: 11.5px; text-transform: none;
+  border-left: 1px solid var(--border); padding-left: 16px; align-self: center;
+}
+
+/* 색 의미 통일: 빨강=위험, 노랑=주의, 초록=정상 */
+.risk-high { color: var(--danger); }
+.risk-medium { color: var(--warn); }
+.risk-low { color: var(--ok); }
+.risk-high-badge { background: var(--danger-soft); color: var(--danger); }
+.risk-medium-badge { background: var(--warn-soft); color: var(--warn); }
+.risk-low-badge { background: var(--ok-soft); color: var(--ok); }
+
+.legend { margin-left: auto; font-size: 12.5px; color: var(--text-dim); }
+.legend span { font-size: 13px; }
+
+.risk-layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+@media (max-width: 1100px) { .risk-layout { grid-template-columns: 1fr; } }
+.risk-side { display: flex; flex-direction: column; gap: 0; }
+
+.heatmap-card { padding: 8px; }
+.heatmap-scroll { overflow-x: auto; }
+.heatmap { border-collapse: collapse; width: 100%; font-size: 13px; }
+.heatmap th, .heatmap td { padding: 4px 6px; text-align: center; border-bottom: 1px solid var(--border); }
+.heatmap thead th { font-size: 12px; color: var(--text-dim); font-weight: 600; white-space: nowrap; }
+.heatmap .heatmap-scenario { text-align: left; max-width: 260px; }
+.heatmap tbody tr:hover { background: var(--accent-soft); }
+.heatmap-na { color: var(--border); }
+
+.cell-btn {
+  background: none; border: none; cursor: pointer; font: inherit;
+  font-size: 15px; padding: 2px 6px; border-radius: 6px; line-height: 1.2;
+}
+.cell-btn:hover { background: var(--accent-soft); }
+.cell-btn.cell-selected { outline: 2px solid var(--accent); }
+.cell-btn.scenario-name {
+  font-size: 13px; text-align: left; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; display: block;
+}
+
+.link-btn {
+  background: none; border: none; color: var(--accent); cursor: pointer;
+  font: inherit; font-size: 12.5px; padding: 6px 0 0;
+}
+.link-btn:hover { text-decoration: underline; }

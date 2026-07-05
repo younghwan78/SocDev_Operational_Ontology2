@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { fetchPortfolio, type AttentionItem } from "../api/client";
+import { CollapsibleList } from "../components/CollapsibleList";
+import { useLabels } from "../hooks/useLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.portfolio;
@@ -16,6 +18,7 @@ const LANE_BADGE: Record<string, string> = {
 
 export function PortfolioPage() {
   const portfolio = useQuery({ queryKey: ["portfolio"], queryFn: fetchPortfolio });
+  const label = useLabels();
 
   if (portfolio.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (portfolio.isError) return <p className="status-msg">{ko.app.error}</p>;
@@ -56,9 +59,13 @@ export function PortfolioPage() {
               <div className="week-label">
                 {items[0].lane_ko} ({items.length})
               </div>
-              {items.map((item, index) => (
-                <AttentionRow key={`${item.ref_id}-${index}`} item={item} />
-              ))}
+              <CollapsibleList
+                items={items}
+                limit={5}
+                render={(item: AttentionItem, index: number) => (
+                  <AttentionRow key={`${item.ref_id}-${index}`} item={item} label={label} />
+                )}
+              />
             </div>
           );
         })}
@@ -72,12 +79,13 @@ export function PortfolioPage() {
               key={cell.scenario_id}
               to={`/scenarios/${cell.scenario_id}/overview`}
               className="card scenario-card"
+              title={cell.scenario_id}
             >
               <div className="name">{cell.scenario_name}</div>
               <div className="chip-row">
                 {cell.project_ids.map((projectId) => (
-                  <span key={projectId} className="chip">
-                    {projectId}
+                  <span key={projectId} className="chip" title={projectId}>
+                    {label(projectId)}
                   </span>
                 ))}
               </div>
@@ -96,15 +104,23 @@ export function PortfolioPage() {
   );
 }
 
-function AttentionRow({ item }: { item: AttentionItem }) {
+function AttentionRow({
+  item,
+  label,
+}: {
+  item: AttentionItem;
+  label: (id: string) => string;
+}) {
   return (
     <div className="list-item">
       <div className="head">
         <span className={`badge ${LANE_BADGE[item.lane] ?? "badge-info"}`}>{item.lane_ko}</span>
-        <span className="title">{item.title}</span>
+        <span className="title" title={item.ref_id}>
+          {item.title}
+        </span>
         {(item.project_ids ?? []).map((projectId) => (
-          <span key={projectId} className="chip">
-            {projectId}
+          <span key={projectId} className="chip" title={projectId}>
+            {label(projectId)}
           </span>
         ))}
       </div>
@@ -113,15 +129,21 @@ function AttentionRow({ item }: { item: AttentionItem }) {
         <p className="desc">
           {ko.portfolio.related_scenarios}:{" "}
           {(item.scenario_ids ?? []).map((scenarioId) => (
-            <Link key={scenarioId} to={`/scenarios/${scenarioId}/overview`} className="chip-link">
-              {scenarioId}
+            <Link
+              key={scenarioId}
+              to={`/scenarios/${scenarioId}/overview`}
+              className="chip-link"
+              title={scenarioId}
+            >
+              {label(scenarioId)}
             </Link>
           ))}
         </p>
       )}
       {(item.suggested_review_roles ?? []).length > 0 && (
         <p className="desc">
-          {ko.portfolio.suggested_roles}: {(item.suggested_review_roles ?? []).join(", ")}
+          {ko.portfolio.suggested_roles}:{" "}
+          {(item.suggested_review_roles ?? []).map((roleId) => label(roleId)).join(", ")}
         </p>
       )}
     </div>

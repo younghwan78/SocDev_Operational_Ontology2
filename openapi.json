@@ -1137,6 +1137,31 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "HeatmapColumn": {
+        "additionalProperties": false,
+        "description": "heatmap 열 — 시나리오가 참조하는 IP/시스템 블록.",
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "ip_id": {
+            "title": "Ip Id",
+            "type": "string"
+          },
+          "ip_name": {
+            "title": "Ip Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ip_id",
+          "ip_name",
+          "category"
+        ],
+        "title": "HeatmapColumn",
+        "type": "object"
+      },
       "IngestBatch": {
         "additionalProperties": false,
         "description": "반입 배치 기록.",
@@ -2102,6 +2127,120 @@
         "title": "RequiredEvidenceNeed",
         "type": "object"
       },
+      "RiskBasisItem": {
+        "additionalProperties": false,
+        "description": "등급 판정 근거 — 어떤 룰이 어떤 원본 객체 때문에 발화했는가.",
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "ref_collection": {
+            "title": "Ref Collection",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "rule_ko": {
+            "title": "Rule Ko",
+            "type": "string"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rule",
+          "rule_ko",
+          "ref_id",
+          "ref_collection",
+          "description"
+        ],
+        "title": "RiskBasisItem",
+        "type": "object"
+      },
+      "RiskCell": {
+        "additionalProperties": false,
+        "description": "시나리오×IP 셀 — 정성 등급 + 판정 근거. 수치 점수 없음.",
+        "properties": {
+          "basis": {
+            "items": {
+              "$ref": "#/components/schemas/RiskBasisItem"
+            },
+            "title": "Basis",
+            "type": "array"
+          },
+          "grade": {
+            "title": "Grade",
+            "type": "string"
+          },
+          "grade_ko": {
+            "title": "Grade Ko",
+            "type": "string"
+          },
+          "ip_id": {
+            "title": "Ip Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "ip_id",
+          "grade",
+          "grade_ko",
+          "basis"
+        ],
+        "title": "RiskCell",
+        "type": "object"
+      },
+      "RiskHeatmap": {
+        "additionalProperties": false,
+        "description": "위험 지도 파생 뷰 — 홈 화면의 첫 응답.",
+        "properties": {
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/HeatmapColumn"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "focus": {
+            "items": {
+              "$ref": "#/components/schemas/WeeklyFocusItem"
+            },
+            "title": "Focus",
+            "type": "array"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioRiskRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "columns",
+          "rows",
+          "focus"
+        ],
+        "title": "RiskHeatmap",
+        "type": "object"
+      },
       "RoleActivity": {
         "additionalProperties": false,
         "description": "역할 주간 활동 — 이벤트 검토의 역할별 기록.",
@@ -2982,6 +3121,60 @@
         "title": "ScenarioRequest",
         "type": "object"
       },
+      "ScenarioRiskRow": {
+        "additionalProperties": false,
+        "description": "heatmap 행 — 시나리오 종합 등급 + 관련 IP 셀.",
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/RiskCell"
+            },
+            "title": "Cells",
+            "type": "array"
+          },
+          "overall_basis": {
+            "items": {
+              "$ref": "#/components/schemas/RiskBasisItem"
+            },
+            "title": "Overall Basis",
+            "type": "array"
+          },
+          "overall_grade": {
+            "title": "Overall Grade",
+            "type": "string"
+          },
+          "overall_grade_ko": {
+            "title": "Overall Grade Ko",
+            "type": "string"
+          },
+          "project_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Project Ids",
+            "type": "array"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_name": {
+            "title": "Scenario Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "scenario_name",
+          "project_ids",
+          "overall_grade",
+          "overall_grade_ko",
+          "overall_basis",
+          "cells"
+        ],
+        "title": "ScenarioRiskRow",
+        "type": "object"
+      },
       "SourceMeta": {
         "additionalProperties": false,
         "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
@@ -3460,6 +3653,78 @@
         "title": "WeekWindow",
         "type": "object"
       },
+      "WeeklyFocusItem": {
+        "additionalProperties": false,
+        "description": "이번 주 주목 항목 — P1 요청·확신도 차단·근거 공백 우선.",
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "kind_ko": {
+            "title": "Kind Ko",
+            "type": "string"
+          },
+          "project_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Project Ids",
+            "type": "array"
+          },
+          "ref_collection": {
+            "title": "Ref Collection",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week"
+          }
+        },
+        "required": [
+          "kind",
+          "kind_ko",
+          "ref_id",
+          "ref_collection",
+          "title",
+          "description"
+        ],
+        "title": "WeeklyFocusItem",
+        "type": "object"
+      },
       "WeeklyIndex": {
         "additionalProperties": false,
         "description": "주차 목록과 주차별 건수 요약.",
@@ -3918,6 +4183,29 @@
         "summary": "Glossary"
       }
     },
+    "/api/v1/meta/labels": {
+      "get": {
+        "description": "내부 ID → 표시명 매핑 — ID 숨김 원칙(ID는 hover/상세만 노출) 지원.",
+        "operationId": "labels_api_v1_meta_labels_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Labels Api V1 Meta Labels Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Labels"
+      }
+    },
     "/api/v1/portfolio/overview": {
       "get": {
         "operationId": "portfolio_overview_api_v1_portfolio_overview_get",
@@ -4052,6 +4340,55 @@
           }
         },
         "summary": "Weekly Snapshot"
+      }
+    },
+    "/api/v1/risk/heatmap": {
+      "get": {
+        "description": "위험 지도 — 시나리오×IP 정성 등급 + 판정 근거 (수치 점수 없음).",
+        "operationId": "risk_heatmap_api_v1_risk_heatmap_get",
+        "parameters": [
+          {
+            "description": "프로젝트 필터",
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "프로젝트 필터",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskHeatmap"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Risk Heatmap"
       }
     },
     "/api/v1/scenarios": {
