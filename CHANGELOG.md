@@ -1,5 +1,33 @@
 # CHANGELOG
 
+## Stage 12 — 데모 스토리 + TAT 측정 체계 (2026-07-06)
+
+> 원점 목표 복원(Stage 8~12)의 마지막 단계 (`internal_docs/design/03_course_correction.md` §4.5).
+> **Stage 8~12 교정 계획 완료** — 5대 질문 코크핏 + 데모/효과 측정 체계.
+
+### 추가
+
+- **데모 스토리 모드** (`?story=1`, 내비 '데모 스토리'):
+  "위험 발견 → 원인 분석 → 변경 영향 → 결정 근거" 4장면을 클릭만으로 진행.
+  - 장면별 사전 구성 딥링크: 홈 heatmap → 이슈 RCA(`?issue=`) →
+    변경 영향 자동 실행(`?ip=&knob=` 신규 지원) → Ask SoC(`?q=`).
+  - 장면별 경과 시간 실시간 표시 + localStorage 기록(`soc_tat_run`) →
+    완료 시 장면별/합계 TAT 요약 표시 (앱 내 로그).
+- **TAT 측정 체계** (`internal_docs/validation/01_tat_measurement.md`):
+  원점 데모 질문 5종 + 스토리 4장면의 수작업 baseline vs 코크핏 비교 기준표,
+  측정 방법(도달 정의/스톱워치/앱 내 로그), 클릭 3번 규칙 검증 절차.
+- **사내 검증 워크숍 자료** (`internal_docs/validation/02_workshop_fixture_hypotheses.md`):
+  원점 Phase 0D 대응 — 연결 모델/위험 룰/원인 유형/archetype/역할 경계 가설 22건
+  판정표 + 60분 진행안.
+
+### 검증
+
+```text
+backend 127 passed / ruff / mypy pass · frontend build / test(21, +DemoStoryBar 3) / lint pass
+E2E: 데모 4장면 실제 완주 — 클릭만으로 진행, 합계 1:35 (실 Claude 질의 포함),
+  TAT 요약 바 표시 확인. 수용 기준(클릭 진행/비교표 산출) 충족.
+```
+
 ## Stage 11 — Ask SoC 자연어 질의 (2026-07-06)
 
 > "과거 과제에서 비슷한 문제가 있었나?" — 원점 5대 질문 메뉴의 마지막 조각

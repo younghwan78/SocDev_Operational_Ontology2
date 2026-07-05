@@ -1,4 +1,5 @@
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
+import { DemoStoryBar } from "./components/DemoStoryBar";
 import { ko } from "./i18n/ko";
 import { AskPage } from "./pages/AskPage";
 import { ChangeImpactPage } from "./pages/ChangeImpactPage";
@@ -50,8 +51,12 @@ export default function App() {
               {label}
             </NavLink>
           ))}
+          <NavLink to="/?story=1" className="nav-demo">
+            {ko.demo.nav}
+          </NavLink>
         </nav>
       </header>
+      <DemoStoryBar />
       <main className="app-main">
         <Routes>
           <Route path="/" element={<RiskMapPage />} />

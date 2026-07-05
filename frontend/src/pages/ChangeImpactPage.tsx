@@ -5,7 +5,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   fetchChangeImpact,
   fetchChangeImpactOptions,
@@ -37,11 +37,23 @@ export function ChangeImpactPage() {
     queryKey: ["change-impact-options"],
     queryFn: fetchChangeImpactOptions,
   });
-  const [ipId, setIpId] = useState("");
-  const [knobId, setKnobId] = useState("");
-  const [capabilityId, setCapabilityId] = useState("");
-  const [mode, setMode] = useState("");
-  const [params, setParams] = useState<ChangeImpactParams | null>(null);
+  // 데모 스토리 등 외부 딥링크(?ip=&knob=...)로 사전 구성 실행을 지원한다.
+  const [searchParams] = useSearchParams();
+  const initialIp = searchParams.get("ip") ?? "";
+  const [ipId, setIpId] = useState(initialIp);
+  const [knobId, setKnobId] = useState(searchParams.get("knob") ?? "");
+  const [capabilityId, setCapabilityId] = useState(searchParams.get("capability") ?? "");
+  const [mode, setMode] = useState(searchParams.get("mode") ?? "");
+  const [params, setParams] = useState<ChangeImpactParams | null>(
+    initialIp
+      ? {
+          ipId: initialIp,
+          knobId: searchParams.get("knob") ?? undefined,
+          capabilityId: searchParams.get("capability") ?? undefined,
+          mode: searchParams.get("mode") ?? undefined,
+        }
+      : null,
+  );
 
   const result = useQuery({
     queryKey: ["change-impact", params],

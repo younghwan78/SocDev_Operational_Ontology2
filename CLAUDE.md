@@ -170,9 +170,10 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
 - **방향 교정 확정 (2026-07-05)**: 원점 문서 대비 검증 결과 TAT 단축 유스케이스 4종
   (위험 지도/변경 영향/RCA/Ask SoC)이 부재 → Stage 8~12로 복원한다.
   UI를 "질문이 곧 메뉴인 코크핏"으로 재편한다. 기준: `internal_docs/design/03_course_correction.md`.
-- Stage 8 완료 (2026-07-05): 위험 지도 홈 + 코크핏 내비 + UI 공통 원칙(ID 숨김/색 통일/접기).
-- Stage 9 완료 (2026-07-05): 변경 영향(그래프 순회 4분면 + 역할별 체크리스트). 문서 재편:
-  `docs/`=UI 가이드(Pages), `internal_docs/`=설계 문서.
-- 활성: **Stage 10 (RCA 체인 + Test 온톨로지 확장)** — `CURRENT_TASK.md` 참조, 사용자 승인 대기.
-- 알려진 문제: 56 참조 데이터 드리프트로 `test_converter_roundtrip` 1건 실패 (CHANGELOG Stage 8 참조).
+- **Stage 8~12 교정 계획 완료 (2026-07-06)**: 5대 질문 코크핏 전부 활성 —
+  위험 지도(8) / 변경 영향(9) / 이슈 분석 RCA+Test 온톨로지(10) / Ask SoC(11) /
+  데모 스토리+TAT 측정(12). 56 드리프트 재동기화 완료(전 테스트 green, `_58` 오버레이 로더).
+  문서: `docs/`=UI 가이드(Pages 소스), `internal_docs/`=설계·검증 자료.
+- 활성 Stage 없음 — 다음 후보(워크숍 실행/Stage 13+ 커넥터·임베딩)는 `CURRENT_TASK.md` 참조,
+  사용자 승인 후 착수.
 - 진행 이력은 `CHANGELOG.md`, 원격은 github.com/younghwan78/SocDev_Operational_Ontology2.
