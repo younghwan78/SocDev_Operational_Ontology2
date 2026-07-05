@@ -108,6 +108,22 @@ def test_risk_heatmap(client: TestClient) -> None:
     assert filtered["columns"] == body["columns"], "열은 프로젝트 필터와 무관하게 고정"
 
 
+def test_issues_and_rca(client: TestClient) -> None:
+    issues = client.get("/api/v1/issues").json()
+    assert len(issues) >= 36
+    assert issues[0]["closed_without_verification"] is True, "경고 이슈가 선두"
+    no_tests = client.get("/api/v1/issues", params={"verification": "no_tests"}).json()
+    assert no_tests and all(i["verification"] == "no_tests" for i in no_tests)
+
+    chain = client.get("/api/v1/issues/issue_isp_csid_bw_overrun_u/rca").json()
+    assert [n["step"] for n in chain["nodes"]] == [
+        "symptom", "impact", "root_cause", "action",
+        "verification", "residual_risk", "lesson",
+    ]
+    assert chain["verification_ko"] == "검증됨"
+    assert client.get("/api/v1/issues/nope/rca").status_code == 404
+
+
 def test_change_impact(client: TestClient) -> None:
     body = client.get(
         "/api/v1/change-impact",

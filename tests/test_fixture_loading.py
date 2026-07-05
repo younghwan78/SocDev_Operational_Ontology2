@@ -40,7 +40,11 @@ def test_legacy_events_promoted(repo: InMemoryRepository) -> None:
 
 
 def test_every_object_has_synthetic_source(repo: InMemoryRepository) -> None:
+    """계보 규약 — 56 변환분은 '56:', 58 전용 추가분은 '58:' ref를 갖는다."""
     for key in COLLECTIONS:
         for obj in repo.list(key):
             assert obj.source.origin.value == "synthetic"
-            assert obj.source.ref and obj.source.ref.startswith("56:synthetic_data/")
+            assert obj.source.ref and (
+                obj.source.ref.startswith("56:synthetic_data/")
+                or obj.source.ref.startswith("58:fixtures/")
+            )

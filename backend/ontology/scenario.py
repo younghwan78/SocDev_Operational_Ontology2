@@ -66,6 +66,7 @@ class Variant(OntologyObject):
 
     scenario_id: str
     mode: str
+    source_basis: list[str] = Field(default_factory=list)
     resolution: str | None = None
     fps: int | None = None
     toggles: dict[str, bool] = Field(default_factory=dict)

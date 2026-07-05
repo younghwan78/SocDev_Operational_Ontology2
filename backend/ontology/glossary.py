@@ -47,6 +47,8 @@ OBJECT_LABELS: dict[str, str] = {
     "ExpectedReviewOutput": "기대 검토 산출",
     "RequiredEvidenceNeed": "요구 근거",
     "AffectedScope": "영향 범위",
+    "RootCause": "근본 원인",
+    "Test": "검증 테스트",
     # evidence
     "Evidence": "근거",
     "EvidenceCatalogEntry": "근거 카탈로그 항목",
@@ -378,6 +380,24 @@ MODEL_FIELD_LABELS: dict[str, dict[str, str]] = {
         "evidence_refs": "근거 참조",
         "root_cause_candidates": "근본원인 후보",
         "affected_scope": "영향 범위",
+        "root_causes": "근본 원인 목록",
+        "fix_type": "조치 유형",
+        "fix_description": "조치 내용",
+        "workaround": "임시 우회",
+        "verifying_test_ids": "검증 테스트 ID",
+        "residual_risk": "잔존 리스크",
+        "reusable_lesson": "재사용 교훈",
+        "resolved_week": "종결 주차",
+    },
+    "RootCause": {
+        "cause_type": "원인 유형",
+        "evidence_refs": "근거 참조",
+    },
+    "Test": {
+        "test_type": "테스트 유형",
+        "result": "결과",
+        "verifies_issue_ids": "검증 대상 이슈 ID",
+        "executed_week": "실행 주차",
     },
     "EvidenceCatalogEntry": {
         "confidence_contribution": "확신도 기여",
@@ -569,6 +589,14 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
         "low": "낮음",
         "medium": "중간",
         "high": "높음",
+    },
+    "RootCauseType": {
+        "architecture_miss": "아키텍처 누락",
+        "spec_ambiguity": "스펙 모호성",
+        "verification_gap": "검증 공백",
+        "power_model_error": "전력 모델 오류",
+        "sw_workaround_dependency": "SW 우회 의존",
+        "customer_scenario_mismatch": "고객 시나리오 불일치",
     },
 }
 

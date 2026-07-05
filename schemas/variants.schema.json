@@ -178,6 +178,13 @@
     "source": {
       "$ref": "#/$defs/SourceMeta"
     },
+    "source_basis": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Basis",
+      "type": "array"
+    },
     "streams": {
       "items": {
         "$ref": "#/$defs/VariantStream"

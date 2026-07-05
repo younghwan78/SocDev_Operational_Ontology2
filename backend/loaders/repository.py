@@ -207,4 +207,20 @@ def check_integrity(repo: RepositoryProtocol) -> list[Finding]:
     for obj in repo.list("simulation_runs"):
         require("simulation_runs", "event_id", field_values(obj, "event_id"), events)
 
+    # Stage 10: 검증 테스트 ↔ 이슈 참조
+    issues = repo.ids("issues")
+    tests = repo.ids("tests")
+    for obj in repo.list("tests"):
+        require("tests", "project_id", field_values(obj, "project_id"), projects)
+        require("tests", "linked_scenario_ids", field_values(obj, "linked_scenario_ids"), scenarios)
+        require("tests", "verifies_issue_ids", field_values(obj, "verifies_issue_ids"), issues)
+        require("tests", "linked_evidence_ids", field_values(obj, "linked_evidence_ids"), evidence_union, level="warning")
+    for obj in repo.list("issues"):
+        require("issues", "verifying_test_ids", field_values(obj, "verifying_test_ids"), tests)
+        scope = getattr(obj, "affected_scope", None)
+        if scope is not None:
+            require("issues", "scenarios", scope.scenarios, scenarios)
+            require("issues", "ip_blocks", scope.ip_blocks, ip_blocks)
+            require("issues", "system_blocks", scope.system_blocks, ip_blocks)
+
     return findings

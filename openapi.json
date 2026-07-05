@@ -1706,7 +1706,7 @@
       },
       "Issue": {
         "additionalProperties": false,
-        "description": "개발 이슈 — 증상/근본원인 후보/영향 범위.",
+        "description": "개발 이슈 — 증상/근본원인/조치/검증/잔존 리스크/교훈 (RCA 체인).",
         "properties": {
           "affected_scope": {
             "$ref": "#/components/schemas/AffectedScope"
@@ -1721,6 +1721,28 @@
             "title": "Evidence Refs",
             "type": "array"
           },
+          "fix_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fix Description"
+          },
+          "fix_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fix Type"
+          },
           "id": {
             "title": "Id",
             "type": "string"
@@ -1733,11 +1755,51 @@
             "title": "Project Id",
             "type": "string"
           },
+          "residual_risk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Residual Risk"
+          },
+          "resolved_week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved Week"
+          },
+          "reusable_lesson": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reusable Lesson"
+          },
           "root_cause_candidates": {
             "items": {
               "type": "string"
             },
             "title": "Root Cause Candidates",
+            "type": "array"
+          },
+          "root_causes": {
+            "items": {
+              "$ref": "#/components/schemas/RootCause"
+            },
+            "title": "Root Causes",
             "type": "array"
           },
           "source": {
@@ -1754,6 +1816,24 @@
           "title": {
             "title": "Title",
             "type": "string"
+          },
+          "verifying_test_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verifying Test Ids",
+            "type": "array"
+          },
+          "workaround": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workaround"
           }
         },
         "required": [
@@ -1766,6 +1846,68 @@
           "confidence"
         ],
         "title": "Issue",
+        "type": "object"
+      },
+      "IssueSummary": {
+        "additionalProperties": false,
+        "description": "이슈 목록 항목 — 검증 상태 뱃지 포함.",
+        "properties": {
+          "closed_without_verification": {
+            "title": "Closed Without Verification",
+            "type": "boolean"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "issue_id": {
+            "title": "Issue Id",
+            "type": "string"
+          },
+          "issue_type": {
+            "title": "Issue Type",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "verification": {
+            "title": "Verification",
+            "type": "string"
+          },
+          "verification_ko": {
+            "title": "Verification Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "issue_id",
+          "title",
+          "issue_type",
+          "status",
+          "project_id",
+          "confidence",
+          "verification",
+          "verification_ko",
+          "closed_without_verification"
+        ],
+        "title": "IssueSummary",
         "type": "object"
       },
       "KPIDefinition": {
@@ -2574,6 +2716,177 @@
         "title": "Propagation",
         "type": "object"
       },
+      "RCAChain": {
+        "additionalProperties": false,
+        "description": "이슈 RCA 파생 뷰 — 7단 세로 흐름 (저장하지 않음).",
+        "properties": {
+          "alert_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Ko"
+          },
+          "closed_without_verification": {
+            "title": "Closed Without Verification",
+            "type": "boolean"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "issue_id": {
+            "title": "Issue Id",
+            "type": "string"
+          },
+          "issue_type": {
+            "title": "Issue Type",
+            "type": "string"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/RCANode"
+            },
+            "title": "Nodes",
+            "type": "array"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "verification": {
+            "title": "Verification",
+            "type": "string"
+          },
+          "verification_ko": {
+            "title": "Verification Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "issue_id",
+          "title",
+          "issue_type",
+          "status",
+          "project_id",
+          "confidence",
+          "verification",
+          "verification_ko",
+          "closed_without_verification",
+          "nodes"
+        ],
+        "title": "RCAChain",
+        "type": "object"
+      },
+      "RCAItem": {
+        "additionalProperties": false,
+        "description": "RCA 노드 안의 개별 항목 — 원본 객체 참조 동반.",
+        "properties": {
+          "badge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Badge"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "ref_collection": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Collection"
+          },
+          "ref_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Id"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "description"
+        ],
+        "title": "RCAItem",
+        "type": "object"
+      },
+      "RCANode": {
+        "additionalProperties": false,
+        "description": "RCA 체인의 한 단계 — 근거 뱃지와 사유를 갖는다.",
+        "properties": {
+          "badge": {
+            "title": "Badge",
+            "type": "string"
+          },
+          "badge_reason_ko": {
+            "title": "Badge Reason Ko",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RCAItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "step": {
+            "title": "Step",
+            "type": "string"
+          },
+          "step_ko": {
+            "title": "Step Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "step_ko",
+          "badge",
+          "badge_reason_ko"
+        ],
+        "title": "RCANode",
+        "type": "object"
+      },
       "RejectedRow": {
         "additionalProperties": false,
         "properties": {
@@ -3001,6 +3314,49 @@
         ],
         "title": "RoleAdvisory",
         "type": "object"
+      },
+      "RootCause": {
+        "additionalProperties": false,
+        "description": "구조화된 근본 원인 — 유형/서술/확신도/근거.",
+        "properties": {
+          "cause_type": {
+            "$ref": "#/components/schemas/RootCauseType"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "cause_type",
+          "description",
+          "confidence"
+        ],
+        "title": "RootCause",
+        "type": "object"
+      },
+      "RootCauseType": {
+        "description": "근본 원인 유형 — 원점 문서 분류 승계 (Stage 10).",
+        "enum": [
+          "architecture_miss",
+          "spec_ambiguity",
+          "verification_gap",
+          "power_model_error",
+          "sw_workaround_dependency",
+          "customer_scenario_mismatch"
+        ],
+        "title": "RootCauseType",
+        "type": "string"
       },
       "SafetyFlags": {
         "additionalProperties": false,
@@ -4152,6 +4508,13 @@
           "source": {
             "$ref": "#/components/schemas/SourceMeta"
           },
+          "source_basis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Basis",
+            "type": "array"
+          },
           "streams": {
             "items": {
               "$ref": "#/components/schemas/VariantStream"
@@ -4812,6 +5175,117 @@
           }
         },
         "summary": "Ingest File"
+      }
+    },
+    "/api/v1/issues": {
+      "get": {
+        "description": "이슈 목록 — 검증 상태 뱃지 포함 (종결+미검증이 먼저).",
+        "operationId": "list_issues_api_v1_issues_get",
+        "parameters": [
+          {
+            "description": "프로젝트 필터",
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "프로젝트 필터",
+              "title": "Project Id"
+            }
+          },
+          {
+            "description": "verified | unverified | no_tests",
+            "in": "query",
+            "name": "verification",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "verified | unverified | no_tests",
+              "title": "Verification"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/IssueSummary"
+                  },
+                  "title": "Response List Issues Api V1 Issues Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Issues"
+      }
+    },
+    "/api/v1/issues/{issue_id}/rca": {
+      "get": {
+        "description": "이슈 RCA 체인 — 증상→영향→원인→조치→검증→잔존→교훈 (근거 뱃지).",
+        "operationId": "issue_rca_api_v1_issues__issue_id__rca_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "issue_id",
+            "required": true,
+            "schema": {
+              "title": "Issue Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RCAChain"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Issue Rca"
       }
     },
     "/api/v1/meta": {

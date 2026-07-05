@@ -1,6 +1,222 @@
 # GENERATED — tools/convert_56_fixtures.py가 56 synthetic_data에서 변환함.
 # 직접 편집 금지. 재생성: uv run python tools/convert_56_fixtures.py
 relations:
+- id: rel_project_u_has_req_uhd60
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_project_u_has_req_uhd60
+  source_id: project_u
+  source_type: Project
+  relation_type: has_request
+  target_id: req_uhd60_eis_u_w12
+  target_type: ScenarioRequest
+  confidence: high
+  basis:
+  - req_uhd60_eis_u_w12
+- id: rel_req_uhd60_opens_event
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_req_uhd60_opens_event
+  source_id: req_uhd60_eis_u_w12
+  source_type: ScenarioRequest
+  relation_type: opens
+  target_id: project_u_uhd60_request_opened
+  target_type: DevelopmentProcessEvent
+  confidence: high
+  basis:
+  - req_uhd60_eis_u_w12
+- id: rel_event_uhd60_reviews_scenario
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_event_uhd60_reviews_scenario
+  source_id: project_u_uhd60_request_opened
+  source_type: DevelopmentProcessEvent
+  relation_type: reviews
+  target_id: uhd60_recording_eis_on
+  target_type: Scenario
+  confidence: high
+  basis:
+  - req_uhd60_eis_u_w12
+- id: rel_scenario_uhd60_has_variant_off
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_has_variant_off
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: has_variant
+  target_id: var_uhd60_eis_off_hdr_off
+  target_type: Variant
+  confidence: high
+  basis:
+  - req_uhd60_eis_u_w12
+- id: rel_scenario_uhd60_has_variant_on
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_has_variant_on
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: has_variant
+  target_id: var_uhd60_eis_on_hdr_off
+  target_type: Variant
+  confidence: high
+  basis:
+  - req_uhd60_eis_u_w12
+- id: rel_scenario_uhd60_uses_mfc
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_uses_mfc
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: uses
+  target_id: ip_mfc
+  target_type: IPBlock
+  confidence: high
+  basis:
+  - camera_recording_kpi
+- id: rel_scenario_uhd60_depends_noc
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_depends_noc
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: depends_on
+  target_id: sys_noc
+  target_type: SystemInfluenceBlock
+  confidence: high
+  basis:
+  - need_u_kpi_bw
+- id: rel_scenario_uhd60_depends_power_control
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_depends_power_control
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: depends_on
+  target_id: sys_power_clock_thermal
+  target_type: SystemInfluenceBlock
+  confidence: high
+  basis:
+  - need_u_kpi_power
+- id: rel_scenario_uhd60_measures_power
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_measures_power
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: measures
+  target_id: power
+  target_type: KPI
+  confidence: high
+  basis:
+  - need_u_kpi_power
+- id: rel_scenario_uhd60_measures_eis_gap
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_measures_eis_gap
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: measures
+  target_id: eis_power_gap
+  target_type: KPI
+  confidence: high
+  basis:
+  - need_u_kpi_power
+- id: rel_scenario_uhd60_measures_ddr_bw
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_measures_ddr_bw
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: measures
+  target_id: ddr_bw
+  target_type: KPI
+  confidence: high
+  basis:
+  - need_u_kpi_bw
+- id: rel_scenario_uhd60_measures_thermal
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_measures_thermal
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: measures
+  target_id: thermal
+  target_type: KPI
+  confidence: high
+  basis:
+  - need_u_kpi_power
+- id: rel_scenario_uhd60_measures_fps
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_scenario_uhd60_measures_fps
+  source_id: uhd60_recording_eis_on
+  source_type: Scenario
+  relation_type: measures
+  target_id: fps_stability
+  target_type: KPI
+  confidence: high
+  basis:
+  - need_u_kpi_power
+- id: rel_issue_uhd60_affects_scenario
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_issue_uhd60_affects_scenario
+  source_id: issue_u_uhd60_eis_power_gap
+  source_type: Issue
+  relation_type: affects
+  target_id: uhd60_recording_eis_on
+  target_type: Scenario
+  confidence: high
+  basis:
+  - evd_u_customer_eis_power_request
+- id: rel_event_uhd60_requires_power_measurement
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_event_uhd60_requires_power_measurement
+  source_id: project_u_uhd60_request_opened
+  source_type: DevelopmentProcessEvent
+  relation_type: requires
+  target_id: req_meas_u_uhd60_matched_power_trace
+  target_type: MeasurementRequirement
+  confidence: high
+  basis:
+  - need_u_kpi_power
+- id: rel_event_uhd60_requires_bw_measurement
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_event_uhd60_requires_bw_measurement
+  source_id: project_u_uhd60_request_opened
+  source_type: DevelopmentProcessEvent
+  relation_type: requires
+  target_id: req_meas_u_uhd60_matched_bw_trace
+  target_type: MeasurementRequirement
+  confidence: high
+  basis:
+  - need_u_kpi_bw
+- id: rel_event_uhd60_uses_previous_evidence
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_event_uhd60_uses_previous_evidence
+  source_id: project_u_uhd60_request_opened
+  source_type: DevelopmentProcessEvent
+  relation_type: uses_evidence
+  target_id: evidence_u_uhd60_previous_measurement
+  target_type: EvidenceCatalogEntry
+  confidence: high
+  basis:
+  - evidence_u_uhd60_previous_measurement
+- id: rel_event_uhd60_uses_current_evidence
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/relations.yaml#rel_event_uhd60_uses_current_evidence
+  source_id: project_u_uhd60_request_opened
+  source_type: DevelopmentProcessEvent
+  relation_type: uses_evidence
+  target_id: evidence_u_uhd60_current_power_dashboard
+  target_type: EvidenceCatalogEntry
+  confidence: high
+  basis:
+  - evidence_u_uhd60_current_power_dashboard
 - id: rel_evt_u_heavy_affects_heavy_group
   source:
     origin: synthetic

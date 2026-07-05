@@ -102,6 +102,35 @@ export type ChainedIP = components["schemas"]["ChainedIP"];
 export type ChecklistItem = components["schemas"]["ChecklistItem"];
 export type SimilarCase = components["schemas"]["SimilarCase"];
 
+export type IssueSummary = components["schemas"]["IssueSummary"];
+export type RCAChain = components["schemas"]["RCAChain"];
+export type RCANode = components["schemas"]["RCANode"];
+export type RCAItem = components["schemas"]["RCAItem"];
+
+export async function fetchIssues(filters: {
+  projectId?: string;
+  verification?: string;
+}): Promise<IssueSummary[]> {
+  const { data, error } = await client.GET("/api/v1/issues", {
+    params: {
+      query: {
+        ...(filters.projectId ? { project_id: filters.projectId } : {}),
+        ...(filters.verification ? { verification: filters.verification } : {}),
+      },
+    },
+  });
+  if (error || !data) throw new Error("issues 조회 실패");
+  return data;
+}
+
+export async function fetchIssueRCA(issueId: string): Promise<RCAChain> {
+  const { data, error } = await client.GET("/api/v1/issues/{issue_id}/rca", {
+    params: { path: { issue_id: issueId } },
+  });
+  if (error || !data) throw new Error("rca 조회 실패");
+  return data;
+}
+
 export interface ChangeImpactParams {
   ipId: string;
   knobId?: string;

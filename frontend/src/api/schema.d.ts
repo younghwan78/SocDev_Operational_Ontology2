@@ -172,6 +172,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Issues
+         * @description 이슈 목록 — 검증 상태 뱃지 포함 (종결+미검증이 먼저).
+         */
+        get: operations["list_issues_api_v1_issues_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/issues/{issue_id}/rca": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Issue Rca
+         * @description 이슈 RCA 체인 — 증상→영향→원인→조치→검증→잔존→교훈 (근거 뱃지).
+         */
+        get: operations["issue_rca_api_v1_issues__issue_id__rca_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta": {
         parameters: {
             query?: never;
@@ -1109,21 +1149,33 @@ export interface components {
         };
         /**
          * Issue
-         * @description 개발 이슈 — 증상/근본원인 후보/영향 범위.
+         * @description 개발 이슈 — 증상/근본원인/조치/검증/잔존 리스크/교훈 (RCA 체인).
          */
         Issue: {
             affected_scope?: components["schemas"]["AffectedScope"];
             confidence: components["schemas"]["Confidence"];
             /** Evidence Refs */
             evidence_refs?: string[];
+            /** Fix Description */
+            fix_description?: string | null;
+            /** Fix Type */
+            fix_type?: string | null;
             /** Id */
             id: string;
             /** Issue Type */
             issue_type: string;
             /** Project Id */
             project_id: string;
+            /** Residual Risk */
+            residual_risk?: string | null;
+            /** Resolved Week */
+            resolved_week?: number | null;
+            /** Reusable Lesson */
+            reusable_lesson?: string | null;
             /** Root Cause Candidates */
             root_cause_candidates?: string[];
+            /** Root Causes */
+            root_causes?: components["schemas"]["RootCause"][];
             source?: components["schemas"]["SourceMeta"];
             /** Status */
             status: string;
@@ -1131,6 +1183,36 @@ export interface components {
             symptom: string;
             /** Title */
             title: string;
+            /** Verifying Test Ids */
+            verifying_test_ids?: string[];
+            /** Workaround */
+            workaround?: string | null;
+        };
+        /**
+         * IssueSummary
+         * @description 이슈 목록 항목 — 검증 상태 뱃지 포함.
+         */
+        IssueSummary: {
+            /** Closed Without Verification */
+            closed_without_verification: boolean;
+            /** Confidence */
+            confidence: string;
+            /** Issue Id */
+            issue_id: string;
+            /** Issue Type */
+            issue_type: string;
+            /** Project Id */
+            project_id: string;
+            /** Scenario Ids */
+            scenario_ids?: string[];
+            /** Status */
+            status: string;
+            /** Title */
+            title: string;
+            /** Verification */
+            verification: string;
+            /** Verification Ko */
+            verification_ko: string;
         };
         /**
          * KPIDefinition
@@ -1424,6 +1506,68 @@ export interface components {
             /** Trigger Role */
             trigger_role: string;
         };
+        /**
+         * RCAChain
+         * @description 이슈 RCA 파생 뷰 — 7단 세로 흐름 (저장하지 않음).
+         */
+        RCAChain: {
+            /** Alert Ko */
+            alert_ko?: string | null;
+            /** Closed Without Verification */
+            closed_without_verification: boolean;
+            /** Confidence */
+            confidence: string;
+            /** Issue Id */
+            issue_id: string;
+            /** Issue Type */
+            issue_type: string;
+            /** Nodes */
+            nodes: components["schemas"]["RCANode"][];
+            /** Project Id */
+            project_id: string;
+            /** Status */
+            status: string;
+            /** Title */
+            title: string;
+            /** Verification */
+            verification: string;
+            /** Verification Ko */
+            verification_ko: string;
+        };
+        /**
+         * RCAItem
+         * @description RCA 노드 안의 개별 항목 — 원본 객체 참조 동반.
+         */
+        RCAItem: {
+            /** Badge */
+            badge?: string | null;
+            /** Description */
+            description: string;
+            /** Ref Collection */
+            ref_collection?: string | null;
+            /** Ref Id */
+            ref_id?: string | null;
+            /** Source Refs */
+            source_refs?: string[];
+            /** Title */
+            title: string;
+        };
+        /**
+         * RCANode
+         * @description RCA 체인의 한 단계 — 근거 뱃지와 사유를 갖는다.
+         */
+        RCANode: {
+            /** Badge */
+            badge: string;
+            /** Badge Reason Ko */
+            badge_reason_ko: string;
+            /** Items */
+            items?: components["schemas"]["RCAItem"][];
+            /** Step */
+            step: string;
+            /** Step Ko */
+            step_ko: string;
+        };
         /** RejectedRow */
         RejectedRow: {
             /** Reason */
@@ -1575,6 +1719,24 @@ export interface components {
             /** Summary */
             summary: string;
         };
+        /**
+         * RootCause
+         * @description 구조화된 근본 원인 — 유형/서술/확신도/근거.
+         */
+        RootCause: {
+            cause_type: components["schemas"]["RootCauseType"];
+            confidence: components["schemas"]["Confidence"];
+            /** Description */
+            description: string;
+            /** Evidence Refs */
+            evidence_refs?: string[];
+        };
+        /**
+         * RootCauseType
+         * @description 근본 원인 유형 — 원점 문서 분류 승계 (Stage 10).
+         * @enum {string}
+         */
+        RootCauseType: "architecture_miss" | "spec_ambiguity" | "verification_gap" | "power_model_error" | "sw_workaround_dependency" | "customer_scenario_mismatch";
         /**
          * SafetyFlags
          * @description 활동의 안전 플래그 — 자동 결정/실행이 아님을 명시.
@@ -1979,6 +2141,8 @@ export interface components {
             /** Scenario Id */
             scenario_id: string;
             source?: components["schemas"]["SourceMeta"];
+            /** Source Basis */
+            source_basis?: string[];
             /** Streams */
             streams?: components["schemas"]["VariantStream"][];
             /** Toggles */
@@ -2324,6 +2488,71 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IngestReport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_issues_api_v1_issues_get: {
+        parameters: {
+            query?: {
+                /** @description 프로젝트 필터 */
+                project_id?: string | null;
+                /** @description verified | unverified | no_tests */
+                verification?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    issue_rca_api_v1_issues__issue_id__rca_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RCAChain"];
                 };
             };
             /** @description Validation Error */

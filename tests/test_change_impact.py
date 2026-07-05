@@ -123,10 +123,11 @@ def test_capability_conservative_matching(service) -> None:
 
 
 def test_similar_cases_issue_first_with_overlap(isp_knob_result) -> None:
-    first = isp_knob_result.similar_cases[0]
-    assert first.kind == "issue"
-    assert first.ref_id == "issue_u_uhd60_eis_power_gap"
-    assert first.scenario_ids == ["uhd60_recording_eis_on"]
+    kinds = [case.kind for case in isp_knob_result.similar_cases]
+    assert kinds == sorted(kinds, key=lambda k: k != "issue"), "이슈가 이벤트보다 먼저"
+    by_id = {case.ref_id: case for case in isp_knob_result.similar_cases}
+    assert "issue_u_uhd60_eis_power_gap" in by_id
+    assert by_id["issue_u_uhd60_eis_power_gap"].scenario_ids == ["uhd60_recording_eis_on"]
 
 
 def test_deterministic(service, isp_knob_result) -> None:

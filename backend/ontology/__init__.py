@@ -15,7 +15,7 @@ from backend.ontology.common import (
     SourceOrigin,
 )
 from backend.ontology.decision import ActionItem, Decision, ReviewPack
-from backend.ontology.event import DevelopmentEvent, Issue
+from backend.ontology.event import DevelopmentEvent, Issue, Test
 from backend.ontology.evidence import (
     Evidence,
     EvidenceCatalogEntry,
@@ -63,6 +63,7 @@ COLLECTIONS: dict[str, tuple[str, type[OntologyObject]]] = {
     "ip_dependency_rules": ("ip", IPDependencyRule),
     "development_events": ("event", DevelopmentEvent),
     "issues": ("event", Issue),
+    "tests": ("event", Test),
     "evidence": ("evidence", Evidence),
     "evidence_catalog": ("evidence", EvidenceCatalogEntry),
     "measurement_evidence": ("evidence", MeasurementEvidence),

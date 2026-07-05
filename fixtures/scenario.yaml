@@ -593,6 +593,7 @@ scenarios:
   - sys_smmu
   - sys_power_clock_thermal
   variants:
+  - var_uhd60_eis_off_hdr_off
   - var_uhd60_eis_on_hdr_off
   generation_path:
   - previous_project_base
@@ -1533,12 +1534,30 @@ scenarios:
   legacy_aliases:
   - youtube_video_playback_dou
 variants:
+- id: var_uhd60_eis_off_hdr_off
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/variants.yaml#var_uhd60_eis_off_hdr_off
+  scenario_id: uhd60_recording_eis_on
+  mode: matched_baseline
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_uhd60_eis_u_w12
+  resolution: UHD
+  fps: 60
+  toggles:
+    eis: false
+    hdr: false
+    hier_b: false
+  streams: []
+  operations: []
 - id: var_uhd60_eis_on_hdr_off
   source:
     origin: synthetic
     ref: 56:synthetic_data/variants.yaml#var_uhd60_eis_on_hdr_off
   scenario_id: uhd60_recording_eis_on
   mode: normal
+  source_basis:
+  - synthetic_data/scenario_requests.yaml#req_uhd60_eis_u_w12
   resolution: UHD
   fps: 60
   toggles:
@@ -1553,6 +1572,8 @@ variants:
     ref: 56:synthetic_data/variants.yaml#var_dual_recording_uhd30_fhd30
   scenario_id: dual_video_recording
   mode: sustained_recording
+  source_basis:
+  - synthetic_data/scenarios.yaml#dual_video_recording
   toggles:
     eis: true
     hdr: false
@@ -1568,6 +1589,8 @@ variants:
     ref: 56:synthetic_data/variants.yaml#var_display_low_clock_scale_rotation
   scenario_id: video_mode_panel_underrun_prevention
   mode: rt_stress
+  source_basis:
+  - synthetic_data/scenarios.yaml#video_mode_panel_underrun_prevention
   toggles: {}
   streams: []
   operations:
@@ -1582,6 +1605,8 @@ variants:
     ref: 56:synthetic_data/variants.yaml#var_video_editor_uhd_export
   scenario_id: video_editor_export
   mode: performance_competition
+  source_basis:
+  - synthetic_data/scenarios.yaml#video_editor_export
   resolution: UHD
   toggles: {}
   streams: []
@@ -1593,6 +1618,8 @@ variants:
     ref: 56:synthetic_data/variants.yaml#var_low_light_ai_multiframe
   scenario_id: low_light_ai_capture
   mode: low_light
+  source_basis:
+  - synthetic_data/scenarios.yaml#low_light_ai_capture
   toggles: {}
   streams: []
   operations: []

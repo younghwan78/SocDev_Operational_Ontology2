@@ -1,6 +1,8 @@
-"""event 모듈: 개발 이벤트(구 event + development_event 통합 계약), 이슈."""
+"""event 모듈: 개발 이벤트(구 event + development_event 통합 계약), 이슈, 검증 테스트."""
 
 from __future__ import annotations
+
+from enum import StrEnum
 
 from pydantic import Field
 
@@ -127,8 +129,42 @@ class AffectedScope(OntologyModel):
     kpis: list[str] = Field(default_factory=list)
 
 
+class RootCauseType(StrEnum):
+    """근본 원인 유형 — 원점 문서 분류 승계 (Stage 10)."""
+
+    ARCHITECTURE_MISS = "architecture_miss"
+    SPEC_AMBIGUITY = "spec_ambiguity"
+    VERIFICATION_GAP = "verification_gap"
+    POWER_MODEL_ERROR = "power_model_error"
+    SW_WORKAROUND_DEPENDENCY = "sw_workaround_dependency"
+    CUSTOMER_SCENARIO_MISMATCH = "customer_scenario_mismatch"
+
+
+class RootCause(OntologyModel):
+    """구조화된 근본 원인 — 유형/서술/확신도/근거."""
+
+    cause_type: RootCauseType
+    description: str
+    confidence: Confidence
+    evidence_refs: list[str] = Field(default_factory=list)
+
+
+class Test(OntologyObject):
+    """검증 테스트 — 이슈 해결과 시나리오 동작을 검증하는 실행 단위."""
+
+    title: str
+    test_type: str  # regression | scenario | cts_vts | power
+    result: str  # passed | failed | blocked | planned
+    project_id: str
+    summary: str
+    linked_scenario_ids: list[str] = Field(default_factory=list)
+    verifies_issue_ids: list[str] = Field(default_factory=list)
+    linked_evidence_ids: list[str] = Field(default_factory=list)
+    executed_week: int | None = None
+
+
 class Issue(OntologyObject):
-    """개발 이슈 — 증상/근본원인 후보/영향 범위."""
+    """개발 이슈 — 증상/근본원인/조치/검증/잔존 리스크/교훈 (RCA 체인)."""
 
     project_id: str
     title: str
@@ -139,3 +175,12 @@ class Issue(OntologyObject):
     evidence_refs: list[str] = Field(default_factory=list)
     root_cause_candidates: list[str] = Field(default_factory=list)
     affected_scope: AffectedScope = Field(default_factory=AffectedScope)
+    # Stage 10 RCA 확장 — 56 유래 이슈는 아래 필드 없이 통과한다.
+    root_causes: list[RootCause] = Field(default_factory=list)
+    fix_type: str | None = None  # hw_fix | sw_fix | tuning | spec_change | process_change | none
+    fix_description: str | None = None
+    workaround: str | None = None
+    verifying_test_ids: list[str] = Field(default_factory=list)
+    residual_risk: str | None = None
+    reusable_lesson: str | None = None
+    resolved_week: int | None = None

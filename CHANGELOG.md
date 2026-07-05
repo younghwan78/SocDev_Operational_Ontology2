@@ -1,5 +1,58 @@
 # CHANGELOG
 
+## Stage 10 — 이슈 분석: RCA 체인 + Test 온톨로지 확장 (2026-07-06)
+
+> "이 이슈의 원인은? 정말 해결됐나?" — **close됐지만 검증 테스트가 없는 이슈가
+> 빨갛게 드러나는 것**이 이 화면의 존재 이유 (`internal_docs/design/04_stage10_rca_design.md`).
+> 변경 규율 6단계(설계→모델→schema→fixture→테스트→changelog) 준수.
+
+### 온톨로지 확장 (event 모듈)
+
+- `Test` 저장 객체 신설 (컬렉션 `tests`): test_type(regression/scenario/cts_vts/power),
+  result(passed/failed/blocked/planned), 시나리오/이슈/근거 연결, 실행 주차.
+- `RootCauseType` enum 6종 (원점 문서 분류 승계): architecture_miss / spec_ambiguity /
+  verification_gap / power_model_error / sw_workaround_dependency / customer_scenario_mismatch.
+- `RootCause` 구조화 (유형/서술/확신도/근거) + `Issue` 확장: root_causes, fix_type,
+  fix_description, workaround, verifying_test_ids, residual_risk, reusable_lesson,
+  resolved_week — 전부 optional, 56 유래 이슈 4건 무변경 통과.
+- glossary label_ko 전체 추가, JSON Schema/openapi 재생성, 무결성 검사 확장
+  (tests↔issues/scenarios/projects hard 참조, issue affected_scope 검증).
+
+### 56 드리프트 재동기화
+
+- `Variant.source_basis` 추가 후 변환기 재실행 — 56의 2026-07-05 갱신 반영
+  (변형 +1건 matched_baseline, 측정 요구 +2건, 관계 +18건). **converter roundtrip 복구.**
+- 로더에 `<module>_58.yaml` 오버레이 지원: 56 생성물과 58 전용 synthetic을 분리 관리
+  (id 충돌 거부, 계보 ref `58:fixtures/...`). roundtrip 테스트는 `_58` 제외 비교.
+
+### Fixture 보강 (`fixtures/event_58.yaml`)
+
+- 원점 문서 §7 archetype 기반 이슈 **32건** (ISP 7 / DPU 6 / Codec 6 / Audio 6 / DDR·NoC 7)
+  + 검증 테스트 **30건**. 상태 구성: RCA 완결 체인(전부 통과) 5건+,
+  **검증 테스트 없는 close 이슈 3건**(수용 기준 사례), failed/planned 미검증, workaround 의존,
+  open 후보 단계 혼재. validate-data 무결성 오류 0 유지.
+
+### RCA 서비스 + 화면
+
+- `backend/services/rca.py`: 7단 체인 파생 뷰 — 증상→영향→원인→조치→검증 테스트→
+  잔존 리스크→재사용 교훈. 노드별 근거 뱃지(green/red/yellow) + 판정 사유.
+  검증 상태(verified/unverified/no_tests), 종결+미검증 경고. 원인은 기록된 데이터만
+  표시(LLM 추론 없음).
+- API: `GET /api/v1/issues`(project/verification 필터, 경고 이슈 선두 정렬),
+  `GET /api/v1/issues/{id}/rca`.
+- Frontend `IssueAnalysisPage`(`/issues`, 내비 '이슈 분석' 활성화): 이슈 목록(검증 뱃지,
+  경고 빨간 강조) → 세로 RCA 흐름(색 보더+뱃지+사유). UI 공통 원칙 준수.
+- `docs/` 가이드에 `issues.md` 추가 (뱃지 규칙/원인 유형 6종 해석, 스크린샷 2장).
+
+### 검증
+
+```text
+backend 117 passed(+rca 12, api 1) / 0 failed — converter roundtrip 포함 전부 green
+ruff / mypy pass · frontend build / test(15) / lint pass · validate-data 오류 0
+E2E: 실구동 — 이슈 36건 목록(경고 3건 선두·빨간 강조), 검증 없는 close 이슈의
+  검증 노드 red + 경고 배너, 완결 체인 이슈 all-green(테스트 2건 통과) 확인.
+```
+
 ## Stage 9 — 변경 영향 (Change Impact) (2026-07-05)
 
 > "이 IP/knob을 바꾸면 어디에 영향이 가나?" — TAT 효과 1위 유스케이스 복원

@@ -18,7 +18,10 @@ def test_conversion_matches_shipped_fixtures(tmp_path: Path) -> None:
     assert convert(SOURCE_56, tmp_path) == 0
     shipped_dir = ROOT / "fixtures"
     generated = sorted(p.name for p in tmp_path.glob("*.yaml"))
-    shipped = sorted(p.name for p in shipped_dir.glob("*.yaml"))
+    # *_58.yaml은 58 전용 synthetic 추가분 — 변환 대상이 아니므로 비교에서 제외.
+    shipped = sorted(
+        p.name for p in shipped_dir.glob("*.yaml") if not p.stem.endswith("_58")
+    )
     assert generated == shipped
     for name in generated:
         assert (tmp_path / name).read_text(encoding="utf-8") == (

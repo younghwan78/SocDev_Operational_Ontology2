@@ -1257,6 +1257,64 @@ measurement_evidence:
   related_risk_basis_ids:
   - knob_risk_basis.evt_w_mmip_area_exploration_uhd60_recording_eis_on_bandwidth_pressure
 measurement_requirements:
+- id: req_meas_u_uhd60_matched_power_trace
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/measurement_requirements.yaml#req_meas_u_uhd60_matched_power_trace
+  project_id: project_u
+  title: Project U matched EIS on/off power trace
+  description: Requires matched EIS-off and EIS-on power evidence for the same UHD60 workload before the
+    power-gap review can close.
+  measurement_type: scenario_matched_power_trace
+  event_id: project_u_uhd60_request_opened
+  scenario_id: uhd60_recording_eis_on
+  variant_id: var_uhd60_eis_on_hdr_off
+  required_for:
+  - need_u_kpi_power
+  related_evidence_gap_ids:
+  - need_u_kpi_power
+  related_ip_ids:
+  - ip_isp
+  - ip_mfc
+  - sys_mif
+  related_knob_ids: []
+  related_kpi_ids:
+  - power
+  - eis_power_gap
+  - thermal
+  - fps_stability
+  related_resource_profile_ids: []
+  related_risk_basis_ids: []
+  source_ref: synthetic_data/development_events.yaml#project_u_uhd60_request_opened
+- id: req_meas_u_uhd60_matched_bw_trace
+  source:
+    origin: synthetic
+    ref: 56:synthetic_data/measurement_requirements.yaml#req_meas_u_uhd60_matched_bw_trace
+  project_id: project_u
+  title: Project U matched UHD60 bandwidth trace
+  description: Requires scenario-specific DDR and NoC bandwidth evidence for the matched UHD60 EIS workload.
+  measurement_type: scenario_matched_bandwidth_trace
+  event_id: project_u_uhd60_request_opened
+  scenario_id: uhd60_recording_eis_on
+  variant_id: var_uhd60_eis_on_hdr_off
+  required_for:
+  - need_u_kpi_bw
+  related_evidence_gap_ids:
+  - need_u_kpi_bw
+  related_ip_ids:
+  - ip_isp
+  - ip_mfc
+  - sys_mif
+  - sys_noc
+  related_knob_ids: []
+  related_kpi_ids:
+  - ddr_bw
+  - power
+  - thermal
+  - fps_stability
+  related_resource_profile_ids: []
+  related_risk_basis_ids: []
+  source_ref: synthetic_data/development_events.yaml#project_u_uhd60_request_opened
 - id: req_meas_uhd60_gpu_bandwidth_direction
   source:
     origin: synthetic

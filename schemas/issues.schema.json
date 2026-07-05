@@ -47,6 +47,49 @@
       "title": "Confidence",
       "type": "string"
     },
+    "RootCause": {
+      "additionalProperties": false,
+      "description": "구조화된 근본 원인 — 유형/서술/확신도/근거.",
+      "properties": {
+        "cause_type": {
+          "$ref": "#/$defs/RootCauseType"
+        },
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "cause_type",
+        "description",
+        "confidence"
+      ],
+      "title": "RootCause",
+      "type": "object"
+    },
+    "RootCauseType": {
+      "description": "근본 원인 유형 — 원점 문서 분류 승계 (Stage 10).",
+      "enum": [
+        "architecture_miss",
+        "spec_ambiguity",
+        "verification_gap",
+        "power_model_error",
+        "sw_workaround_dependency",
+        "customer_scenario_mismatch"
+      ],
+      "title": "RootCauseType",
+      "type": "string"
+    },
     "SourceMeta": {
       "additionalProperties": false,
       "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
@@ -96,7 +139,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "개발 이슈 — 증상/근본원인 후보/영향 범위.",
+  "description": "개발 이슈 — 증상/근본원인/조치/검증/잔존 리스크/교훈 (RCA 체인).",
   "properties": {
     "affected_scope": {
       "$ref": "#/$defs/AffectedScope"
@@ -111,6 +154,30 @@
       "title": "Evidence Refs",
       "type": "array"
     },
+    "fix_description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Fix Description"
+    },
+    "fix_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Fix Type"
+    },
     "id": {
       "title": "Id",
       "type": "string"
@@ -123,11 +190,54 @@
       "title": "Project Id",
       "type": "string"
     },
+    "residual_risk": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Residual Risk"
+    },
+    "resolved_week": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Resolved Week"
+    },
+    "reusable_lesson": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reusable Lesson"
+    },
     "root_cause_candidates": {
       "items": {
         "type": "string"
       },
       "title": "Root Cause Candidates",
+      "type": "array"
+    },
+    "root_causes": {
+      "items": {
+        "$ref": "#/$defs/RootCause"
+      },
+      "title": "Root Causes",
       "type": "array"
     },
     "source": {
@@ -144,6 +254,25 @@
     "title": {
       "title": "Title",
       "type": "string"
+    },
+    "verifying_test_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Verifying Test Ids",
+      "type": "array"
+    },
+    "workaround": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Workaround"
     }
   },
   "required": [

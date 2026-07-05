@@ -3731,6 +3731,8 @@ issues:
     - eis_power_gap
     - ddr_bw
     - thermal
+  root_causes: []
+  verifying_test_ids: []
 - id: issue_u_display_video_mode_underrun
   source:
     origin: synthetic
@@ -3763,6 +3765,8 @@ issues:
     - dpu_clock
     - noc_qos_margin
     - display_latency
+  root_causes: []
+  verifying_test_ids: []
 - id: issue_u_mfc_video_editor_perf_gap
   source:
     origin: synthetic
@@ -3794,6 +3798,8 @@ issues:
     - encoder_throughput
     - video_editor_latency
     - codec_power
+  root_causes: []
+  verifying_test_ids: []
 - id: issue_w_mmip_area_tradeoff
   source:
     origin: synthetic
@@ -3831,3 +3837,5 @@ issues:
     - sustained_power
     - codec_throughput
     - underrun_count
+  root_causes: []
+  verifying_test_ids: []

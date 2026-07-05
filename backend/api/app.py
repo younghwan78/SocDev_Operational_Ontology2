@@ -42,6 +42,12 @@ from backend.services.change_impact import (
     UnknownIPError,
 )
 from backend.services.portfolio import PortfolioOverview, PortfolioService
+from backend.services.rca import (
+    IssueNotFoundError,
+    IssueSummary,
+    RCAChain,
+    RCAService,
+)
 from backend.services.review import ReviewService, WeeklyIndex, WeeklySnapshot
 from backend.services.risk import RiskHeatmap, RiskService
 from backend.services.scenario_analysis import (
@@ -67,6 +73,7 @@ class AppServices:
     review: ReviewService
     risk: RiskService
     change_impact: ChangeImpactService
+    rca: RCAService
     traceability: TraceabilityService
     advisory: AdvisoryRunner
     run_store: RunStoreProtocol
@@ -109,6 +116,7 @@ def build_services(
         review=ReviewService(repo),
         risk=RiskService(repo),
         change_impact=ChangeImpactService(repo),
+        rca=RCAService(repo),
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
         run_store=run_store,
@@ -252,6 +260,24 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     ) -> RiskHeatmap:
         """위험 지도 — 시나리오×IP 정성 등급 + 판정 근거 (수치 점수 없음)."""
         return services.risk.heatmap(project_id)
+
+    @app.get(f"{prefix}/issues", response_model=list[IssueSummary])
+    def list_issues(
+        project_id: str | None = Query(default=None, description="프로젝트 필터"),
+        verification: str | None = Query(
+            default=None, description="verified | unverified | no_tests"
+        ),
+    ) -> list[IssueSummary]:
+        """이슈 목록 — 검증 상태 뱃지 포함 (종결+미검증이 먼저)."""
+        return services.rca.list_issues(project_id, verification)
+
+    @app.get(f"{prefix}/issues/{{issue_id}}/rca", response_model=RCAChain)
+    def issue_rca(issue_id: str) -> RCAChain:
+        """이슈 RCA 체인 — 증상→영향→원인→조치→검증→잔존→교훈 (근거 뱃지)."""
+        try:
+            return services.rca.chain(issue_id)
+        except IssueNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.get(f"{prefix}/change-impact/options", response_model=ChangeImpactOptions)
     def change_impact_options() -> ChangeImpactOptions:
