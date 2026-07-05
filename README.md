@@ -2,10 +2,19 @@
 
 Multimedia SoC 개발 운영 온톨로지 — evidence-grounded 분석·조언 시스템.
 
-- 설계: `docs/design/01_system_architecture.md`
-- 전체 로드맵: `docs/design/02_implementation_roadmap.md`
+## 문서
+
+- **UI 사용·해석 가이드 (사용자용, GitHub Pages 소스)**: [`docs/`](docs/index.md)
+  — 위험 지도 / 변경 영향 / 데이터 탐색 / 공통 개념
+- 내부 설계 문서 (개발용): `internal_docs/design/`
+  - 시스템 아키텍처: `internal_docs/design/01_system_architecture.md`
+  - 전체 로드맵: `internal_docs/design/02_implementation_roadmap.md`
+  - 교정 설계 (Stage 8~12 기준): `internal_docs/design/03_course_correction.md`
 - 활성 Stage: `CURRENT_TASK.md`
 - 참조(read-only): `E:\56_Codex_SoC_Operational_Ontology`
+
+> GitHub Pages 연동: 저장소 Settings → Pages → Source를 `main` 브랜치의 `/docs`
+> 폴더로 지정하면 UI 가이드가 웹으로 게시된다.
 
 ## 실행
 

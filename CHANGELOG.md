@@ -3,7 +3,7 @@
 ## Stage 9 — 변경 영향 (Change Impact) (2026-07-05)
 
 > "이 IP/knob을 바꾸면 어디에 영향이 가나?" — TAT 효과 1위 유스케이스 복원
-> (`docs/design/03_course_correction.md` §4.2). 결정론 그래프 순회만 사용, LLM 불개입.
+> (`internal_docs/design/03_course_correction.md` §4.2). 결정론 그래프 순회만 사용, LLM 불개입.
 
 ### 추가
 
@@ -39,7 +39,7 @@ E2E: ISP×pixel_mode 실구동 — 4분면 완결, 역할 경계 문구, 유사 
 
 ## Stage 8 — 홈 개편 + 위험 지도 (2026-07-05)
 
-> 방향 교정(`docs/design/03_course_correction.md`) 첫 구현 — 원점 문서의
+> 방향 교정(`internal_docs/design/03_course_correction.md`) 첫 구현 — 원점 문서의
 > Milestone Risk Early Warning 복원. UI를 "질문이 곧 메뉴인 코크핏"으로 재편 시작.
 
 ### 추가
@@ -295,6 +295,6 @@ uv run python -m backend.cli.main validate-data → 오류 0 / 경고 15 / gloss
 
 ## 설계 확정 (2026-07-04)
 
-- `docs/design/01_system_architecture.md`: 운영 시스템 아키텍처 확정 — LLM 3단 체인
+- `internal_docs/design/01_system_architecture.md`: 운영 시스템 아키텍처 확정 — LLM 3단 체인
   (Claude CLI → 사내 on-prem → 결정론), PostgreSQL-first, 온톨로지 8모듈, 한국어 1급.
-- `docs/design/02_implementation_roadmap.md`: Stage 1~8+ 전체 상세 계획.
+- `internal_docs/design/02_implementation_roadmap.md`: Stage 1~8+ 전체 상세 계획.

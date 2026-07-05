@@ -95,7 +95,7 @@ flowchart TD
     API -. openapi-typescript .-> FE
 ```
 
-상세: `docs/design/01_system_architecture.md`. 전체 Stage 계획: `docs/design/02_implementation_roadmap.md`.
+상세: `internal_docs/design/01_system_architecture.md`. 전체 Stage 계획: `internal_docs/design/02_implementation_roadmap.md`.
 
 ## 5. 기술 스택 & 명령
 
@@ -124,7 +124,7 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
 
 1. `CLAUDE.md` (프로젝트 전역 규칙)
 2. `CURRENT_TASK.md` (활성 Stage 범위)
-3. `docs/design/` (58 설계문서)
+3. `internal_docs/design/` (58 설계문서)
 4. `E:\56_...\docs\` (도메인 참조, read-only)
 
 현재 Stage를 넘는 구현 금지. 미래 지향 라벨/플레이스홀더는 구현 근거가 아니다. Stage 완료 시: 수용 기준·회귀 명령 확인, changelog 갱신, 다음 `CURRENT_TASK.md` 준비 후 **정지** — 사용자 승인 없이 다음 Stage 진입 금지.
@@ -140,7 +140,7 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
 - 조회·현황·traceability는 항상 결정론. LLM은 advisory/질의 응답 생성에만 관여하며 provider chain + validator + 감사 기록을 우회할 수 없다.
 - 온톨로지 데이터의 수정/삭제 API 금지 — 데이터는 ingest 계층으로만 진입, 삭제는 반입 단위 rollback만.
 - **수치** 리스크/우선순위 스코어링, owner/task 자동 할당, 자율 멀티에이전트 토론 금지.
-  단 **정성 위험 등급(높음/중간/낮음) + 판정 근거 목록 명시**는 허용 (2026-07-05 승인 — 원점 문서의 Milestone Risk Early Warning 복원, `docs/design/03_course_correction.md` §4.1).
+  단 **정성 위험 등급(높음/중간/낮음) + 판정 근거 목록 명시**는 허용 (2026-07-05 승인 — 원점 문서의 Milestone Risk Early Warning 복원, `internal_docs/design/03_course_correction.md` §4.1).
 - 읽기 좋은 boring Python. 도메인 로직과 CLI/API 표현 분리. 비즈니스 로직에 synthetic ID 하드코딩 금지.
 - 모든 비자명한 loader/validator/resolver/service 동작에 테스트.
 - 설계 먼저, 코드 나중: 구현 전에 제안/설계를 확정한다.
@@ -150,9 +150,10 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
 | 필요 | 위치 |
 |---|---|
 | **원점 비전 (프로젝트의 최상위 기준)** | `D:\YHJOO\100_SoC_Operational_Ontology\01_Brainstorming\26.06.18 SoC ontology (ChatGPT).md` (read-only) |
-| **교정 설계 — Stage 8~12 기준** | `docs/design/03_course_correction.md` |
-| 58 시스템 아키텍처 (확정) | `docs/design/01_system_architecture.md` |
-| 58 전체 Stage 상세 계획 | `docs/design/02_implementation_roadmap.md` |
+| **교정 설계 — Stage 8~12 기준** | `internal_docs/design/03_course_correction.md` |
+| UI 사용·해석 가이드 (사용자용 — GitHub Pages 소스, 내부 설계는 넣지 않음) | `docs/` |
+| 58 시스템 아키텍처 (확정) | `internal_docs/design/01_system_architecture.md` |
+| 58 전체 Stage 상세 계획 | `internal_docs/design/02_implementation_roadmap.md` |
 | 활성 Stage 범위 | `CURRENT_TASK.md` |
 | 도메인 목적/범위 (참조) | `56/docs/00_project_brief.md`, `56/docs/02_poc_scope.md` |
 | Agent 계약/출력 스키마 (참조) | `56/docs/step0_poc_contract/` |
@@ -168,6 +169,10 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
   한국어 frontend, LLM 3단 체인 advisory, Excel/CSV 반입. **이는 기반(foundation)이다.**
 - **방향 교정 확정 (2026-07-05)**: 원점 문서 대비 검증 결과 TAT 단축 유스케이스 4종
   (위험 지도/변경 영향/RCA/Ask SoC)이 부재 → Stage 8~12로 복원한다.
-  UI를 "질문이 곧 메뉴인 코크핏"으로 재편한다. 기준: `docs/design/03_course_correction.md`.
-- 활성: **Stage 8 (홈 개편 + 위험 지도)** — `CURRENT_TASK.md` 참조, 사용자 승인 완료·착수 대기.
+  UI를 "질문이 곧 메뉴인 코크핏"으로 재편한다. 기준: `internal_docs/design/03_course_correction.md`.
+- Stage 8 완료 (2026-07-05): 위험 지도 홈 + 코크핏 내비 + UI 공통 원칙(ID 숨김/색 통일/접기).
+- Stage 9 완료 (2026-07-05): 변경 영향(그래프 순회 4분면 + 역할별 체크리스트). 문서 재편:
+  `docs/`=UI 가이드(Pages), `internal_docs/`=설계 문서.
+- 활성: **Stage 10 (RCA 체인 + Test 온톨로지 확장)** — `CURRENT_TASK.md` 참조, 사용자 승인 대기.
+- 알려진 문제: 56 참조 데이터 드리프트로 `test_converter_roundtrip` 1건 실패 (CHANGELOG Stage 8 참조).
 - 진행 이력은 `CHANGELOG.md`, 원격은 github.com/younghwan78/SocDev_Operational_Ontology2.

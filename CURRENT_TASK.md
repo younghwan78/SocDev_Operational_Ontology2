@@ -5,8 +5,8 @@
 **Stage 10 — 이슈 분석: RCA 체인 + Test 온톨로지 확장** (준비 완료 — **사용자 승인 대기, 착수 금지**)
 
 > 새 세션 시작 시 이 파일과 함께 반드시 읽을 것:
-> 1. `docs/design/03_course_correction.md` §4.3 — **교정 설계 (Stage 8~12의 기준 문서)**
-> 2. `docs/design/02_implementation_roadmap.md` — Stage 10 수용 기준
+> 1. `internal_docs/design/03_course_correction.md` §4.3 — **교정 설계 (Stage 8~12의 기준 문서)**
+> 2. `internal_docs/design/02_implementation_roadmap.md` — Stage 10 수용 기준
 > 3. 원점 문서(read-only, 특히 §7 issue archetype): `D:\YHJOO\100_SoC_Operational_Ontology\01_Brainstorming\26.06.18 SoC ontology (ChatGPT).md`
 
 ## 작업 디렉토리

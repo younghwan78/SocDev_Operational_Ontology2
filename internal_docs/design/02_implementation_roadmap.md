@@ -1,7 +1,7 @@
 # 구현 로드맵 — 전체 상세 계획
 
 > 상태: v1.0 (2026-07-04)
-> 선행 문서: `docs/design/01_system_architecture.md`
+> 선행 문서: `internal_docs/design/01_system_architecture.md`
 > 이 문서는 전체 Stage의 상세 계획이다. 각 Stage 시작 시 이 문서에서 해당 Stage를 발췌·구체화하여 `CURRENT_TASK.md` scope lock을 생성한다.
 
 ## 0. 진행 규율 (모든 Stage 공통)
@@ -224,7 +224,7 @@ Stage 3 (서비스/API), Stage 4 (표시 화면) 권장.
 
 ## Stage 8~12 — 원점 목표 복원 (2026-07-05 개정, 사용자 승인)
 
-> **설계 기준: `docs/design/03_course_correction.md`** (원점 문서 대비 괴리 진단과 교정 설계).
+> **설계 기준: `internal_docs/design/03_course_correction.md`** (원점 문서 대비 괴리 진단과 교정 설계).
 > Stage 1~7 검증 결과 원점의 TAT 단축 유스케이스 4종이 부재하여 Stage 8+를 아래로 대체한다.
 > UI를 "데이터 종류별 화면"에서 "질문이 곧 메뉴인 코크핏"으로 재편한다.
 

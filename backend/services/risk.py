@@ -1,6 +1,6 @@
 """위험 지도 서비스 — 시나리오×IP 정성 위험 등급 파생 뷰 (저장하지 않음).
 
-원점 문서의 Milestone Risk Early Warning 복원 (docs/design/03_course_correction.md §4.1).
+원점 문서의 Milestone Risk Early Warning 복원 (internal_docs/design/03_course_correction.md §4.1).
 결정론 룰만 사용한다: 미해결 이슈, 확신도 차단 근거, 일정 신호, 이벤트 심각도,
 P1 요청 상태, 과거 유사 패턴. 출력은 높음/중간/낮음 정성 등급 + 판정 근거 목록이며
 수치 리스크 점수는 산출하지 않는다 (CLAUDE.md §6.3 승인 범위).

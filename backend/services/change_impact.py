@@ -1,6 +1,6 @@
 """변경 영향 서비스 — "이 IP/knob/capability/모드를 바꾸면 어디에 영향이 가나?"
 
-docs/design/03_course_correction.md §4.2의 결정론 그래프 순회만 사용한다:
+internal_docs/design/03_course_correction.md §4.2의 결정론 그래프 순회만 사용한다:
 
     선택 IP → scenario_ip_requirements → 영향 시나리오 → primary_kpis
     선택 IP → ip_dependency_rules → 연쇄 IP (조건 표시)
