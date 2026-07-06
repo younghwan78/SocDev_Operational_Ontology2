@@ -151,6 +151,7 @@ Frontend(존재 시): `cd frontend && npm run build && npm run test && npm run l
 |---|---|
 | **원점 비전 (프로젝트의 최상위 기준)** | `D:\YHJOO\100_SoC_Operational_Ontology\01_Brainstorming\26.06.18 SoC ontology (ChatGPT).md` (read-only) |
 | **교정 설계 — Stage 8~12 기준** | `internal_docs/design/03_course_correction.md` |
+| **장기 개선 계획 — Stage 13~19 기준** | `internal_docs/design/05_long_term_improvement_plan.md` |
 | UI 사용·해석 가이드 (사용자용 — GitHub Pages 소스, 내부 설계는 넣지 않음) | `docs/` |
 | 58 시스템 아키텍처 (확정) | `internal_docs/design/01_system_architecture.md` |
 | 58 전체 Stage 상세 계획 | `internal_docs/design/02_implementation_roadmap.md` |

@@ -7,15 +7,15 @@
 > 원점 목표 복원이 완료됐다: 5대 질문 코크핏(위험 지도/변경 영향/이슈 분석/Ask SoC/
 > 시나리오 상세) + 데모 스토리 + TAT 측정 체계. 진행 이력은 `CHANGELOG.md` 참조.
 
-## 다음 후보 (착수 전 사용자 승인 필요)
+## 다음 단계 기준 문서
 
-1. **사내 검증 워크숍 실행** — `internal_docs/validation/` 자료로 실무 리더 검증
-   (TAT 측정 + fixture 가설 판정) → 교정 백로그 도출. **권장 다음 단계.**
-2. **Stage 13+ (이연 계획)** — `internal_docs/design/02_implementation_roadmap.md` 참조:
-   JIRA/Confluence read-only 커넥터(보안 승인 선행), 사내 임베딩+pgvector 한국어 시맨틱
-   검색(키워드 retriever 대체), 운영 파일럿(실무 리더 1~2명 주간 사용).
-   원점 문서 원칙: "ingestion 자동화보다 연결 모델 검증이 먼저" — 1번 이후 착수 권장.
-3. 워크숍 피드백 기반 교정 (위험 룰 가중/원인 유형/archetype 수정 — 변경 규율 6단계).
+**`internal_docs/design/05_long_term_improvement_plan.md`** — Stage 13~19 상세 실행 계약
+(현재 상태 스냅샷/관찰된 한계 L1~L12/단계별 In·Out-scope/수용 기준/실행 규약 포함,
+다른 구현 주체가 이 문서만으로 착수 가능하도록 작성됨).
+
+순서: Stage 13(워크숍 검증+교정 루프) → 14(CI·인증·배포·캐시) → 15(실데이터 반입 확대)
+→ 16(운영 파일럿+효과 지표) → 17(시맨틱 검색+Ask 고도화) → 18(JIRA/Confluence 커넥터)
+→ 19+(타 도메인 확장). 각 Stage 착수는 사용자 승인 필요.
 
 ## 작업 디렉토리
 
