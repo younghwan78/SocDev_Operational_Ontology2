@@ -859,6 +859,51 @@
         "title": "ChecklistItem",
         "type": "object"
       },
+      "CollectionCoverage": {
+        "additionalProperties": false,
+        "description": "컬렉션별 출처 집계 — 가상/반입/연동 건수 + 계보(ref) 누락 건수.",
+        "properties": {
+          "collection": {
+            "title": "Collection",
+            "type": "string"
+          },
+          "collection_ko": {
+            "title": "Collection Ko",
+            "type": "string"
+          },
+          "imported": {
+            "title": "Imported",
+            "type": "integer"
+          },
+          "integrated": {
+            "title": "Integrated",
+            "type": "integer"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "without_ref": {
+            "title": "Without Ref",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "collection",
+          "collection_ko",
+          "total",
+          "synthetic",
+          "imported",
+          "integrated",
+          "without_ref"
+        ],
+        "title": "CollectionCoverage",
+        "type": "object"
+      },
       "Confidence": {
         "description": "확신도 — evidence-grounded 출력의 공통 척도.",
         "enum": [
@@ -2488,6 +2533,41 @@
           "rationale"
         ],
         "title": "OptionAssessment",
+        "type": "object"
+      },
+      "OriginTotals": {
+        "additionalProperties": false,
+        "description": "전체 출처 요약 — 실데이터(반입+연동) 진척을 건수/문구로 표기.",
+        "properties": {
+          "imported": {
+            "title": "Imported",
+            "type": "integer"
+          },
+          "integrated": {
+            "title": "Integrated",
+            "type": "integer"
+          },
+          "real_data_note": {
+            "title": "Real Data Note",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "synthetic",
+          "imported",
+          "integrated",
+          "real_data_note"
+        ],
+        "title": "OriginTotals",
         "type": "object"
       },
       "PortfolioOverview": {
@@ -4240,6 +4320,28 @@
         "title": "SimilarCase",
         "type": "object"
       },
+      "SourceCoverage": {
+        "additionalProperties": false,
+        "description": "출처 지도 파생 뷰 — 컬렉션별 집계 + 전체 요약.",
+        "properties": {
+          "collections": {
+            "items": {
+              "$ref": "#/components/schemas/CollectionCoverage"
+            },
+            "title": "Collections",
+            "type": "array"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/OriginTotals"
+          }
+        },
+        "required": [
+          "collections",
+          "totals"
+        ],
+        "title": "SourceCoverage",
+        "type": "object"
+      },
       "SourceMeta": {
         "additionalProperties": false,
         "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
@@ -5979,6 +6081,25 @@
           }
         },
         "summary": "Scenario Timeline"
+      }
+    },
+    "/api/v1/source-map": {
+      "get": {
+        "description": "출처 지도 — 컬렉션별 가상/반입/연동 집계 (파편화·실데이터 진척 가시화).",
+        "operationId": "source_map_api_v1_source_map_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceCoverage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Source Map"
       }
     },
     "/api/v1/traceability/{object_id}": {

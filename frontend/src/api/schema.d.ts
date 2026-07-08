@@ -488,6 +488,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/source-map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Source Map
+         * @description 출처 지도 — 컬렉션별 가상/반입/연동 집계 (파편화·실데이터 진척 가시화).
+         */
+        get: operations["source_map_api_v1_source_map_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/traceability/{object_id}": {
         parameters: {
             query?: never;
@@ -871,6 +891,26 @@ export interface components {
             role_id: string;
             /** Role Name */
             role_name: string;
+        };
+        /**
+         * CollectionCoverage
+         * @description 컬렉션별 출처 집계 — 가상/반입/연동 건수 + 계보(ref) 누락 건수.
+         */
+        CollectionCoverage: {
+            /** Collection */
+            collection: string;
+            /** Collection Ko */
+            collection_ko: string;
+            /** Imported */
+            imported: number;
+            /** Integrated */
+            integrated: number;
+            /** Synthetic */
+            synthetic: number;
+            /** Total */
+            total: number;
+            /** Without Ref */
+            without_ref: number;
         };
         /**
          * Confidence
@@ -1478,6 +1518,22 @@ export interface components {
             rationale: string;
             /** Role Posture */
             role_posture: string;
+        };
+        /**
+         * OriginTotals
+         * @description 전체 출처 요약 — 실데이터(반입+연동) 진척을 건수/문구로 표기.
+         */
+        OriginTotals: {
+            /** Imported */
+            imported: number;
+            /** Integrated */
+            integrated: number;
+            /** Real Data Note */
+            real_data_note: string;
+            /** Synthetic */
+            synthetic: number;
+            /** Total */
+            total: number;
         };
         /**
          * PortfolioOverview
@@ -2108,6 +2164,15 @@ export interface components {
             title: string;
             /** Why Similar */
             why_similar: string;
+        };
+        /**
+         * SourceCoverage
+         * @description 출처 지도 파생 뷰 — 컬렉션별 집계 + 전체 요약.
+         */
+        SourceCoverage: {
+            /** Collections */
+            collections: components["schemas"]["CollectionCoverage"][];
+            totals: components["schemas"]["OriginTotals"];
         };
         /**
          * SourceMeta
@@ -3104,6 +3169,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    source_map_api_v1_source_map_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourceCoverage"];
                 };
             };
         };

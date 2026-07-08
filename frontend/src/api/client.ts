@@ -182,6 +182,15 @@ export async function fetchRiskHeatmap(projectId?: string): Promise<RiskHeatmap>
   return data;
 }
 
+export type SourceCoverage = components["schemas"]["SourceCoverage"];
+export type CollectionCoverage = components["schemas"]["CollectionCoverage"];
+
+export async function fetchSourceMap(): Promise<SourceCoverage> {
+  const { data, error } = await client.GET("/api/v1/source-map");
+  if (error || !data) throw new Error("source-map 조회 실패");
+  return data;
+}
+
 export async function fetchLabels(): Promise<Record<string, string>> {
   const { data, error } = await client.GET("/api/v1/meta/labels");
   if (error || !data) throw new Error("labels 조회 실패");

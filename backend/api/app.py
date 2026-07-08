@@ -57,6 +57,7 @@ from backend.services.scenario_analysis import (
     ScenarioNotFoundError,
     TimelineItem,
 )
+from backend.services.source_map import SourceCoverage, SourceCoverageService
 
 API_VERSION = "v1"
 ROOT = Path(__file__).resolve().parents[2]
@@ -75,6 +76,7 @@ class AppServices:
     risk: RiskService
     change_impact: ChangeImpactService
     rca: RCAService
+    source_map: SourceCoverageService
     traceability: TraceabilityService
     advisory: AdvisoryRunner
     ask: AskRunner
@@ -119,6 +121,7 @@ def build_services(
         risk=RiskService(repo),
         change_impact=ChangeImpactService(repo),
         rca=RCAService(repo),
+        source_map=SourceCoverageService(repo),
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
         ask=AskRunner(repo),
@@ -309,6 +312,11 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         except InvalidSelectionError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get(f"{prefix}/source-map", response_model=SourceCoverage)
+    def source_map() -> SourceCoverage:
+        """출처 지도 — 컬렉션별 가상/반입/연동 집계 (파편화·실데이터 진척 가시화)."""
+        return services.source_map.coverage()
 
     @app.get(f"{prefix}/review/weekly", response_model=WeeklyIndex)
     def weekly_index() -> WeeklyIndex:

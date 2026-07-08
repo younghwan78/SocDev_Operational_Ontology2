@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## Bridge F1 — 출처 지도 (2026-07-09)
+
+> 설계: `internal_docs/design/07_advisory_to_os_bridge.md` §1. 원점 비전의 Data
+> Fragmentation Map 대응 — "지식 중 무엇이 가상이고 무엇이 실데이터인가" 가시화.
+
+### 추가
+
+- **출처 지도** (`GET /api/v1/source-map`, 내비 '출처 지도'):
+  전 컬렉션의 `SourceMeta.origin`(가상/반입/연동) + `ref` 유무를 집계하는
+  결정론 파생 뷰(`backend/services/source_map.py`). 온톨로지 계약 변경 없음.
+  - 컬렉션별 origin 세그먼트 막대 + 전체 요약(실데이터 N/M건) + 계보 미기재 경고.
+  - 수치 리스크 점수 아님 — 단순 건수/비율 집계 (CLAUDE.md §6.3 무관).
+  - `collection_ko`는 glossary `object_label`에서 파생(신규 라벨 불필요).
+
+### 검증
+
+```text
+backend 133 passed / ruff / mypy pass · frontend build / test(21) pass ·
+  validate-data 오류 0. openapi 재생성 + gen:api 반영.
+참고: frontend lint의 기존 오류 3건(DemoStoryBar/AskPage, react-hooks) 선존 —
+  본 변경과 무관(HEAD에서도 재현). 별도 처리 예정.
+```
+
 ## Stage 12 — 데모 스토리 + TAT 측정 체계 (2026-07-06)
 
 > 원점 목표 복원(Stage 8~12)의 마지막 단계 (`internal_docs/design/03_course_correction.md` §4.5).

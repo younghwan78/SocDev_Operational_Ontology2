@@ -233,3 +233,18 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .story-bar .story-title { font-weight: 700; font-size: 14px; color: var(--accent); }
 .story-bar .story-desc { font-size: 13px; color: var(--text); flex: 1; min-width: 200px; }
 .nav-demo { color: var(--warn) !important; font-weight: 600; }
+
+/* 출처 지도 — origin 세그먼트 막대 */
+.source-collection-list { display: flex; flex-direction: column; gap: 12px; }
+.origin-bar { margin-top: 6px; }
+.origin-track {
+  display: flex; height: 10px; border-radius: 5px; overflow: hidden;
+  background: var(--bg); border: 1px solid var(--border);
+}
+.origin-seg { height: 100%; }
+.origin-synthetic { background: #98a2b3; }
+.origin-imported { background: var(--accent); }
+.origin-integrated { background: var(--ok); }
+.origin-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 6px; font-size: 12px; color: var(--text-dim); }
+.origin-key { display: inline-flex; align-items: center; gap: 5px; }
+.origin-dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
