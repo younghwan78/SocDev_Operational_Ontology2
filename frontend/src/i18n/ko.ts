@@ -242,6 +242,18 @@ export const ko = {
     col_total: "전체",
     real_data: "실데이터",
     note_synthetic_ok: "현재는 대부분 가상 fixture입니다. 실데이터 반입 시 반입·연동 막대가 늘어납니다.",
+    entity_section: "식별자 해석",
+    entity_subtitle:
+      "같은 IP가 문서마다 다르게 불리는 명칭 불일치를 canonical IP로 해석합니다. 커넥터 연동의 전제입니다.",
+    alias_table: "IP 별칭표",
+    alias_domain: "도메인",
+    alias_aliases: "별칭",
+    alias_none: "등록된 별칭 없음",
+    unmatched_queue: "미해석 토큰 큐 (사람 판별 대상)",
+    unmatched_hint:
+      "어떤 IP로도 해석되지 않은 토큰입니다. 일부는 별칭 누락(IPBlock.aliases 보완 대상), 일부는 IP가 아닌 개념축(아키텍처·대역폭·품질 등)입니다.",
+    unmatched_occurrences: "출현",
+    unmatched_none: "미해석 토큰이 없습니다.",
   },
   advisory: {
     tab: "조언",

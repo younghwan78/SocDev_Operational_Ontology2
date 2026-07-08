@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## Bridge F2 — 엔티티 해석 (2026-07-09)
+
+> 설계: `internal_docs/design/07_advisory_to_os_bridge.md` §2. 원점 비전의 "식별자
+> 파편화"(§2) 대응 — 같은 IP의 명칭 불일치를 canonical ip_id로 해석하는 1급 서비스.
+
+### 추가
+
+- **엔티티 해석** (`GET /api/v1/entity-resolution`, 출처 지도 페이지 '식별자 해석' 섹션):
+  `backend/resolve/entity_resolution.py` — `IPAliasIndex`(IPBlock name/domain/aliases
+  토큰 역인덱스) + `EntityResolutionService.report()`.
+  - **별칭표**: canonical IP별 도메인·별칭 목록.
+  - **미해석 토큰 큐**: event `affected_domains` 중 어떤 IP로도 해석 안 되는 토큰을
+    빈도순 수집 — 사람 판별용 큐레이션 큐(별칭 누락 vs 비-IP 개념축).
+  - 교정은 IPBlock.aliases 변경(변경 규율)으로만 — 쓰기 API 없음.
+  - `risk.py` 귀속 통일(L8 완전 해소)은 본 단계 out-of-scope (05 Stage 15).
+
+### 검증
+
+```text
+backend 139 passed / ruff / mypy(55 files) pass · frontend build / test(21) pass ·
+  validate-data 오류 0. openapi/gen:api 재생성. lint 기존 3건 외 신규 0.
+관찰: 현 fixture affected_domains에 IP 토큰 + 비-IP 개념축(architecture/bandwidth/
+  quality/schedule 등 23종)이 혼재 — 큐가 이를 정직하게 노출(L8 근거 재확인).
+```
+
 ## Bridge F1 — 출처 지도 (2026-07-09)
 
 > 설계: `internal_docs/design/07_advisory_to_os_bridge.md` §1. 원점 비전의 Data

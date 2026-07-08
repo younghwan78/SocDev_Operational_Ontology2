@@ -33,6 +33,7 @@ from backend.ontology.glossary import export_glossary
 from backend.ontology.project import Project
 from backend.ontology.relation import AgentRun
 from backend.ontology.scenario import Scenario
+from backend.resolve.entity_resolution import EntityResolutionReport, EntityResolutionService
 from backend.resolve.object_index import ObjectIndex
 from backend.resolve.traceability import TraceabilityResult, TraceabilityService
 from backend.services.change_impact import (
@@ -77,6 +78,7 @@ class AppServices:
     change_impact: ChangeImpactService
     rca: RCAService
     source_map: SourceCoverageService
+    entity_resolution: EntityResolutionService
     traceability: TraceabilityService
     advisory: AdvisoryRunner
     ask: AskRunner
@@ -122,6 +124,7 @@ def build_services(
         change_impact=ChangeImpactService(repo),
         rca=RCAService(repo),
         source_map=SourceCoverageService(repo),
+        entity_resolution=EntityResolutionService(repo),
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
         ask=AskRunner(repo),
@@ -317,6 +320,11 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     def source_map() -> SourceCoverage:
         """출처 지도 — 컬렉션별 가상/반입/연동 집계 (파편화·실데이터 진척 가시화)."""
         return services.source_map.coverage()
+
+    @app.get(f"{prefix}/entity-resolution", response_model=EntityResolutionReport)
+    def entity_resolution() -> EntityResolutionReport:
+        """엔티티 해석 — IP 별칭표 + 미해석 토큰 큐 (식별자 파편화 가시화)."""
+        return services.entity_resolution.report()
 
     @app.get(f"{prefix}/review/weekly", response_model=WeeklyIndex)
     def weekly_index() -> WeeklyIndex:

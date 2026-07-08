@@ -241,6 +241,39 @@
         "title": "AgentRun",
         "type": "object"
       },
+      "AliasEntry": {
+        "additionalProperties": false,
+        "description": "canonical IP 하나의 별칭표.",
+        "properties": {
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Aliases",
+            "type": "array"
+          },
+          "domain": {
+            "title": "Domain",
+            "type": "string"
+          },
+          "ip_id": {
+            "title": "Ip Id",
+            "type": "string"
+          },
+          "ip_name": {
+            "title": "Ip Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ip_id",
+          "ip_name",
+          "domain",
+          "aliases"
+        ],
+        "title": "AliasEntry",
+        "type": "object"
+      },
       "AskCard": {
         "additionalProperties": false,
         "description": "질의 관련 객체 카드 — 답변 인용의 대상.",
@@ -1277,6 +1310,32 @@
           "event_category"
         ],
         "title": "DevelopmentEvent",
+        "type": "object"
+      },
+      "EntityResolutionReport": {
+        "additionalProperties": false,
+        "description": "엔티티 해석 리포트 — 별칭표 + 미해석 큐.",
+        "properties": {
+          "aliases": {
+            "items": {
+              "$ref": "#/components/schemas/AliasEntry"
+            },
+            "title": "Aliases",
+            "type": "array"
+          },
+          "unmatched": {
+            "items": {
+              "$ref": "#/components/schemas/UnmatchedToken"
+            },
+            "title": "Unmatched",
+            "type": "array"
+          }
+        },
+        "required": [
+          "aliases",
+          "unmatched"
+        ],
+        "title": "EntityResolutionReport",
         "type": "object"
       },
       "EventRelations": {
@@ -4614,6 +4673,34 @@
         "title": "TraceabilityResult",
         "type": "object"
       },
+      "UnmatchedToken": {
+        "additionalProperties": false,
+        "description": "어떤 IP로도 해석되지 않은 토큰 — 별칭 큐레이션 후보.",
+        "properties": {
+          "occurrences": {
+            "title": "Occurrences",
+            "type": "integer"
+          },
+          "sample_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sample Refs",
+            "type": "array"
+          },
+          "token": {
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "occurrences",
+          "sample_refs"
+        ],
+        "title": "UnmatchedToken",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -5161,6 +5248,25 @@
           }
         },
         "summary": "Change Impact Options"
+      }
+    },
+    "/api/v1/entity-resolution": {
+      "get": {
+        "description": "엔티티 해석 — IP 별칭표 + 미해석 토큰 큐 (식별자 파편화 가시화).",
+        "operationId": "entity_resolution_api_v1_entity_resolution_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityResolutionReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Entity Resolution"
       }
     },
     "/api/v1/events": {

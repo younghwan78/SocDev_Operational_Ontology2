@@ -86,6 +86,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/entity-resolution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Entity Resolution
+         * @description 엔티티 해석 — IP 별칭표 + 미해석 토큰 큐 (식별자 파편화 가시화).
+         */
+        get: operations["entity_resolution_api_v1_entity_resolution_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/events": {
         parameters: {
             query?: never;
@@ -641,6 +661,20 @@ export interface components {
             validation_notes?: string[];
         };
         /**
+         * AliasEntry
+         * @description canonical IP 하나의 별칭표.
+         */
+        AliasEntry: {
+            /** Aliases */
+            aliases: string[];
+            /** Domain */
+            domain: string;
+            /** Ip Id */
+            ip_id: string;
+            /** Ip Name */
+            ip_name: string;
+        };
+        /**
          * AskCard
          * @description 질의 관련 객체 카드 — 답변 인용의 대상.
          */
@@ -1045,6 +1079,16 @@ export interface components {
             title: string;
             /** Week */
             week?: number | null;
+        };
+        /**
+         * EntityResolutionReport
+         * @description 엔티티 해석 리포트 — 별칭표 + 미해석 큐.
+         */
+        EntityResolutionReport: {
+            /** Aliases */
+            aliases: components["schemas"]["AliasEntry"][];
+            /** Unmatched */
+            unmatched: components["schemas"]["UnmatchedToken"][];
         };
         /**
          * EventRelations
@@ -2272,6 +2316,18 @@ export interface components {
             /** Object Id */
             object_id: string;
         };
+        /**
+         * UnmatchedToken
+         * @description 어떤 IP로도 해석되지 않은 토큰 — 별칭 큐레이션 후보.
+         */
+        UnmatchedToken: {
+            /** Occurrences */
+            occurrences: number;
+            /** Sample Refs */
+            sample_refs: string[];
+            /** Token */
+            token: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Context */
@@ -2517,6 +2573,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChangeImpactOptions"];
+                };
+            };
+        };
+    };
+    entity_resolution_api_v1_entity_resolution_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityResolutionReport"];
                 };
             };
         };

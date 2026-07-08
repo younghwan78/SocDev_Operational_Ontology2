@@ -1,11 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchSourceMap, type CollectionCoverage } from "../api/client";
+import {
+  fetchEntityResolution,
+  fetchSourceMap,
+  type AliasEntry,
+  type CollectionCoverage,
+  type UnmatchedToken,
+} from "../api/client";
+import { useLabels } from "../hooks/useLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.source_map;
 
 export function SourceMapPage() {
   const query = useQuery({ queryKey: ["source-map"], queryFn: fetchSourceMap });
+  const entity = useQuery({ queryKey: ["entity-resolution"], queryFn: fetchEntityResolution });
+  const label = useLabels();
 
   if (query.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (query.isError) return <p className="status-msg">{ko.app.error}</p>;
@@ -43,7 +52,63 @@ export function SourceMapPage() {
           ))}
         </div>
       </div>
+
+      <div className="card">
+        <h2 className="card-title">{t.entity_section}</h2>
+        <p className="section-note">{t.entity_subtitle}</p>
+        {entity.isPending && <p className="status-msg">{ko.app.loading}</p>}
+        {entity.isError && <p className="status-msg">{ko.app.error}</p>}
+        {entity.data && (
+          <>
+            <h3 className="subhead">{t.alias_table}</h3>
+            <div className="source-collection-list">
+              {entity.data.aliases.map((a) => (
+                <AliasRow key={a.ip_id} entry={a} name={label(a.ip_id)} />
+              ))}
+            </div>
+            <h3 className="subhead">{t.unmatched_queue}</h3>
+            <p className="desc">{t.unmatched_hint}</p>
+            {entity.data.unmatched.length === 0 ? (
+              <p className="status-msg">{t.unmatched_none}</p>
+            ) : (
+              <div className="chip-row">
+                {entity.data.unmatched.map((u) => (
+                  <UnmatchedChip key={u.token} token={u} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
+  );
+}
+
+function AliasRow({ entry, name }: { entry: AliasEntry; name: string }) {
+  return (
+    <div className="list-item" title={entry.ip_id}>
+      <div className="head">
+        <span className="title">{name}</span>
+        <span className="chip">
+          {t.alias_domain}: {entry.domain}
+        </span>
+      </div>
+      <p className="desc">
+        {t.alias_aliases}:{" "}
+        {entry.aliases.length > 0 ? entry.aliases.join(", ") : t.alias_none}
+      </p>
+    </div>
+  );
+}
+
+function UnmatchedChip({ token }: { token: UnmatchedToken }) {
+  return (
+    <span
+      className="badge badge-warn"
+      title={`${t.unmatched_occurrences} ${token.occurrences} · ${token.sample_refs.join(", ")}`}
+    >
+      {token.token} ({token.occurrences})
+    </span>
   );
 }
 

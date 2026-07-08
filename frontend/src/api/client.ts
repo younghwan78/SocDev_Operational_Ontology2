@@ -191,6 +191,16 @@ export async function fetchSourceMap(): Promise<SourceCoverage> {
   return data;
 }
 
+export type EntityResolutionReport = components["schemas"]["EntityResolutionReport"];
+export type AliasEntry = components["schemas"]["AliasEntry"];
+export type UnmatchedToken = components["schemas"]["UnmatchedToken"];
+
+export async function fetchEntityResolution(): Promise<EntityResolutionReport> {
+  const { data, error } = await client.GET("/api/v1/entity-resolution");
+  if (error || !data) throw new Error("entity-resolution 조회 실패");
+  return data;
+}
+
 export async function fetchLabels(): Promise<Record<string, string>> {
   const { data, error } = await client.GET("/api/v1/meta/labels");
   if (error || !data) throw new Error("labels 조회 실패");
