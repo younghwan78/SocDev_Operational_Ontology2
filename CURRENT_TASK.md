@@ -2,16 +2,16 @@
 
 ## 활성 Stage
 
-**Bridge: 조언 레이어 → 운영체제 (F1 출처 지도 / F2 엔티티 해석 / F3 실행 초안)**
-설계: `internal_docs/design/07_advisory_to_os_bridge.md` (2026-07-09 사용자 승인).
+**Bridge: 조언 레이어 → 운영체제 — 완료 (2026-07-09).**
+설계: `internal_docs/design/07_advisory_to_os_bridge.md`.
 
-> 세 기능 모두 **계약 변경 없는 결정론 파생 뷰(GET)** — 온톨로지 쓰기·자동 실행·수치 점수 없음.
-> 순서: F1(출처 지도) → F2(엔티티 해석) → F3(실행 초안). 각 단계 후 전체 회귀 + commit.
+> F1 출처 지도 / F2 엔티티 해석 / F3 실행 초안 세 기능 전부 구현 완료.
+> 모두 계약 변경 없는 결정론 파생 뷰(GET) — 온톨로지 쓰기·자동 실행·수치 점수 없음.
+> 진행 이력: `CHANGELOG.md`(Bridge F1~F3).
 >
-> In-scope: 파생 서비스 3종 + read-only API + FE 화면/섹션 + 인라인 `_ko` 라벨.
-> Out-of-scope: 온톨로지 모델/fixture 변경, `risk.py` 귀속 통일(L8 완전 해소는 05 Stage 15),
->   초안 저장·반입, 쓰기 API.
-> 수용 기준·회귀 명령: 07 문서 §1.4/§2.5/§3.4/§5.
+> 남은 후속(사용자 승인 필요): `risk.py` 귀속을 `IPAliasIndex`로 통일(L8 완전 해소, 05 Stage 15),
+> 출처 지도의 반입 진척 지표를 파일럿 효과 패널로(05 Stage 17), 초안→ReviewPack 반입(05 Stage 20).
+> 기존 frontend lint 부채 3건(DemoStoryBar/AskPage, react-hooks) 별도 정리 대상.
 
 ## 다음 단계 기준 문서
 

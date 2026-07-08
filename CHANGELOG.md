@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## Bridge F3 — 실행 초안 (2026-07-09)
+
+> 설계: `internal_docs/design/07_advisory_to_os_bridge.md` §3. 원점 비전 4층 루프
+> (조언 → 실행)의 다리 — 조언 tool을 operating system으로 잇는다.
+
+### 추가
+
+- **실행 초안** (`GET /api/v1/action-draft/scenario/{id}`, 시나리오 상세 '실행 초안' 탭):
+  `backend/services/action_draft.py` — 위험 근거·미해결/미검증 이슈·근거 공백을
+  결정론으로 조립한 리뷰 팩 초안. 기존 파생 서비스(RiskService 등) 재사용.
+  - 3섹션(위험 근거 검토 / 확인 필요 이슈 / 근거 수집), 모든 항목이 최소 1개 근거 동반.
+  - **저장 안 함·owner 자동할당 없음** — `provenance_note`로 "사람이 검토·커밋" 명시.
+    재진입은 ingest 계층으로만(CLAUDE.md §6.3). GET이라 `test_no_write_endpoints` 무영향.
+  - 프론트: JSON/Markdown 복사 버튼(change_impact 복사 패턴 재사용).
+
+### 검증
+
+```text
+backend 144 passed / ruff / mypy(56 files) pass · frontend build / test(21) pass ·
+  validate-data 오류 0. openapi/gen:api 재생성. lint 기존 3건 외 신규 0.
+E2E(TestClient): F1 549객체/32컬렉션, F2 별칭11/미해석23,
+  F3 '8K30 Recording KPI' 섹션[위험8·이슈1·근거공백2] + 404 동작 확인.
+```
+
 ## Bridge F2 — 엔티티 해석 (2026-07-09)
 
 > 설계: `internal_docs/design/07_advisory_to_os_bridge.md` §2. 원점 비전의 "식별자

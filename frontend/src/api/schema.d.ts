@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/v1/action-draft/scenario/{scenario_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Action Draft
+         * @description 실행 초안 — 시나리오 기준 결정론 리뷰 팩 초안 (저장 아님, 사람이 검토·커밋).
+         */
+        get: operations["action_draft_api_v1_action_draft_scenario__scenario_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/ask": {
         parameters: {
             query?: never;
@@ -550,6 +570,22 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
+         * ActionDraft
+         * @description 실행 초안 파생 뷰 — 저장되지 않는 조립 결과.
+         */
+        ActionDraft: {
+            /** Generated Context */
+            generated_context: string;
+            /** Provenance Note */
+            provenance_note: string;
+            /** Scenario Id */
+            scenario_id: string;
+            /** Scenario Name */
+            scenario_name: string;
+            /** Sections */
+            sections: components["schemas"]["DraftSection"][];
+        };
+        /**
          * ActivityInputContext
          * @description 활동 입력 컨텍스트 — 어떤 fixture 근거로 검토했는지.
          */
@@ -1079,6 +1115,30 @@ export interface components {
             title: string;
             /** Week */
             week?: number | null;
+        };
+        /**
+         * DraftItem
+         * @description 초안 항목 — 근거 없는 항목은 존재하지 않는다.
+         */
+        DraftItem: {
+            /** Basis */
+            basis: components["schemas"]["BasisItem"][];
+            /** Statement */
+            statement: string;
+        };
+        /**
+         * DraftSection
+         * @description 초안 섹션 — 위험 근거 / 확인 필요 이슈 / 근거 수집.
+         */
+        DraftSection: {
+            /** Items */
+            items: components["schemas"]["DraftItem"][];
+            /** Kind */
+            kind: string;
+            /** Kind Ko */
+            kind_ko: string;
+            /** Title */
+            title: string;
         };
         /**
          * EntityResolutionReport
@@ -2467,6 +2527,37 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    action_draft_api_v1_action_draft_scenario__scenario_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActionDraft"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     ask_api_v1_ask_post: {
         parameters: {
             query?: never;

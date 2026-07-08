@@ -201,6 +201,18 @@ export async function fetchEntityResolution(): Promise<EntityResolutionReport> {
   return data;
 }
 
+export type ActionDraft = components["schemas"]["ActionDraft"];
+export type DraftSection = components["schemas"]["DraftSection"];
+export type DraftItem = components["schemas"]["DraftItem"];
+
+export async function fetchActionDraft(scenarioId: string): Promise<ActionDraft> {
+  const { data, error } = await client.GET("/api/v1/action-draft/scenario/{scenario_id}", {
+    params: { path: { scenario_id: scenarioId } },
+  });
+  if (error || !data) throw new Error("action-draft 조회 실패");
+  return data;
+}
+
 export async function fetchLabels(): Promise<Record<string, string>> {
   const { data, error } = await client.GET("/api/v1/meta/labels");
   if (error || !data) throw new Error("labels 조회 실패");

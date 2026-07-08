@@ -3,6 +3,7 @@ import { NavLink, useParams } from "react-router-dom";
 import { fetchScenarioAnalysis } from "../api/client";
 import { TraceabilityPanel } from "../components/TraceabilityPanel";
 import { ko } from "../i18n/ko";
+import { ActionDraftTab } from "./tabs/ActionDraftTab";
 import { AdvisoryTab } from "./tabs/AdvisoryTab";
 import { EventsTab } from "./tabs/EventsTab";
 import { OverviewTab } from "./tabs/OverviewTab";
@@ -13,6 +14,7 @@ const TABS = [
   { key: "timeline", label: ko.scenario_detail.tab_timeline },
   { key: "events", label: ko.scenario_detail.tab_events },
   { key: "advisory", label: ko.advisory.tab },
+  { key: "action-draft", label: ko.action_draft.tab },
   { key: "trace", label: ko.scenario_detail.tab_trace },
 ] as const;
 
@@ -49,6 +51,7 @@ export function ScenarioDetailPage() {
       {tab === "timeline" && <TimelineTab items={data.timeline} />}
       {tab === "events" && <EventsTab events={data.events} activities={data.activities} />}
       {tab === "advisory" && <AdvisoryTab scenarioId={scenarioId} />}
+      {tab === "action-draft" && <ActionDraftTab scenarioId={scenarioId} />}
       {tab === "trace" && <TraceabilityPanel rootId={scenarioId} />}
     </div>
   );

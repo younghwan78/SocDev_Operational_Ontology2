@@ -36,6 +36,7 @@ from backend.ontology.scenario import Scenario
 from backend.resolve.entity_resolution import EntityResolutionReport, EntityResolutionService
 from backend.resolve.object_index import ObjectIndex
 from backend.resolve.traceability import TraceabilityResult, TraceabilityService
+from backend.services.action_draft import ActionDraft, ActionDraftService
 from backend.services.change_impact import (
     ChangeImpactOptions,
     ChangeImpactResult,
@@ -79,6 +80,7 @@ class AppServices:
     rca: RCAService
     source_map: SourceCoverageService
     entity_resolution: EntityResolutionService
+    action_draft: ActionDraftService
     traceability: TraceabilityService
     advisory: AdvisoryRunner
     ask: AskRunner
@@ -125,6 +127,7 @@ def build_services(
         rca=RCAService(repo),
         source_map=SourceCoverageService(repo),
         entity_resolution=EntityResolutionService(repo),
+        action_draft=ActionDraftService(repo),
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
         ask=AskRunner(repo),
@@ -325,6 +328,14 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     def entity_resolution() -> EntityResolutionReport:
         """엔티티 해석 — IP 별칭표 + 미해석 토큰 큐 (식별자 파편화 가시화)."""
         return services.entity_resolution.report()
+
+    @app.get(f"{prefix}/action-draft/scenario/{{scenario_id}}", response_model=ActionDraft)
+    def action_draft(scenario_id: str) -> ActionDraft:
+        """실행 초안 — 시나리오 기준 결정론 리뷰 팩 초안 (저장 아님, 사람이 검토·커밋)."""
+        try:
+            return services.action_draft.draft(scenario_id)
+        except ScenarioNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.get(f"{prefix}/review/weekly", response_model=WeeklyIndex)
     def weekly_index() -> WeeklyIndex:

@@ -141,6 +141,21 @@ export const ko = {
     kpi_label: "주요 KPI",
     project_label: "관련 프로젝트",
   },
+  action_draft: {
+    tab: "실행 초안",
+    title: "실행 초안",
+    subtitle:
+      "이 시나리오의 위험 근거·미해결 이슈·근거 공백을 결정론으로 조립한 리뷰 팩 초안입니다.",
+    generate: "실행 초안 생성",
+    generating: "조립 중…",
+    empty: "조립할 위험 근거·이슈·근거 공백이 없습니다.",
+    copy_json: "복사(JSON)",
+    copy_markdown: "복사(Markdown)",
+    copied: "복사됨",
+    copy_failed: "복사 실패 — 아래 텍스트를 직접 선택하세요",
+    reasons: "근거",
+    context: "조립 요약",
+  },
   scenario_detail: {
     tab_overview: "개요",
     tab_timeline: "타임라인",
