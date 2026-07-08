@@ -8,3 +8,7 @@ node_modules/
 dist/
 .env
 *.egg-info/
+
+# 원점 비전 문서는 D:\YHJOO\...의 read-only 참조본 — repo에 중복 추적 금지 (CLAUDE.md §7)
+internal_docs/26.06.18 SoC ontology (ChatGPT).md
+internal_docs/26.07.05 비지니스 가치 논의.md
