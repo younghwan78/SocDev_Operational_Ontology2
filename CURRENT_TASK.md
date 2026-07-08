@@ -9,9 +9,10 @@
 > 모두 계약 변경 없는 결정론 파생 뷰(GET) — 온톨로지 쓰기·자동 실행·수치 점수 없음.
 > 진행 이력: `CHANGELOG.md`(Bridge F1~F3).
 >
-> 남은 후속(사용자 승인 필요): `risk.py` 귀속을 `IPAliasIndex`로 통일(L8 완전 해소, 05 Stage 15),
-> 출처 지도의 반입 진척 지표를 파일럿 효과 패널로(05 Stage 17), 초안→ReviewPack 반입(05 Stage 20).
-> 기존 frontend lint 부채 3건(DemoStoryBar/AskPage, react-hooks) 별도 정리 대상.
+> **남은 후속은 `internal_docs/design/08_bridge_followups.md`에 정리됨** (다음 세션 인수인계용):
+> H1 lint 부채 3건 / B1 L8 해소(F2 재사용) / P1 Evidence Ladder / P4 시퀀싱 재배열 등.
+> 다음 착수 권장: H1(품질 게이트 복구) → B1(L8 코드 마무리) → 사용자 우선순위.
+> 각 항목 착수는 사용자 승인 필요.
 
 ## 다음 단계 기준 문서
 
