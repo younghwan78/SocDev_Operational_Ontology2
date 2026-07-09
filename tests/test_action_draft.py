@@ -65,3 +65,39 @@ def test_no_store_side_effect(repo: InMemoryRepository, draft: ActionDraft) -> N
 def test_unknown_scenario_raises(repo: InMemoryRepository) -> None:
     with pytest.raises(ScenarioNotFoundError):
         ActionDraftService(repo).draft("존재하지_않는_시나리오")
+
+
+def test_evidence_posture_when_scenario_has_evidence(repo: InMemoryRepository) -> None:
+    """근거가 있는 시나리오는 태세 요약(실측/예측/부재 + 정성 판정)을 갖는다."""
+    from backend.ontology.evidence import EvidenceCatalogEntry
+    from backend.services.evidence_ladder import EvidenceLadderService
+
+    scn = next(
+        e.scenario_id
+        for e in repo.list("evidence_catalog")
+        if isinstance(e, EvidenceCatalogEntry)
+    )
+    draft = ActionDraftService(repo).draft(scn)
+    posture = draft.evidence_posture
+    assert posture is not None
+    total = EvidenceLadderService(repo).ladder(scenario_id=scn).totals.total
+    assert posture.measured + posture.predicted + posture.absent == total
+    assert posture.note_ko
+
+
+def test_evidence_gap_items_carry_strength(repo: InMemoryRepository) -> None:
+    """근거 수집 항목은 신뢰 등급(strength_ko)을 동반한다."""
+    from backend.ontology.evidence import EvidenceCatalogEntry
+    from backend.services.evidence_ladder import TIER_LABELS
+
+    # 미가용 근거가 있는 시나리오를 결정론으로 고른다.
+    scn = next(
+        e.scenario_id
+        for e in repo.list("evidence_catalog")
+        if isinstance(e, EvidenceCatalogEntry) and e.availability != "available"
+    )
+    draft = ActionDraftService(repo).draft(scn)
+    gap = next((s for s in draft.sections if s.kind == "evidence_gap"), None)
+    assert gap is not None
+    for item in gap.items:
+        assert item.strength_ko in TIER_LABELS.values()

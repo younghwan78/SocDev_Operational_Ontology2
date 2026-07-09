@@ -155,6 +155,11 @@ export const ko = {
     copy_failed: "복사 실패 — 아래 텍스트를 직접 선택하세요",
     reasons: "근거",
     context: "조립 요약",
+    posture: "근거 태세",
+    posture_measured: "실측",
+    posture_predicted: "예측·에뮬",
+    posture_absent: "부재",
+    strength: "신뢰",
   },
   scenario_detail: {
     tab_overview: "개요",

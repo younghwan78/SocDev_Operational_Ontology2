@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 근거 신뢰 사다리 → 결정 지점 통합 (Action Draft) (2026-07-10)
+
+> 설계: `internal_docs/design/09_evidence_ladder.md` §7. 사다리가 근거 탐색 화면에만
+> 머물면 결정 품질로 이어지지 않는다 — 결정이 일어나는 실행 초안으로 끌어온다.
+
+### 추가
+
+- **실행 초안에 근거 태세**(`ActionDraft.evidence_posture`): 시나리오 근거의 실측/예측/부재
+  건수 + 정성 판정(예: "예측 비중이 높음 — 실측 확보 시 신뢰 상승"). `EvidenceLadderService`
+  재사용. 근거 없으면 None. 카운트 비교 기반 정성 문장(수치 점수 아님, §6.3).
+- **근거 수집 항목에 신뢰 등급**(`DraftItem.strength_ko`): `classify_evidence`로 각 근거 공백
+  항목의 등급(실측·정합/유사/에뮬/예측/부재) 표시 — "무엇부터 실측할지" 우선순위 신호.
+- 프론트: `ActionDraftTab` 상단 근거 태세 배지 + 항목별 신뢰 chip, Markdown 내보내기 반영.
+  온톨로지 무변경, GET. openapi/schema.d.ts 재생성.
+
+### 검증
+
+```text
+backend 160 passed / 9 skipped · ruff · mypy(57) pass · frontend lint 0 / build / test(21) pass.
+E2E: '8K30 Recording KPI' 태세[실측1·예측2·부재1 "예측 비중 높음"] + 항목 등급 확인.
+```
+
 ## 근거 신뢰 사다리 (Evidence Ladder) — P1 실현 (2026-07-09)
 
 > 설계: `internal_docs/design/09_evidence_ladder.md`. 백로그 P1(G-3)을 원점 §5.3의

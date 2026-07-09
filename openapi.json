@@ -5,6 +5,16 @@
         "additionalProperties": false,
         "description": "실행 초안 파생 뷰 — 저장되지 않는 조립 결과.",
         "properties": {
+          "evidence_posture": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidencePosture"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "generated_context": {
             "title": "Generated Context",
             "type": "string"
@@ -33,6 +43,7 @@
           "scenario_id",
           "scenario_name",
           "generated_context",
+          "evidence_posture",
           "sections",
           "provenance_note"
         ],
@@ -1364,6 +1375,17 @@
           "statement": {
             "title": "Statement",
             "type": "string"
+          },
+          "strength_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strength Ko"
           }
         },
         "required": [
@@ -1707,6 +1729,36 @@
           "totals"
         ],
         "title": "EvidenceLadder",
+        "type": "object"
+      },
+      "EvidencePosture": {
+        "additionalProperties": false,
+        "description": "시나리오 근거 태세 — 실측/예측/부재 건수 + 정성 판정. 수치 점수 아님.",
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "measured": {
+            "title": "Measured",
+            "type": "integer"
+          },
+          "note_ko": {
+            "title": "Note Ko",
+            "type": "string"
+          },
+          "predicted": {
+            "title": "Predicted",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "measured",
+          "predicted",
+          "absent",
+          "note_ko"
+        ],
+        "title": "EvidencePosture",
         "type": "object"
       },
       "EvidenceStrengthItem": {

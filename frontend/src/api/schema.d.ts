@@ -591,6 +591,7 @@ export interface components {
          * @description 실행 초안 파생 뷰 — 저장되지 않는 조립 결과.
          */
         ActionDraft: {
+            evidence_posture: components["schemas"]["EvidencePosture"] | null;
             /** Generated Context */
             generated_context: string;
             /** Provenance Note */
@@ -1142,6 +1143,8 @@ export interface components {
             basis: components["schemas"]["BasisItem"][];
             /** Statement */
             statement: string;
+            /** Strength Ko */
+            strength_ko?: string | null;
         };
         /**
          * DraftSection
@@ -1274,6 +1277,20 @@ export interface components {
             /** Entries */
             entries: components["schemas"]["EvidenceStrengthItem"][];
             totals: components["schemas"]["LadderTotals"];
+        };
+        /**
+         * EvidencePosture
+         * @description 시나리오 근거 태세 — 실측/예측/부재 건수 + 정성 판정. 수치 점수 아님.
+         */
+        EvidencePosture: {
+            /** Absent */
+            absent: number;
+            /** Measured */
+            measured: number;
+            /** Note Ko */
+            note_ko: string;
+            /** Predicted */
+            predicted: number;
         };
         /**
          * EvidenceStrengthItem

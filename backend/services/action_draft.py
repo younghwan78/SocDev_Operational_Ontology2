@@ -16,6 +16,11 @@ from backend.ontology.event import Issue
 from backend.ontology.evidence import EvidenceCatalogEntry
 from backend.ontology.scenario import Scenario
 from backend.services.common import BasisItem
+from backend.services.evidence_ladder import (
+    TIER_LABELS,
+    EvidenceLadderService,
+    classify_evidence,
+)
 from backend.services.risk import RiskService
 from backend.services.scenario_analysis import ScenarioNotFoundError
 
@@ -34,6 +39,18 @@ class DraftItem(BaseModel):
 
     statement: str
     basis: list[BasisItem]
+    strength_ko: str | None = None  # 근거 항목의 신뢰 등급(실측·정합 등), 해당 시에만.
+
+
+class EvidencePosture(BaseModel):
+    """시나리오 근거 태세 — 실측/예측/부재 건수 + 정성 판정. 수치 점수 아님."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    measured: int
+    predicted: int
+    absent: int
+    note_ko: str
 
 
 class DraftSection(BaseModel):
@@ -55,14 +72,27 @@ class ActionDraft(BaseModel):
     scenario_id: str
     scenario_name: str
     generated_context: str
+    evidence_posture: EvidencePosture | None
     sections: list[DraftSection]
     provenance_note: str
+
+
+def _posture_note(measured: int, predicted: int, absent: int) -> str:
+    """근거 태세의 정성 판정 — 카운트 비교 기반(수치 점수 아님)."""
+    if measured == 0 and (predicted + absent) > 0:
+        return "실측 근거 없음 — 판단이 예측·미확보 근거에 의존, 실측 확보 우선"
+    if absent > measured + predicted:
+        return "근거 미확보 비중이 큼 — 근거 수집 우선"
+    if predicted > measured:
+        return "예측 비중이 높음 — 실측 확보 시 신뢰 상승"
+    return "실측 근거 비중이 높음 — 상대적으로 견고"
 
 
 class ActionDraftService:
     def __init__(self, repo: RepositoryProtocol) -> None:
         self._repo = repo
         self._risk = RiskService(repo)
+        self._ladder = EvidenceLadderService(repo)
 
     def _scenario(self, scenario_id: str) -> Scenario:
         obj = self._repo.get("scenarios", scenario_id)
@@ -144,6 +174,7 @@ class ActionDraftService:
                 continue
             if entry.scenario_id != scenario_id or entry.availability == "available":
                 continue
+            tier, _ = classify_evidence(entry)
             statement = (
                 f"근거 확보: '{entry.title}' (가용성 {entry.availability}, "
                 f"유형 {entry.evidence_type})"
@@ -151,6 +182,7 @@ class ActionDraftService:
             items.append(
                 DraftItem(
                     statement=statement,
+                    strength_ko=TIER_LABELS[tier],
                     basis=[
                         BasisItem(
                             rule="required_evidence_open",
@@ -173,6 +205,17 @@ class ActionDraftService:
             items=items,
         )
 
+    def _evidence_posture(self, scenario_id: str) -> EvidencePosture | None:
+        totals = self._ladder.ladder(scenario_id=scenario_id).totals
+        if totals.total == 0:
+            return None
+        return EvidencePosture(
+            measured=totals.measured,
+            predicted=totals.predicted,
+            absent=totals.absent,
+            note_ko=_posture_note(totals.measured, totals.predicted, totals.absent),
+        )
+
     def draft(self, scenario_id: str) -> ActionDraft:
         scenario = self._scenario(scenario_id)
         sections = [
@@ -189,6 +232,7 @@ class ActionDraftService:
             scenario_id=scenario_id,
             scenario_name=scenario.name,
             generated_context=f"시나리오 '{scenario.name}' 기준 결정론 조립 — {counts}",
+            evidence_posture=self._evidence_posture(scenario_id),
             sections=sections,
             provenance_note=_PROVENANCE,
         )

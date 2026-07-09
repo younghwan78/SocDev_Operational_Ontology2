@@ -79,3 +79,18 @@ GET /api/v1/evidence/ladder?project_id=&scenario_id=   → EvidenceLadder
 2. `backend/services/evidence_ladder.py` + `GET /evidence/ladder` + 테스트.
 3. Frontend 분포 패널 + 항목 배지 + i18n/client 타입.
 4. CHANGELOG·`08_bridge_followups.md`(P1 진행) 갱신.
+
+## 7. 통합 — 신뢰 등급을 결정 지점으로 (Action Draft) · v1.1 (2026-07-10)
+
+사다리가 근거 탐색 화면에만 있으면 결정 품질로 이어지지 않는다. **결정이 일어나는
+실행 초안(F3)**에 시나리오의 근거 태세와 항목별 신뢰 등급을 끌어온다 — 신뢰 계산을
+"실측 확보 우선 / 예측에 얹힘 주의" 같은 행동 신호로 전환한다.
+
+- `ActionDraft`에 `evidence_posture: EvidencePosture | None` 추가.
+  `EvidencePosture{measured, predicted, absent, note_ko}` — 시나리오 근거의 실측/예측/부재
+  건수 + **정성 태세 판정**(예: "실측 근거 없음 — 예측·미확보에 의존, 실측 확보 우선").
+  `EvidenceLadderService.ladder(scenario_id=…)` 재사용. 근거 없으면 None.
+- `DraftItem`에 `strength_ko: str | None` 추가 — 근거 공백 항목에 `classify_evidence` 등급 표시.
+- 판정 note는 카운트 비교 기반 정성 문장(수치 점수 아님, §6.3). 온톨로지 무변경, GET.
+- Frontend: `ActionDraftTab` 상단에 근거 태세 헤드라인, 근거 수집 항목에 신뢰 등급 배지.
+- 리스크 지도 통합은 후속(과잉 방지 — 이번엔 결정 초안에 한정).
