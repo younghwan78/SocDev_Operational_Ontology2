@@ -35,22 +35,6 @@ export function DemoStoryBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const storyParam = new URLSearchParams(location.search).get("story");
-  const sceneIndex = storyParam === "summary" ? -1 : Number(storyParam ?? "0");
-  const [enteredAt, setEnteredAt] = useState(() => Date.now());
-  const [, setTick] = useState(0);
-
-  useEffect(() => {
-    if (sceneIndex >= 1) {
-      setEnteredAt(Date.now());
-      if (sceneIndex === 1) localStorage.setItem(RUN_KEY, "[]");
-    }
-  }, [sceneIndex]);
-
-  useEffect(() => {
-    if (sceneIndex < 1) return;
-    const timer = setInterval(() => setTick((value) => value + 1), 1000);
-    return () => clearInterval(timer);
-  }, [sceneIndex]);
 
   if (storyParam === "summary") {
     const run = readRun();
@@ -74,10 +58,31 @@ export function DemoStoryBar() {
     );
   }
 
+  const sceneIndex = Number(storyParam ?? "0");
   if (!Number.isInteger(sceneIndex) || sceneIndex < 1 || sceneIndex > STORY_SCENES.length) {
     return null;
   }
+  // key로 장면 전환 시 SceneBar를 remount → 스톱워치(enteredAt)가 자연히 리셋된다.
+  return <SceneBar key={sceneIndex} sceneIndex={sceneIndex} />;
+}
+
+/** 단일 장면 배너 + 경과 스톱워치. sceneIndex별 key로 마운트되어 상태가 장면마다 초기화된다. */
+function SceneBar({ sceneIndex }: { sceneIndex: number }) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const scene = STORY_SCENES[sceneIndex - 1];
+  const [enteredAt] = useState(() => Date.now());
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    // 스토리 시작(장면1) 진입 시 이전 실행 로그 초기화 — 외부 저장소 부수효과.
+    if (sceneIndex === 1) localStorage.setItem(RUN_KEY, "[]");
+  }, [sceneIndex]);
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const record = () => {
     const run = readRun();
@@ -93,7 +98,7 @@ export function DemoStoryBar() {
       <span className="story-title">{scene.title}</span>
       <span className="story-desc">{scene.description}</span>
       <span className="badge badge-warn">
-        {t.elapsed} {formatMs(Date.now() - enteredAt)}
+        {t.elapsed} {formatMs(now - enteredAt)}
       </span>
       {sceneIndex > 1 && (
         <button

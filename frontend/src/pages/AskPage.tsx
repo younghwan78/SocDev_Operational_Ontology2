@@ -4,7 +4,7 @@
  *       → LLM 미가용 시 검색 결과 요약. 인용 클릭 시 관련 객체 카드로 이동.
  */
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   fetchAskPresets,
@@ -29,9 +29,15 @@ const CONFIDENCE_BADGE: Record<string, string> = {
 
 export function AskPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initial = searchParams.get("q") ?? "";
-  const [draft, setDraft] = useState(initial);
-  const [question, setQuestion] = useState<string | null>(initial || null);
+  // 질문은 URL(?q=)이 단일 소스 — state로 이중화하지 않고 파생한다.
+  const question = searchParams.get("q");
+  const [draft, setDraft] = useState(question ?? "");
+  // URL이 외부에서 바뀌면(뒤로가기/프리셋) draft를 render 중 동기화 (effect 아님).
+  const [draftFor, setDraftFor] = useState(question);
+  if (question !== draftFor) {
+    setDraftFor(question);
+    setDraft(question ?? "");
+  }
 
   const presets = useQuery({ queryKey: ["ask-presets"], queryFn: fetchAskPresets });
   const result = useQuery({
@@ -41,19 +47,9 @@ export function AskPage() {
     staleTime: Infinity,
   });
 
-  useEffect(() => {
-    const q = searchParams.get("q");
-    if (q && q !== question) {
-      setDraft(q);
-      setQuestion(q);
-    }
-  }, [searchParams, question]);
-
   const submit = (value: string) => {
     const trimmed = value.trim();
     if (!trimmed) return;
-    setDraft(trimmed);
-    setQuestion(trimmed);
     setSearchParams({ q: trimmed });
   };
 
