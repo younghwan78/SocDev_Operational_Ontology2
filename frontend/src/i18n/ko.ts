@@ -241,6 +241,22 @@ export const ko = {
     measurement: "측정",
     prediction: "예측",
   },
+  evidence_ladder: {
+    title: "근거 신뢰 분포",
+    subtitle:
+      "이 근거가 이 시나리오의 실측인가, 유사 사례에서 빌려온 예측인가 — 결정 신뢰도를 한눈에",
+    headline_measured: "실측",
+    headline_predicted: "예측·에뮬",
+    headline_absent: "부재",
+    of_total: "건 / 전체",
+    strength: "신뢰 등급",
+    basis: "판정 근거",
+    tier_measured_direct: "실측·정합",
+    tier_measured_analogous: "실측·유사",
+    tier_emulated: "에뮬레이션",
+    tier_predicted: "예측·설계",
+    tier_absent: "부재·미가용",
+  },
   source_map: {
     title: "출처 지도",
     subtitle:

@@ -1,18 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchEvidence, fetchIngestBatches, fetchProjects } from "../api/client";
+import {
+  fetchEvidence,
+  fetchEvidenceLadder,
+  fetchIngestBatches,
+  fetchProjects,
+  type EvidenceLadder,
+  type EvidenceStrengthItem,
+} from "../api/client";
 import { SourceBadge } from "../components/SourceBadge";
 import { useLabels } from "../hooks/useLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.evidence;
+const tl = ko.evidence_ladder;
 
 const AVAILABILITY_BADGE: Record<string, string> = {
   available: "badge-ok",
   partial: "badge-warn",
   missing: "badge-danger",
   planned: "badge-info",
+};
+
+const TIER_BADGE: Record<string, string> = {
+  measured_direct: "badge-ok",
+  measured_analogous: "badge-ok",
+  emulated: "badge-info",
+  predicted: "badge-warn",
+  absent: "badge-danger",
 };
 
 const AVAILABILITY_OPTIONS = ["available", "partial", "missing", "planned"];
@@ -26,8 +42,16 @@ export function EvidencePage() {
     queryKey: ["evidence", projectFilter, availabilityFilter],
     queryFn: () => fetchEvidence({ projectId: projectFilter, availability: availabilityFilter }),
   });
+  const ladder = useQuery({
+    queryKey: ["evidence-ladder", projectFilter],
+    queryFn: () => fetchEvidenceLadder({ projectId: projectFilter }),
+  });
   const batches = useQuery({ queryKey: ["ingest-batches"], queryFn: fetchIngestBatches });
   const label = useLabels();
+
+  const strengthById = new Map<string, EvidenceStrengthItem>(
+    (ladder.data?.entries ?? []).map((item) => [item.evidence_id, item]),
+  );
 
   if (evidence.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (evidence.isError) return <p className="status-msg">{ko.app.error}</p>;
@@ -70,6 +94,8 @@ export function EvidencePage() {
         ))}
       </div>
 
+      {ladder.data && <LadderPanel ladder={ladder.data} />}
+
       {(batches.data ?? []).length > 0 && (
         <div className="card">
           <h2 className="card-title">{ko.ingest.history}</h2>
@@ -101,6 +127,14 @@ export function EvidencePage() {
           <div key={entry.id} className="list-item">
             <div className="head">
               <SourceBadge origin={entry.source?.origin} />
+              {strengthById.get(entry.id) && (
+                <span
+                  className={`badge ${TIER_BADGE[strengthById.get(entry.id)!.tier] ?? "badge-info"}`}
+                  title={strengthById.get(entry.id)!.basis[0]?.description ?? ""}
+                >
+                  {tl.strength}: {strengthById.get(entry.id)!.tier_ko}
+                </span>
+              )}
               <span className={`badge ${AVAILABILITY_BADGE[entry.availability] ?? "badge-info"}`}>
                 {entry.availability}
               </span>
@@ -124,6 +158,51 @@ export function EvidencePage() {
               </Link>
             </p>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LadderPanel({ ladder }: { ladder: EvidenceLadder }) {
+  const total = ladder.totals.total;
+  const pct = (n: number) => (total > 0 ? (n / total) * 100 : 0);
+  const shown = ladder.distribution.filter((b) => b.count > 0);
+  return (
+    <div className="card">
+      <h2 className="card-title">{tl.title}</h2>
+      <p className="section-note">{tl.subtitle}</p>
+      <div className="ladder-headline">
+        <span>
+          {tl.headline_measured} <b>{ladder.totals.measured}</b> {tl.of_total} {total}
+        </span>
+        <span>
+          {tl.headline_predicted} <b>{ladder.totals.predicted}</b>
+        </span>
+        <span>
+          {tl.headline_absent} <b>{ladder.totals.absent}</b>
+        </span>
+      </div>
+      <div
+        className="ladder-track"
+        role="img"
+        aria-label={shown.map((b) => `${b.tier_ko} ${b.count}`).join(", ")}
+      >
+        {shown.map((b) => (
+          <span
+            key={b.tier}
+            className={`ladder-seg tier-${b.tier}`}
+            style={{ width: `${pct(b.count)}%` }}
+            title={`${b.tier_ko} ${b.count}`}
+          />
+        ))}
+      </div>
+      <div className="origin-legend">
+        {ladder.distribution.map((b) => (
+          <span key={b.tier} className="origin-key">
+            <span className={`origin-dot tier-${b.tier}`} />
+            {b.tier_ko} {b.count}
+          </span>
         ))}
       </div>
     </div>

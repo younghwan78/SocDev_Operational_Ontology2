@@ -243,6 +243,24 @@ export async function fetchEvidence(filters: {
   return data;
 }
 
+export type EvidenceLadder = components["schemas"]["EvidenceLadder"];
+export type EvidenceStrengthItem = components["schemas"]["EvidenceStrengthItem"];
+export type TierBucket = components["schemas"]["TierBucket"];
+
+export async function fetchEvidenceLadder(filters: {
+  projectId?: string;
+}): Promise<EvidenceLadder> {
+  const { data, error } = await client.GET("/api/v1/evidence/ladder", {
+    params: {
+      query: {
+        ...(filters.projectId ? { project_id: filters.projectId } : {}),
+      },
+    },
+  });
+  if (error || !data) throw new Error("evidence-ladder 조회 실패");
+  return data;
+}
+
 export async function fetchAdvisoryRuns(scenarioId: string): Promise<AgentRun[]> {
   const { data, error } = await client.GET("/api/v1/scenarios/{scenario_id}/advisory", {
     params: { path: { scenario_id: scenarioId } },

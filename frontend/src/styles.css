@@ -249,3 +249,17 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .origin-key { display: inline-flex; align-items: center; gap: 5px; }
 .origin-dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
 .subhead { font-size: 13px; font-weight: 700; color: var(--text-dim); margin: 14px 0 8px; }
+
+/* 근거 신뢰 사다리 — 강→약 세그먼트 */
+.ladder-track {
+  display: flex; height: 12px; border-radius: 6px; overflow: hidden;
+  background: var(--bg); border: 1px solid var(--border); margin: 6px 0;
+}
+.ladder-seg { height: 100%; }
+.tier-measured_direct { background: var(--ok); }
+.tier-measured_analogous { background: #52b788; }
+.tier-emulated { background: var(--accent); }
+.tier-predicted { background: var(--warn); }
+.tier-absent { background: var(--danger); }
+.ladder-headline { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13px; margin-bottom: 4px; }
+.ladder-headline b { font-size: 15px; }

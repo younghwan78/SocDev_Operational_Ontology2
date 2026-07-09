@@ -1,5 +1,32 @@
 # CHANGELOG
 
+## 근거 신뢰 사다리 (Evidence Ladder) — P1 실현 (2026-07-09)
+
+> 설계: `internal_docs/design/09_evidence_ladder.md`. 백로그 P1(G-3)을 원점 §5.3의
+> 시맨틱 메타(evidence_level)가 아니라 **evidence_catalog에 실재하는 필드**로 재정초.
+> "이 조언이 이 시나리오의 실측인가, 빌려온 예측인가"를 결정론 정성 등급으로 노출.
+
+### 추가
+
+- **근거 신뢰 등급 파생 뷰** (`GET /api/v1/evidence/ladder`, 근거 탐색 화면 상단 패널):
+  `backend/services/evidence_ladder.py` — `measurement_stage`·`scenario_match`·
+  `availability`·`is_measurement/prediction`를 규칙으로 조합해 강→약 5단
+  (실측·정합 / 실측·유사 / 에뮬레이션 / 예측·설계 / 부재·미가용) 정성 분류 + 판정 근거.
+  - `absent`(미가용/무정합)를 최우선으로 걸러 "없는 근거 강신뢰" 오류 차단.
+  - 분포(tier별 건수) + 실측/예측/부재 3분 요약. **수치 점수·가중치·rank 없음**(§6.3).
+  - `origin`(synthetic/imported/integrated) 동반 — fixture→real 전환 시 "레벨업" 훅.
+- 프론트: 근거 탐색에 **신뢰 분포 패널**(세그먼트 바 + 헤드라인) + 항목별 **신뢰 등급 배지**.
+  project 필터 연동. i18n `evidence_ladder` 블록, openapi/schema.d.ts 재생성.
+
+### 검증
+
+```text
+backend 158 passed / 9 skipped · ruff · mypy(57) pass · validate-data 오류 0 ·
+frontend lint 0 / build / test(21) pass. test_evidence_ladder 14케이스.
+E2E(TestClient): 전체 54건 분포[실측17·예측/에뮬22·부재15],
+  프로젝트별 U(실측14/예측1) · V(예측11) · W(예측10/실측3) → 성숙도 U>V>W 가시화.
+```
+
 ## 후속 H1·B1 — lint 게이트 복구 + L8 귀속 통일 (2026-07-09)
 
 > 백로그 `internal_docs/design/08_bridge_followups.md` §1·§2. Bridge를 코드 레벨에서 마무리.

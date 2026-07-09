@@ -53,7 +53,7 @@ Bridge에서 F1(=G-1)·F2(=G-2)·Action Draft(=§1)를 했다. 남은 제안:
 
 | # | 제안 | 핵심 | 규모 | 근거 |
 |---|---|---|---|---|
-| P1 | **Evidence Ladder(0~5) 전면화 (G-3)** | `evidence.py`에 이미 있는 `evidence_level`·`confidence_upgrade_allowed`를 confidence와 매핑해 노출. fixture→real 전환 시 같은 객체가 Level 0→4로 "레벨업"하는 걸 시각화. G4(close evidence 연결률)의 상위 프레임. | M | 원점 §5.3 |
+| ~~P1~~ ✅ | ~~Evidence Ladder 전면화 (G-3)~~ **완료(2026-07-09)** | 설계 `09_evidence_ladder.md`. 원점의 `evidence_level`(시맨틱 메타)이 아니라 evidence_catalog 실필드(measurement_stage·scenario_match·availability)로 재정초 — 강→약 5단 정성 등급 + 근거. `GET /evidence/ladder` + 근거 탐색 분포 패널. fixture→real "레벨업" 훅(origin) 포함. | — |
 | P2 | **측정을 제품 기능으로 (G-4)** | TAT를 localStorage 데모 로깅이 아니라 "OS의 운영 지표"로. 05 Stage 17 telemetry를 코어 루프로 승격. **단 C1(pre-tool baseline) 선행 필수.** | M~L | 원점 §10, 05 C1 |
 | P3 | **`Path` 객체 도입 (G-5)** | IPBlock/SystemInfluenceBlock만으로는 "ISP M2M **path**가 DDR을 밀었다"는 인과 경로 표현 불가. 대규모 계약 변경 — 도입 시 change_impact가 질적 도약. | L | 원점 §2 Phase 2, archetype 근본원인 서술 |
 | P4 | **시퀀싱 이견 반영** | 05는 Stage 14(경화)를 실데이터(15) 앞에 둠 → "fixture 완벽주의 함정"(원점 §10 위험3) 위험. **CI만 얇게 먼저 + 실데이터 소량 반입 당기기** 재배열 검토. | 문서 | 원점 §10, 7/9 제안 §4 |
