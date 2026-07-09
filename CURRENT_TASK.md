@@ -2,16 +2,22 @@
 
 ## 활성 Stage
 
-**Bridge: 조언 레이어 → 운영체제 — 완료 (2026-07-09).**
-설계: `internal_docs/design/07_advisory_to_os_bridge.md`.
+**활성 Stage 없음 — Bridge + 후속 개선 일단락 (2026-07-10).**
 
-> F1 출처 지도 / F2 엔티티 해석 / F3 실행 초안 세 기능 전부 구현 완료.
-> 모두 계약 변경 없는 결정론 파생 뷰(GET) — 온톨로지 쓰기·자동 실행·수치 점수 없음.
-> 진행 이력: `CHANGELOG.md`(Bridge F1~F3).
+> **Bridge(F1 출처 지도 / F2 엔티티 해석 / F3 실행 초안)** 완료 —
+> 설계 `internal_docs/design/07_advisory_to_os_bridge.md`.
 >
-> **남은 후속은 `internal_docs/design/08_bridge_followups.md`에 정리됨** (다음 세션 인수인계용):
-> H1 lint 부채 3건 / B1 L8 해소(F2 재사용) / P1 Evidence Ladder / P4 시퀀싱 재배열 등.
-> 다음 착수 권장: H1(품질 게이트 복구) → B1(L8 코드 마무리) → 사용자 우선순위.
+> **후속 개선 완료** (설계 `09_evidence_ladder.md`, `10_review_pack.md`):
+> - H1 lint 게이트 복구 · B1 L8 귀속 통일(공용 IPAliasIndex) · H2 tsbuildinfo untrack · H3 종결.
+> - **P1 근거 신뢰 사다리** — evidence_catalog 실필드로 강→약 5단 정성 등급(`GET /evidence/ladder`).
+> - **사다리 → 실행 초안 통합** — 시나리오 근거 태세 + 항목 신뢰 등급을 결정 지점에 노출.
+> - **B3 리뷰 팩 조립** — ReviewPack이 묶은 시나리오 초안을 조립(`GET /review-packs`) + 결정 CSV.
+>
+> 전부 계약 변경 없는 결정론 파생 뷰(GET) — 온톨로지 쓰기·자동 실행·수치 점수 없음.
+> 진행 이력: `CHANGELOG.md`. 궤적: 사다리(계산)→분포→실행 초안 통합→리뷰 팩(결정←근거 루프).
+>
+> **남은 항목·다음 착수 순서는 `internal_docs/design/08_bridge_followups.md` §4** (인수인계용):
+> 권장 = 위험 지도 근거 태세 확장(저비용·고가시성) → B3b 결정 재진입(쓰기 경로, 신중) → P3 Path(대형).
 > 각 항목 착수는 사용자 승인 필요.
 
 ## 다음 단계 기준 문서
