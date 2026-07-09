@@ -6,6 +6,7 @@ __pycache__/
 .mypy_cache/
 node_modules/
 dist/
+*.tsbuildinfo
 .env
 *.egg-info/
 
