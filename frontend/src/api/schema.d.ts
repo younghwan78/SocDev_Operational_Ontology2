@@ -177,6 +177,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/evidence/ladder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Evidence Ladder */
+        get: operations["evidence_ladder_api_v1_evidence_ladder_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -1248,6 +1265,39 @@ export interface components {
             source_refs: string[];
         };
         /**
+         * EvidenceLadder
+         * @description 근거 신뢰 사다리 파생 뷰.
+         */
+        EvidenceLadder: {
+            /** Distribution */
+            distribution: components["schemas"]["TierBucket"][];
+            /** Entries */
+            entries: components["schemas"]["EvidenceStrengthItem"][];
+            totals: components["schemas"]["LadderTotals"];
+        };
+        /**
+         * EvidenceStrengthItem
+         * @description 근거 항목 하나의 신뢰 등급 + 판정 근거.
+         */
+        EvidenceStrengthItem: {
+            /** Basis */
+            basis: components["schemas"]["BasisItem"][];
+            /** Evidence Id */
+            evidence_id: string;
+            /** Origin */
+            origin: string;
+            /** Project Id */
+            project_id: string;
+            /** Scenario Id */
+            scenario_id: string;
+            /** Tier */
+            tier: string;
+            /** Tier Ko */
+            tier_ko: string;
+            /** Title */
+            title: string;
+        };
+        /**
          * ExpectedReviewOutput
          * @description 이벤트 검토의 기대 산출물.
          */
@@ -1511,6 +1561,20 @@ export interface components {
             risk_direction: string;
             /** Source Ref */
             source_ref: string;
+        };
+        /**
+         * LadderTotals
+         * @description 실측/예측/부재 3분 요약 — 정수 건수(점수 아님).
+         */
+        LadderTotals: {
+            /** Absent */
+            absent: number;
+            /** Measured */
+            measured: number;
+            /** Predicted */
+            predicted: number;
+            /** Total */
+            total: number;
         };
         /**
          * MeasurementEvidence
@@ -2313,6 +2377,18 @@ export interface components {
             start_week: number;
         };
         /**
+         * TierBucket
+         * @description 신뢰 등급별 분포 — 근거 건강도.
+         */
+        TierBucket: {
+            /** Count */
+            count: number;
+            /** Tier */
+            tier: string;
+            /** Tier Ko */
+            tier_ko: string;
+        };
+        /**
          * TimelineItem
          * @description 주차 기반 타임라인 항목.
          */
@@ -2771,6 +2847,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EvidenceCatalogEntry"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evidence_ladder_api_v1_evidence_ladder_get: {
+        parameters: {
+            query?: {
+                project_id?: string | null;
+                scenario_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceLadder"];
                 };
             };
             /** @description Validation Error */

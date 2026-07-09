@@ -44,6 +44,7 @@ from backend.services.change_impact import (
     InvalidSelectionError,
     UnknownIPError,
 )
+from backend.services.evidence_ladder import EvidenceLadder, EvidenceLadderService
 from backend.services.portfolio import PortfolioOverview, PortfolioService
 from backend.services.rca import (
     IssueNotFoundError,
@@ -81,6 +82,7 @@ class AppServices:
     source_map: SourceCoverageService
     entity_resolution: EntityResolutionService
     action_draft: ActionDraftService
+    evidence_ladder: EvidenceLadderService
     traceability: TraceabilityService
     advisory: AdvisoryRunner
     ask: AskRunner
@@ -128,6 +130,7 @@ def build_services(
         source_map=SourceCoverageService(repo),
         entity_resolution=EntityResolutionService(repo),
         action_draft=ActionDraftService(repo),
+        evidence_ladder=EvidenceLadderService(repo),
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
         ask=AskRunner(repo),
@@ -260,6 +263,13 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         if availability:
             entries = [e for e in entries if e.availability == availability]
         return entries
+
+    @app.get(f"{prefix}/evidence/ladder", response_model=EvidenceLadder)
+    def evidence_ladder(
+        project_id: str | None = Query(default=None),
+        scenario_id: str | None = Query(default=None),
+    ) -> EvidenceLadder:
+        return services.evidence_ladder.ladder(project_id, scenario_id)
 
     @app.get(f"{prefix}/traceability/{{object_id}}", response_model=TraceabilityResult)
     def traceability(object_id: str) -> TraceabilityResult:

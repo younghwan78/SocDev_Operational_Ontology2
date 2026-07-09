@@ -1679,6 +1679,89 @@
         "title": "EvidenceGapItem",
         "type": "object"
       },
+      "EvidenceLadder": {
+        "additionalProperties": false,
+        "description": "근거 신뢰 사다리 파생 뷰.",
+        "properties": {
+          "distribution": {
+            "items": {
+              "$ref": "#/components/schemas/TierBucket"
+            },
+            "title": "Distribution",
+            "type": "array"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceStrengthItem"
+            },
+            "title": "Entries",
+            "type": "array"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/LadderTotals"
+          }
+        },
+        "required": [
+          "distribution",
+          "entries",
+          "totals"
+        ],
+        "title": "EvidenceLadder",
+        "type": "object"
+      },
+      "EvidenceStrengthItem": {
+        "additionalProperties": false,
+        "description": "근거 항목 하나의 신뢰 등급 + 판정 근거.",
+        "properties": {
+          "basis": {
+            "items": {
+              "$ref": "#/components/schemas/BasisItem"
+            },
+            "title": "Basis",
+            "type": "array"
+          },
+          "evidence_id": {
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "origin": {
+            "title": "Origin",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "tier": {
+            "title": "Tier",
+            "type": "string"
+          },
+          "tier_ko": {
+            "title": "Tier Ko",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "title",
+          "project_id",
+          "scenario_id",
+          "tier",
+          "tier_ko",
+          "origin",
+          "basis"
+        ],
+        "title": "EvidenceStrengthItem",
+        "type": "object"
+      },
       "ExpectedReviewOutput": {
         "additionalProperties": false,
         "description": "이벤트 검토의 기대 산출물.",
@@ -2365,6 +2448,36 @@
           "source_ref"
         ],
         "title": "KnobEffect",
+        "type": "object"
+      },
+      "LadderTotals": {
+        "additionalProperties": false,
+        "description": "실측/예측/부재 3분 요약 — 정수 건수(점수 아님).",
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "measured": {
+            "title": "Measured",
+            "type": "integer"
+          },
+          "predicted": {
+            "title": "Predicted",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "measured",
+          "predicted",
+          "absent"
+        ],
+        "title": "LadderTotals",
         "type": "object"
       },
       "MeasurementEvidence": {
@@ -4583,6 +4696,31 @@
         "title": "StageWindow",
         "type": "object"
       },
+      "TierBucket": {
+        "additionalProperties": false,
+        "description": "신뢰 등급별 분포 — 근거 건강도.",
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "tier": {
+            "title": "Tier",
+            "type": "string"
+          },
+          "tier_ko": {
+            "title": "Tier Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tier",
+          "tier_ko",
+          "count"
+        ],
+        "title": "TierBucket",
+        "type": "object"
+      },
       "TimelineItem": {
         "additionalProperties": false,
         "description": "주차 기반 타임라인 항목.",
@@ -5588,6 +5726,68 @@
           }
         },
         "summary": "List Evidence"
+      }
+    },
+    "/api/v1/evidence/ladder": {
+      "get": {
+        "operationId": "evidence_ladder_api_v1_evidence_ladder_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "scenario_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceLadder"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evidence Ladder"
       }
     },
     "/api/v1/health": {
