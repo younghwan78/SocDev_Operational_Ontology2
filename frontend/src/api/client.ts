@@ -87,6 +87,24 @@ export async function fetchWeeklySnapshot(week: number): Promise<WeeklySnapshot>
   return data;
 }
 
+export type ReviewPackSummary = components["schemas"]["ReviewPackSummary"];
+export type ReviewPackDocument = components["schemas"]["ReviewPackDocument"];
+export type ReviewPackRollup = components["schemas"]["ReviewPackRollup"];
+
+export async function fetchReviewPacks(): Promise<ReviewPackSummary[]> {
+  const { data, error } = await client.GET("/api/v1/review-packs");
+  if (error || !data) throw new Error("review-packs 조회 실패");
+  return data;
+}
+
+export async function fetchReviewPack(packId: string): Promise<ReviewPackDocument> {
+  const { data, error } = await client.GET("/api/v1/review-packs/{pack_id}", {
+    params: { path: { pack_id: packId } },
+  });
+  if (error || !data) throw new Error("review-pack 조회 실패");
+  return data;
+}
+
 export type RiskHeatmap = components["schemas"]["RiskHeatmap"];
 export type ScenarioRiskRow = components["schemas"]["ScenarioRiskRow"];
 export type RiskCell = components["schemas"]["RiskCell"];

@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## 리뷰 팩 조립 — 결정 ← 근거 루프 (B3) (2026-07-10)
+
+> 설계: `internal_docs/design/10_review_pack.md`. 원점 4층 루프의 review→decision 고리.
+> 정의만 되고 안 쓰이던 `ReviewPack` 객체를 실제 리뷰 워크플로로 살린다.
+
+### 추가
+
+- **리뷰 팩 조립 파생 뷰** (`GET /api/v1/review-packs`, `/review-packs/{id}`, 리뷰 센터 상단):
+  `backend/services/review_pack.py` — `ReviewPack`이 묶은 시나리오들의 실행 초안(ActionDraft)
+  +근거 태세를 한 장으로 조립. 회의용 롤업(위험·이슈·근거공백 항목 + 실측/예측/부재 집계).
+  - F3 ActionDraft를 시나리오 단위로 **그대로 재사용** — 중복 계약 없음. 없는 팩 → 404.
+- **결정 round-trip CSV**(프론트 생성): 리뷰 팩을 결정/담당/상태 컬럼이 **빈** CSV로 복사 —
+  회의에서 사람이 채우고 추후 ingest로 재진입해 `Decision`으로 추적(B3b 후속).
+- 프론트: 리뷰 센터에 리뷰 팩 섹션(팩 목록 → 조립 문서 + 시나리오별 태세 배지 + CSV 버튼).
+  온톨로지 무변경, GET, 결정 자동생성·owner 자동할당 없음(§6.3).
+
+### 검증
+
+```text
+backend 168 passed / 9 skipped · ruff · mypy(58) pass · frontend lint 0 / build / test(21) pass.
+test_review_pack 8케이스. E2E: pack_project_w_multimedia_review(3 시나리오)
+  롤업[위험34·이슈12·공백5 · 실측7·예측2·부재4] + 404 확인.
+```
+
 ## 근거 신뢰 사다리 → 결정 지점 통합 (Action Draft) (2026-07-10)
 
 > 설계: `internal_docs/design/09_evidence_ladder.md` §7. 사다리가 근거 탐색 화면에만

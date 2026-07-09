@@ -416,6 +416,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/review-packs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Review Packs
+         * @description 리뷰 팩 목록 — 함께 검토할 시나리오 묶음.
+         */
+        get: operations["review_packs_api_v1_review_packs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/review-packs/{pack_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Review Pack
+         * @description 리뷰 팩 조립 — 묶인 시나리오들의 실행 초안+근거 태세 (저장 아님, 결정은 사람이).
+         */
+        get: operations["review_pack_api_v1_review_packs__pack_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/review/weekly": {
         parameters: {
             query?: never;
@@ -1950,6 +1990,61 @@ export interface components {
             source_refs?: string[];
         };
         /**
+         * ReviewPackDocument
+         * @description 리뷰 팩 조립 파생 뷰 — 저장되지 않는 조립 결과.
+         */
+        ReviewPackDocument: {
+            /** Pack Id */
+            pack_id: string;
+            /** Project Ids */
+            project_ids: string[];
+            /** Provenance Note */
+            provenance_note: string;
+            /** Purpose */
+            purpose: string;
+            rollup: components["schemas"]["ReviewPackRollup"];
+            /** Scenarios */
+            scenarios: components["schemas"]["ActionDraft"][];
+            /** Title */
+            title: string;
+        };
+        /**
+         * ReviewPackRollup
+         * @description 회의 헤드라인 — 항목·근거 태세 집계 (정수 건수, 점수 아님).
+         */
+        ReviewPackRollup: {
+            /** Absent */
+            absent: number;
+            /** Evidence Gap Items */
+            evidence_gap_items: number;
+            /** Issue Items */
+            issue_items: number;
+            /** Measured */
+            measured: number;
+            /** Predicted */
+            predicted: number;
+            /** Risk Items */
+            risk_items: number;
+            /** Scenario Count */
+            scenario_count: number;
+        };
+        /**
+         * ReviewPackSummary
+         * @description 리뷰 팩 요약 — 목록용.
+         */
+        ReviewPackSummary: {
+            /** Pack Id */
+            pack_id: string;
+            /** Project Ids */
+            project_ids: string[];
+            /** Purpose */
+            purpose: string;
+            /** Scenario Ids */
+            scenario_ids: string[];
+            /** Title */
+            title: string;
+        };
+        /**
          * RiskCell
          * @description 시나리오×IP 셀 — 정성 등급 + 판정 근거. 수치 점수 없음.
          */
@@ -3209,6 +3304,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Project"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_packs_api_v1_review_packs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewPackSummary"][];
+                };
+            };
+        };
+    };
+    review_pack_api_v1_review_packs__pack_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pack_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewPackDocument"];
                 };
             };
             /** @description Validation Error */

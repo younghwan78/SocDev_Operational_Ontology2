@@ -53,6 +53,12 @@ from backend.services.rca import (
     RCAService,
 )
 from backend.services.review import ReviewService, WeeklyIndex, WeeklySnapshot
+from backend.services.review_pack import (
+    ReviewPackDocument,
+    ReviewPackNotFoundError,
+    ReviewPackService,
+    ReviewPackSummary,
+)
 from backend.services.risk import RiskHeatmap, RiskService
 from backend.services.scenario_analysis import (
     ScenarioAnalysis,
@@ -83,6 +89,7 @@ class AppServices:
     entity_resolution: EntityResolutionService
     action_draft: ActionDraftService
     evidence_ladder: EvidenceLadderService
+    review_pack: ReviewPackService
     traceability: TraceabilityService
     advisory: AdvisoryRunner
     ask: AskRunner
@@ -131,6 +138,7 @@ def build_services(
         entity_resolution=EntityResolutionService(repo),
         action_draft=ActionDraftService(repo),
         evidence_ladder=EvidenceLadderService(repo),
+        review_pack=ReviewPackService(repo),
         traceability=TraceabilityService(repo, index),
         advisory=AdvisoryRunner(repo, run_store),
         ask=AskRunner(repo),
@@ -345,6 +353,19 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         try:
             return services.action_draft.draft(scenario_id)
         except ScenarioNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get(f"{prefix}/review-packs", response_model=list[ReviewPackSummary])
+    def review_packs() -> list[ReviewPackSummary]:
+        """리뷰 팩 목록 — 함께 검토할 시나리오 묶음."""
+        return services.review_pack.list_packs()
+
+    @app.get(f"{prefix}/review-packs/{{pack_id}}", response_model=ReviewPackDocument)
+    def review_pack(pack_id: str) -> ReviewPackDocument:
+        """리뷰 팩 조립 — 묶인 시나리오들의 실행 초안+근거 태세 (저장 아님, 결정은 사람이)."""
+        try:
+            return services.review_pack.assemble(pack_id)
+        except ReviewPackNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.get(f"{prefix}/review/weekly", response_model=WeeklyIndex)

@@ -3535,6 +3535,142 @@
         "title": "RequiredEvidenceNeed",
         "type": "object"
       },
+      "ReviewPackDocument": {
+        "additionalProperties": false,
+        "description": "리뷰 팩 조립 파생 뷰 — 저장되지 않는 조립 결과.",
+        "properties": {
+          "pack_id": {
+            "title": "Pack Id",
+            "type": "string"
+          },
+          "project_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Project Ids",
+            "type": "array"
+          },
+          "provenance_note": {
+            "title": "Provenance Note",
+            "type": "string"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "rollup": {
+            "$ref": "#/components/schemas/ReviewPackRollup"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ActionDraft"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pack_id",
+          "title",
+          "purpose",
+          "project_ids",
+          "scenarios",
+          "rollup",
+          "provenance_note"
+        ],
+        "title": "ReviewPackDocument",
+        "type": "object"
+      },
+      "ReviewPackRollup": {
+        "additionalProperties": false,
+        "description": "회의 헤드라인 — 항목·근거 태세 집계 (정수 건수, 점수 아님).",
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "evidence_gap_items": {
+            "title": "Evidence Gap Items",
+            "type": "integer"
+          },
+          "issue_items": {
+            "title": "Issue Items",
+            "type": "integer"
+          },
+          "measured": {
+            "title": "Measured",
+            "type": "integer"
+          },
+          "predicted": {
+            "title": "Predicted",
+            "type": "integer"
+          },
+          "risk_items": {
+            "title": "Risk Items",
+            "type": "integer"
+          },
+          "scenario_count": {
+            "title": "Scenario Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "scenario_count",
+          "risk_items",
+          "issue_items",
+          "evidence_gap_items",
+          "measured",
+          "predicted",
+          "absent"
+        ],
+        "title": "ReviewPackRollup",
+        "type": "object"
+      },
+      "ReviewPackSummary": {
+        "additionalProperties": false,
+        "description": "리뷰 팩 요약 — 목록용.",
+        "properties": {
+          "pack_id": {
+            "title": "Pack Id",
+            "type": "string"
+          },
+          "project_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Project Ids",
+            "type": "array"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pack_id",
+          "title",
+          "purpose",
+          "project_ids",
+          "scenario_ids"
+        ],
+        "title": "ReviewPackSummary",
+        "type": "object"
+      },
       "RiskCell": {
         "additionalProperties": false,
         "description": "시나리오×IP 셀 — 정성 등급 + 판정 근거. 수치 점수 없음.",
@@ -6234,6 +6370,69 @@
           }
         },
         "summary": "Get Project"
+      }
+    },
+    "/api/v1/review-packs": {
+      "get": {
+        "description": "리뷰 팩 목록 — 함께 검토할 시나리오 묶음.",
+        "operationId": "review_packs_api_v1_review_packs_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewPackSummary"
+                  },
+                  "title": "Response Review Packs Api V1 Review Packs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Review Packs"
+      }
+    },
+    "/api/v1/review-packs/{pack_id}": {
+      "get": {
+        "description": "리뷰 팩 조립 — 묶인 시나리오들의 실행 초안+근거 태세 (저장 아님, 결정은 사람이).",
+        "operationId": "review_pack_api_v1_review_packs__pack_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pack_id",
+            "required": true,
+            "schema": {
+              "title": "Pack Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewPackDocument"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Pack"
       }
     },
     "/api/v1/review/weekly": {

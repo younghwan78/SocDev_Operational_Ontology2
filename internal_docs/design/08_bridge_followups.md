@@ -38,7 +38,7 @@
 |---|---|---|---|
 | ~~B1~~ ✅ | ~~F2 → risk.py 귀속 통일 (L8 완전 해소)~~ **완료(2026-07-09)** | `IPAliasIndex.resolve_all`(다중값) 추가 → `event_related_ips` 재작성, `ip_match_tokens` 폐기. change_impact도 공용 인덱스 사용. **동작 보존**(63/63 이벤트 일치)이라 `test_risk` 무변경. | — |
 | B2 | **F1 → 반입 진척 지표 상시화** | 출처 지도의 synthetic→integrated 비율을 파일럿 효과 지표 패널에 편입(홈 하단 카드). | 05 Stage 17 |
-| B3 | **F3 → 초안을 ReviewPack 반입으로** | 실행 초안을 `ReviewPack` 반입 템플릿(CSV)으로 내보내 "결정 ← 근거" 추적. 데모 5장면째. | 05 Stage 20 #3 |
+| ~~B3~~ ✅ | ~~F3 → 초안을 ReviewPack 반입으로~~ **완료(2026-07-10)** | 설계 `10_review_pack.md`. ReviewPack이 묶은 시나리오들의 실행 초안+근거 태세를 조립하는 파생 뷰(`GET /review-packs`) + 결정 컬럼 빈 round-trip CSV. **B3b(채운 CSV → ingest → Decision 재진입)는 후속** — ingest 매핑 필요. | B3b: 05 Stage 20 |
 
 > B1 결과 메모: naive 단일 `resolve` 치환은 공유 토큰('memory'→MIF·SMMU, 'ai'→GPU·NPU)을
 > 임의의 한 IP로 축소해 정당한 귀속을 잃는 **회귀**였다. 다중값 `resolve_all`로 현재 동작을

@@ -1,10 +1,48 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchWeeklyIndex, fetchWeeklySnapshot } from "../api/client";
+import {
+  fetchReviewPack,
+  fetchReviewPacks,
+  fetchWeeklyIndex,
+  fetchWeeklySnapshot,
+  type ReviewPackDocument,
+} from "../api/client";
 import { useLabels } from "../hooks/useLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.review;
+const tp = ko.review_pack;
+
+function csvCell(value: string): string {
+  return `"${value.replace(/"/g, '""')}"`;
+}
+
+function toDecisionCsv(doc: ReviewPackDocument): string {
+  const header = ["시나리오", "항목종류", "진술", "근거", "신뢰등급", "결정", "담당", "상태"];
+  const rows = [header.map(csvCell).join(",")];
+  for (const scenario of doc.scenarios) {
+    for (const section of scenario.sections) {
+      for (const item of section.items) {
+        rows.push(
+          [
+            scenario.scenario_name,
+            section.kind_ko,
+            item.statement,
+            item.basis[0]?.ref_id ?? "",
+            item.strength_ko ?? "",
+            "",
+            "",
+            "",
+          ]
+            .map(csvCell)
+            .join(","),
+        );
+      }
+    }
+  }
+  return rows.join("\r\n");
+}
 
 export function ReviewPage() {
   const { week } = useParams<{ week: string }>();
@@ -28,6 +66,9 @@ export function ReviewPage() {
   return (
     <div>
       <h1>{t.title}</h1>
+
+      <ReviewPacksSection />
+
       <div className="filter-row">
         <span className="filter-label">{t.week_select}</span>
         {weeks.map((w) => (
@@ -102,6 +143,117 @@ export function ReviewPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function ReviewPacksSection() {
+  const [selected, setSelected] = useState<string | null>(null);
+  const packs = useQuery({ queryKey: ["review-packs"], queryFn: fetchReviewPacks });
+
+  if (!packs.data || packs.data.length === 0) return null;
+
+  return (
+    <div className="card">
+      <h2 className="card-title">{tp.section}</h2>
+      <p className="section-note">{tp.hint}</p>
+      <div className="filter-row">
+        {packs.data.map((pack) => (
+          <button
+            key={pack.pack_id}
+            className={`chip chip-btn ${selected === pack.pack_id ? "active" : ""}`}
+            onClick={() => setSelected(selected === pack.pack_id ? null : pack.pack_id)}
+            title={pack.purpose}
+          >
+            {pack.title} ({pack.scenario_ids.length})
+          </button>
+        ))}
+      </div>
+      {selected && <ReviewPackDetail packId={selected} />}
+    </div>
+  );
+}
+
+function ReviewPackDetail({ packId }: { packId: string }) {
+  const doc = useQuery({
+    queryKey: ["review-pack", packId],
+    queryFn: () => fetchReviewPack(packId),
+  });
+  const [copied, setCopied] = useState<string | null>(null);
+
+  if (doc.isPending) return <p className="status-msg">{ko.app.loading}</p>;
+  if (doc.isError || !doc.data) return <p className="status-msg">{ko.app.error}</p>;
+  const data = doc.data;
+  const r = data.rollup;
+
+  const copyCsv = async () => {
+    try {
+      await navigator.clipboard.writeText(toDecisionCsv(data));
+      setCopied(tp.copied);
+    } catch {
+      setCopied(tp.copy_failed);
+    }
+  };
+
+  return (
+    <div>
+      <p className="desc">{data.purpose}</p>
+      <div className="ladder-headline">
+        <span>
+          {tp.rollup_risk} <b>{r.risk_items}</b>
+        </span>
+        <span>
+          {tp.rollup_issue} <b>{r.issue_items}</b>
+        </span>
+        <span>
+          {tp.rollup_gap} <b>{r.evidence_gap_items}</b>
+        </span>
+        <span>
+          {tp.posture}: {tp.measured} <b>{r.measured}</b> · {tp.predicted} <b>{r.predicted}</b> ·{" "}
+          {tp.absent} <b>{r.absent}</b>
+        </span>
+      </div>
+      <div className="chip-row">
+        <button type="button" className="link-btn" onClick={copyCsv}>
+          {tp.export_csv}
+        </button>
+        {copied && <span className="badge badge-ok">{copied}</span>}
+      </div>
+      <span className="badge badge-warn">{data.provenance_note}</span>
+
+      {data.scenarios.map((scenario) => (
+        <div key={scenario.scenario_id} className="list-item">
+          <div className="head">
+            <span className="title">{scenario.scenario_name}</span>
+            {scenario.evidence_posture && (
+              <span
+                className={`badge ${
+                  scenario.evidence_posture.measured === 0
+                    ? "badge-danger"
+                    : scenario.evidence_posture.predicted > scenario.evidence_posture.measured
+                      ? "badge-warn"
+                      : "badge-ok"
+                }`}
+                title={scenario.evidence_posture.note_ko}
+              >
+                {tp.posture}: {tp.measured} {scenario.evidence_posture.measured} · {tp.predicted}{" "}
+                {scenario.evidence_posture.predicted} · {tp.absent}{" "}
+                {scenario.evidence_posture.absent}
+              </span>
+            )}
+          </div>
+          {scenario.sections.length === 0 && <p className="desc">{tp.empty_sections}</p>}
+          {scenario.sections.map((section) => (
+            <p key={section.kind} className="desc">
+              <span className="chip">
+                {section.kind_ko} ({section.items.length})
+              </span>{" "}
+              {section.items[0]?.statement}
+              {section.items.length > 1 ? " …" : ""}
+            </p>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
