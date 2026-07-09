@@ -28,6 +28,7 @@ from backend.ontology.scenario import (
     ScenarioIPRequirement,
     ScenarioRequest,
 )
+from backend.resolve.entity_resolution import IPAliasIndex
 from backend.services.common import BasisItem
 from backend.services.risk import event_related_ips
 
@@ -591,9 +592,9 @@ class ChangeImpactService:
                     source_refs=issue.evidence_refs,
                 )
             )
-        blocks = self._list("ip_blocks", IPBlock)
+        alias_index = IPAliasIndex(self._repo)
         for event in self._list("development_events", DevelopmentEvent):
-            if ip.id not in event_related_ips(event, blocks):
+            if ip.id not in event_related_ips(event, alias_index):
                 continue
             shared = [s for s in event.linked_scenario_ids if s in impacted_set]
             if not shared:

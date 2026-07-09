@@ -1,9 +1,12 @@
 # Bridge 이후 후속 작업 백로그
 
-> 상태: v1.0 (2026-07-09 — Bridge F1~F3 완료 시점 기록)
-> 목적: 오늘 여기서 중단. 다음 세션이 이 문서만으로 이어받을 수 있도록 남은 일을 기록한다.
+> 상태: v1.1 (2026-07-09 — H1·B1 완료 반영)
+> 목적: 다음 세션이 이 문서만으로 이어받을 수 있도록 남은 일을 기록한다.
 > 선행: `07_advisory_to_os_bridge.md`(Bridge 설계), `05_long_term_improvement_plan.md`(Stage 13~20)
 > 각 항목 착수는 사용자 승인 필요 (CLAUDE.md §6.1).
+>
+> **완료: H1(lint 게이트 복구), B1(L8 귀속 통일) — CHANGELOG 참조.**
+> 남은 우선 후보: H2/H3(위생), B2/B3(Bridge 연장), P1~P4(전략), 실데이터 워크숍(05 Stage 13).
 
 ---
 
@@ -23,7 +26,7 @@
 
 | # | 항목 | 근거/위치 | 조치 |
 |---|---|---|---|
-| H1 | **frontend lint 기존 오류 3건** | `DemoStoryBar.tsx:44,96`, `AskPage.tsx:47` — `react-hooks/set-state-in-effect`, "impure function during render" | HEAD에서도 재현되는 선존 부채(Bridge와 무관). effect 내 setState를 파생 계산/`useMemo`로 리팩터. **품질 게이트(lint pass) 복구 목적.** |
+| ~~H1~~ ✅ | ~~frontend lint 기존 오류 3건~~ **완료(2026-07-09)** | `DemoStoryBar`, `AskPage` | `SceneBar` key-remount + `question` URL 파생으로 render 순수성 위반 제거. lint 0. |
 | H2 | **`frontend/tsconfig.tsbuildinfo` 추적됨** | 빌드마다 변경되는 캐시 아티팩트가 git에 추적 중 | `git rm --cached` + `.gitignore` 추가. |
 | H3 | **원점 문서 사본 2개 디스크 잔존** | `internal_docs/26.06.18 …md`, `26.07.05 …md` (gitignore로 추적만 제외됨) | 참조본은 `D:\YHJOO\…`가 정본(CLAUDE.md §7). 디스크 사본은 삭제 여부를 사용자 결정. |
 
@@ -33,11 +36,14 @@
 
 | # | 항목 | 내용 | 편입 대상 |
 |---|---|---|---|
-| B1 | **F2 → risk.py 귀속 통일 (L8 완전 해소)** | `risk.py::event_related_ips`를 `IPAliasIndex.resolve`로 통일. "명시 링크 우선 → 별칭 해석 → (없으면) 미해석 큐" 순. `tests/test_risk.py` 고정 기대값 재검토 필요. | 05 Stage 15 |
+| ~~B1~~ ✅ | ~~F2 → risk.py 귀속 통일 (L8 완전 해소)~~ **완료(2026-07-09)** | `IPAliasIndex.resolve_all`(다중값) 추가 → `event_related_ips` 재작성, `ip_match_tokens` 폐기. change_impact도 공용 인덱스 사용. **동작 보존**(63/63 이벤트 일치)이라 `test_risk` 무변경. | — |
 | B2 | **F1 → 반입 진척 지표 상시화** | 출처 지도의 synthetic→integrated 비율을 파일럿 효과 지표 패널에 편입(홈 하단 카드). | 05 Stage 17 |
 | B3 | **F3 → 초안을 ReviewPack 반입으로** | 실행 초안을 `ReviewPack` 반입 템플릿(CSV)으로 내보내 "결정 ← 근거" 추적. 데모 5장면째. | 05 Stage 20 #3 |
 
-> B1은 F2가 이미 인덱스를 만들어 두어 **가장 저비용**. L8을 코드에서 실제로 지운다.
+> B1 결과 메모: naive 단일 `resolve` 치환은 공유 토큰('memory'→MIF·SMMU, 'ai'→GPU·NPU)을
+> 임의의 한 IP로 축소해 정당한 귀속을 잃는 **회귀**였다. 다중값 `resolve_all`로 현재 동작을
+> 정확히 보존하면서 중복 휴리스틱만 제거하는 방향으로 수정함. (F2가 재확인한 "affected_domains가
+> IP 토큰과 비-IP 개념축을 섞는다"는 지점은 데이터 계약 개선 과제로 남음 — 05 §3.2.)
 
 ---
 
@@ -56,9 +62,9 @@ Bridge에서 F1(=G-1)·F2(=G-2)·Action Draft(=§1)를 했다. 남은 제안:
 
 ## 4. 다음 세션 착수 순서 권장
 
-1. **H1 lint 부채** 정리 → 품질 게이트 green 복구 (독립적, 저비용).
-2. **B1 (L8 해소)** — F2 인덱스 재사용, risk 테스트 갱신. Bridge를 코드에서 마무리.
-3. 그다음은 사용자 우선순위: 실데이터 워크숍(05 Stage 13) vs P1 Evidence Ladder vs P4 재배열.
+- ~~H1 lint 부채~~ ✅ / ~~B1 L8 해소~~ ✅ — 완료. Bridge 코드 레벨 마무리됨.
+1. **H2/H3 위생** — `tsconfig.tsbuildinfo` untrack, 원점 문서 디스크 사본 처리(사용자 결정). 저비용.
+2. 사용자 우선순위: 실데이터 워크숍(05 Stage 13) vs P1 Evidence Ladder vs P4 시퀀싱 재배열.
 
 ## 5. 착수 전 필독 (순서)
 

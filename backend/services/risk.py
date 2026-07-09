@@ -15,6 +15,7 @@ from backend.ontology.event import DevelopmentEvent, Issue
 from backend.ontology.evidence import EvidenceCatalogEntry
 from backend.ontology.ip import IPBlock
 from backend.ontology.scenario import Scenario, ScenarioRequest
+from backend.resolve.entity_resolution import IPAliasIndex
 from backend.services.common import BasisItem
 
 GRADE_LABELS: dict[str, str] = {"high": "높음", "medium": "중간", "low": "낮음"}
@@ -128,24 +129,18 @@ def _confidence_cap(raw: str) -> str:
     return _CONFIDENCE_CAP_NORMALIZE.get(lowered, lowered)
 
 
-def ip_match_tokens(ip: IPBlock) -> set[str]:
-    """이벤트 affected_domains와 대조할 IP 토큰 — 데이터(도메인/별칭)에서 파생."""
-    tokens = {ip.domain.lower(), ip.name.lower()}
-    tokens.update(part for part in ip.domain.lower().split("_") if part)
-    tokens.update(alias.lower() for alias in ip.aliases)
-    return tokens
+def event_related_ips(event: DevelopmentEvent, index: IPAliasIndex) -> set[str]:
+    """이벤트가 관련되는 IP 판별 — 후보 옵션의 명시 참조 + affected_domains의 별칭 해석 합집합.
 
-
-def event_related_ips(event: DevelopmentEvent, blocks: list[IPBlock]) -> set[str]:
-    """이벤트가 관련되는 IP 판별 — 도메인/별칭 일치 또는 후보 옵션의 명시 참조."""
-    option_ips = {
+    risk 고유 토큰 휴리스틱(구 `ip_match_tokens`, L8)을 폐기하고 엔티티 해석과 동일한
+    정규화·역인덱스(IPAliasIndex)를 공유한다. 한 도메인 토큰이 다중 IP에 걸리면
+    (예: 'memory'→MIF·SMMU) `resolve_all`로 모두 보존한다.
+    """
+    matched = {
         ip_id for option in event.candidate_options for ip_id in option.related_ip_ids
     }
-    domains = {d.lower() for d in event.affected_domains}
-    matched: set[str] = set()
-    for ip in blocks:
-        if ip.id in option_ips or domains & ip_match_tokens(ip):
-            matched.add(ip.id)
+    for domain in event.affected_domains:
+        matched |= index.resolve_all(domain)
     return matched
 
 
@@ -531,8 +526,9 @@ class RiskService:
         requests = self._requests()
         catalog = self._catalog()
 
+        alias_index = IPAliasIndex(self._repo)
         event_ip_cache: dict[str, set[str]] = {
-            e.id: event_related_ips(e, columns) for e in events
+            e.id: event_related_ips(e, alias_index) for e in events
         }
 
         rows: list[ScenarioRiskRow] = []

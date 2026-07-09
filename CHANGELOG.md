@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## 후속 H1·B1 — lint 게이트 복구 + L8 귀속 통일 (2026-07-09)
+
+> 백로그 `internal_docs/design/08_bridge_followups.md` §1·§2. Bridge를 코드 레벨에서 마무리.
+
+### 변경
+
+- **H1 — frontend lint 게이트 복구** (render 순수성 위반 3건):
+  - `DemoStoryBar`: 씬 배너를 `SceneBar`로 분리, `key={sceneIndex}` remount로 장면별
+    스톱워치를 리셋(effect 내 `setState` 제거). render 중 `Date.now()` 호출 제거.
+  - `AskPage`: `question`을 URL(`?q=`) 파생으로 전환(state 이중화 제거), effect 동기화를
+    render 중 previous-value 비교로 대체. `react-hooks/set-state-in-effect`·`purity` 0.
+- **B1 — event↔IP 귀속 통일 (L8 완전 해소)**:
+  - `IPAliasIndex`에 다중값 `resolve_all(token) -> set[str]` 추가. 한 토큰이 여러 IP에
+    걸리는 경우('memory'→MIF·SMMU, 'ai'→GPU·NPU)를 보존 — 큐레이션용 단일 `resolve`와 분리.
+  - `risk.py::event_related_ips`를 인덱스 기반으로 재작성, 고유 휴리스틱 `ip_match_tokens`
+    폐기. `change_impact.py`도 공용 인덱스 사용. 엔티티 해석과 **단일 정규화 규칙** 공유.
+  - **동작 보존**: fixture 63개 이벤트 전수 비교에서 기존 귀속과 0/63 차이 → `test_risk`
+    고정 기대값 무변경. (naive `resolve` 단일 치환은 'memory'→SMMU 탈락 회귀라 기각.)
+
+### 검증
+
+```text
+backend 144 passed / 9 skipped · ruff · mypy(56 files) pass · validate-data 오류 0 ·
+frontend lint 0 / build / test(21) pass. 귀속 동등성: 63/63 이벤트 일치(사전 검증 스크립트).
+```
+
 ## Bridge F3 — 실행 초안 (2026-07-09)
 
 > 설계: `internal_docs/design/07_advisory_to_os_bridge.md` §3. 원점 비전 4층 루프

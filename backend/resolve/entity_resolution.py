@@ -4,7 +4,8 @@
 구축해 임의 명칭을 canonical ip_id로 해석하고, 해석되지 않는 토큰을 큐레이션 큐로 모은다.
 
 교정(별칭 추가)은 IPBlock.aliases 변경(변경 규율)으로만 반영한다 — 쓰기 API 없음.
-본 서비스는 인덱스·리포트 생성까지만 담당하며, risk.py 귀속 통일은 후속(05 Stage 15).
+본 인덱스는 risk.py의 event↔IP 귀속에서도 공용으로 쓰인다(`resolve_all`) — 구
+`ip_match_tokens` 휴리스틱(L8)을 대체하는 단일 정규화·해석 경로다.
 """
 
 from __future__ import annotations
@@ -59,20 +60,35 @@ class EntityResolutionReport(BaseModel):
 
 
 class IPAliasIndex:
-    """토큰 → canonical ip_id 역인덱스."""
+    """토큰 → canonical ip_id 역인덱스.
+
+    한 토큰이 여러 IP에 걸릴 수 있다(예: 'memory'→MIF·SMMU, 'ai'→GPU·NPU). 큐레이션용
+    `resolve`는 단일 canonical(첫 등록 우선)을, risk 귀속용 `resolve_all`은 전체 집합을 준다.
+    """
 
     def __init__(self, repo: RepositoryProtocol) -> None:
         self._blocks: dict[str, IPBlock] = {
             b.id: b for b in repo.list("ip_blocks") if isinstance(b, IPBlock)
         }
-        self._by_token: dict[str, str] = {}
+        self._ids_by_token: dict[str, list[str]] = {}
         for ip in self._blocks.values():
-            self._by_token.setdefault(ip.id.lower(), ip.id)
+            self._add(ip.id.lower(), ip.id)
             for token in normalize_tokens(ip.name, ip.domain, *ip.aliases):
-                self._by_token.setdefault(token, ip.id)
+                self._add(token, ip.id)
+
+    def _add(self, token: str, ip_id: str) -> None:
+        ids = self._ids_by_token.setdefault(token, [])
+        if ip_id not in ids:
+            ids.append(ip_id)
 
     def resolve(self, token: str) -> str | None:
-        return self._by_token.get(token.strip().lower())
+        """단일 canonical ip_id (첫 등록 우선). 별칭 큐레이션·미해석 판정용."""
+        ids = self._ids_by_token.get(token.strip().lower())
+        return ids[0] if ids else None
+
+    def resolve_all(self, token: str) -> set[str]:
+        """토큰에 걸리는 모든 ip_id. event↔IP 귀속(risk)에서 다중 관련 IP를 보존한다."""
+        return set(self._ids_by_token.get(token.strip().lower(), ()))
 
     def alias_entries(self) -> list[AliasEntry]:
         return [
