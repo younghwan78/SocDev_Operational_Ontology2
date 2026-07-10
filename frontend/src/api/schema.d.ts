@@ -823,6 +823,8 @@ export interface components {
             ref_id: string;
             /** Snippet */
             snippet: string;
+            /** Status Kind */
+            status_kind?: string | null;
             /** Status Ko */
             status_ko?: string | null;
             /** Title */

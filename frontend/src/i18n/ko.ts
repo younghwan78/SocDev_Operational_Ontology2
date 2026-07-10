@@ -11,6 +11,7 @@ export const ko = {
     absent: "부재",
   },
   app: {
+    busy_seconds: "초 경과",
     title: "SoC 운영 온톨로지",
     nav_risk: "위험 지도",
     nav_change_impact: "변경 영향",
@@ -37,8 +38,8 @@ export const ko = {
     title: "변경 영향",
     subtitle: "이 IP·knob·capability·모드를 바꾸면 어디에 영향이 가나 — 모든 항목에 근거 표시",
     select_ip: "무엇을 바꾸나요?",
-    select_knob: "knob",
-    select_capability: "capability",
+    select_knob: "제어 항목",
+    select_capability: "기능",
     select_mode: "모드",
     none_option: "선택 안 함",
     run: "분석 실행",
@@ -234,6 +235,8 @@ export const ko = {
   },
   review: {
     title: "리뷰 센터",
+    weeks_show_all: "전체 주차 보기",
+    weeks_collapse: "최근 8주만",
     week_select: "주차 선택",
     events_section: "개발 이벤트",
     activities_section: "역할 활동",

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdvisoryRuns, runAdvisory, type RoleAdvisory } from "../../api/client";
 import { useLabels } from "../../hooks/useLabels";
+import { Busy } from "../../components/Busy";
 import { ko } from "../../i18n/ko";
 
 const t = ko.advisory;
@@ -42,7 +43,7 @@ export function AdvisoryTab({ scenarioId }: { scenarioId: string }) {
         >
           {t.run_button}
         </button>
-        {execute.isPending && <span className="filter-label">{t.running}</span>}
+        {execute.isPending && <Busy message={t.running} />}
         {execute.isError && <span className="badge badge-danger">{t.run_failed}</span>}
       </div>
 

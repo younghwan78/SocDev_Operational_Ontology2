@@ -12,6 +12,7 @@ import {
   type AskCard,
   type AskResult,
 } from "../api/client";
+import { Busy } from "../components/Busy";
 import { ko } from "../i18n/ko";
 
 const t = ko.ask;
@@ -69,12 +70,20 @@ export function AskPage() {
           <input
             type="text"
             className="ask-input"
+            name="question"
+            aria-label={t.placeholder}
+            autoComplete="off"
+            spellCheck={false}
             value={draft}
             placeholder={t.placeholder}
             onChange={(event) => setDraft(event.target.value)}
           />
-          <button type="submit" className="run-btn" disabled={!draft.trim()}>
-            {t.submit}
+          <button
+            type="submit"
+            className="run-btn"
+            disabled={!draft.trim() || result.isFetching}
+          >
+            {result.isFetching ? t.asking : t.submit}
           </button>
         </form>
         <div className="filter-row">
@@ -93,10 +102,12 @@ export function AskPage() {
       </div>
 
       {question === null && <p className="status-msg">{t.idle_hint}</p>}
-      {result.isFetching && <p className="status-msg">{t.asking}</p>}
+      {result.isFetching && <Busy message={t.asking} />}
       {result.isError && <p className="status-msg">{ko.app.error}</p>}
       {question !== null && result.data && !result.isFetching && (
-        <AskAnswer result={result.data} />
+        <div aria-live="polite">
+          <AskAnswer result={result.data} />
+        </div>
       )}
     </div>
   );
@@ -185,11 +196,9 @@ function AskCardRow({ card, cited }: { card: AskCard; cited: boolean }) {
         {card.status_ko && (
           <span
             className={`badge ${
-              card.status_ko.includes("높음") || card.status_ko.includes("없음")
-                ? "badge-danger"
-                : card.status_ko.includes("중간") || card.status_ko.includes("미검증")
-                  ? "badge-warn"
-                  : "badge-info"
+              { danger: "badge-danger", warn: "badge-warn", ok: "badge-ok" }[
+                card.status_kind ?? ""
+              ] ?? "badge-info"
             }`}
           >
             {card.status_ko}

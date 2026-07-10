@@ -20,9 +20,9 @@ from backend.agents.providers.base import LLMProvider, ProviderError
 from backend.agents.runner import DETERMINISTIC, build_provider_chain
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.event import DevelopmentEvent, Issue, Test
-from backend.ontology.glossary import object_label
-from backend.ontology.ip import IPBlock, IPKnob
-from backend.ontology.scenario import Scenario, ScenarioGroup, ScenarioRequest
+from backend.ontology.glossary import object_label, value_label
+from backend.ontology.ip import IPBlock
+from backend.ontology.scenario import Scenario, ScenarioRequest
 from backend.services.rca import RCAService
 from backend.services.risk import RiskService
 
@@ -73,6 +73,8 @@ class AskCard(BaseModel):
     title: str
     snippet: str
     status_ko: str | None = None  # 위험 등급/검증 상태 등 결정론 요약
+    # 상태의 시각 성격(danger/warn/ok/info) — 프론트가 한국어 문자열을 파싱하지 않게 한다.
+    status_kind: str | None = None
     matched_terms: list[str] = Field(default_factory=list)
 
 
@@ -164,7 +166,7 @@ class AskRunner:
                     or getattr(obj, "purpose", None)
                     or ""
                 )
-                status_ko = self._status_ko(obj, risk_rows, verification)
+                status_ko, status_kind = self._status(obj, risk_rows, verification)
                 # 제목 일치 가중 — 제목에 걸린 토큰은 2배로 센다 (수치 점수 아님, 정렬용 순위)
                 title_tokens = _tokens(str(title))
                 weight = len(matched) + len(query_tokens & title_tokens)
@@ -178,6 +180,7 @@ class AskRunner:
                         title=str(title),
                         snippet=str(snippet_source)[:160],
                         status_ko=status_ko,
+                        status_kind=status_kind,
                         matched_terms=matched,
                     ),
                 )
@@ -201,7 +204,8 @@ class AskRunner:
                         collection_ko=object_label("Scenario") or "scenarios",
                         title=row.scenario_name,
                         snippet=scenario.description[:160],
-                        status_ko=self._status_ko(scenario, risk_rows, verification),
+                        status_ko=(status := self._status(scenario, risk_rows, verification))[0],
+                        status_kind=status[1],
                         matched_terms=["risk"],
                     ),
                 )
@@ -209,28 +213,51 @@ class AskRunner:
         ordered = sorted(scored.items(), key=lambda entry: (-entry[1][0], entry[0]))
         return [card for _, (_, card) in ordered[:MAX_CARDS]]
 
-    def _status_ko(self, obj: object, risk_rows: dict, verification: dict) -> str | None:
-        """카드에 붙는 결정론 상태 요약 — 위험 등급/검증 상태/일정 신호."""
+    def _status(
+        self, obj: object, risk_rows: dict, verification: dict
+    ) -> tuple[str | None, str | None]:
+        """카드의 결정론 상태 요약 + 시각 성격 — 서술은 라벨, 코드는 쓰지 않는다 (B2)."""
         if isinstance(obj, Scenario):
             row = risk_rows.get(obj.id)
             if row:
                 worst = [c for c in row.cells if c.grade == row.overall_grade]
                 ips = ", ".join(c.ip_id for c in worst[:3])
-                return f"위험 등급 {row.overall_grade_ko}" + (f" (셀: {ips})" if ips else "")
+                kind = {"high": "danger", "medium": "warn"}.get(row.overall_grade, "ok")
+                return (
+                    f"위험 등급 {row.overall_grade_ko}" + (f" (셀: {ips})" if ips else ""),
+                    kind,
+                )
         if isinstance(obj, Issue):
             summary = verification.get(obj.id)
             if summary:
                 alert = " · 종결됐지만 미검증" if summary.closed_without_verification else ""
-                return f"상태 {obj.status} · {summary.verification_ko}{alert}"
+                status_label = value_label("issue_status", obj.status) or obj.status
+                kind = (
+                    "danger"
+                    if summary.closed_without_verification
+                    else ("ok" if summary.verification == "verified" else "warn")
+                )
+                return f"상태 {status_label} · {summary.verification_ko}{alert}", kind
         if isinstance(obj, Test):
-            return f"결과 {obj.result}"
+            result_label = value_label("test_result", obj.result) or obj.result
+            kind = {"failed": "danger", "passed": "ok"}.get(obj.result, "info")
+            return f"결과 {result_label}", kind
         if isinstance(obj, DevelopmentEvent) and obj.schedule_signal:
-            return f"일정 신호 {obj.schedule_signal}"
+            signal_label = (
+                value_label("schedule_signal", obj.schedule_signal) or obj.schedule_signal
+            )
+            kind = (
+                "warn"
+                if obj.schedule_signal in ("at_risk", "delayed", "window_closing")
+                else "info"
+            )
+            return f"일정 신호 {signal_label}", kind
         if isinstance(obj, ScenarioRequest):
-            return f"{obj.priority} · 상태 {obj.status}"
-        if isinstance(obj, (IPKnob, ScenarioGroup)):
-            return None
-        return None
+            status_label = value_label("request_status", obj.status) or obj.status
+            return f"{obj.priority} · 상태 {status_label}", (
+                "warn" if obj.priority == "P0" else "info"
+            )
+        return None, None
 
     # ---- LLM 답변 ----
 

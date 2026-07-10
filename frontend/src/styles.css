@@ -290,3 +290,18 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
   padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px;
   font-size: 13px; min-width: 200px; background: var(--surface); color: inherit;
 }
+
+.chip-count { color: var(--accent); font-weight: 700; }
+
+/* 진행 스피너 — LLM 등 긴 대기의 진행감 (prefers-reduced-motion 존중) */
+.busy { display: flex; align-items: center; gap: 8px; justify-content: center; }
+.spinner {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--border); border-top-color: var(--accent);
+  animation: spin 0.9s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
+/* 접근성 — 공통 포커스 링 (U3) */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

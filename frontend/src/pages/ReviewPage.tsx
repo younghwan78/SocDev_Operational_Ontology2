@@ -91,17 +91,26 @@ export function ReviewPage() {
 
   const index = useQuery({ queryKey: ["weekly-index"], queryFn: fetchWeeklyIndex });
   const selectedWeek = week ? Number(week) : undefined;
+  const [showAllWeeks, setShowAllWeeks] = useState(false);
+
+  // 기본 선택 = 데이터가 있는 최신 주차 — 빈 W1이 아니라 이번 주 리뷰가 먼저 보인다.
+  const weeks = index.data?.weeks ?? [];
+  const countOf = (w: number) =>
+    (index.data?.event_counts[String(w)] ?? 0) +
+    (index.data?.activity_counts[String(w)] ?? 0) +
+    (index.data?.request_counts[String(w)] ?? 0);
+  const latestWithData = [...weeks].reverse().find((w) => countOf(w) > 0) ?? weeks[0];
+  const active = selectedWeek ?? latestWithData;
   const snapshot = useQuery({
-    queryKey: ["weekly-snapshot", selectedWeek],
-    queryFn: () => fetchWeeklySnapshot(selectedWeek!),
-    enabled: selectedWeek !== undefined,
+    queryKey: ["weekly-snapshot", active],
+    queryFn: () => fetchWeeklySnapshot(active!),
+    enabled: active !== undefined,
   });
 
   if (index.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (index.isError) return <p className="status-msg">{ko.app.error}</p>;
 
-  const weeks = index.data.weeks;
-  const active = selectedWeek ?? weeks[0];
+  const recentWeeks = showAllWeeks ? weeks : weeks.slice(-8);
 
   return (
     <div>
@@ -111,30 +120,37 @@ export function ReviewPage() {
 
       <div className="filter-row">
         <span className="filter-label">{t.week_select}</span>
-        {weeks.map((w) => (
+        {recentWeeks.map((w) => (
           <button
             key={w}
             className={`chip chip-btn ${w === active ? "active" : ""}`}
             onClick={() => navigate(`/review/${w}`)}
+            title={`${ko.scenario_detail.week_prefix}${w}`}
           >
             {ko.scenario_detail.week_prefix}
             {w}
+            {countOf(w) > 0 && <span className="chip-count"> {countOf(w)}</span>}
           </button>
         ))}
+        {weeks.length > 8 && (
+          <button
+            type="button"
+            className="link-btn"
+            onClick={() => setShowAllWeeks((previous) => !previous)}
+          >
+            {showAllWeeks ? t.weeks_collapse : t.weeks_show_all}
+          </button>
+        )}
       </div>
 
-      {selectedWeek === undefined && weeks.length > 0 && (
-        <p className="section-note">
-          {t.counts
-            .replace("{e}", String(index.data.event_counts[String(active)] ?? 0))
-            .replace("{a}", String(index.data.activity_counts[String(active)] ?? 0))
-            .replace("{r}", String(index.data.request_counts[String(active)] ?? 0))}
-        </p>
-      )}
+      <p className="section-note">
+        {t.counts
+          .replace("{e}", String(index.data.event_counts[String(active)] ?? 0))
+          .replace("{a}", String(index.data.activity_counts[String(active)] ?? 0))
+          .replace("{r}", String(index.data.request_counts[String(active)] ?? 0))}
+      </p>
 
-      {snapshot.isPending && selectedWeek !== undefined && (
-        <p className="status-msg">{ko.app.loading}</p>
-      )}
+      {snapshot.isPending && <p className="status-msg">{ko.app.loading}</p>}
       {snapshot.data && (
         <div>
           <div className="card">

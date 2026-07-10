@@ -350,6 +350,17 @@
             "title": "Snippet",
             "type": "string"
           },
+          "status_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Kind"
+          },
           "status_ko": {
             "anyOf": [
               {

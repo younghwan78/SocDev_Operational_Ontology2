@@ -234,6 +234,7 @@ function HeatmapRow({
             <button
               type="button"
               title={`${cell.grade_ko} — ${row.scenario_id} × ${ipId}`}
+              aria-label={`${row.scenario_name} × ${ipId} ${cell.grade_ko}`}
               className={`cell-btn ${GRADE_CLASS[cell.grade]} ${
                 isSelected(ipId) ? "cell-selected" : ""
               }`}

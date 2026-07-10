@@ -18,6 +18,7 @@ import {
 import { CollapsibleList } from "../components/CollapsibleList";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
+import { Busy } from "../components/Busy";
 import { ko } from "../i18n/ko";
 
 const t = ko.change_impact;
@@ -74,8 +75,9 @@ export function ChangeImpactPage() {
 
       <div className="card">
         <div className="filter-row">
-          <span className="filter-label">{t.select_ip}</span>
+          <label className="filter-label" htmlFor="ci-ip">{t.select_ip}</label>
           <select
+            id="ci-ip"
             value={ipId}
             onChange={(event) => {
               setIpId(event.target.value);
@@ -91,8 +93,9 @@ export function ChangeImpactPage() {
               </option>
             ))}
           </select>
-          <span className="filter-label">{t.select_knob}</span>
+          <label className="filter-label" htmlFor="ci-knob">{t.select_knob}</label>
           <select
+            id="ci-knob"
             value={knobId}
             onChange={(event) => setKnobId(event.target.value)}
             disabled={!selected || (selected.knobs ?? []).length === 0}
@@ -104,8 +107,9 @@ export function ChangeImpactPage() {
               </option>
             ))}
           </select>
-          <span className="filter-label">{t.select_capability}</span>
+          <label className="filter-label" htmlFor="ci-capability">{t.select_capability}</label>
           <select
+            id="ci-capability"
             value={capabilityId}
             onChange={(event) => setCapabilityId(event.target.value)}
             disabled={!selected || (selected.capabilities ?? []).length === 0}
@@ -117,8 +121,9 @@ export function ChangeImpactPage() {
               </option>
             ))}
           </select>
-          <span className="filter-label">{t.select_mode}</span>
+          <label className="filter-label" htmlFor="ci-mode">{t.select_mode}</label>
           <select
+            id="ci-mode"
             value={mode}
             onChange={(event) => setMode(event.target.value)}
             disabled={!selected || (selected.modes ?? []).length === 0}
@@ -166,14 +171,16 @@ export function ChangeImpactPage() {
       </div>
 
       {params === null && <p className="status-msg">{t.idle_hint}</p>}
-      {result.isFetching && <p className="status-msg">{ko.app.loading}</p>}
+      {result.isFetching && <Busy message={ko.app.loading} />}
       {result.isError && (
         <p className="status-msg" role="alert">
           {t.analysis_failed}
         </p>
       )}
       {params !== null && result.data && !result.isFetching && (
-        <ImpactResult result={result.data} />
+        <div aria-live="polite">
+          <ImpactResult result={result.data} />
+        </div>
       )}
     </div>
   );
