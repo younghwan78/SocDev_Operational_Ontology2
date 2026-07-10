@@ -2,7 +2,14 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — 사내 실운영 준비 Phase 0~4 전부 완료 (2026-07-11).**
+**UI 실사용자 재설계 (2026-07-11 승인) — 설계 `internal_docs/design/13_ui_operational_redesign.md`.**
+
+> 순서(각 단계 commit): P0-1 신뢰 품질(B1 초안 중복 제거·B2 backend 서술 코드 은닉·
+> B3 태세 배지 분리) → P0-2 운영 루프 UI(A1 반입 센터·A2 결정 루프) →
+> P0-3 URL=상태+스케일(C1·C2) → P1(A3 리뷰 센터·C3 로딩·C4 폼 언어·D 접근성) →
+> P2(여력 시). 수용 기준·invariant는 설계 문서 §2~3.
+
+### 직전 완료 — 사내 실운영 준비 Phase 0~4 (2026-07-11)
 
 > **방향 재정의 (2026-07-11, 사용자)**: 목표는 워크숍 데모가 아니라 **사내 실운영
 > (operational ontology) + JIRA/Confluence 연동**. 사외에서는 fixture로 구현·검증
