@@ -10,6 +10,10 @@ from backend.loaders.repository import InMemoryRepository
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "fixtures"
 SAMPLE = ROOT / "samples" / "sample_milestones.csv"
+SAMPLE_ISSUES = ROOT / "samples" / "sample_issues.csv"
+SAMPLE_TESTS = ROOT / "samples" / "sample_tests.csv"
+SAMPLE_EVENTS = ROOT / "samples" / "sample_events.csv"
+SAMPLE_EVIDENCE = ROOT / "samples" / "sample_evidence_catalog.csv"
 
 
 @pytest.fixture()
@@ -86,6 +90,177 @@ def test_synthetic_data_untouched_by_rollback(
     report = service.ingest("sample_milestones.csv", SAMPLE.read_bytes(), "project_milestones")
     service.rollback(report.batch.id)
     assert repo.get("project_milestones", "project_u_package_out_done") is not None
+
+
+# ---- 신규 매핑 (반입 표면 확대) ----
+
+
+def test_convert_row_nested_bool_single_item() -> None:
+    from backend.ingest.mappings import MAPPINGS, convert_row
+
+    mapping = MAPPINGS["issues"]
+    record = convert_row(
+        mapping,
+        {
+            "이슈 ID": "x",
+            "프로젝트 ID": "project_u",
+            "제목": "t",
+            "유형": "underrun",
+            "상태": "open",
+            "증상": "s",
+            "확신도": "medium",
+            "영향 시나리오": "a;b",
+            "영향 IP": "ip_dpu",
+            "원인 유형": "architecture_miss",
+            "원인 설명": "d",
+            "원인 확신도": "low",
+        },
+    )
+    assert record["affected_scope"] == {"scenarios": ["a", "b"], "ip_blocks": ["ip_dpu"]}
+    assert record["root_causes"] == [
+        {"cause_type": "architecture_miss", "description": "d", "confidence": "low"}
+    ]
+
+    catalog = MAPPINGS["evidence_catalog"]
+    row = {"근거 ID": "e", "실측 여부": "예", "예측 여부": "false"}
+    converted = convert_row(catalog, row)
+    assert converted["is_measurement"] is True
+    assert converted["is_prediction"] is False
+
+    import pytest as _pytest
+
+    with _pytest.raises(ValueError):
+        convert_row(catalog, {"근거 ID": "e", "실측 여부": "몰라"})
+
+
+def test_ingest_issues_roundtrip(repo: InMemoryRepository, service: IngestService) -> None:
+    before = len(repo.list("issues"))
+    report = service.ingest("sample_issues.csv", SAMPLE_ISSUES.read_bytes(), "issues")
+    assert report.batch.accepted_count == 3
+    assert report.batch.rejected_count == 0
+
+    imported = repo.get("issues", "import_issue_dpu_ui_underrun_v")
+    assert imported is not None
+    assert imported.source.origin.value == "imported"
+    assert imported.affected_scope.scenarios == [
+        "video_mode_panel_underrun_prevention",
+        "uhd60_recording_eis_on",
+    ]
+    assert imported.affected_scope.system_blocks == ["sys_noc", "sys_mif"]
+    assert imported.root_causes[0].cause_type.value == "architecture_miss"
+    assert imported.root_causes[0].confidence.value == "medium"
+
+    no_cause = repo.get("issues", "import_issue_isp_lowlight_close_unverified_w")
+    assert no_cause is not None and no_cause.root_causes == []
+
+    assert service.rollback(report.batch.id) == 3
+    assert len(repo.list("issues")) == before
+
+
+def test_ingest_tests_roundtrip(repo: InMemoryRepository, service: IngestService) -> None:
+    before = len(repo.list("tests"))
+    report = service.ingest("sample_tests.csv", SAMPLE_TESTS.read_bytes(), "tests")
+    assert report.batch.accepted_count == 2
+    assert report.batch.rejected_count == 0
+
+    imported = repo.get("tests", "import_test_mfc_export_thermal_w")
+    assert imported is not None
+    assert imported.verifies_issue_ids == ["import_issue_mfc_export_thermal_w"]
+    assert imported.executed_week == 31
+
+    assert service.rollback(report.batch.id) == 2
+    assert len(repo.list("tests")) == before
+
+
+def test_ingest_events_roundtrip(repo: InMemoryRepository, service: IngestService) -> None:
+    before = len(repo.list("development_events"))
+    report = service.ingest("sample_events.csv", SAMPLE_EVENTS.read_bytes(), "development_events")
+    assert report.batch.accepted_count == 2
+    assert report.batch.rejected_count == 0
+
+    imported = repo.get("development_events", "import_event_dpu_qos_risk_v")
+    assert imported is not None
+    assert imported.severity == "high"
+    assert imported.schedule_signal == "at_risk"
+    assert imported.affected_domains == ["display", "memory"]
+    assert imported.roles_involved == ["soc_architecture", "hw_development"]
+
+    assert service.rollback(report.batch.id) == 2
+    assert len(repo.list("development_events")) == before
+
+
+def test_ingest_evidence_catalog_roundtrip(
+    repo: InMemoryRepository, service: IngestService
+) -> None:
+    before = len(repo.list("evidence_catalog"))
+    report = service.ingest(
+        "sample_evidence_catalog.csv", SAMPLE_EVIDENCE.read_bytes(), "evidence_catalog"
+    )
+    assert report.batch.accepted_count == 2
+    assert report.batch.rejected_count == 0
+
+    measured = repo.get("evidence_catalog", "import_evidence_mfc_export_thermal_w")
+    assert measured is not None
+    assert measured.is_measurement is True and measured.is_prediction is False
+    predicted = repo.get("evidence_catalog", "import_evidence_dpu_ui_traffic_v")
+    assert predicted is not None
+    assert predicted.is_measurement is False and predicted.is_prediction is True
+
+    assert service.rollback(report.batch.id) == 2
+    assert len(repo.list("evidence_catalog")) == before
+
+
+def test_ingested_data_flows_into_derived_views(
+    repo: InMemoryRepository, service: IngestService
+) -> None:
+    """반입 데이터가 위험 지도/RCA/근거 사다리에 즉시 반영되고 rollback 시 사라진다."""
+    from backend.services.evidence_ladder import EvidenceLadderService
+    from backend.services.rca import RCAService
+    from backend.services.risk import RiskService
+
+    rca = RCAService(repo)
+    risk = RiskService(repo)
+    ladder = EvidenceLadderService(repo)
+
+    baseline_issue_ids = {s.issue_id for s in rca.list_issues()}
+    baseline_ladder_total = ladder.ladder().totals.total
+
+    issues_batch = service.ingest("sample_issues.csv", SAMPLE_ISSUES.read_bytes(), "issues")
+    tests_batch = service.ingest("sample_tests.csv", SAMPLE_TESTS.read_bytes(), "tests")
+    evidence_batch = service.ingest(
+        "sample_evidence_catalog.csv", SAMPLE_EVIDENCE.read_bytes(), "evidence_catalog"
+    )
+
+    # RCA: 반입 이슈 등장 + 검증 배지 — 검증 테스트 없는 close는 빨간 경고.
+    summaries = {s.issue_id: s for s in rca.list_issues()}
+    assert "import_issue_dpu_ui_underrun_v" in summaries
+    assert summaries["import_issue_isp_lowlight_close_unverified_w"].closed_without_verification
+    assert summaries["import_issue_mfc_export_thermal_w"].verification == "verified"
+
+    # 위험 지도: open 이슈가 걸린 시나리오×IP 셀이 미해결 이슈 근거로 표시.
+    heatmap = risk.heatmap(project_id="project_v")
+    row = next(
+        r for r in heatmap.rows if r.scenario_id == "video_mode_panel_underrun_prevention"
+    )
+    cell = next(c for c in row.cells if c.ip_id == "ip_dpu")
+    assert cell.grade == "high"
+    assert any(
+        b.rule == "open_issue" and b.ref_id == "import_issue_dpu_ui_underrun_v"
+        for b in cell.basis
+    )
+
+    # 근거 사다리: 반입 근거 2건이 분류되어 합계 증가 (실측·정합 1 + 예측 1).
+    after = ladder.ladder()
+    assert after.totals.total == baseline_ladder_total + 2
+    tiers = {e.evidence_id: e.tier for e in after.entries if e.evidence_id.startswith("import_")}
+    assert tiers["import_evidence_mfc_export_thermal_w"] == "measured_direct"
+    assert tiers["import_evidence_dpu_ui_traffic_v"] == "predicted"
+
+    # rollback 후 전 파생 뷰가 기준선으로 복귀.
+    for batch in (issues_batch, tests_batch, evidence_batch):
+        service.rollback(batch.batch.id)
+    assert {s.issue_id for s in rca.list_issues()} == baseline_issue_ids
+    assert ladder.ladder().totals.total == baseline_ladder_total
 
 
 def test_ingest_api_roundtrip() -> None:

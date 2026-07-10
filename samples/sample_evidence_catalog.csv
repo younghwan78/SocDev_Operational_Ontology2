@@ -1,0 +1,3 @@
+근거 ID,프로젝트 ID,시나리오 ID,제목,근거 유형,가용성,확신도 기여,실측 여부,예측 여부,알려진 한계,측정 단계,시나리오 정합,출처 시스템,출처 참조,주차,관련 마일스톤,관련 요청
+import_evidence_mfc_export_thermal_w,project_w,video_editor_export,장시간 export thermal 지속 부하 실측,current_measurement,available,high,예,아니오,"고온 환경(35°C+) 조건은 별도 챔버 실측이 필요하다.",current_silicon,strong,lab,import:thermal_lab_report_w30,30,,
+import_evidence_dpu_ui_traffic_v,project_v,video_mode_panel_underrun_prevention,Preview+UI 동시 트래픽 프로파일 예측,architecture_prediction,partial,medium,아니오,예,"실보드 트래픽 캡처 전 단계의 모델 예측이다.",architecture,partial,simulation,import:noc_traffic_model_v,28,,
