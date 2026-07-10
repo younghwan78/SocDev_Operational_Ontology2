@@ -1,5 +1,37 @@
 # CHANGELOG
 
+## 사내 실운영 준비 Phase 0~1 — 얇은 CI + 반입 표면 확대 (2026-07-11)
+
+> **방향 재정의(사용자)**: 목표는 워크숍 데모가 아니라 사내 실운영 + JIRA/Confluence 연동.
+> 사외에서는 fixture로 구현·검증 가능한 것을 앞당긴다 — 백로그 P4 재배열 채택.
+> 로드맵: Phase 0(CI) → 1(반입 확대) → 2(B3b 결정 재진입) → 3(커넥터 사외 선행분) →
+> 4(U1 값 한국어화 + 위험 지도 태세). 이번 완료분은 Phase 0~1.
+
+### 추가
+
+- **얇은 CI** (`.github/workflows/ci.yml`, L1 해소 착수): backend(pytest/ruff/mypy/
+  validate-data) / frontend(build/test/lint) / contracts(schema·openapi·gen:api 재생성 후
+  `git diff --exit-code` 드리프트 검출) 3 job. PG 통합 job은 후속 확장.
+- **반입 매핑 4종** (`backend/ingest/mappings.py`, L3 해소 — JIRA 데이터 착지 표면):
+  issues / tests / development_events / evidence_catalog. `convert_row`에 중첩 필드
+  (점 표기, `affected_scope.scenarios`), bool 열(예/아니오), 단일 하위 객체 리스트
+  (`root_causes` 1건) 지원. 샘플 CSV 4종(`samples/`, fixture 세계관 정합).
+- **계약 정밀화 (L8 해소, 변경 규율 6단계)**:
+  - `DevelopmentEvent.related_ip_ids`(optional) — 명시 IP 링크.
+    `event_related_ips()`는 명시 링크 우선, 없으면 기존 `IPAliasIndex` 휴리스틱(동작 보존).
+  - `Issue.severity`(optional) — 미해결 이슈 심각도 low/info면 중간, 그 외/무명시는
+    기존대로 높음(근거 서술에 심각도 표기). fixture 무명시라 기존 등급 전부 불변.
+  - 컨버터 재생성(`event.yaml`에 `related_ip_ids: []` 63건), schema/openapi/gen:api 재생성.
+
+### 검증
+
+```text
+backend 176 passed / 9 skipped · ruff · mypy(58) pass · validate-data 오류 0 ·
+frontend build / test(21) / lint 0. test_ingest 14케이스(신규 매핑 왕복 + 파생 뷰 통합).
+E2E(실서버 8155): CSV 4종 반입(9건) → 위험 지도 open_issue 셀 근거 / RCA 미검증 close
+빨간 경고(no_tests) / 사다리 54→56(실측·정합 1, 예측 1) → rollback 후 전부 기준선 복귀.
+```
+
 ## 리뷰 팩 조립 — 결정 ← 근거 루프 (B3) (2026-07-10)
 
 > 설계: `internal_docs/design/10_review_pack.md`. 원점 4층 루프의 review→decision 고리.

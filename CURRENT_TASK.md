@@ -2,41 +2,25 @@
 
 ## 활성 Stage
 
-**사내 실운영 준비 로드맵 Phase 0~1 — 얇은 CI + 반입 표면 확대 (2026-07-11 승인).**
+**활성 Stage 없음 — 사내 실운영 준비 Phase 0~1 완료 (2026-07-11). Phase 2 승인 대기.**
 
 > **방향 재정의 (2026-07-11, 사용자)**: 목표는 워크숍 데모가 아니라 **사내 실운영
 > (operational ontology) + JIRA/Confluence 연동**. 사외에서는 fixture로 구현·검증
-> 가능한 것을 최대한 앞당긴다 — 백로그 P4("CI 얇게 먼저 + 실데이터 반입 당기기") 채택.
-> 전체 로드맵: Phase 0(얇은 CI) → 1(반입 표면 확대 = Stage 15 사외 선행분) →
-> 2(B3b 결정 재진입) → 3(JIRA/Confluence 커넥터 사외 선행분) → 4(U1 값 한국어화 + 태세 배지).
-> **이번 승인 범위는 Phase 0~1** — Phase 2~4는 완료 보고 후 순차 승인.
-
-### Phase 0 — 얇은 CI (In-scope)
-
-- `.github/workflows/ci.yml` 3 jobs: backend(pytest/ruff/mypy/validate-data),
-  frontend(build/test/lint), contracts(schema/openapi/gen:api 재생성 후 drift 검출).
-- PG 통합 job은 후속 확장으로 명시만. 56 참조 부재 시 라운드트립 테스트는 기존 skipif로 skip.
-
-### Phase 1 — 반입 표면 확대 (In-scope)
-
-1. **1a 매핑 중첩 필드 지원**: `column_map` 점 표기(`affected_scope.scenarios`),
-   `bool_columns`, 단일 근본원인 3열→`root_causes[0]` 조립. 필요한 형태만(일반화 과잉 금지).
-2. **1b 매핑 4종**: issues / tests / development_events / evidence_catalog
-   (한국어 헤더, `;` 리스트). 각각 rollback 왕복 테스트 + 반입→위험 지도·RCA·사다리
-   즉시 반영 통합 테스트. `samples/`에 4종 샘플 CSV.
-3. **1c 계약 정밀화 (L8, 변경 규율 6단계)**: `DevelopmentEvent.related_ip_ids`(optional,
-   명시 링크 우선→휴리스틱 폴백), `Issue.severity`(optional). glossary + 3종 재생성.
-
-### Out-of-scope (이번 Phase)
-
-B3b/커넥터/U1(각 Phase 2~4), P3 Path, 신규 화면, 인증/배포, telemetry, 시맨틱 검색.
-
-### 수용 기준
-
-- [ ] CI 3 job 정의가 로컬 회귀 명령과 동일 게이트를 실행
-- [ ] 4개 매핑 각각: 샘플 CSV 반입 성공 → 해당 화면 파생 뷰 반영 → rollback 시 소멸 (테스트 고정)
-- [ ] `related_ip_ids` 있는 이벤트는 휴리스틱 없이 정확 귀속 (테스트 고정)
-- [ ] 라운드트립·glossary 커버리지·전체 회귀 green, validate-data 오류 0
+> 가능한 것을 최대한 앞당긴다 — 백로그 P4("CI 얇게 먼저 + 반입 표면 당기기") 채택.
+>
+> **완료 (CHANGELOG 참조)**:
+> - **Phase 0 얇은 CI** — backend/frontend/contracts 3 job (`.github/workflows/ci.yml`).
+> - **Phase 1 반입 표면 확대(Stage 15 사외 선행분)** — 매핑 4종(issues/tests/
+>   development_events/evidence_catalog, 중첩·bool·root_causes 지원) + 샘플 CSV 4종 +
+>   왕복·파생 뷰 통합 테스트. 계약 정밀화(L8): `DevelopmentEvent.related_ip_ids`
+>   (명시 링크 우선), `Issue.severity`(low/info→중간). E2E(실서버 8155) 검증 완료.
+>
+> **다음 로드맵 (각 Phase 착수는 사용자 승인 — `08_bridge_followups.md` §4)**:
+> - **Phase 2 = B3b 결정 재진입**: 설계 `11_decision_reentry.md` 선행 → decisions 매핑 →
+>   리뷰 팩 CSV 왕복. `Decision.event_id` 필수 처리 설계 포함. **쓰기 경로라 신중.**
+> - **Phase 3 = JIRA/Confluence 커넥터 사외 선행분**: Protocol+Fake+설정 YAML 매핑+
+>   ingest 경유(origin=integrated)+`sync-jira --dry-run`. 보안 승인 등은 사내 후속.
+> - **Phase 4 = U1 값 도메인 한국어화 + 위험 지도 근거 태세 배지.**
 
 ## 다음 단계 기준 문서
 

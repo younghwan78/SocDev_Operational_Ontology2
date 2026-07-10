@@ -56,7 +56,7 @@ Bridge에서 F1(=G-1)·F2(=G-2)·Action Draft(=§1)를 했다. 남은 제안:
 | ~~P1~~ ✅ | ~~Evidence Ladder 전면화 (G-3)~~ **완료(2026-07-09)** | 설계 `09_evidence_ladder.md`. 원점의 `evidence_level`(시맨틱 메타)이 아니라 evidence_catalog 실필드(measurement_stage·scenario_match·availability)로 재정초 — 강→약 5단 정성 등급 + 근거. `GET /evidence/ladder` + 근거 탐색 분포 패널. fixture→real "레벨업" 훅(origin) 포함. | — |
 | P2 | **측정을 제품 기능으로 (G-4)** | TAT를 localStorage 데모 로깅이 아니라 "OS의 운영 지표"로. 05 Stage 17 telemetry를 코어 루프로 승격. **단 C1(pre-tool baseline) 선행 필수.** | M~L | 원점 §10, 05 C1 |
 | P3 | **`Path` 객체 도입 (G-5)** | IPBlock/SystemInfluenceBlock만으로는 "ISP M2M **path**가 DDR을 밀었다"는 인과 경로 표현 불가. 대규모 계약 변경 — 도입 시 change_impact가 질적 도약. | L | 원점 §2 Phase 2, archetype 근본원인 서술 |
-| P4 | **시퀀싱 이견 반영** | 05는 Stage 14(경화)를 실데이터(15) 앞에 둠 → "fixture 완벽주의 함정"(원점 §10 위험3) 위험. **CI만 얇게 먼저 + 실데이터 소량 반입 당기기** 재배열 검토. | 문서 | 원점 §10, 7/9 제안 §4 |
+| ~~P4~~ ✅ | ~~시퀀싱 이견 반영~~ **채택(2026-07-11)** | 사용자 방향 재정의(사내 실운영 + JIRA/Confluence 연동이 목표, 사외에서는 fixture로 최대 검증)에 따라 **CI 얇게 먼저 + 반입 표면 당기기**로 재배열 실행. Phase 0(얇은 CI)·Phase 1(매핑 4종 + related_ip_ids/severity 계약 정밀화 = Stage 15 사외 선행분) 완료 — CHANGELOG 참조. | 문서 | 원점 §10, 7/9 제안 §4 |
 
 ---
 
@@ -66,17 +66,21 @@ Bridge에서 F1(=G-1)·F2(=G-2)·Action Draft(=§1)를 했다. 남은 제안:
 (+ 사다리→실행 초안 통합 ✅) · B3 리뷰 팩 조립 ✅. 오늘까지 궤적:
 사다리(계산)→분포(가시화)→실행 초안 통합(행동화)→리뷰 팩(결정←근거 루프).
 
-**남은 항목 — 실데이터 없이 홈에서 가능한 것 우선**:
+**방향 재정의(2026-07-11)**: 사내 실운영 + JIRA/Confluence 연동이 목표 — 데이터 경로 우선
+로드맵으로 재배열(P4 채택). Phase 0(얇은 CI)·Phase 1(반입 매핑 4종 + 계약 정밀화 L8) 완료.
 
-1. **B3b — 결정 재진입(루프 완전 닫기)**: 채운 결정 CSV → ingest 매핑 → `Decision` 객체로 재진입.
-   **쓰기 경로**라 신중 필요(ingest 매핑 정의·검증·테스트). 설계 `10_review_pack.md` §2.2.
-2. **위험 지도에 근거 태세 확장**: 홈 코크핏 각 시나리오 행에 실측/예측/부재 배지 —
-   `EvidenceLadderService` 재사용, 저위험 결정론 파생. Action Draft 통합과 동일 패턴.
-3. **P3 `Path` 객체(인과 경로, G-5)**: 최고 가치이나 대규모 계약 변경(다세션) — 착수 시
-   변경 규율 전체(설계→모델→Schema→fixture→테스트) 필요. 사용자 승인 권장.
-4. **P4 시퀀싱 재배열(문서)** · **P2 측정=제품**/**B2 반입 진척**(실데이터 의존 — 사내에서 효과적).
+**남은 로드맵 (각 Phase 착수는 사용자 승인)**:
 
-> 홈 권장 순서: **위험 지도 태세 확장(저비용·고가시성)** → B3b(루프 닫기, 신중) → P3(대형, 승인).
+1. **Phase 2 = B3b — 결정 재진입(루프 완전 닫기)**: 채운 결정 CSV → ingest 매핑 →
+   `Decision` 객체로 재진입. **쓰기 경로**라 신중(설계 `11_decision_reentry.md` 선행 —
+   `Decision.event_id` 필수 처리 포함). 설계 근거 `10_review_pack.md` §2.2.
+2. **Phase 3 = JIRA/Confluence 커넥터 사외 선행분(Stage 19 앞당김)**: JiraClient Protocol +
+   Fake payload + 설정 YAML 매핑 + ingest 경유(origin=integrated) + `sync-jira --dry-run`.
+   보안 승인·실 자격증명·실 스키마 값만 사내 후속.
+3. **Phase 4 = U1 값 도메인 한국어화 + 위험 지도 근거 태세 배지**: VALUE_LABELS +
+   fixture 전 값 커버리지 테스트(반입 신규 값 누락 검출) / `EvidenceLadderService` 재사용.
+4. **P3 `Path` 객체(인과 경로, G-5)**: 최고 가치이나 대규모 계약 변경(다세션) —
+   실데이터로 연결 모델 검증 후 착수 권장. **P2 측정=제품**/**B2 반입 진척**은 실데이터 의존.
 
 ## 5. 착수 전 필독 (순서)
 
