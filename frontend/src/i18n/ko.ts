@@ -4,6 +4,12 @@
  * 도메인 용어(객체/필드 라벨)는 backend glossary(/api/v1/meta/glossary)가 소스다.
  */
 export const ko = {
+  posture: {
+    label: "근거 태세",
+    measured: "실측",
+    predicted: "예측",
+    absent: "부재",
+  },
   app: {
     title: "SoC 운영 온톨로지",
     nav_risk: "위험 지도",

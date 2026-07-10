@@ -7,6 +7,7 @@ import {
   type DraftSection,
 } from "../../api/client";
 import { CollapsibleList } from "../../components/CollapsibleList";
+import { PostureChip } from "../../components/PostureChip";
 import { ko } from "../../i18n/ko";
 
 const t = ko.action_draft;
@@ -34,12 +35,6 @@ function toMarkdown(draft: ActionDraft): string {
   }
   return lines.join("\n");
 }
-
-const POSTURE_BADGE = (measured: number, predicted: number, absent: number): string => {
-  if (measured === 0) return "badge-danger";
-  if (predicted > measured || absent > measured) return "badge-warn";
-  return "badge-ok";
-};
 
 export function ActionDraftTab({ scenarioId }: { scenarioId: string }) {
   const draft = useQuery({
@@ -74,17 +69,12 @@ export function ActionDraftTab({ scenarioId }: { scenarioId: string }) {
         </p>
         {data.evidence_posture && (
           <p className="desc">
-            <span
-              className={`badge ${POSTURE_BADGE(
-                data.evidence_posture.measured,
-                data.evidence_posture.predicted,
-                data.evidence_posture.absent,
-              )}`}
-            >
-              {t.posture}: {t.posture_measured} {data.evidence_posture.measured} ·{" "}
-              {t.posture_predicted} {data.evidence_posture.predicted} · {t.posture_absent}{" "}
-              {data.evidence_posture.absent}
-            </span>{" "}
+            <PostureChip
+              measured={data.evidence_posture.measured}
+              predicted={data.evidence_posture.predicted}
+              absent={data.evidence_posture.absent}
+              note={data.evidence_posture.note_ko}
+            />{" "}
             {data.evidence_posture.note_ko}
           </p>
         )}
@@ -128,7 +118,8 @@ function DraftSectionCard({ section }: { section: DraftSection }) {
             limit={3}
             render={(basis: BasisItem, i: number) => (
               <p key={`${basis.ref_id}-${i}`} className="desc" title={basis.ref_id}>
-                <span className="chip">{basis.rule_ko}</span> {basis.description}
+                <span className="chip">{basis.rule_ko}</span>
+                {basis.description !== item.statement && <> {basis.description}</>}
               </p>
             )}
           />

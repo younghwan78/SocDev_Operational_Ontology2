@@ -14,6 +14,7 @@ from pydantic import BaseModel, ConfigDict
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.event import Issue
 from backend.ontology.evidence import EvidenceCatalogEntry
+from backend.ontology.glossary import value_label
 from backend.ontology.scenario import Scenario
 from backend.services.common import BasisItem
 from backend.services.evidence_ladder import (
@@ -25,6 +26,12 @@ from backend.services.evidence_ladder import (
 )
 from backend.services.risk import RiskService
 from backend.services.scenario_analysis import ScenarioNotFoundError
+
+
+def _vl(domain: str, value: str) -> str:
+    """서술용 값 라벨 — 없으면 원문 유지 (코드는 hover/패널에서만)."""
+    return value_label(domain, value) or value
+
 
 _CLOSED_ISSUE_STATUSES = {"closed", "resolved", "done"}
 
@@ -113,13 +120,15 @@ class ActionDraftService:
             if is_open:
                 rule, rule_ko = "open_issue", "미해결 이슈"
                 statement = (
-                    f"미해결 이슈 확인: '{issue.title}' (유형 {issue.issue_type}, "
-                    f"상태 {issue.status}) — 증상: {issue.symptom}"
+                    f"미해결 이슈 확인: '{issue.title}' "
+                    f"(유형 {_vl('issue_type', issue.issue_type)}, "
+                    f"상태 {_vl('issue_status', issue.status)}) — 증상: {issue.symptom}"
                 )
             else:
                 rule, rule_ko = "unverified_close", "검증 없는 종결"
                 statement = (
-                    f"검증 근거 확인: '{issue.title}'이 종결(상태 {issue.status})됐으나 "
+                    f"검증 근거 확인: '{issue.title}'이 "
+                    f"종결(상태 {_vl('issue_status', issue.status)})됐으나 "
                     "검증 테스트 연결이 없음 — 재발 여부 확인 필요"
                 )
             items.append(
@@ -156,8 +165,9 @@ class ActionDraftService:
                 continue
             tier, _ = classify_evidence(entry)
             statement = (
-                f"근거 확보: '{entry.title}' (가용성 {entry.availability}, "
-                f"유형 {entry.evidence_type})"
+                f"근거 확보: '{entry.title}' "
+                f"(가용성 {_vl('availability', entry.availability)}, "
+                f"유형 {_vl('evidence_type', entry.evidence_type)})"
             )
             items.append(
                 DraftItem(

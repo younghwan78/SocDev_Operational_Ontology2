@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { fetchPortfolio, type AttentionItem } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
 import { useLabels } from "../hooks/useLabels";
+import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.portfolio;
@@ -111,6 +112,7 @@ function AttentionRow({
   item: AttentionItem;
   label: (id: string) => string;
 }) {
+  const valueLabel = useValueLabels();
   return (
     <div className="list-item">
       <div className="head">
@@ -143,7 +145,7 @@ function AttentionRow({
       {(item.suggested_review_roles ?? []).length > 0 && (
         <p className="desc">
           {ko.portfolio.suggested_roles}:{" "}
-          {(item.suggested_review_roles ?? []).map((roleId) => label(roleId)).join(", ")}
+          {(item.suggested_review_roles ?? []).map((roleId) => valueLabel("role", roleId)).join(", ")}
         </p>
       )}
     </div>

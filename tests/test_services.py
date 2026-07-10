@@ -98,3 +98,17 @@ def test_traceability_unknown_object(repo) -> None:
     result = service.trace("없는_객체_id")
     assert result.collection is None
     assert result.links == []
+
+
+def test_portfolio_descriptions_hide_raw_codes(repo) -> None:
+    """주의 항목 서술의 원문 코드·id 은닉 (B2) — id는 source_refs로 유지."""
+    from backend.services.portfolio import PortfolioService
+
+    overview = PortfolioService(repo).overview()
+    blocked = [i for i in overview.attention if i.lane == "evidence_blocked"]
+    assert blocked, "근거 부족 lane 존재"
+    for item in blocked:
+        assert "누락 근거" in item.description and "_" not in item.description
+        assert item.source_refs, "누락 근거 id는 source_refs로 추적 가능해야 한다"
+    for item in overview.attention:
+        assert "근거 '" not in item.description, "need id 인용 금지"

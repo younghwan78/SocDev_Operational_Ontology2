@@ -13,18 +13,13 @@ import {
   type WeeklyFocusItem,
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
+import { PostureChip } from "../components/PostureChip";
 import { useLabels } from "../hooks/useLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.risk;
 
 const GRADE_SYMBOL: Record<string, string> = { high: "●", medium: "◐", low: "○" };
-const POSTURE_BADGE = (measured: number, predicted: number, absent: number): string => {
-  if (measured === 0) return "badge-danger";
-  if (predicted > measured || absent > measured) return "badge-warn";
-  return "badge-ok";
-};
-
 const GRADE_CLASS: Record<string, string> = {
   high: "risk-high",
   medium: "risk-medium",
@@ -174,19 +169,12 @@ function HeatmapRow({
           {row.scenario_name}
         </button>
         {row.evidence_posture && (
-          <span
-            className={`badge ${POSTURE_BADGE(
-              row.evidence_posture.measured,
-              row.evidence_posture.predicted,
-              row.evidence_posture.absent,
-            )}`}
-            title={row.evidence_posture.note_ko}
-          >
-            {t.posture_measured}
-            {row.evidence_posture.measured}·{t.posture_predicted}
-            {row.evidence_posture.predicted}·{t.posture_absent}
-            {row.evidence_posture.absent}
-          </span>
+          <PostureChip
+            measured={row.evidence_posture.measured}
+            predicted={row.evidence_posture.predicted}
+            absent={row.evidence_posture.absent}
+            note={row.evidence_posture.note_ko}
+          />
         )}
       </th>
       {columnIds.map((ipId) => {

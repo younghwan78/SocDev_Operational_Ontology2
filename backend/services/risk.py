@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.event import DevelopmentEvent, Issue
 from backend.ontology.evidence import EvidenceCatalogEntry
+from backend.ontology.glossary import enum_label, value_label
 from backend.ontology.ip import IPBlock
 from backend.ontology.scenario import Scenario, ScenarioRequest
 from backend.resolve.entity_resolution import IPAliasIndex
@@ -130,6 +131,11 @@ def _worst(grades: list[str]) -> str:
     return min(grades, key=lambda g: _GRADE_RANK[g])
 
 
+def _vl(domain: str, value: str) -> str:
+    """서술용 값 라벨 — 없으면 원문 유지 (코드는 hover/패널에서만)."""
+    return value_label(domain, value) or value
+
+
 def _confidence_cap(raw: str) -> str:
     """56 축약 표기(H/M/L)를 정규화한 확신도 상한."""
     lowered = raw.lower()
@@ -233,7 +239,7 @@ class RiskService:
                         ref_collection="issues",
                         description=(
                             f"같은 시나리오·IP 조합의 과거 이슈 '{issue.title}' "
-                            f"(상태 {issue.status}) — 재발 가능성 검토 대상"
+                            f"(상태 {_vl('issue_status', issue.status)}) — 재발 가능성 검토 대상"
                         ),
                         source_refs=issue.evidence_refs,
                     )
@@ -245,7 +251,9 @@ class RiskService:
                     "info",
                 )
                 grades.append("medium" if low_severity else "high")
-                severity_note = f", 심각도 {issue.severity}" if issue.severity else ""
+                severity_note = (
+                    f", 심각도 {_vl('severity', issue.severity)}" if issue.severity else ""
+                )
                 basis.append(
                     RiskBasisItem(
                         rule="open_issue",
@@ -253,8 +261,10 @@ class RiskService:
                         ref_id=issue.id,
                         ref_collection="issues",
                         description=(
-                            f"미해결 이슈 '{issue.title}' (유형 {issue.issue_type}, "
-                            f"상태 {issue.status}{severity_note}) — 증상: {issue.symptom}"
+                            f"미해결 이슈 '{issue.title}' "
+                            f"(유형 {_vl('issue_type', issue.issue_type)}, "
+                            f"상태 {_vl('issue_status', issue.status)}{severity_note}) "
+                            f"— 증상: {issue.symptom}"
                         ),
                         source_refs=issue.evidence_refs,
                     )
@@ -273,8 +283,9 @@ class RiskService:
                         ref_id=event.id,
                         ref_collection="development_events",
                         description=(
-                            f"이벤트 '{event.title}'의 일정 신호 {event.schedule_signal}"
-                            f" (심각도 {event.severity})"
+                            f"이벤트 '{event.title}'의 일정 신호 "
+                            f"{_vl('schedule_signal', event.schedule_signal)}"
+                            f" (심각도 {_vl('severity', event.severity)})"
                         ),
                         source_refs=event.source_basis,
                     )
@@ -288,7 +299,8 @@ class RiskService:
                         ref_id=event.id,
                         ref_collection="development_events",
                         description=(
-                            f"고심각도({event.severity}) 이벤트 '{event.title}' 진행 중"
+                            f"고심각도({_vl('severity', event.severity)}) "
+                            f"이벤트 '{event.title}' 진행 중"
                         ),
                         source_refs=event.source_basis,
                     )
@@ -307,10 +319,10 @@ class RiskService:
                             ref_id=event.id,
                             ref_collection="development_events",
                             description=(
-                                f"근거 '{need.evidence_need_id}' 미가용 — 확신도 상한 "
-                                f"{cap}: {need.reason}"
+                                f"요구 근거 미가용 — 확신도 상한 "
+                                f"{enum_label('Confidence', cap) or cap}: {need.reason}"
                             ),
-                            source_refs=need.source_refs,
+                            source_refs=[need.evidence_need_id, *need.source_refs],
                         )
                     )
                 else:
@@ -376,11 +388,11 @@ class RiskService:
                         ref_id=request.id,
                         ref_collection="scenario_requests",
                         description=(
-                            f"{request.priority} 요청 '{request.title}' (상태 {request.status})에 "
-                            f"누락 근거 {len(request.missing_evidence)}건: "
-                            f"{'; '.join(request.missing_evidence)}"
+                            f"{request.priority} 요청 '{request.title}' "
+                            f"(상태 {_vl('request_status', request.status)})에 "
+                            f"누락 근거 {len(request.missing_evidence)}건"
                         ),
-                        source_refs=request.source_refs,
+                        source_refs=[*request.missing_evidence, *request.source_refs],
                     )
                 )
             else:
@@ -393,7 +405,7 @@ class RiskService:
                         ref_collection="scenario_requests",
                         description=(
                             f"{request.priority} 요청 '{request.title}' 진행 중 "
-                            f"(상태 {request.status})"
+                            f"(상태 {_vl('request_status', request.status)})"
                         ),
                         source_refs=request.source_refs,
                     )
@@ -460,9 +472,9 @@ class RiskService:
                         ref_collection="scenario_requests",
                         title=request.title,
                         description=(
-                            f"{request.priority} · 상태 {request.status} · 누락 근거 "
-                            f"{len(request.missing_evidence)}건: "
-                            f"{'; '.join(request.missing_evidence)}"
+                            f"{request.priority} · "
+                            f"상태 {_vl('request_status', request.status)} · "
+                            f"누락 근거 {len(request.missing_evidence)}건"
                         ),
                         week=request.requested_week,
                         project_ids=[request.origin_project_id],

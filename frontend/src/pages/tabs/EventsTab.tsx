@@ -50,7 +50,7 @@ export function EventsTab({
             <p className="desc">{event.description}</p>
             {(event.roles_involved ?? []).length > 0 && (
               <p className="desc">
-                {t.roles}: {(event.roles_involved ?? []).map((roleId) => label(roleId)).join(", ")}
+                {t.roles}: {(event.roles_involved ?? []).map((roleId) => valueLabel("role", roleId)).join(", ")}
               </p>
             )}
           </div>

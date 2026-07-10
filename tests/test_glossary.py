@@ -75,6 +75,8 @@ def test_value_labels_cover_all_fixture_values() -> None:
         ("direction", "ip_knobs", "bandwidth_direction"),
         ("direction", "ip_knobs", "risk_direction"),
         ("support_status", "ip_capabilities", "support_status"),
+        ("evidence_type", "evidence_catalog", "evidence_type"),
+        ("role", "roles", "id"),
     ]
     missing: list[str] = []
     for domain, collection, field_name in domain_fields:

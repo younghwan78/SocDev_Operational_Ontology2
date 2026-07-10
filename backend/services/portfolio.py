@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict
 
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.event import DevelopmentEvent
+from backend.ontology.glossary import enum_label, value_label
 from backend.ontology.project import Project, ProjectScenarioFocus
 from backend.ontology.scenario import Scenario, ScenarioGroup, ScenarioRequest
 
@@ -77,6 +78,12 @@ LANE_LABELS: dict[str, str] = {
 }
 
 
+def _cap_label(raw: str) -> str:
+    """확신도 상한 라벨 — H/M/L 축약을 정규화 후 한국어."""
+    normalized = {"h": "high", "m": "medium", "l": "low"}.get(raw.lower(), raw.lower())
+    return enum_label("Confidence", normalized) or raw
+
+
 def _request_scenarios(request: ScenarioRequest) -> list[str]:
     """요청이 가리키는 시나리오 ID 목록."""
     result = list(request.scenario_ids)
@@ -97,21 +104,23 @@ class PortfolioService:
 
         # 근거 부족 — 요청의 누락 근거
         for request in requests:
-            for missing in request.missing_evidence:
-                items.append(
-                    AttentionItem(
-                        lane="evidence_blocked",
-                        lane_ko=LANE_LABELS["evidence_blocked"],
-                        ref_id=request.id,
-                        ref_collection="scenario_requests",
-                        title=request.title,
-                        description=f"누락 근거: {missing}",
-                        project_ids=[request.origin_project_id],
-                        scenario_ids=_request_scenarios(request),
-                        suggested_review_roles=request.role_relevance,
-                        source_refs=request.source_refs,
-                    )
+            if not request.missing_evidence:
+                continue
+            # 누락 근거는 요청당 1카드로 묶는다 — id 나열은 hover/추적(source_refs)으로.
+            items.append(
+                AttentionItem(
+                    lane="evidence_blocked",
+                    lane_ko=LANE_LABELS["evidence_blocked"],
+                    ref_id=request.id,
+                    ref_collection="scenario_requests",
+                    title=request.title,
+                    description=f"누락 근거 {len(request.missing_evidence)}건",
+                    project_ids=[request.origin_project_id],
+                    scenario_ids=_request_scenarios(request),
+                    suggested_review_roles=request.role_relevance,
+                    source_refs=[*request.missing_evidence, *request.source_refs],
                 )
+            )
 
         # 정의 필요 — 그룹이 참조하지만 카탈로그에 없는 시나리오
         scenario_ids = self._repo.ids("scenarios")
@@ -142,13 +151,13 @@ class PortfolioService:
                             ref_collection="development_events",
                             title=event.title,
                             description=(
-                                f"근거 '{need.evidence_need_id}' 미가용 — "
-                                f"확신도 상한 {need.blocks_confidence_above}: {need.reason}"
+                                "요구 근거 미가용 — 확신도 상한 "
+                                f"{_cap_label(need.blocks_confidence_above)}: {need.reason}"
                             ),
                             project_ids=[event.project_id],
                             scenario_ids=event.linked_scenario_ids,
                             suggested_review_roles=event.roles_involved,
-                            source_refs=need.source_refs,
+                            source_refs=[need.evidence_need_id, *need.source_refs],
                         )
                     )
             # 리스크 해소 후보 — 후보 옵션이 검토 대기 중인 이벤트
@@ -203,7 +212,10 @@ class PortfolioService:
                         ref_id=request.id,
                         ref_collection="scenario_requests",
                         title=request.title,
-                        description=f"경영 관심사: {request.management_interest} (P1, {request.status})",
+                        description=(
+                            f"경영 관심사: {request.management_interest} "
+                            f"(P1, {value_label('request_status', request.status) or request.status})"
+                        ),
                         project_ids=[request.origin_project_id],
                         scenario_ids=_request_scenarios(request),
                         suggested_review_roles=["management", *request.trigger_roles],

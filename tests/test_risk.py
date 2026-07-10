@@ -208,7 +208,7 @@ def test_open_issue_low_severity_grades_medium() -> None:
     low = _cell("low")
     low_basis = next(b for b in low.basis if b.ref_id == "issue_sev_test")
     assert low.grade == "medium", "심각도 low 미해결 이슈는 중간"
-    assert "심각도 low" in low_basis.description
+    assert "심각도 낮음" in low_basis.description
 
     high = _cell("high")
     assert high.grade == "high", "심각도 high는 기존대로 높음"
@@ -235,3 +235,16 @@ def test_rows_carry_evidence_posture(repo, heatmap) -> None:
                 totals.absent,
             )
             assert posture.note_ko
+
+
+def test_descriptions_hide_raw_codes(heatmap) -> None:
+    """서술에는 라벨, 코드는 hover/패널 — 조립 문장에 원문 코드·id 나열 금지 (B2)."""
+    for row in heatmap.rows:
+        for cell in row.cells:
+            for item in cell.basis:
+                assert "상태 synthetic_open" not in item.description
+                assert "유형 power_gap" not in item.description
+    for item in heatmap.focus:
+        assert "누락 근거" not in item.description or ":" not in item.description.split("누락 근거")[1], (
+            f"누락 근거 id 나열 금지: {item.description}"
+        )

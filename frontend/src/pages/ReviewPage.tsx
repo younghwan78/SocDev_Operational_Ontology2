@@ -8,6 +8,7 @@ import {
   fetchWeeklySnapshot,
   type ReviewPackDocument,
 } from "../api/client";
+import { PostureChip } from "../components/PostureChip";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
@@ -269,20 +270,12 @@ function ReviewPackDetail({ packId }: { packId: string }) {
           <div className="head">
             <span className="title">{scenario.scenario_name}</span>
             {scenario.evidence_posture && (
-              <span
-                className={`badge ${
-                  scenario.evidence_posture.measured === 0
-                    ? "badge-danger"
-                    : scenario.evidence_posture.predicted > scenario.evidence_posture.measured
-                      ? "badge-warn"
-                      : "badge-ok"
-                }`}
-                title={scenario.evidence_posture.note_ko}
-              >
-                {tp.posture}: {tp.measured} {scenario.evidence_posture.measured} · {tp.predicted}{" "}
-                {scenario.evidence_posture.predicted} · {tp.absent}{" "}
-                {scenario.evidence_posture.absent}
-              </span>
+              <PostureChip
+                measured={scenario.evidence_posture.measured}
+                predicted={scenario.evidence_posture.predicted}
+                absent={scenario.evidence_posture.absent}
+                note={scenario.evidence_posture.note_ko}
+              />
             )}
           </div>
           {scenario.sections.length === 0 && <p className="desc">{tp.empty_sections}</p>}

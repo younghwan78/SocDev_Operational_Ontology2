@@ -63,6 +63,13 @@ beforeEach(() => {
     vi.fn((input: RequestInfo | URL) => {
       const url = input instanceof Request ? input.url : String(input);
       if (url.includes("/api/v1/meta/labels")) return jsonResponse(labels);
+      if (url.includes("/api/v1/meta/glossary"))
+        return jsonResponse({
+          objects: {},
+          fields: {},
+          enums: {},
+          value_labels: { role: { pm: "PM" } },
+        });
       return jsonResponse(overview);
     }),
   );
@@ -92,7 +99,7 @@ describe("PortfolioPage", () => {
     renderPage();
     await screen.findAllByText("Project U");
     // 라벨 로드 완료(=역할 표시명 등장)를 기다린 뒤 ID 부재를 확인한다.
-    expect(await screen.findByText(/PM Agent/)).toBeInTheDocument();
+    expect(await screen.findByText(/PM/)).toBeInTheDocument();
     expect(screen.queryByText("project_u")).not.toBeInTheDocument();
     expect(screen.queryByText("uhd60_recording_eis_on")).not.toBeInTheDocument();
     expect(screen.queryByText("req_1")).not.toBeInTheDocument();
