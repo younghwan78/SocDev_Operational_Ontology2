@@ -1,5 +1,50 @@
 # CHANGELOG
 
+## UI 실사용자 재설계 P0~P2 — 운영 루프 완결 + 신뢰 품질 (2026-07-11)
+
+> 설계: `internal_docs/design/13_ui_operational_redesign.md` (실구동 관찰 기반).
+> 커밋 단위: P0-1(신뢰 품질) / P0-2(운영 루프 UI) / P0-3(URL·스케일) / P1(사용성·접근성) / P2(마감).
+
+### P0-1 신뢰 품질
+
+- 실행 초안 중복 텍스트 제거(B1), risk/portfolio/action_draft/ask 조립 문장의
+  원문 코드·id 나열 은닉(B2 — 라벨 사용, id는 source_refs 추적 유지, 가드 테스트),
+  역할·evidence_type 라벨 도메인 신설. `PostureChip` — 태세를 위험색과 분리(B3).
+
+### P0-2 운영 루프 UI
+
+- **반입 센터**(`/ingest`): 업로드·거부 사유·rollback·템플릿 CSV — 기존 ingest API의
+  화면화(신규 쓰기 없음). `GET /ingest/mappings`·`GET /decisions` 읽기 추가.
+- 리뷰 팩에 결정 CSV 반입 존 + 팩 결정 목록 — 내보내기→회의→재진입 한 화면 왕복.
+
+### P0-3 URL=상태 + 스케일
+
+- 위험 지도 `?project=&grade=&cell=`, 이슈 `?project=&verification=&q=`, 변경 영향
+  역동기화+실패 피드백. 이슈 텍스트 검색(debounce), heatmap sticky(시나리오 열+헤더),
+  등급 표시 필터, 종합 열 구분, 범례 이동. URL 재현 테스트.
+
+### P1 사용성·접근성
+
+- 리뷰 센터: 데이터 있는 최신 주 기본, 주차 칩 건수 병기+최근 8주 접기(A3).
+- `<Busy>`(스피너+경과 초) — Ask/advisory/변경 영향, 제출 비활성, aria-live(C3).
+- 폼 언어(제어 항목/기능, C4). focus-visible 토큰, select 라벨 연결, heatmap 셀
+  aria-label, AskCard `status_kind` 계약 필드(한국어 substring 파싱 제거 + 상태 라벨화),
+  **axe-core smoke 3화면 serious/critical 0 게이트**(D).
+
+### P2 마감
+
+- 다크 모드(prefers-color-scheme 변수 이중화 + color-scheme), Ctrl/Cmd+K → Ask,
+  tabular-nums, 리뷰 활동 역할 배지 한국어.
+
+### 검증
+
+```text
+backend 192 passed / 9 skipped · ruff · mypy(61) pass. frontend build / test(29:
+axe smoke 3·URL 재현·CSV 계약·훅) / lint 0. E2E(실서버 8155/5275 + PostgreSQL):
+반입 센터 업로드 3건→rollback, URL 재현(project/grade/cell → 셀 하이라이트+패널),
+이슈 ?q=DPU 5건, 리뷰 센터 W52 기본, 실행 초안 중복 0·코드 노출 0 화면 확인.
+```
+
 ## 사내 실운영 준비 Phase 4 — U1 값 한국어화 + 위험 지도 근거 태세 (2026-07-11)
 
 > 06_stage16_ui_overhaul.md U1을 Stage 16에서 앞당김(사내 첫인상 + 반입 신규 값 게이트)

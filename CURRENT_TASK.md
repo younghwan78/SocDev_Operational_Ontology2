@@ -2,12 +2,15 @@
 
 ## 활성 Stage
 
-**UI 실사용자 재설계 (2026-07-11 승인) — 설계 `internal_docs/design/13_ui_operational_redesign.md`.**
+**활성 Stage 없음 — UI 실사용자 재설계 P0~P2 완료 (2026-07-11).**
 
-> 순서(각 단계 commit): P0-1 신뢰 품질(B1 초안 중복 제거·B2 backend 서술 코드 은닉·
-> B3 태세 배지 분리) → P0-2 운영 루프 UI(A1 반입 센터·A2 결정 루프) →
-> P0-3 URL=상태+스케일(C1·C2) → P1(A3 리뷰 센터·C3 로딩·C4 폼 언어·D 접근성) →
-> P2(여력 시). 수용 기준·invariant는 설계 문서 §2~3.
+> 설계 `internal_docs/design/13_ui_operational_redesign.md` 전 패키지 구현·검증 완료
+> (CHANGELOG 참조): P0-1 신뢰 품질(B1·B2·B3) / P0-2 운영 루프 UI(반입 센터·결정 왕복) /
+> P0-3 URL=상태+스케일 / P1 사용성·접근성(axe 게이트) / P2 마감(다크모드·Ctrl+K).
+>
+> **후속 후보(미착수, 승인 필요)**: 목록 스켈레톤·가상화(500건+), 공통
+> StatusBadge/AsyncSection 리팩터(badge 맵 7종·무언 실패 정리), 1280px 분기·프린트
+> 스타일, docs/ 스크린샷 재캡처, Stage 13 트랙 A 또는 Stage 14 잔여(인증/배포/캐시).
 
 ### 직전 완료 — 사내 실운영 준비 Phase 0~4 (2026-07-11)
 

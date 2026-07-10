@@ -12,7 +12,30 @@
   --danger-soft: #fdecea;
   --ok: #067647;
   --ok-soft: #e6f4ee;
+  --muted: #616e7c;
   font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+  color-scheme: light;
+}
+
+/* 다크 모드 (P2) — 변수 이중화, 의미색 대비 유지 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1419;
+    --surface: #1a2027;
+    --border: #323b45;
+    --text: #e3e8ee;
+    --text-dim: #99a5b1;
+    --muted: #99a5b1;
+    --accent: #549bf5;
+    --accent-soft: #1b2c45;
+    --warn: #f5a623;
+    --warn-soft: #3a2c14;
+    --danger: #ef6a5e;
+    --danger-soft: #42201c;
+    --ok: #3fb97f;
+    --ok-soft: #16321f;
+    color-scheme: dark;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -305,3 +328,6 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 
 /* 접근성 — 공통 포커스 링 (U3) */
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 숫자 표기 정렬 (P2) — 카운트·경과 시간 */
+.badge, .chip, .chip-count, .ladder-headline, .posture-chip, .busy { font-variant-numeric: tabular-nums; }

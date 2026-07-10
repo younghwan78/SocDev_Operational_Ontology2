@@ -71,6 +71,7 @@ export function AskPage() {
             type="text"
             className="ask-input"
             name="question"
+            autoFocus
             aria-label={t.placeholder}
             autoComplete="off"
             spellCheck={false}

@@ -13,7 +13,6 @@ import {
 } from "../api/client";
 import { useRef } from "react";
 import { PostureChip } from "../components/PostureChip";
-import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
 
@@ -86,7 +85,6 @@ export function toDecisionCsv(doc: ReviewPackDocument): string {
 export function ReviewPage() {
   const { week } = useParams<{ week: string }>();
   const navigate = useNavigate();
-  const label = useLabels();
   const valueLabel = useValueLabels();
 
   const index = useQuery({ queryKey: ["weekly-index"], queryFn: fetchWeeklyIndex });
@@ -180,7 +178,7 @@ export function ReviewPage() {
               <div key={activity.id} className="list-item">
                 <div className="head">
                   <span className="badge badge-warn" title={activity.role_id}>
-                    {label(activity.role_id)}
+                    {valueLabel("role", activity.role_id)}
                   </span>
                   <span className="title">{activity.title}</span>
                 </div>

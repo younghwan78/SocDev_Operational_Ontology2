@@ -1,4 +1,5 @@
-import { NavLink, Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { NavLink, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { DemoStoryBar } from "./components/DemoStoryBar";
 import { ko } from "./i18n/ko";
 import { AskPage } from "./pages/AskPage";
@@ -32,6 +33,18 @@ const EXPLORE_NAV = [
 ];
 
 export default function App() {
+  const navigate = useNavigate();
+  // Ctrl/Cmd+K → Ask SoC (P2) — 어느 화면에서든 질문으로.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        navigate("/ask");
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [navigate]);
   return (
     <div className="app">
       <header className="app-header">
