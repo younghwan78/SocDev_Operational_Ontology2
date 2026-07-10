@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import {
   fetchEvidence,
   fetchEvidenceLadder,
-  fetchIngestBatches,
   fetchProjects,
   type EvidenceLadder,
   type EvidenceStrengthItem,
@@ -47,7 +46,6 @@ export function EvidencePage() {
     queryKey: ["evidence-ladder", projectFilter],
     queryFn: () => fetchEvidenceLadder({ projectId: projectFilter }),
   });
-  const batches = useQuery({ queryKey: ["ingest-batches"], queryFn: fetchIngestBatches });
   const label = useLabels();
   const valueLabel = useValueLabels();
 
@@ -98,31 +96,6 @@ export function EvidencePage() {
       </div>
 
       {ladder.data && <LadderPanel ladder={ladder.data} />}
-
-      {(batches.data ?? []).length > 0 && (
-        <div className="card">
-          <h2 className="card-title">{ko.ingest.history}</h2>
-          {(batches.data ?? []).map((batch) => (
-            <div key={batch.id} className="list-item">
-              <div className="head">
-                <span
-                  className={`badge ${batch.status === "completed" ? "badge-ok" : "badge-warn"}`}
-                >
-                  {batch.status === "completed"
-                    ? ko.ingest.status_completed
-                    : ko.ingest.status_rolled_back}
-                </span>
-                <span className="title">{batch.filename}</span>
-                <span className="chip">{batch.mapping_name}</span>
-              </div>
-              <p className="desc">
-                {ko.ingest.accepted} {batch.accepted_count} · {ko.ingest.rejected}{" "}
-                {batch.rejected_count} · {batch.created_at}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
 
       <div className="card">
         {evidence.data.length === 0 && <p className="status-msg">{ko.app.empty}</p>}

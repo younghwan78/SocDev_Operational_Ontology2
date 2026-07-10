@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from backend.agents.ask_runner import PRESET_QUESTIONS, AskResult, AskRunner
 from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
@@ -27,6 +27,7 @@ from backend.ingest.service import (
 from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.repository import InMemoryRepository
 from backend.ontology import COLLECTIONS, RUNTIME_CONTRACTS
+from backend.ontology.decision import Decision
 from backend.ontology.event import DevelopmentEvent
 from backend.ontology.evidence import EvidenceCatalogEntry
 from backend.ontology.glossary import export_glossary
@@ -155,6 +156,18 @@ class AskRequest(BaseModel):
     """Ask SoC 질의 요청."""
 
     question: str = Field(min_length=2, description="한국어/영어 혼용 자연어 질의")
+
+
+class IngestMappingInfo(BaseModel):
+    """반입 매핑 메타 — 반입 센터 화면 계약 (읽기 전용)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    label_ko: str
+    target_collection: str
+    columns: list[str]
+    required_columns: list[str]
 
 
 def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
@@ -413,6 +426,35 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             return services.ingest.ingest(file.filename or "upload", content, mapping)
         except IngestError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get(f"{prefix}/ingest/mappings", response_model=list[IngestMappingInfo])
+    def list_ingest_mappings() -> list[IngestMappingInfo]:
+        """반입 매핑 목록 — 반입 센터의 매핑 선택·템플릿 다운로드용 (읽기 전용)."""
+        return [
+            IngestMappingInfo(
+                name=m.name,
+                label_ko=m.label_ko,
+                target_collection=m.target_collection,
+                columns=list(m.column_map.keys()),
+                required_columns=sorted(m.required_columns),
+            )
+            for m in services.ingest.mappings()
+        ]
+
+    @app.get(f"{prefix}/decisions", response_model=list[Decision])
+    def list_decisions(
+        project_id: str | None = Query(default=None),
+        event_id: str | None = Query(default=None),
+    ) -> list[Decision]:
+        """결정 목록 — 리뷰 팩의 '이 팩에서 나온 결정' 표시용 (읽기 전용)."""
+        decisions = [
+            d for d in services.repo.list("decisions") if isinstance(d, Decision)
+        ]
+        if project_id:
+            decisions = [d for d in decisions if d.project_id == project_id]
+        if event_id:
+            decisions = [d for d in decisions if d.event_id == event_id]
+        return sorted(decisions, key=lambda d: d.id)
 
     @app.get(f"{prefix}/ingest/batches", response_model=list[IngestBatch])
     def list_ingest_batches() -> list[IngestBatch]:

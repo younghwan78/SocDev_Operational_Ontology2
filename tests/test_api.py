@@ -214,3 +214,21 @@ def test_no_write_endpoints(client: TestClient) -> None:
         allowed = {"get", "post"} if is_operation else {"get"}
         assert set(operations.keys()) <= allowed, f"{path}에 허용 외 메서드 존재"
         assert not {"put", "patch", "delete"} & set(operations.keys()), path
+
+
+def test_ingest_mappings_endpoint(client) -> None:
+    """반입 센터 계약 — 매핑 메타(열 순서 = 템플릿 헤더) 노출 (읽기 전용)."""
+    mappings = client.get("/api/v1/ingest/mappings").json()
+    names = {m["name"] for m in mappings}
+    assert {"issues", "tests", "development_events", "evidence_catalog", "decisions"} <= names
+    issues = next(m for m in mappings if m["name"] == "issues")
+    assert issues["columns"][0] == "이슈 ID"
+    assert "이슈 ID" in issues["required_columns"]
+    assert issues["label_ko"] == "개발 이슈"
+
+
+def test_decisions_endpoint_filters(client) -> None:
+    decisions = client.get("/api/v1/decisions").json()
+    assert isinstance(decisions, list) and decisions, "fixture 결정 1건 이상"
+    filtered = client.get("/api/v1/decisions", params={"project_id": "없는_프로젝트"}).json()
+    assert filtered == []

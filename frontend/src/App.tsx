@@ -11,6 +11,7 @@ import { RiskMapPage } from "./pages/RiskMapPage";
 import { ScenarioDetailPage } from "./pages/ScenarioDetailPage";
 import { ScenarioListPage } from "./pages/ScenarioListPage";
 import { SourceMapPage } from "./pages/SourceMapPage";
+import { IngestPage } from "./pages/IngestPage";
 
 // 질문이 곧 메뉴 — 원점 문서의 5대 질문이 전부 활성화됐다.
 const QUESTION_NAV = [
@@ -27,6 +28,7 @@ const EXPLORE_NAV = [
   { to: "/review", label: ko.app.nav_review },
   { to: "/evidence", label: ko.app.nav_evidence },
   { to: "/source-map", label: ko.app.nav_source_map },
+  { to: "/ingest", label: ko.app.nav_ingest },
 ];
 
 export default function App() {
@@ -73,6 +75,7 @@ export default function App() {
           <Route path="/review/:week" element={<ReviewPage />} />
           <Route path="/evidence" element={<EvidencePage />} />
           <Route path="/source-map" element={<SourceMapPage />} />
+          <Route path="/ingest" element={<IngestPage />} />
         </Routes>
       </main>
     </div>

@@ -245,6 +245,54 @@ export async function fetchValueLabels(): Promise<Record<string, Record<string, 
 }
 
 export type IngestBatch = components["schemas"]["IngestBatch"];
+export type IngestReport = components["schemas"]["IngestReport"];
+export type IngestMappingInfo = components["schemas"]["IngestMappingInfo"];
+export type Decision = components["schemas"]["Decision"];
+
+export async function fetchIngestMappings(): Promise<IngestMappingInfo[]> {
+  const { data, error } = await client.GET("/api/v1/ingest/mappings");
+  if (error || !data) throw new Error("ingest mappings 조회 실패");
+  return data;
+}
+
+export async function fetchDecisions(params?: {
+  projectId?: string;
+  eventId?: string;
+}): Promise<Decision[]> {
+  const { data, error } = await client.GET("/api/v1/decisions", {
+    params: {
+      query: {
+        ...(params?.projectId ? { project_id: params.projectId } : {}),
+        ...(params?.eventId ? { event_id: params.eventId } : {}),
+      },
+    },
+  });
+  if (error || !data) throw new Error("decisions 조회 실패");
+  return data;
+}
+
+// multipart 업로드는 openapi-fetch 대신 FormData 직접 — 응답 타입은 생성 스키마 사용.
+export async function uploadIngestFile(file: File, mapping: string): Promise<IngestReport> {
+  const form = new FormData();
+  form.append("file", file);
+  const response = await globalThis.fetch(
+    `${baseUrl}/api/v1/ingest/file?mapping=${encodeURIComponent(mapping)}`,
+    { method: "POST", body: form },
+  );
+  if (!response.ok) {
+    const detail = (await response.json().catch(() => null)) as { detail?: string } | null;
+    throw new Error(detail?.detail ?? "반입 실패");
+  }
+  return (await response.json()) as IngestReport;
+}
+
+export async function rollbackIngestBatch(batchId: string): Promise<number> {
+  const { data, error } = await client.POST("/api/v1/ingest/batches/{batch_id}/rollback", {
+    params: { path: { batch_id: batchId } },
+  });
+  if (error || !data) throw new Error("rollback 실패");
+  return (data as { removed: number }).removed;
+}
 
 export async function fetchIngestBatches(): Promise<IngestBatch[]> {
   const { data, error } = await client.GET("/api/v1/ingest/batches");

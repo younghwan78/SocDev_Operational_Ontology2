@@ -1058,6 +1058,147 @@
         "title": "ConfidenceSignal",
         "type": "object"
       },
+      "Decision": {
+        "additionalProperties": false,
+        "description": "결정 — 옵션/선택/트레이드오프/미해결 리스크를 기록.",
+        "properties": {
+          "action_items": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Action Items",
+            "type": "array"
+          },
+          "decision_type": {
+            "title": "Decision Type",
+            "type": "string"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionOption"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "selected_option": {
+            "title": "Selected Option",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "supporting_basis": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionBasis"
+            },
+            "title": "Supporting Basis",
+            "type": "array"
+          },
+          "tradeoff_summary": {
+            "title": "Tradeoff Summary",
+            "type": "string"
+          },
+          "unresolved_risks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unresolved Risks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "event_id",
+          "decision_type",
+          "selected_option",
+          "tradeoff_summary"
+        ],
+        "title": "Decision",
+        "type": "object"
+      },
+      "DecisionBasis": {
+        "additionalProperties": false,
+        "description": "결정의 뒷받침 근거 항목.",
+        "properties": {
+          "basis_type": {
+            "title": "Basis Type",
+            "type": "string"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "statement": {
+            "title": "Statement",
+            "type": "string"
+          }
+        },
+        "required": [
+          "basis_type",
+          "ref_id",
+          "statement",
+          "confidence"
+        ],
+        "title": "DecisionBasis",
+        "type": "object"
+      },
+      "DecisionOption": {
+        "additionalProperties": false,
+        "description": "결정 옵션 — 이득/리스크/비용 영향.",
+        "properties": {
+          "benefits": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Benefits",
+            "type": "array"
+          },
+          "cost_impact": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Cost Impact",
+            "type": "object"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "risks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Risks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "label"
+        ],
+        "title": "DecisionOption",
+        "type": "object"
+      },
       "DecisionQuestion": {
         "additionalProperties": false,
         "description": "이벤트가 제기하는 결정 질문 — 최종 결정이 아님.",
@@ -2168,6 +2309,47 @@
           "created_at"
         ],
         "title": "IngestBatch",
+        "type": "object"
+      },
+      "IngestMappingInfo": {
+        "additionalProperties": false,
+        "description": "반입 매핑 메타 — 반입 센터 화면 계약 (읽기 전용).",
+        "properties": {
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "label_ko": {
+            "title": "Label Ko",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "required_columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Required Columns",
+            "type": "array"
+          },
+          "target_collection": {
+            "title": "Target Collection",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "label_ko",
+          "target_collection",
+          "columns",
+          "required_columns"
+        ],
+        "title": "IngestMappingInfo",
         "type": "object"
       },
       "IngestReport": {
@@ -5738,6 +5920,73 @@
         "summary": "Change Impact Options"
       }
     },
+    "/api/v1/decisions": {
+      "get": {
+        "description": "결정 목록 — 리뷰 팩의 '이 팩에서 나온 결정' 표시용 (읽기 전용).",
+        "operationId": "list_decisions_api_v1_decisions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "event_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Decision"
+                  },
+                  "title": "Response List Decisions Api V1 Decisions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Decisions"
+      }
+    },
     "/api/v1/entity-resolution": {
       "get": {
         "description": "엔티티 해석 — IP 별칭표 + 미해석 토큰 큐 (식별자 파편화 가시화).",
@@ -6145,6 +6394,29 @@
           }
         },
         "summary": "Ingest File"
+      }
+    },
+    "/api/v1/ingest/mappings": {
+      "get": {
+        "description": "반입 매핑 목록 — 반입 센터의 매핑 선택·템플릿 다운로드용 (읽기 전용).",
+        "operationId": "list_ingest_mappings_api_v1_ingest_mappings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/IngestMappingInfo"
+                  },
+                  "title": "Response List Ingest Mappings Api V1 Ingest Mappings Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Ingest Mappings"
       }
     },
     "/api/v1/issues": {

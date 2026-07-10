@@ -106,6 +106,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/decisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Decisions
+         * @description 결정 목록 — 리뷰 팩의 '이 팩에서 나온 결정' 표시용 (읽기 전용).
+         */
+        get: operations["list_decisions_api_v1_decisions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/entity-resolution": {
         parameters: {
             query?: never;
@@ -265,6 +285,26 @@ export interface paths {
          * @description 실데이터 반입 — 온톨로지 데이터가 진입하는 유일한 쓰기 경로.
          */
         post: operations["ingest_file_api_v1_ingest_file_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ingest/mappings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Ingest Mappings
+         * @description 반입 매핑 목록 — 반입 센터의 매핑 선택·템플릿 다운로드용 (읽기 전용).
+         */
+        get: operations["list_ingest_mappings_api_v1_ingest_mappings_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1072,6 +1112,64 @@ export interface components {
             reason: string;
         };
         /**
+         * Decision
+         * @description 결정 — 옵션/선택/트레이드오프/미해결 리스크를 기록.
+         */
+        Decision: {
+            /** Action Items */
+            action_items?: string[];
+            /** Decision Type */
+            decision_type: string;
+            /** Event Id */
+            event_id: string;
+            /** Id */
+            id: string;
+            /** Options */
+            options?: components["schemas"]["DecisionOption"][];
+            /** Project Id */
+            project_id: string;
+            /** Selected Option */
+            selected_option: string;
+            source?: components["schemas"]["SourceMeta"];
+            /** Supporting Basis */
+            supporting_basis?: components["schemas"]["DecisionBasis"][];
+            /** Tradeoff Summary */
+            tradeoff_summary: string;
+            /** Unresolved Risks */
+            unresolved_risks?: string[];
+        };
+        /**
+         * DecisionBasis
+         * @description 결정의 뒷받침 근거 항목.
+         */
+        DecisionBasis: {
+            /** Basis Type */
+            basis_type: string;
+            confidence: components["schemas"]["Confidence"];
+            /** Ref Id */
+            ref_id: string;
+            /** Statement */
+            statement: string;
+        };
+        /**
+         * DecisionOption
+         * @description 결정 옵션 — 이득/리스크/비용 영향.
+         */
+        DecisionOption: {
+            /** Benefits */
+            benefits?: string[];
+            /** Cost Impact */
+            cost_impact?: {
+                [key: string]: string;
+            };
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Risks */
+            risks?: string[];
+        };
+        /**
          * DecisionQuestion
          * @description 이벤트가 제기하는 결정 질문 — 최종 결정이 아님.
          */
@@ -1495,6 +1593,22 @@ export interface components {
             rejected_count: number;
             /** Status */
             status: string;
+            /** Target Collection */
+            target_collection: string;
+        };
+        /**
+         * IngestMappingInfo
+         * @description 반입 매핑 메타 — 반입 센터 화면 계약 (읽기 전용).
+         */
+        IngestMappingInfo: {
+            /** Columns */
+            columns: string[];
+            /** Label Ko */
+            label_ko: string;
+            /** Name */
+            name: string;
+            /** Required Columns */
+            required_columns: string[];
             /** Target Collection */
             target_collection: string;
         };
@@ -2861,6 +2975,38 @@ export interface operations {
             };
         };
     };
+    list_decisions_api_v1_decisions_get: {
+        parameters: {
+            query?: {
+                project_id?: string | null;
+                event_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Decision"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     entity_resolution_api_v1_entity_resolution_get: {
         parameters: {
             query?: never;
@@ -3116,6 +3262,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_ingest_mappings_api_v1_ingest_mappings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngestMappingInfo"][];
                 };
             };
         };

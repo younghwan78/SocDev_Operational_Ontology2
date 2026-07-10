@@ -1,13 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  fetchDecisions,
   fetchReviewPack,
   fetchReviewPacks,
   fetchWeeklyIndex,
   fetchWeeklySnapshot,
+  uploadIngestFile,
+  type IngestReport,
   type ReviewPackDocument,
 } from "../api/client";
+import { useRef } from "react";
 import { PostureChip } from "../components/PostureChip";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
@@ -224,6 +228,20 @@ function ReviewPackDetail({ packId }: { packId: string }) {
     queryFn: () => fetchReviewPack(packId),
   });
   const [copied, setCopied] = useState<string | null>(null);
+  const [uploadReport, setUploadReport] = useState<IngestReport | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
+  const uploadDecisions = useMutation({
+    mutationFn: async () => {
+      const file = fileRef.current?.files?.[0];
+      if (!file) throw new Error(ko.ingest.file_required);
+      return uploadIngestFile(file, "decisions");
+    },
+    onSuccess: (result) => {
+      setUploadReport(result);
+      void queryClient.invalidateQueries({ queryKey: ["decisions"] });
+    },
+  });
 
   if (doc.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (doc.isError || !doc.data) return <p className="status-msg">{ko.app.error}</p>;
@@ -262,7 +280,37 @@ function ReviewPackDetail({ packId }: { packId: string }) {
           {tp.export_csv}
         </button>
         {copied && <span className="badge badge-ok">{copied}</span>}
+        <label className="filter-label" htmlFor="decision-csv">
+          {tp.upload_decisions}
+        </label>
+        <input id="decision-csv" ref={fileRef} type="file" accept=".csv,.xlsx" />
+        <button
+          type="button"
+          className="link-btn"
+          disabled={uploadDecisions.isPending}
+          onClick={() => uploadDecisions.mutate()}
+        >
+          {uploadDecisions.isPending ? tp.uploading_decisions : tp.upload_decisions}
+        </button>
       </div>
+      {uploadDecisions.isError && (
+        <p className="status-msg" role="alert">
+          {(uploadDecisions.error as Error).message}
+        </p>
+      )}
+      {uploadReport && (
+        <p className="desc" aria-live="polite">
+          <span className="badge badge-ok">
+            {ko.ingest.accepted} {uploadReport.batch.accepted_count}
+          </span>{" "}
+          <span
+            className={`badge ${(uploadReport.batch.rejected_count ?? 0) > 0 ? "badge-danger" : "badge-info"}`}
+          >
+            {ko.ingest.rejected} {uploadReport.batch.rejected_count}
+          </span>
+        </p>
+      )}
+      <PackDecisions projectIds={data.project_ids} />
       <span className="badge badge-warn">{data.provenance_note}</span>
 
       {data.scenarios.map((scenario) => (
@@ -286,6 +334,34 @@ function ReviewPackDetail({ packId }: { packId: string }) {
               </span>{" "}
               {section.items[0]?.statement}
               {section.items.length > 1 ? " …" : ""}
+            </p>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PackDecisions({ projectIds }: { projectIds: string[] }) {
+  const decisions = useQuery({ queryKey: ["decisions"], queryFn: () => fetchDecisions() });
+  const related = (decisions.data ?? []).filter((decision) =>
+    projectIds.includes(decision.project_id),
+  );
+  return (
+    <div>
+      <h3 className="card-title">{tp.decisions_section}</h3>
+      {related.length === 0 && <p className="section-note">{tp.no_decisions}</p>}
+      {related.map((decision) => (
+        <div key={decision.id} className="list-item">
+          <div className="head">
+            <span className="badge badge-info" title={decision.id}>
+              {tp.decision_selected}
+            </span>
+            <span className="title">{decision.selected_option}</span>
+          </div>
+          {(decision.supporting_basis ?? []).map((basis, index) => (
+            <p key={index} className="desc" title={basis.ref_id}>
+              {tp.decision_basis}: {basis.statement}
             </p>
           ))}
         </div>
