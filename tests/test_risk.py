@@ -215,3 +215,23 @@ def test_open_issue_low_severity_grades_medium() -> None:
 
     unspecified = _cell(None)
     assert unspecified.grade == "high", "심각도 미명시는 기존 동작 보존 (높음)"
+
+
+def test_rows_carry_evidence_posture(repo, heatmap) -> None:
+    """근거 태세 배지 — 사다리 totals와 일치, 근거 없는 시나리오는 None (수치 점수 아님)."""
+    from backend.services.evidence_ladder import EvidenceLadderService
+
+    ladder = EvidenceLadderService(repo)
+    for row in heatmap.rows:
+        totals = ladder.ladder(scenario_id=row.scenario_id).totals
+        if totals.total == 0:
+            assert row.evidence_posture is None
+        else:
+            posture = row.evidence_posture
+            assert posture is not None
+            assert (posture.measured, posture.predicted, posture.absent) == (
+                totals.measured,
+                totals.predicted,
+                totals.absent,
+            )
+            assert posture.note_ko

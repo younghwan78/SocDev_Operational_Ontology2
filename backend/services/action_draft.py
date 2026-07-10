@@ -19,7 +19,9 @@ from backend.services.common import BasisItem
 from backend.services.evidence_ladder import (
     TIER_LABELS,
     EvidenceLadderService,
+    EvidencePosture,
     classify_evidence,
+    scenario_posture,
 )
 from backend.services.risk import RiskService
 from backend.services.scenario_analysis import ScenarioNotFoundError
@@ -40,17 +42,6 @@ class DraftItem(BaseModel):
     statement: str
     basis: list[BasisItem]
     strength_ko: str | None = None  # 근거 항목의 신뢰 등급(실측·정합 등), 해당 시에만.
-
-
-class EvidencePosture(BaseModel):
-    """시나리오 근거 태세 — 실측/예측/부재 건수 + 정성 판정. 수치 점수 아님."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    measured: int
-    predicted: int
-    absent: int
-    note_ko: str
 
 
 class DraftSection(BaseModel):
@@ -75,17 +66,6 @@ class ActionDraft(BaseModel):
     evidence_posture: EvidencePosture | None
     sections: list[DraftSection]
     provenance_note: str
-
-
-def _posture_note(measured: int, predicted: int, absent: int) -> str:
-    """근거 태세의 정성 판정 — 카운트 비교 기반(수치 점수 아님)."""
-    if measured == 0 and (predicted + absent) > 0:
-        return "실측 근거 없음 — 판단이 예측·미확보 근거에 의존, 실측 확보 우선"
-    if absent > measured + predicted:
-        return "근거 미확보 비중이 큼 — 근거 수집 우선"
-    if predicted > measured:
-        return "예측 비중이 높음 — 실측 확보 시 신뢰 상승"
-    return "실측 근거 비중이 높음 — 상대적으로 견고"
 
 
 class ActionDraftService:
@@ -206,15 +186,7 @@ class ActionDraftService:
         )
 
     def _evidence_posture(self, scenario_id: str) -> EvidencePosture | None:
-        totals = self._ladder.ladder(scenario_id=scenario_id).totals
-        if totals.total == 0:
-            return None
-        return EvidencePosture(
-            measured=totals.measured,
-            predicted=totals.predicted,
-            absent=totals.absent,
-            note_ko=_posture_note(totals.measured, totals.predicted, totals.absent),
-        )
+        return scenario_posture(self._ladder, scenario_id)
 
     def draft(self, scenario_id: str) -> ActionDraft:
         scenario = self._scenario(scenario_id)

@@ -2414,6 +2414,7 @@ export interface components {
         ScenarioRiskRow: {
             /** Cells */
             cells: components["schemas"]["RiskCell"][];
+            evidence_posture?: components["schemas"]["EvidencePosture"] | null;
             /** Overall Basis */
             overall_basis: components["schemas"]["BasisItem"][];
             /** Overall Grade */

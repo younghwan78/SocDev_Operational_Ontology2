@@ -2,25 +2,30 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — 사내 실운영 준비 Phase 0~1 완료 (2026-07-11). Phase 2 승인 대기.**
+**활성 Stage 없음 — 사내 실운영 준비 Phase 0~4 전부 완료 (2026-07-11).**
 
 > **방향 재정의 (2026-07-11, 사용자)**: 목표는 워크숍 데모가 아니라 **사내 실운영
 > (operational ontology) + JIRA/Confluence 연동**. 사외에서는 fixture로 구현·검증
 > 가능한 것을 최대한 앞당긴다 — 백로그 P4("CI 얇게 먼저 + 반입 표면 당기기") 채택.
 >
-> **완료 (CHANGELOG 참조)**:
+> **완료 (상세: CHANGELOG, 설계: 11/12_*.md)**:
 > - **Phase 0 얇은 CI** — backend/frontend/contracts 3 job (`.github/workflows/ci.yml`).
 > - **Phase 1 반입 표면 확대(Stage 15 사외 선행분)** — 매핑 4종(issues/tests/
->   development_events/evidence_catalog, 중첩·bool·root_causes 지원) + 샘플 CSV 4종 +
->   왕복·파생 뷰 통합 테스트. 계약 정밀화(L8): `DevelopmentEvent.related_ip_ids`
->   (명시 링크 우선), `Issue.severity`(low/info→중간). E2E(실서버 8155) 검증 완료.
+>   development_events/evidence_catalog, 중첩·bool·root_causes) + 샘플 CSV + 왕복·파생 뷰
+>   통합 테스트. 계약 정밀화(L8): `related_ip_ids` 명시 링크 우선, `Issue.severity`.
+> - **Phase 2 B3b 결정 재진입** — 결정 CSV(템플릿 v2, 양쪽 계약 테스트) → `decisions`
+>   매핑 → Decision. traceability 시작 시 스냅샷 제거(반입 객체 즉시 연결 조회).
+> - **Phase 3 JIRA/Confluence 커넥터 사외 선행분** — Protocol+Fake+설정 YAML 매핑,
+>   `ingest_rows(origin=integrated)` 경유, `sync-jira/sync-confluence` CLI(dry-run).
+>   사내 후속: 보안 승인·실 자격증명·실 스키마 값·주기 실행.
+> - **Phase 4 U1 값 한국어화 + 위험 지도 근거 태세** — `VALUE_LABELS` 17 도메인 +
+>   fixture 전 값 커버리지 게이트 + `useValueLabels`, 시나리오 행 태세 배지.
 >
-> **다음 로드맵 (각 Phase 착수는 사용자 승인 — `08_bridge_followups.md` §4)**:
-> - **Phase 2 = B3b 결정 재진입**: 설계 `11_decision_reentry.md` 선행 → decisions 매핑 →
->   리뷰 팩 CSV 왕복. `Decision.event_id` 필수 처리 설계 포함. **쓰기 경로라 신중.**
-> - **Phase 3 = JIRA/Confluence 커넥터 사외 선행분**: Protocol+Fake+설정 YAML 매핑+
->   ingest 경유(origin=integrated)+`sync-jira --dry-run`. 보안 승인 등은 사내 후속.
-> - **Phase 4 = U1 값 도메인 한국어화 + 위험 지도 근거 태세 배지.**
+> **다음 후보 (착수는 사용자 승인)**:
+> - Stage 13 트랙 A(가설 판정 모드 + baseline — 사내 검증 세션 준비) 또는
+>   Stage 16 잔여 U2~U9(URL=상태·접근성·로딩 규약·스케일).
+> - Stage 14 잔여(인증/배포/LLM 캐시 — 사내 표준 필요), P3 Path 객체(대형, 실데이터 검증 후).
+> - 사내 반입 리허설: `sync-jira --execute`(PostgreSQL) + curation 워크플로(05 Stage 15 §3).
 
 ## 다음 단계 기준 문서
 

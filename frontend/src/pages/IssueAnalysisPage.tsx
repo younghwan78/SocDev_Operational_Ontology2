@@ -17,6 +17,7 @@ import {
   type RCANode,
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
+import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.issues;
@@ -51,6 +52,7 @@ export function IssueAnalysisPage() {
     searchParams.get("issue"),
   );
 
+  const valueLabel = useValueLabels();
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
   const issues = useQuery({
     queryKey: ["issues", projectFilter, verificationFilter],
@@ -128,8 +130,9 @@ export function IssueAnalysisPage() {
                   {issue.verification_ko}
                 </span>
                 <span className="title">{issue.title}</span>
-                <span className="desc">
-                  {issue.issue_type} · {t.status_label}: {issue.status}
+                <span className="desc" title={`${issue.issue_type} · ${issue.status}`}>
+                  {valueLabel("issue_type", issue.issue_type)} · {t.status_label}:{" "}
+                  {valueLabel("issue_status", issue.status)}
                 </span>
               </button>
             )}
@@ -150,6 +153,7 @@ export function IssueAnalysisPage() {
 }
 
 function RCAFlow({ chainData }: { chainData: RCAChain }) {
+  const valueLabel = useValueLabels();
   return (
     <div>
       <div className="card">
@@ -157,9 +161,11 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
           <span className="title" title={chainData.issue_id}>
             {chainData.title}
           </span>
-          <span className="badge badge-info">{chainData.issue_type}</span>
-          <span className="badge badge-info">
-            {t.status_label}: {chainData.status}
+          <span className="badge badge-info" title={chainData.issue_type}>
+            {valueLabel("issue_type", chainData.issue_type)}
+          </span>
+          <span className="badge badge-info" title={chainData.status}>
+            {t.status_label}: {valueLabel("issue_status", chainData.status)}
           </span>
           <span className={`badge ${VERIFICATION_BADGE[chainData.verification] ?? "badge-info"}`}>
             {t.verification_label}: {chainData.verification_ko}

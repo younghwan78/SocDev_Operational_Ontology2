@@ -1,5 +1,36 @@
 # CHANGELOG
 
+## 사내 실운영 준비 Phase 4 — U1 값 한국어화 + 위험 지도 근거 태세 (2026-07-11)
+
+> 06_stage16_ui_overhaul.md U1을 Stage 16에서 앞당김(사내 첫인상 + 반입 신규 값 게이트)
+> + 백로그 §4 "위험 지도 근거 태세 확장" 실현.
+
+### 추가
+
+- **U1 값 도메인 한국어화**: `glossary.VALUE_LABELS` 계약 신설 — 17개 값 도메인
+  (issue_status/issue_type/fix_type/severity/test_type/test_result/event_status/
+  schedule_signal/availability/confidence_contribution/measurement_stage/scenario_match/
+  request_status/request_priority/requirement_level/direction/support_status).
+  - **fixture 전 값 커버리지 테스트** (`test_glossary`): CSV/JIRA 반입으로 새 값이
+    들어오면 라벨 누락이 테스트로 드러난다 (JIRA value_maps와 연동 게이트).
+  - `GET /meta/glossary`에 `value_labels` 포함, frontend `useValueLabels` 훅 —
+    표시는 한국어, 원문 코드는 hover(title)만. 적용: 이슈 목록/RCA 헤더(유형·상태),
+    이벤트 심각도·상태(리뷰 센터/이벤트 탭), 요청 우선순위·상태, 근거 가용성
+    (필터 칩 영어 하드코딩 D1 해소), 변경 영향 과거 사례 상태. 미등재 값은 원문 폴백.
+- **위험 지도 근거 태세 배지**: `ScenarioRiskRow.evidence_posture` — 시나리오 행에
+  실측/예측/부재 건수 배지(hover에 정성 판정) + 판정 근거 패널에 태세 문장.
+  `EvidencePosture`/`scenario_posture`를 `evidence_ladder.py`로 승격(action_draft와
+  risk가 공유 — 중복 계약 제거). 건수·정성 판정만, 수치 점수 없음(§6.3).
+- docs/risk-map.md에 근거 태세 배지 해석 가이드 추가.
+
+### 검증
+
+```text
+backend 188 passed / 9 skipped · ruff · mypy(61) pass · validate-data 오류 0 ·
+frontend build / test(25) / lint 0. E2E(TestClient): value_labels 17 도메인,
+위험 지도 23행 중 14행 태세 표시(예: 8K30 → 실측1·예측2·부재1 "예측 비중 높음").
+```
+
 ## 사내 실운영 준비 Phase 3 — JIRA/Confluence 커넥터 사외 선행분 (2026-07-11)
 
 > 설계: `internal_docs/design/12_jira_connector.md`. Stage 19의 사외 가능 부분을 앞당김 —

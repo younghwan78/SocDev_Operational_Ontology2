@@ -237,6 +237,13 @@ export async function fetchLabels(): Promise<Record<string, string>> {
   return data;
 }
 
+export async function fetchValueLabels(): Promise<Record<string, Record<string, string>>> {
+  const { data, error } = await client.GET("/api/v1/meta/glossary");
+  if (error || !data) throw new Error("glossary 조회 실패");
+  const glossary = data as { value_labels?: Record<string, Record<string, string>> };
+  return glossary.value_labels ?? {};
+}
+
 export type IngestBatch = components["schemas"]["IngestBatch"];
 
 export async function fetchIngestBatches(): Promise<IngestBatch[]> {

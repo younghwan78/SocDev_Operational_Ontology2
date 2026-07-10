@@ -252,3 +252,40 @@ class EvidenceLadderService:
             absent=counts["absent"],
         )
         return EvidenceLadder(distribution=distribution, entries=items, totals=totals)
+
+
+class EvidencePosture(BaseModel):
+    """시나리오 근거 태세 — 실측/예측/부재 건수 + 정성 판정. 수치 점수 아님."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    measured: int
+    predicted: int
+    absent: int
+    note_ko: str
+
+
+def posture_note(measured: int, predicted: int, absent: int) -> str:
+    """근거 태세의 정성 판정 — 카운트 비교 기반(수치 점수 아님)."""
+    if measured == 0 and (predicted + absent) > 0:
+        return "실측 근거 없음 — 판단이 예측·미확보 근거에 의존, 실측 확보 우선"
+    if absent > measured + predicted:
+        return "근거 미확보 비중이 큼 — 근거 수집 우선"
+    if predicted > measured:
+        return "예측 비중이 높음 — 실측 확보 시 신뢰 상승"
+    return "실측 근거 비중이 높음 — 상대적으로 견고"
+
+
+def scenario_posture(
+    ladder_service: EvidenceLadderService, scenario_id: str
+) -> EvidencePosture | None:
+    """시나리오의 근거 태세 — 근거가 없으면 None (실행 초안·위험 지도 공용)."""
+    totals = ladder_service.ladder(scenario_id=scenario_id).totals
+    if totals.total == 0:
+        return None
+    return EvidencePosture(
+        measured=totals.measured,
+        predicted=totals.predicted,
+        absent=totals.absent,
+        note_ko=posture_note(totals.measured, totals.predicted, totals.absent),
+    )

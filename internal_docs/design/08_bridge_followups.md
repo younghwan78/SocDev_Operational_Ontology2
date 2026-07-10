@@ -67,18 +67,18 @@ Bridge에서 F1(=G-1)·F2(=G-2)·Action Draft(=§1)를 했다. 남은 제안:
 사다리(계산)→분포(가시화)→실행 초안 통합(행동화)→리뷰 팩(결정←근거 루프).
 
 **방향 재정의(2026-07-11)**: 사내 실운영 + JIRA/Confluence 연동이 목표 — 데이터 경로 우선
-로드맵으로 재배열(P4 채택). Phase 0(얇은 CI)·Phase 1(반입 매핑 4종 + 계약 정밀화 L8) 완료.
+로드맵으로 재배열(P4 채택). **Phase 0~4 전부 완료 (2026-07-11, CHANGELOG 참조)**:
+Phase 0 얇은 CI · 1 반입 매핑 4종+계약 정밀화(L8 최종 해소: `related_ip_ids` 명시 링크) ·
+2 B3b 결정 재진입(설계 11, `decisions` 매핑 + traceability 스냅샷 제거) ·
+3 JIRA/Confluence 커넥터 사외 선행분(설계 12, `ingest_rows(origin=integrated)` + CLI) ·
+4 U1 값 한국어화(VALUE_LABELS 17 도메인 + 커버리지 게이트) + 위험 지도 근거 태세 배지.
 
-**남은 로드맵 (각 Phase 착수는 사용자 승인)**:
+**남은 항목 (각 착수는 사용자 승인)**:
 
-1. **Phase 2 = B3b — 결정 재진입(루프 완전 닫기)**: 채운 결정 CSV → ingest 매핑 →
-   `Decision` 객체로 재진입. **쓰기 경로**라 신중(설계 `11_decision_reentry.md` 선행 —
-   `Decision.event_id` 필수 처리 포함). 설계 근거 `10_review_pack.md` §2.2.
-2. **Phase 3 = JIRA/Confluence 커넥터 사외 선행분(Stage 19 앞당김)**: JiraClient Protocol +
-   Fake payload + 설정 YAML 매핑 + ingest 경유(origin=integrated) + `sync-jira --dry-run`.
-   보안 승인·실 자격증명·실 스키마 값만 사내 후속.
-3. **Phase 4 = U1 값 도메인 한국어화 + 위험 지도 근거 태세 배지**: VALUE_LABELS +
-   fixture 전 값 커버리지 테스트(반입 신규 값 누락 검출) / `EvidenceLadderService` 재사용.
+1. **사내 이관 절차**: 보안/계정 승인 → `jira_field_map.yaml` 실 스키마 값 교체 →
+   `sync-jira --execute`(PostgreSQL) 리허설 → 주기 실행. curation 워크플로(05 Stage 15 §3).
+2. **Stage 13 트랙 A**(가설 판정 모드 + baseline) 또는 **Stage 16 잔여 U2~U9**.
+3. **Stage 14 잔여**(인증/배포/LLM 캐시 — 사내 표준 필요).
 4. **P3 `Path` 객체(인과 경로, G-5)**: 최고 가치이나 대규모 계약 변경(다세션) —
    실데이터로 연결 모델 검증 후 착수 권장. **P2 측정=제품**/**B2 반입 진척**은 실데이터 의존.
 

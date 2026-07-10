@@ -1,5 +1,6 @@
 import type { ScenarioAnalysis } from "../../api/client";
 import { useLabels } from "../../hooks/useLabels";
+import { useValueLabels } from "../../hooks/useValueLabels";
 import { ko } from "../../i18n/ko";
 
 const t = ko.scenario_detail;
@@ -14,6 +15,7 @@ const GAP_BADGE: Record<string, string> = {
 export function OverviewTab({ analysis }: { analysis: ScenarioAnalysis }) {
   const { scenario } = analysis;
   const label = useLabels();
+  const valueLabel = useValueLabels();
   return (
     <div>
       <div className="card">
@@ -91,13 +93,16 @@ export function OverviewTab({ analysis }: { analysis: ScenarioAnalysis }) {
         {analysis.requests.map((request) => (
           <div key={request.id} className="list-item">
             <div className="head">
-              <span className="badge badge-info">{request.priority}</span>
+              <span className="badge badge-info" title={request.priority}>
+                {valueLabel("request_priority", request.priority)}
+              </span>
               <span className="title">{request.title}</span>
             </div>
             <p className="desc">
               {t.request_week}: {ko.scenario_detail.week_prefix}
-              {request.requested_week} · {t.request_status}: {request.status} · {t.confidence}:{" "}
-              {request.confidence}
+              {request.requested_week} · {t.request_status}:{" "}
+              <span title={request.status}>{valueLabel("request_status", request.status)}</span> ·{" "}
+              {t.confidence}: {request.confidence}
             </p>
           </div>
         ))}
@@ -109,9 +114,13 @@ export function OverviewTab({ analysis }: { analysis: ScenarioAnalysis }) {
           {analysis.issues.map((issue) => (
             <div key={issue.id} className="list-item">
               <div className="head">
-                <span className="badge badge-danger">{issue.issue_type}</span>
+                <span className="badge badge-danger" title={issue.issue_type}>
+                  {valueLabel("issue_type", issue.issue_type)}
+                </span>
                 <span className="title">{issue.title}</span>
-                <span className="badge badge-info">{issue.status}</span>
+                <span className="badge badge-info" title={issue.status}>
+                  {valueLabel("issue_status", issue.status)}
+                </span>
               </div>
               <p className="desc">{issue.symptom}</p>
             </div>

@@ -601,6 +601,154 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
     },
 }
 
+# ---------------------------------------------------------------- 값 도메인 라벨 (U1)
+# 문자열 코드 값 도메인의 한국어 라벨 사전 — 화면 표시는 한국어, 원문 코드는 hover만.
+# fixture 전 값 커버리지는 tests/test_glossary.py가 강제한다: 반입(CSV/JIRA)으로
+# 새 값이 들어오면 여기 누락이 테스트로 드러난다 (06_stage16_ui_overhaul.md U1).
+
+VALUE_LABELS: dict[str, dict[str, str]] = {
+    "issue_status": {
+        "open": "미해결",
+        "synthetic_open": "미해결(합성)",
+        "under_analysis": "분석 중",
+        "workaround_applied": "우회 적용",
+        "resolved": "해결됨",
+        "closed": "종결",
+        "done": "완료",
+    },
+    "issue_type": {
+        "architecture_tradeoff": "아키텍처 트레이드오프",
+        "audio_latency": "오디오 지연",
+        "av_sync": "A/V 동기",
+        "bandwidth_overrun": "대역폭 초과",
+        "defect": "결함",
+        "image_quality_regression": "화질 회귀",
+        "latency_regression": "지연 회귀",
+        "performance_competitiveness": "성능 경쟁력",
+        "power_budget_overrun": "전력 예산 초과",
+        "power_gap": "전력 격차",
+        "power_regression": "전력 회귀",
+        "qos_config": "QoS 설정",
+        "real_time_stability": "실시간 안정성",
+        "resume_latency": "재개 지연",
+        "stability": "안정성",
+        "thermal_throttling": "발열 스로틀링",
+        "underrun": "언더런",
+    },
+    "fix_type": {
+        "hw_fix": "HW 수정",
+        "sw_fix": "SW 수정",
+        "tuning": "튜닝",
+        "spec_change": "스펙 변경",
+        "process_change": "프로세스 변경",
+        "none": "조치 없음",
+    },
+    "severity": {
+        "critical": "치명",
+        "high": "높음",
+        "medium": "중간",
+        "low": "낮음",
+        "info": "정보",
+    },
+    "test_type": {
+        "regression": "회귀",
+        "scenario": "시나리오",
+        "cts_vts": "CTS/VTS",
+        "power": "전력",
+    },
+    "test_result": {
+        "passed": "통과",
+        "failed": "실패",
+        "blocked": "차단됨",
+        "planned": "계획됨",
+    },
+    "event_status": {
+        "recorded": "기록됨",
+        "open": "미해결",
+        "in_review": "검토 중",
+        "mitigated": "완화됨",
+        "deferred": "유보됨",
+        "available": "확보됨",
+    },
+    "schedule_signal": {
+        "on_track": "정상 진행",
+        "watch": "관찰",
+        "at_risk": "위험",
+        "window_closing": "결정 시한 임박",
+        "deferred": "유보",
+        "not_applicable": "해당 없음",
+    },
+    "availability": {
+        "available": "확보",
+        "partial": "부분 확보",
+        "missing": "부재",
+        "planned": "계획됨",
+    },
+    "confidence_contribution": {
+        "high": "높음",
+        "medium": "중간",
+        "low": "낮음",
+        "none": "없음",
+    },
+    "measurement_stage": {
+        "current_silicon": "현 실리콘",
+        "field": "필드",
+        "previous_project": "이전 프로젝트",
+        "customer_project": "고객 프로젝트",
+        "emulator": "에뮬레이터",
+        "architecture": "아키텍처",
+        "planned": "계획됨",
+    },
+    "scenario_match": {
+        "strong": "정합",
+        "partial": "부분 정합",
+        "none": "무정합",
+    },
+    "request_status": {
+        "architecture_document_input": "아키텍처 문서 입력",
+        "architecture_review": "아키텍처 검토",
+        "customer_spec_intake": "고객 스펙 접수",
+        "design_support_review": "설계 지원 검토",
+        "drop_or_defer_review": "철회·유보 검토",
+        "evidence_open": "근거 미확보",
+        "evt0_regression_scope_open": "EVT0 회귀 범위 미정",
+        "evt1_review": "EVT1 검토",
+        "feasibility_review": "실현성 검토",
+        "function_done_power_open": "기능 완료·전력 미해결",
+        "hw_window_closed": "HW 변경 시한 종료",
+        "optimization_review": "최적화 검토",
+        "pre_es_measurement_planning": "ES 전 측정 계획",
+        "pre_spec_freeze_review": "스펙 확정 전 검토",
+        "predevelopment_review": "선행 개발 검토",
+        "regression_open": "회귀 미해결",
+        "reproduced": "재현됨",
+        "spec_discussion": "스펙 논의",
+        "spec_freeze_review": "스펙 확정 검토",
+        "under_review": "검토 중",
+    },
+    "request_priority": {
+        "P0": "P0(최우선)",
+        "P1": "P1(우선)",
+        "P2": "P2(일반)",
+    },
+    "requirement_level": {
+        "required": "필수",
+        "candidate": "후보",
+    },
+    "direction": {
+        "increase": "증가",
+        "decrease": "감소",
+        "mixed": "혼합",
+        "unknown": "미상",
+    },
+    "support_status": {
+        "supported": "지원",
+        "conditional": "조건부 지원",
+        "unsupported": "미지원",
+        "unknown": "미상",
+    },
+}
+
 # ---------------------------------------------------------------- 조회 API
 
 
@@ -618,6 +766,11 @@ def field_label(model_name: str, field_name: str) -> str | None:
 def enum_label(enum_name: str, value: str) -> str | None:
     """enum 값의 한국어 라벨."""
     return ENUM_LABELS.get(enum_name, {}).get(value)
+
+
+def value_label(domain: str, value: str) -> str | None:
+    """값 도메인(문자열 코드)의 한국어 라벨 — 없으면 None (화면은 원문 폴백)."""
+    return VALUE_LABELS.get(domain, {}).get(value)
 
 
 def collect_models(root_models: list[type[BaseModel]]) -> list[type[BaseModel]]:
@@ -690,4 +843,9 @@ def export_glossary(root_models: list[type[BaseModel]]) -> dict[str, Any]:
             if f_label:
                 model_fields[field_name] = f_label
         fields[model.__name__] = model_fields
-    return {"objects": objects, "fields": fields, "enums": ENUM_LABELS}
+    return {
+        "objects": objects,
+        "fields": fields,
+        "enums": ENUM_LABELS,
+        "value_labels": VALUE_LABELS,
+    }

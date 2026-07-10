@@ -17,6 +17,11 @@ from backend.ontology.ip import IPBlock
 from backend.ontology.scenario import Scenario, ScenarioRequest
 from backend.resolve.entity_resolution import IPAliasIndex
 from backend.services.common import BasisItem
+from backend.services.evidence_ladder import (
+    EvidenceLadderService,
+    EvidencePosture,
+    scenario_posture,
+)
 
 GRADE_LABELS: dict[str, str] = {"high": "높음", "medium": "중간", "low": "낮음"}
 _GRADE_RANK: dict[str, int] = {"high": 0, "medium": 1, "low": 2}
@@ -87,6 +92,8 @@ class ScenarioRiskRow(BaseModel):
     overall_grade: str
     overall_grade_ko: str
     overall_basis: list[RiskBasisItem]
+    # 근거 태세 (실측/예측/부재 + 정성 판정) — 사다리 재사용, 근거 없으면 None.
+    evidence_posture: EvidencePosture | None = None
     cells: list[RiskCell]
 
 
@@ -536,6 +543,7 @@ class RiskService:
         catalog = self._catalog()
 
         alias_index = IPAliasIndex(self._repo)
+        ladder = EvidenceLadderService(self._repo)
         event_ip_cache: dict[str, set[str]] = {
             e.id: event_related_ips(e, alias_index) for e in events
         }
@@ -616,6 +624,7 @@ class RiskService:
                     overall_grade=overall,
                     overall_grade_ko=GRADE_LABELS[overall],
                     overall_basis=overall_basis,
+                    evidence_posture=scenario_posture(ladder, scenario.id),
                     cells=cells,
                 )
             )

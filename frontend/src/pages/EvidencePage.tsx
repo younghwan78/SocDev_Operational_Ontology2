@@ -11,6 +11,7 @@ import {
 } from "../api/client";
 import { SourceBadge } from "../components/SourceBadge";
 import { useLabels } from "../hooks/useLabels";
+import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.evidence;
@@ -48,6 +49,7 @@ export function EvidencePage() {
   });
   const batches = useQuery({ queryKey: ["ingest-batches"], queryFn: fetchIngestBatches });
   const label = useLabels();
+  const valueLabel = useValueLabels();
 
   const strengthById = new Map<string, EvidenceStrengthItem>(
     (ladder.data?.entries ?? []).map((item) => [item.evidence_id, item]),
@@ -88,8 +90,9 @@ export function EvidencePage() {
             key={option}
             className={`chip chip-btn ${availabilityFilter === option ? "active" : ""}`}
             onClick={() => setAvailabilityFilter(option)}
+            title={option}
           >
-            {option}
+            {valueLabel("availability", option)}
           </button>
         ))}
       </div>
@@ -135,8 +138,11 @@ export function EvidencePage() {
                   {tl.strength}: {strengthById.get(entry.id)!.tier_ko}
                 </span>
               )}
-              <span className={`badge ${AVAILABILITY_BADGE[entry.availability] ?? "badge-info"}`}>
-                {entry.availability}
+              <span
+                className={`badge ${AVAILABILITY_BADGE[entry.availability] ?? "badge-info"}`}
+                title={entry.availability}
+              >
+                {valueLabel("availability", entry.availability)}
               </span>
               <span className="title">{entry.title}</span>
               {entry.is_measurement && <span className="badge badge-ok">{t.measurement}</span>}

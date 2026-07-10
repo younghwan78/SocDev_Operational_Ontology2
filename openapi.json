@@ -4695,6 +4695,16 @@
             "title": "Cells",
             "type": "array"
           },
+          "evidence_posture": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidencePosture"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "overall_basis": {
             "items": {
               "$ref": "#/components/schemas/BasisItem"

@@ -33,6 +33,64 @@ def test_core_terms() -> None:
 
 def test_export_glossary_structure() -> None:
     exported = export_glossary(all_root_models())
-    assert set(exported.keys()) == {"objects", "fields", "enums"}
+    assert set(exported.keys()) == {"objects", "fields", "enums", "value_labels"}
     assert exported["objects"]["Scenario"] == "시나리오"
     assert exported["fields"]["Project"]["phase"] == "프로젝트 단계"
+
+
+def test_value_labels_cover_all_fixture_values() -> None:
+    """U1 값 도메인 커버리지 — fixture(+오버레이)에 등장하는 전 값에 라벨이 있어야 한다.
+
+    반입(CSV/JIRA)으로 새 값이 들어오면 이 테스트가 누락을 드러낸다
+    (06_stage16_ui_overhaul.md U1 계약).
+    """
+    from pathlib import Path
+
+    from backend.loaders.repository import InMemoryRepository
+    from backend.ontology.glossary import VALUE_LABELS, value_label
+
+    fixtures = Path(__file__).resolve().parents[1] / "fixtures"
+    repo = InMemoryRepository.from_fixtures(fixtures)
+
+    # (도메인, 컬렉션, 필드) — 값 도메인이 실재하는 지점 전수.
+    domain_fields = [
+        ("issue_status", "issues", "status"),
+        ("issue_type", "issues", "issue_type"),
+        ("fix_type", "issues", "fix_type"),
+        ("severity", "issues", "severity"),
+        ("severity", "development_events", "severity"),
+        ("test_type", "tests", "test_type"),
+        ("test_result", "tests", "result"),
+        ("event_status", "development_events", "status"),
+        ("schedule_signal", "development_events", "schedule_signal"),
+        ("availability", "evidence_catalog", "availability"),
+        ("confidence_contribution", "evidence_catalog", "confidence_contribution"),
+        ("measurement_stage", "evidence_catalog", "measurement_stage"),
+        ("scenario_match", "evidence_catalog", "scenario_match"),
+        ("request_status", "scenario_requests", "status"),
+        ("request_priority", "scenario_requests", "priority"),
+        ("requirement_level", "scenario_ip_requirements", "requirement_level"),
+        ("direction", "ip_knobs", "power_direction"),
+        ("direction", "ip_knobs", "latency_direction"),
+        ("direction", "ip_knobs", "bandwidth_direction"),
+        ("direction", "ip_knobs", "risk_direction"),
+        ("support_status", "ip_capabilities", "support_status"),
+    ]
+    missing: list[str] = []
+    for domain, collection, field_name in domain_fields:
+        for obj in repo.list(collection):
+            value = getattr(obj, field_name, None)
+            if value is None or value == "":
+                continue
+            if value_label(domain, str(value)) is None:
+                missing.append(f"{domain}: '{value}' ({collection}.{field_name})")
+    assert missing == [], "값 라벨 누락:\n" + "\n".join(sorted(set(missing)))
+    # 도메인 사전 자체도 비어 있지 않아야 한다.
+    for domain in VALUE_LABELS:
+        assert VALUE_LABELS[domain], f"빈 값 도메인: {domain}"
+
+
+def test_export_glossary_includes_value_labels() -> None:
+    exported = export_glossary(all_root_models())
+    assert "value_labels" in exported
+    assert exported["value_labels"]["availability"]["available"] == "확보"

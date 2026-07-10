@@ -17,6 +17,7 @@ import {
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
 import { useLabels } from "../hooks/useLabels";
+import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.change_impact;
@@ -159,6 +160,7 @@ export function ChangeImpactPage() {
 
 function ImpactResult({ result }: { result: ChangeImpactResult }) {
   const label = useLabels();
+  const valueLabel = useValueLabels();
   const { subject } = result;
   return (
     <div>
@@ -283,7 +285,9 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
                 <span className="title" title={item.ref_id}>
                   {item.title}
                 </span>
-                <span className="badge badge-info">{item.status}</span>
+                <span className="badge badge-info" title={item.status}>
+                  {valueLabel("issue_status", item.status)}
+                </span>
               </div>
               <p className="desc">{item.why_similar}</p>
               {(item.scenario_ids ?? []).length > 0 && (

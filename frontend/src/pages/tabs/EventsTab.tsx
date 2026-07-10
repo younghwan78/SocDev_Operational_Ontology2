@@ -1,5 +1,6 @@
 import type { DevelopmentEvent, RoleActivity } from "../../api/client";
 import { useLabels } from "../../hooks/useLabels";
+import { useValueLabels } from "../../hooks/useValueLabels";
 import { ko } from "../../i18n/ko";
 
 const t = ko.scenario_detail;
@@ -20,6 +21,7 @@ export function EventsTab({
   activities: RoleActivity[];
 }) {
   const label = useLabels();
+  const valueLabel = useValueLabels();
   return (
     <div>
       <div className="card">
@@ -34,11 +36,16 @@ export function EventsTab({
                   {event.week}
                 </span>
               )}
-              <span className={`badge ${SEVERITY_BADGE[event.severity] ?? "badge-info"}`}>
-                {event.severity}
+              <span
+                className={`badge ${SEVERITY_BADGE[event.severity] ?? "badge-info"}`}
+                title={event.severity}
+              >
+                {valueLabel("severity", event.severity)}
               </span>
               <span className="title">{event.title}</span>
-              <span className="badge badge-info">{event.status}</span>
+              <span className="badge badge-info" title={event.status}>
+                {valueLabel("event_status", event.status)}
+              </span>
             </div>
             <p className="desc">{event.description}</p>
             {(event.roles_involved ?? []).length > 0 && (

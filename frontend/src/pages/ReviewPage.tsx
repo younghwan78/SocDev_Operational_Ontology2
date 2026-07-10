@@ -9,6 +9,7 @@ import {
   type ReviewPackDocument,
 } from "../api/client";
 import { useLabels } from "../hooks/useLabels";
+import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.review;
@@ -81,6 +82,7 @@ export function ReviewPage() {
   const { week } = useParams<{ week: string }>();
   const navigate = useNavigate();
   const label = useLabels();
+  const valueLabel = useValueLabels();
 
   const index = useQuery({ queryKey: ["weekly-index"], queryFn: fetchWeeklyIndex });
   const selectedWeek = week ? Number(week) : undefined;
@@ -136,9 +138,13 @@ export function ReviewPage() {
             {snapshot.data.events.map((event) => (
               <div key={event.id} className="list-item">
                 <div className="head">
-                  <span className="badge badge-info">{event.severity}</span>
+                  <span className="badge badge-info" title={event.severity}>
+                    {valueLabel("severity", event.severity)}
+                  </span>
                   <span className="title">{event.title}</span>
-                  <span className="badge badge-ok">{event.status}</span>
+                  <span className="badge badge-ok" title={event.status}>
+                    {valueLabel("event_status", event.status)}
+                  </span>
                 </div>
                 <p className="desc">{event.description}</p>
               </div>
@@ -167,9 +173,13 @@ export function ReviewPage() {
             {snapshot.data.requests.map((request) => (
               <div key={request.id} className="list-item">
                 <div className="head">
-                  <span className="badge badge-danger">{request.priority}</span>
+                  <span className="badge badge-danger" title={request.priority}>
+                    {valueLabel("request_priority", request.priority)}
+                  </span>
                   <span className="title">{request.title}</span>
-                  <span className="badge badge-info">{request.status}</span>
+                  <span className="badge badge-info" title={request.status}>
+                    {valueLabel("request_status", request.status)}
+                  </span>
                 </div>
               </div>
             ))}
