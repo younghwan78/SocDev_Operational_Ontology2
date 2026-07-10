@@ -1,5 +1,37 @@
 # CHANGELOG
 
+## 사내 실운영 준비 Phase 2 — 결정 재진입 B3b (2026-07-11)
+
+> 설계: `internal_docs/design/11_decision_reentry.md`. 원점 4층 루프(review→decision)를
+> **ingest 경로로** 닫는다 — 리뷰 팩 결정 CSV를 사람이 채우면 `Decision`으로 재진입.
+
+### 추가
+
+- **`decisions` 반입 매핑**: 결정 CSV의 채워진 행 → `Decision` (행당 결정 1건,
+  `supporting_basis` 단일 근거 조립). `결정` 빈 행은 한국어 사유로 거부 보고(의도된 동작).
+  `Decision.event_id` 필수는 온톨로지 무변경으로 해소 — 리뷰 회의를 `development_events`
+  매핑으로 먼저 반입하고 CSV에 `회의 이벤트 ID` 기입.
+- **결정 CSV 템플릿 v2** (`toDecisionCsv`): 결정 ID 제안(`decision_<팩>_r<n>`)·프로젝트
+  ID(단일 프로젝트 팩)·근거 유형·확신도(medium) 시스템 프리필. 헤더 계약을 backend/
+  frontend 양쪽 테스트로 고정(`test_decision_csv_template_matches_mapping_contract` ↔
+  `ReviewPackCsv.test.ts`). `담당/상태`는 회의 기록용(미반입 — ActionItem 반입은 후속).
+- 샘플: `sample_decisions.csv`(거부 확인용 결정 없는 행 포함), `sample_events.csv`에
+  리뷰 회의 이벤트 추가.
+
+### 변경
+
+- **traceability 시작 시 스냅샷 제거** (`resolve/traceability.py`): 링크 그래프·인덱스를
+  호출 시점에 조립 — 반입 객체(결정·이슈 등)가 **재시작 없이** traceability에 반영된다
+  (B3b에서 발견된 기존 한계). 파일럿 규모 저비용, 대규모 캐시는 Stage 14 항목.
+
+### 검증
+
+```text
+backend 178 passed / 9 skipped · ruff · mypy(58) pass · validate-data 오류 0 ·
+frontend build / test(24) / lint 0. E2E: 회의 이벤트+결정 CSV 반입(2 수락/1 거부)
+→ 결정↔회의 이벤트·프로젝트 traceability 양방향 확인 → rollback 후 소멸.
+```
+
 ## 사내 실운영 준비 Phase 0~1 — 얇은 CI + 반입 표면 확대 (2026-07-11)
 
 > **방향 재정의(사용자)**: 목표는 워크숍 데모가 아니라 사내 실운영 + JIRA/Confluence 연동.

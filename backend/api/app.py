@@ -34,7 +34,6 @@ from backend.ontology.project import Project
 from backend.ontology.relation import AgentRun
 from backend.ontology.scenario import Scenario
 from backend.resolve.entity_resolution import EntityResolutionReport, EntityResolutionService
-from backend.resolve.object_index import ObjectIndex
 from backend.resolve.traceability import TraceabilityResult, TraceabilityService
 from backend.services.action_draft import ActionDraft, ActionDraftService
 from backend.services.change_impact import (
@@ -124,7 +123,6 @@ def build_services(
             ingest_service = IngestService(MemoryIngestWriter(repo))
         else:
             ingest_service = IngestService(MemoryIngestWriter(InMemoryRepository({})))
-    index = ObjectIndex(repo)
     return AppServices(
         repo=repo,
         backend_kind=backend_kind,
@@ -139,7 +137,7 @@ def build_services(
         action_draft=ActionDraftService(repo),
         evidence_ladder=EvidenceLadderService(repo),
         review_pack=ReviewPackService(repo),
-        traceability=TraceabilityService(repo, index),
+        traceability=TraceabilityService(repo),
         advisory=AdvisoryRunner(repo, run_store),
         ask=AskRunner(repo),
         run_store=run_store,

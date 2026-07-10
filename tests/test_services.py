@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pytest
 from backend.loaders.repository import InMemoryRepository
-from backend.resolve.object_index import ObjectIndex
 from backend.resolve.traceability import TraceabilityService
 from backend.services.portfolio import LANE_LABELS, PortfolioService
 from backend.services.review import ReviewService
@@ -82,7 +81,7 @@ def test_review_weekly(repo) -> None:
 
 
 def test_traceability_bidirectional(repo) -> None:
-    service = TraceabilityService(repo, ObjectIndex(repo))
+    service = TraceabilityService(repo)
     result = service.trace(SCENARIO)
     assert result.collection == "scenarios"
     assert result.label_ko == "시나리오"
@@ -95,7 +94,7 @@ def test_traceability_bidirectional(repo) -> None:
 
 
 def test_traceability_unknown_object(repo) -> None:
-    service = TraceabilityService(repo, ObjectIndex(repo))
+    service = TraceabilityService(repo)
     result = service.trace("없는_객체_id")
     assert result.collection is None
     assert result.links == []

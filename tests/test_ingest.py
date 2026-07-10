@@ -14,6 +14,7 @@ SAMPLE_ISSUES = ROOT / "samples" / "sample_issues.csv"
 SAMPLE_TESTS = ROOT / "samples" / "sample_tests.csv"
 SAMPLE_EVENTS = ROOT / "samples" / "sample_events.csv"
 SAMPLE_EVIDENCE = ROOT / "samples" / "sample_evidence_catalog.csv"
+SAMPLE_DECISIONS = ROOT / "samples" / "sample_decisions.csv"
 
 
 @pytest.fixture()
@@ -176,7 +177,7 @@ def test_ingest_tests_roundtrip(repo: InMemoryRepository, service: IngestService
 def test_ingest_events_roundtrip(repo: InMemoryRepository, service: IngestService) -> None:
     before = len(repo.list("development_events"))
     report = service.ingest("sample_events.csv", SAMPLE_EVENTS.read_bytes(), "development_events")
-    assert report.batch.accepted_count == 2
+    assert report.batch.accepted_count == 3
     assert report.batch.rejected_count == 0
 
     imported = repo.get("development_events", "import_event_dpu_qos_risk_v")
@@ -187,8 +188,79 @@ def test_ingest_events_roundtrip(repo: InMemoryRepository, service: IngestServic
     assert imported.related_ip_ids == ["ip_dpu"], "명시 IP 링크 열이 반입된다"
     assert imported.roles_involved == ["soc_architecture", "hw_development"]
 
-    assert service.rollback(report.batch.id) == 2
+    assert service.rollback(report.batch.id) == 3
     assert len(repo.list("development_events")) == before
+
+
+def test_ingest_decisions_roundtrip(repo: InMemoryRepository, service: IngestService) -> None:
+    """결정 재진입 (B3b) — 채운 행만 Decision, 결정 없는 행은 한국어 사유로 거부."""
+    before = len(repo.list("decisions"))
+    report = service.ingest("sample_decisions.csv", SAMPLE_DECISIONS.read_bytes(), "decisions")
+    assert report.batch.accepted_count == 2
+    assert report.batch.rejected_count == 1
+    assert "결정" in report.rejected_rows[0].reason, "결정 빈 행은 필수 열 누락으로 보고"
+
+    decision = repo.get("decisions", "decision_w_review_r1")
+    assert decision is not None
+    assert decision.event_id == "import_event_w_review_meeting"
+    assert decision.decision_type == "review_decision"
+    assert decision.selected_option.startswith("전력 모델을")
+    basis = decision.supporting_basis[0]
+    assert basis.ref_id == "import_evidence_mfc_export_thermal_w"
+    assert basis.basis_type == "evidence_catalog"
+    assert basis.confidence.value == "high"
+    assert decision.unresolved_risks == ["고온 환경(35°C+) 마진 재확인 필요"]
+
+    no_summary = repo.get("decisions", "decision_w_review_r2")
+    assert no_summary is not None
+    assert no_summary.tradeoff_summary == "", "빈 트레이드오프 요약은 기본값"
+
+    # traceability가 재시작 없이 반입 결정을 본다 (시작 시 스냅샷 한계 제거 검증).
+    from backend.resolve.traceability import TraceabilityService
+
+    trace = TraceabilityService(repo).trace("decision_w_review_r1")
+    assert trace.collection == "decisions"
+    linked = {link.other_id for link in trace.links}
+    assert "import_event_w_review_meeting" in linked, "회의 이벤트와 연결"
+
+    assert service.rollback(report.batch.id) == 2
+    assert len(repo.list("decisions")) == before
+    assert TraceabilityService(repo).trace("decision_w_review_r1").collection is None
+
+
+def test_decision_csv_template_matches_mapping_contract() -> None:
+    """설계 11 §2.1 — 프론트 toDecisionCsv 헤더와 decisions 매핑 계약의 정합 고정.
+
+    프론트 쪽은 ReviewPage 테스트가 같은 리터럴을 검증한다. 어느 한쪽이
+    단독 변경되면 해당 쪽 테스트가 실패해 드리프트를 드러낸다.
+    """
+    from backend.ingest.mappings import MAPPINGS
+
+    template_header = [
+        "결정 ID",
+        "프로젝트 ID",
+        "회의 이벤트 ID",
+        "시나리오 ID",
+        "시나리오",
+        "항목종류",
+        "진술",
+        "근거",
+        "근거 유형",
+        "신뢰등급",
+        "확신도",
+        "결정",
+        "결정 유형",
+        "트레이드오프 요약",
+        "미해결 리스크",
+        "담당",
+        "상태",
+    ]
+    mapping = MAPPINGS["decisions"]
+    mapped = set(mapping.column_map)
+    assert mapped <= set(template_header), "매핑 열은 전부 템플릿에 존재해야 한다"
+    assert mapping.required_columns <= set(template_header)
+    # 읽기용(미반입) 열은 계약에 명시된 것만.
+    assert set(template_header) - mapped == {"시나리오 ID", "시나리오", "항목종류", "신뢰등급", "담당", "상태"}
 
 
 def test_ingest_evidence_catalog_roundtrip(

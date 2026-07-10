@@ -18,19 +18,52 @@ function csvCell(value: string): string {
   return `"${value.replace(/"/g, '""')}"`;
 }
 
-function toDecisionCsv(doc: ReviewPackDocument): string {
-  const header = ["시나리오", "항목종류", "진술", "근거", "신뢰등급", "결정", "담당", "상태"];
-  const rows = [header.map(csvCell).join(",")];
+// 결정 재진입 계약 (internal_docs/design/11_decision_reentry.md §2.1) —
+// backend `decisions` 매핑과 쌍. 열 변경 시 backend test_ingest도 함께 갱신한다.
+export const DECISION_CSV_HEADER = [
+  "결정 ID",
+  "프로젝트 ID",
+  "회의 이벤트 ID",
+  "시나리오 ID",
+  "시나리오",
+  "항목종류",
+  "진술",
+  "근거",
+  "근거 유형",
+  "신뢰등급",
+  "확신도",
+  "결정",
+  "결정 유형",
+  "트레이드오프 요약",
+  "미해결 리스크",
+  "담당",
+  "상태",
+] as const;
+
+export function toDecisionCsv(doc: ReviewPackDocument): string {
+  const rows = [DECISION_CSV_HEADER.map(csvCell).join(",")];
+  const projectId = doc.project_ids.length === 1 ? doc.project_ids[0] : "";
+  let rowNumber = 0;
   for (const scenario of doc.scenarios) {
     for (const section of scenario.sections) {
       for (const item of section.items) {
+        rowNumber += 1;
         rows.push(
           [
+            `decision_${doc.pack_id}_r${rowNumber}`,
+            projectId,
+            "",
+            scenario.scenario_id,
             scenario.scenario_name,
             section.kind_ko,
             item.statement,
             item.basis[0]?.ref_id ?? "",
+            item.basis[0]?.ref_collection ?? "review_item",
             item.strength_ko ?? "",
+            "medium",
+            "",
+            "",
+            "",
             "",
             "",
             "",

@@ -102,11 +102,26 @@ class TraceabilityResult(BaseModel):
 
 
 class TraceabilityService:
-    """양방향 traceability 조립기 — 결정론, 저장하지 않음."""
+    """양방향 traceability 조립기 — 결정론, 저장하지 않음.
 
-    def __init__(self, repo: RepositoryProtocol, index: ObjectIndex) -> None:
+    호출 시점에 인덱스·링크 그래프를 조립한다 — 시작 시 스냅샷이면 반입(ingest)된
+    객체가 재시작 전까지 보이지 않는다 (B3b 결정 재진입에서 확인된 한계).
+    파일럿 규모(수천 객체)에서 저비용. 대규모화 시 배치 버전 키 캐시는 Stage 14 항목.
+    """
+
+    def __init__(self, repo: RepositoryProtocol) -> None:
         self._repo = repo
-        self._index = index
+
+    def trace(self, object_id: str) -> TraceabilityResult:
+        return _LinkGraph(self._repo).trace(object_id)
+
+
+class _LinkGraph:
+    """저장소 현재 상태의 링크 그래프 1회 조립체."""
+
+    def __init__(self, repo: RepositoryProtocol) -> None:
+        self._repo = repo
+        self._index = ObjectIndex(repo)
         self._outgoing: dict[str, list[TraceLink]] = {}
         self._incoming: dict[str, list[TraceLink]] = {}
         self._build()
