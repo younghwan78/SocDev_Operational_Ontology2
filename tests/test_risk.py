@@ -144,3 +144,74 @@ def test_focus_respects_project_filter(repo) -> None:
     service = RiskService(repo)
     for item in service.heatmap("project_v").focus:
         assert item.project_ids == ["project_v"]
+
+
+def test_event_explicit_related_ip_ids_override_heuristic(repo) -> None:
+    """명시 IP 링크가 있으면 affected_domains 토큰 확장 없이 정확 귀속된다 (L8)."""
+    from backend.ontology.event import DevelopmentEvent
+    from backend.resolve.entity_resolution import IPAliasIndex
+    from backend.services.risk import event_related_ips
+
+    index = IPAliasIndex(repo)
+    base = {
+        "id": "evt_x",
+        "project_id": "project_v",
+        "title": "t",
+        "description": "d",
+        "event_type": "risk_raised",
+        "event_category": "risk",
+        "affected_domains": ["memory"],
+    }
+    heuristic = DevelopmentEvent.model_validate(base)
+    assert len(event_related_ips(heuristic, index)) >= 2, "'memory'는 다중 IP로 확장"
+
+    explicit = DevelopmentEvent.model_validate({**base, "related_ip_ids": ["ip_dpu"]})
+    assert event_related_ips(explicit, index) == {"ip_dpu"}
+
+
+def test_open_issue_low_severity_grades_medium() -> None:
+    """이슈 자체 심각도가 낮음으로 명시되면 미해결이라도 중간 — 근거에 심각도 표기.
+
+    모듈 공유 repo를 오염시키지 않도록 독립 repo를 사용한다.
+    """
+    from backend.ontology.event import Issue
+
+    # 다른 신호가 없는 조용한 시나리오를 사용해 이슈 심각도의 효과만 격리한다.
+    scenario_id = "high_speed_fhd240_recording"
+    baseline = InMemoryRepository.from_fixtures(FIXTURES)
+    quiet_row = next(
+        r for r in RiskService(baseline).heatmap().rows if r.scenario_id == scenario_id
+    )
+    ip_id = quiet_row.cells[0].ip_id
+    assert quiet_row.cells[0].grade == "low", "전제: 기준선이 조용한 셀"
+
+    base = {
+        "id": "issue_sev_test",
+        "project_id": "project_u",
+        "title": "저심각도 미해결 이슈",
+        "issue_type": "underrun",
+        "status": "open",
+        "symptom": "간헐 재현",
+        "confidence": "medium",
+        "affected_scope": {"scenarios": [scenario_id], "ip_blocks": [ip_id]},
+    }
+
+    def _cell(severity: str | None) -> RiskCell:
+        local = InMemoryRepository.from_fixtures(FIXTURES)
+        payload = base if severity is None else {**base, "severity": severity}
+        local.add_objects("issues", [Issue.model_validate(payload)])
+        row = next(
+            r for r in RiskService(local).heatmap().rows if r.scenario_id == scenario_id
+        )
+        return next(c for c in row.cells if c.ip_id == ip_id)
+
+    low = _cell("low")
+    low_basis = next(b for b in low.basis if b.ref_id == "issue_sev_test")
+    assert low.grade == "medium", "심각도 low 미해결 이슈는 중간"
+    assert "심각도 low" in low_basis.description
+
+    high = _cell("high")
+    assert high.grade == "high", "심각도 high는 기존대로 높음"
+
+    unspecified = _cell(None)
+    assert unspecified.grade == "high", "심각도 미명시는 기존 동작 보존 (높음)"

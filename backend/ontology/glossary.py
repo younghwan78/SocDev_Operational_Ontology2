@@ -376,6 +376,7 @@ MODEL_FIELD_LABELS: dict[str, dict[str, str]] = {
     },
     "Issue": {
         "issue_type": "이슈 유형",
+        "severity": "심각도",
         "symptom": "증상",
         "evidence_refs": "근거 참조",
         "root_cause_candidates": "근본원인 후보",

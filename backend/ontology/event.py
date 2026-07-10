@@ -100,6 +100,9 @@ class DevelopmentEvent(OntologyObject):
     schedule_signal: str | None = None
     roles_involved: list[str] = Field(default_factory=list)
     affected_domains: list[str] = Field(default_factory=list)
+    # 명시 IP 링크 (L8 해소) — 있으면 affected_domains 토큰 휴리스틱보다 우선한다.
+    # 56 유래 데이터는 이 필드 없이 통과한다 (반입/커넥터 경로가 채우는 필드).
+    related_ip_ids: list[str] = Field(default_factory=list)
     linked_scenario_ids: list[str] = Field(default_factory=list)
     linked_evidence_ids: list[str] = Field(default_factory=list)
     linked_milestone_ids: list[str] = Field(default_factory=list)
@@ -170,6 +173,9 @@ class Issue(OntologyObject):
     title: str
     issue_type: str
     status: str
+    # 이슈 자체 심각도 (optional) — 위험 룰이 이벤트 심각도 대신 사용할 수 있다.
+    # 56 유래 데이터는 이 필드 없이 통과한다.
+    severity: str | None = None
     symptom: str
     confidence: Confidence
     evidence_refs: list[str] = Field(default_factory=list)

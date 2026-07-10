@@ -147,6 +147,7 @@ def test_ingest_issues_roundtrip(repo: InMemoryRepository, service: IngestServic
         "uhd60_recording_eis_on",
     ]
     assert imported.affected_scope.system_blocks == ["sys_noc", "sys_mif"]
+    assert imported.severity == "high"
     assert imported.root_causes[0].cause_type.value == "architecture_miss"
     assert imported.root_causes[0].confidence.value == "medium"
 
@@ -183,6 +184,7 @@ def test_ingest_events_roundtrip(repo: InMemoryRepository, service: IngestServic
     assert imported.severity == "high"
     assert imported.schedule_signal == "at_risk"
     assert imported.affected_domains == ["display", "memory"]
+    assert imported.related_ip_ids == ["ip_dpu"], "명시 IP 링크 열이 반입된다"
     assert imported.roles_involved == ["soc_architecture", "hw_development"]
 
     assert service.rollback(report.batch.id) == 2

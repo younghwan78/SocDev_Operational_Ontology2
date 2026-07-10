@@ -130,12 +130,15 @@ def _confidence_cap(raw: str) -> str:
 
 
 def event_related_ips(event: DevelopmentEvent, index: IPAliasIndex) -> set[str]:
-    """이벤트가 관련되는 IP 판별 — 후보 옵션의 명시 참조 + affected_domains의 별칭 해석 합집합.
+    """이벤트가 관련되는 IP 판별 — 명시 링크 우선, 없으면 별칭 해석 휴리스틱.
 
-    risk 고유 토큰 휴리스틱(구 `ip_match_tokens`, L8)을 폐기하고 엔티티 해석과 동일한
-    정규화·역인덱스(IPAliasIndex)를 공유한다. 한 도메인 토큰이 다중 IP에 걸리면
-    (예: 'memory'→MIF·SMMU) `resolve_all`로 모두 보존한다.
+    `related_ip_ids`(반입/커넥터가 채우는 명시 링크, L8 해소)가 있으면 그것만 쓴다 —
+    토큰 확장으로 인한 과잉 귀속이 없다. 없으면 기존 경로: 후보 옵션의 명시 참조 +
+    affected_domains의 별칭 해석 합집합(엔티티 해석과 동일한 IPAliasIndex 공유,
+    'memory'→MIF·SMMU 같은 다중 IP 토큰은 `resolve_all`로 모두 보존).
     """
+    if event.related_ip_ids:
+        return set(event.related_ip_ids)
     matched = {
         ip_id for option in event.candidate_options for ip_id in option.related_ip_ids
     }
@@ -229,7 +232,13 @@ class RiskService:
                     )
                 )
             else:
-                grades.append("high")
+                # 이슈 자체 심각도가 명시되고 낮으면 중간으로 — 없거나 높으면 기존대로 높음.
+                low_severity = issue.severity is not None and issue.severity.lower() in (
+                    "low",
+                    "info",
+                )
+                grades.append("medium" if low_severity else "high")
+                severity_note = f", 심각도 {issue.severity}" if issue.severity else ""
                 basis.append(
                     RiskBasisItem(
                         rule="open_issue",
@@ -238,7 +247,7 @@ class RiskService:
                         ref_collection="issues",
                         description=(
                             f"미해결 이슈 '{issue.title}' (유형 {issue.issue_type}, "
-                            f"상태 {issue.status}) — 증상: {issue.symptom}"
+                            f"상태 {issue.status}{severity_note}) — 증상: {issue.symptom}"
                         ),
                         source_refs=issue.evidence_refs,
                     )

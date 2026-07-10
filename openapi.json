@@ -1260,6 +1260,13 @@
             "title": "Read Only",
             "type": "boolean"
           },
+          "related_ip_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Ip Ids",
+            "type": "array"
+          },
           "requested_by": {
             "anyOf": [
               {
@@ -2281,6 +2288,17 @@
             },
             "title": "Root Causes",
             "type": "array"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
           },
           "source": {
             "$ref": "#/components/schemas/SourceMeta"

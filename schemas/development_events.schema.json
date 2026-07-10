@@ -571,6 +571,13 @@
       "title": "Read Only",
       "type": "boolean"
     },
+    "related_ip_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Ip Ids",
+      "type": "array"
+    },
     "requested_by": {
       "anyOf": [
         {

@@ -22,6 +22,7 @@ development_events:
   affected_domains:
   - project
   - package
+  related_ip_ids: []
   linked_scenario_ids: []
   linked_evidence_ids: []
   linked_milestone_ids:
@@ -58,6 +59,7 @@ development_events:
   affected_domains:
   - power
   - camera
+  related_ip_ids: []
   linked_scenario_ids:
   - uhd60_recording_eis_on
   linked_evidence_ids:
@@ -103,6 +105,7 @@ development_events:
   affected_domains:
   - project
   - release
+  related_ip_ids: []
   linked_scenario_ids: []
   linked_evidence_ids: []
   linked_milestone_ids:
@@ -140,6 +143,7 @@ development_events:
   affected_domains:
   - customer
   - project
+  related_ip_ids: []
   linked_scenario_ids:
   - uhd60_recording_eis_on
   linked_evidence_ids: []
@@ -181,6 +185,7 @@ development_events:
   - camera
   - power
   - bandwidth
+  related_ip_ids: []
   linked_scenario_ids:
   - fhd30_recording_kpi
   - uhd30_recording_kpi
@@ -329,6 +334,7 @@ development_events:
   affected_domains:
   - camera
   - power
+  related_ip_ids: []
   linked_scenario_ids:
   - uhd60_recording_eis_on
   linked_evidence_ids:
@@ -375,6 +381,7 @@ development_events:
   - camera
   - thermal
   - power
+  related_ip_ids: []
   linked_scenario_ids:
   - eight_k30_recording_kpi
   linked_evidence_ids:
@@ -421,6 +428,7 @@ development_events:
   affected_domains:
   - project
   - release
+  related_ip_ids: []
   linked_scenario_ids:
   - eight_k30_recording_kpi
   linked_evidence_ids: []
@@ -460,6 +468,7 @@ development_events:
   affected_domains:
   - project
   - release
+  related_ip_ids: []
   linked_scenario_ids: []
   linked_evidence_ids: []
   linked_milestone_ids:
@@ -497,6 +506,7 @@ development_events:
   - camera
   - codec
   - power
+  related_ip_ids: []
   linked_scenario_ids:
   - dual_video_recording
   linked_evidence_ids:
@@ -543,6 +553,7 @@ development_events:
   affected_domains:
   - camera
   - evidence
+  related_ip_ids: []
   linked_scenario_ids:
   - dual_video_recording
   linked_evidence_ids:
@@ -590,6 +601,7 @@ development_events:
   - camera
   - ai
   - power
+  related_ip_ids: []
   linked_scenario_ids:
   - editable_portrait_video_recording
   linked_evidence_ids:
@@ -715,6 +727,7 @@ development_events:
   - power
   - thermal
   - quality
+  related_ip_ids: []
   linked_scenario_ids:
   - uhd60_recording_eis_on
   - eight_k30_recording_kpi
@@ -762,6 +775,7 @@ development_events:
   - display
   - realtime
   - bandwidth
+  related_ip_ids: []
   linked_scenario_ids:
   - video_mode_panel_underrun_prevention
   linked_evidence_ids:
@@ -811,6 +825,7 @@ development_events:
   affected_domains:
   - display
   - realtime
+  related_ip_ids: []
   linked_scenario_ids:
   - video_mode_panel_underrun_prevention
   linked_evidence_ids:
@@ -855,6 +870,7 @@ development_events:
   affected_domains:
   - display
   - evidence
+  related_ip_ids: []
   linked_scenario_ids:
   - video_mode_panel_underrun_prevention
   linked_evidence_ids:
@@ -900,6 +916,7 @@ development_events:
   - codec
   - video
   - benchmark
+  related_ip_ids: []
   linked_scenario_ids:
   - video_editor_export
   linked_evidence_ids:
@@ -947,6 +964,7 @@ development_events:
   - customer
   - project
   - quality
+  related_ip_ids: []
   linked_scenario_ids:
   - video_mode_panel_underrun_prevention
   - video_editor_export
@@ -992,6 +1010,7 @@ development_events:
   - video
   - power
   - dou
+  related_ip_ids: []
   linked_scenario_ids:
   - youtube_video_playback_dou
   linked_evidence_ids:
@@ -1039,6 +1058,7 @@ development_events:
   - project
   - power
   - quality
+  related_ip_ids: []
   linked_scenario_ids:
   - youtube_video_playback_dou
   - video_editor_export
@@ -1090,6 +1110,7 @@ development_events:
   - camera
   - ai
   - quality
+  related_ip_ids: []
   linked_scenario_ids:
   - low_light_video_recording_ai
   linked_evidence_ids:
@@ -1139,6 +1160,7 @@ development_events:
   affected_domains:
   - camera
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - low_light_video_recording_ai
   linked_evidence_ids:
@@ -1179,6 +1201,7 @@ development_events:
   affected_domains:
   - project
   - silicon
+  related_ip_ids: []
   linked_scenario_ids: []
   linked_evidence_ids: []
   linked_milestone_ids:
@@ -1215,6 +1238,7 @@ development_events:
   affected_domains:
   - software
   - emulator
+  related_ip_ids: []
   linked_scenario_ids:
   - ai_isp_capture_tap_in_out
   linked_evidence_ids:
@@ -1257,6 +1281,7 @@ development_events:
   - camera
   - isp
   - software
+  related_ip_ids: []
   linked_scenario_ids:
   - ai_isp_capture_tap_in_out
   linked_evidence_ids:
@@ -1303,6 +1328,7 @@ development_events:
   - camera
   - isp
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - ai_isp_capture_tap_in_out
   linked_evidence_ids:
@@ -1422,6 +1448,7 @@ development_events:
   - camera
   - control
   - software
+  related_ip_ids: []
   linked_scenario_ids:
   - multi_camera_zoom_sensor_mode_switch
   linked_evidence_ids:
@@ -1465,6 +1492,7 @@ development_events:
   - camera
   - control
   - schedule
+  related_ip_ids: []
   linked_scenario_ids:
   - multi_camera_zoom_sensor_mode_switch
   linked_evidence_ids:
@@ -1551,6 +1579,7 @@ development_events:
   affected_domains:
   - camera
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - ai_isp_capture_tap_in_out
   linked_evidence_ids:
@@ -1592,6 +1621,7 @@ development_events:
   - camera
   - emulator
   - power
+  related_ip_ids: []
   linked_scenario_ids:
   - uhd60_recording_eis_on
   linked_evidence_ids:
@@ -1634,6 +1664,7 @@ development_events:
   affected_domains:
   - camera
   - power
+  related_ip_ids: []
   linked_scenario_ids:
   - uhd60_recording_eis_on
   linked_evidence_ids:
@@ -1681,6 +1712,7 @@ development_events:
   affected_domains:
   - project
   - hardware
+  related_ip_ids: []
   linked_scenario_ids:
   - mfc_mfd_parallel_4k8k_recording
   linked_evidence_ids: []
@@ -1722,6 +1754,7 @@ development_events:
   - codec
   - bandwidth
   - power
+  related_ip_ids: []
   linked_scenario_ids:
   - mfc_mfd_parallel_4k8k_recording
   linked_evidence_ids:
@@ -1767,6 +1800,7 @@ development_events:
   - codec
   - bandwidth
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - mfc_mfd_parallel_4k8k_recording
   linked_evidence_ids:
@@ -1815,6 +1849,7 @@ development_events:
   affected_domains:
   - hardware
   - schedule
+  related_ip_ids: []
   linked_scenario_ids:
   - eight_k30_recording_kpi
   linked_evidence_ids:
@@ -1859,6 +1894,7 @@ development_events:
   - display
   - ai
   - realtime
+  related_ip_ids: []
   linked_scenario_ids:
   - ai_scaler_display_scale_up
   linked_evidence_ids:
@@ -1907,6 +1943,7 @@ development_events:
   - camera
   - thermal
   - schedule
+  related_ip_ids: []
   linked_scenario_ids:
   - eight_k30_recording_kpi
   linked_evidence_ids:
@@ -1955,6 +1992,7 @@ development_events:
   - project
   - package
   - schedule
+  related_ip_ids: []
   linked_scenario_ids:
   - eight_k30_recording_kpi
   linked_evidence_ids:
@@ -2025,6 +2063,7 @@ development_events:
   affected_domains:
   - customer
   - specification
+  related_ip_ids: []
   linked_scenario_ids:
   - low_light_video_recording_ai
   linked_evidence_ids:
@@ -2069,6 +2108,7 @@ development_events:
   - camera
   - ai
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - low_light_video_recording_ai
   linked_evidence_ids:
@@ -2215,6 +2255,7 @@ development_events:
   - camera
   - codec
   - bandwidth
+  related_ip_ids: []
   linked_scenario_ids:
   - apv_recording_high_bw
   linked_evidence_ids:
@@ -2262,6 +2303,7 @@ development_events:
   - codec
   - bandwidth
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - apv_recording_high_bw
   linked_evidence_ids:
@@ -2383,6 +2425,7 @@ development_events:
   - camera
   - bandwidth
   - thermal
+  related_ip_ids: []
   linked_scenario_ids:
   - apv_recording_high_bw
   linked_evidence_ids:
@@ -2431,6 +2474,7 @@ development_events:
   affected_domains:
   - specification
   - project
+  related_ip_ids: []
   linked_scenario_ids:
   - apv_recording_high_bw
   - mfc_mfd_parallel_4k8k_recording
@@ -2476,6 +2520,7 @@ development_events:
   - codec
   - area
   - power
+  related_ip_ids: []
   linked_scenario_ids:
   - mfc_mfd_parallel_4k8k_recording
   linked_evidence_ids:
@@ -2521,6 +2566,7 @@ development_events:
   - area
   - power
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - mfc_mfd_parallel_4k8k_recording
   linked_evidence_ids:
@@ -2570,6 +2616,7 @@ development_events:
   affected_domains:
   - codec
   - area
+  related_ip_ids: []
   linked_scenario_ids:
   - mfc_mfd_parallel_4k8k_recording
   linked_evidence_ids:
@@ -2617,6 +2664,7 @@ development_events:
   - audio
   - ai
   - latency
+  related_ip_ids: []
   linked_scenario_ids:
   - voice_call_audio_ai_latency
   linked_evidence_ids:
@@ -2663,6 +2711,7 @@ development_events:
   - ai
   - latency
   - memory
+  related_ip_ids: []
   linked_scenario_ids:
   - voice_call_audio_ai_latency
   linked_evidence_ids:
@@ -2711,6 +2760,7 @@ development_events:
   - audio
   - measurement
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - voice_call_audio_ai_latency
   linked_evidence_ids:
@@ -2753,6 +2803,7 @@ development_events:
   affected_domains:
   - architecture
   - project
+  related_ip_ids: []
   linked_scenario_ids:
   - low_light_video_recording_ai
   - apv_recording_high_bw
@@ -2804,6 +2855,7 @@ development_events:
   - display
   - realtime
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - video_mode_panel_underrun_prevention
   linked_evidence_ids:
@@ -2849,6 +2901,7 @@ development_events:
   - power
   - dou
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - youtube_video_playback_dou
   linked_evidence_ids:
@@ -2897,6 +2950,7 @@ development_events:
   - project
   - release
   - architecture
+  related_ip_ids: []
   linked_scenario_ids:
   - low_light_video_recording_ai
   - voice_call_audio_ai_latency
@@ -2948,6 +3002,7 @@ development_events:
   - power
   - bandwidth
   - thermal
+  related_ip_ids: []
   linked_scenario_ids:
   - apv_recording_high_bw
   linked_evidence_ids:
@@ -3009,6 +3064,7 @@ development_events:
   - power
   - bandwidth
   - thermal
+  related_ip_ids: []
   linked_scenario_ids:
   - apv_recording_high_bw
   linked_evidence_ids:
@@ -3073,6 +3129,7 @@ development_events:
   - bandwidth
   - area
   - schedule
+  related_ip_ids: []
   linked_scenario_ids:
   - uhd60_recording_eis_on
   - eight_k30_recording_kpi
@@ -3283,6 +3340,7 @@ development_events:
   - area
   - power
   - quality
+  related_ip_ids: []
   linked_scenario_ids:
   - ai_isp_capture_tap_in_out
   - low_light_video_recording_ai
@@ -3462,6 +3520,7 @@ development_events:
   - area
   - quality
   - design
+  related_ip_ids: []
   linked_scenario_ids:
   - ai_isp_capture_tap_in_out
   - low_light_video_recording_ai
@@ -3592,6 +3651,7 @@ development_events:
   status: recorded
   roles_involved: []
   affected_domains: []
+  related_ip_ids: []
   linked_scenario_ids:
   - dual_video_recording
   - editable_portrait_video_recording
@@ -3623,6 +3683,7 @@ development_events:
   status: recorded
   roles_involved: []
   affected_domains: []
+  related_ip_ids: []
   linked_scenario_ids:
   - eight_k30_recording_kpi
   - low_light_ai_capture
@@ -3653,6 +3714,7 @@ development_events:
   status: recorded
   roles_involved: []
   affected_domains: []
+  related_ip_ids: []
   linked_scenario_ids:
   - uhd60_recording_eis_on
   - video_mode_panel_underrun_prevention
@@ -3683,6 +3745,7 @@ development_events:
   status: recorded
   roles_involved: []
   affected_domains: []
+  related_ip_ids: []
   linked_scenario_ids:
   - eight_k30_recording_kpi
   linked_evidence_ids: []

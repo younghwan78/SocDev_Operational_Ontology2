@@ -1144,6 +1144,8 @@ export interface components {
              * @default true
              */
             read_only: boolean;
+            /** Related Ip Ids */
+            related_ip_ids?: string[];
             /** Requested By */
             requested_by?: string | null;
             /** Required Evidence */
@@ -1534,6 +1536,8 @@ export interface components {
             root_cause_candidates?: string[];
             /** Root Causes */
             root_causes?: components["schemas"]["RootCause"][];
+            /** Severity */
+            severity?: string | null;
             source?: components["schemas"]["SourceMeta"];
             /** Status */
             status: string;

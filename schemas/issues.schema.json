@@ -240,6 +240,18 @@
       "title": "Root Causes",
       "type": "array"
     },
+    "severity": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Severity"
+    },
     "source": {
       "$ref": "#/$defs/SourceMeta"
     },
