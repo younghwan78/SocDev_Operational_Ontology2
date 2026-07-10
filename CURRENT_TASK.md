@@ -2,23 +2,41 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — Bridge + 후속 개선 일단락 (2026-07-10).**
+**사내 실운영 준비 로드맵 Phase 0~1 — 얇은 CI + 반입 표면 확대 (2026-07-11 승인).**
 
-> **Bridge(F1 출처 지도 / F2 엔티티 해석 / F3 실행 초안)** 완료 —
-> 설계 `internal_docs/design/07_advisory_to_os_bridge.md`.
->
-> **후속 개선 완료** (설계 `09_evidence_ladder.md`, `10_review_pack.md`):
-> - H1 lint 게이트 복구 · B1 L8 귀속 통일(공용 IPAliasIndex) · H2 tsbuildinfo untrack · H3 종결.
-> - **P1 근거 신뢰 사다리** — evidence_catalog 실필드로 강→약 5단 정성 등급(`GET /evidence/ladder`).
-> - **사다리 → 실행 초안 통합** — 시나리오 근거 태세 + 항목 신뢰 등급을 결정 지점에 노출.
-> - **B3 리뷰 팩 조립** — ReviewPack이 묶은 시나리오 초안을 조립(`GET /review-packs`) + 결정 CSV.
->
-> 전부 계약 변경 없는 결정론 파생 뷰(GET) — 온톨로지 쓰기·자동 실행·수치 점수 없음.
-> 진행 이력: `CHANGELOG.md`. 궤적: 사다리(계산)→분포→실행 초안 통합→리뷰 팩(결정←근거 루프).
->
-> **남은 항목·다음 착수 순서는 `internal_docs/design/08_bridge_followups.md` §4** (인수인계용):
-> 권장 = 위험 지도 근거 태세 확장(저비용·고가시성) → B3b 결정 재진입(쓰기 경로, 신중) → P3 Path(대형).
-> 각 항목 착수는 사용자 승인 필요.
+> **방향 재정의 (2026-07-11, 사용자)**: 목표는 워크숍 데모가 아니라 **사내 실운영
+> (operational ontology) + JIRA/Confluence 연동**. 사외에서는 fixture로 구현·검증
+> 가능한 것을 최대한 앞당긴다 — 백로그 P4("CI 얇게 먼저 + 실데이터 반입 당기기") 채택.
+> 전체 로드맵: Phase 0(얇은 CI) → 1(반입 표면 확대 = Stage 15 사외 선행분) →
+> 2(B3b 결정 재진입) → 3(JIRA/Confluence 커넥터 사외 선행분) → 4(U1 값 한국어화 + 태세 배지).
+> **이번 승인 범위는 Phase 0~1** — Phase 2~4는 완료 보고 후 순차 승인.
+
+### Phase 0 — 얇은 CI (In-scope)
+
+- `.github/workflows/ci.yml` 3 jobs: backend(pytest/ruff/mypy/validate-data),
+  frontend(build/test/lint), contracts(schema/openapi/gen:api 재생성 후 drift 검출).
+- PG 통합 job은 후속 확장으로 명시만. 56 참조 부재 시 라운드트립 테스트는 기존 skipif로 skip.
+
+### Phase 1 — 반입 표면 확대 (In-scope)
+
+1. **1a 매핑 중첩 필드 지원**: `column_map` 점 표기(`affected_scope.scenarios`),
+   `bool_columns`, 단일 근본원인 3열→`root_causes[0]` 조립. 필요한 형태만(일반화 과잉 금지).
+2. **1b 매핑 4종**: issues / tests / development_events / evidence_catalog
+   (한국어 헤더, `;` 리스트). 각각 rollback 왕복 테스트 + 반입→위험 지도·RCA·사다리
+   즉시 반영 통합 테스트. `samples/`에 4종 샘플 CSV.
+3. **1c 계약 정밀화 (L8, 변경 규율 6단계)**: `DevelopmentEvent.related_ip_ids`(optional,
+   명시 링크 우선→휴리스틱 폴백), `Issue.severity`(optional). glossary + 3종 재생성.
+
+### Out-of-scope (이번 Phase)
+
+B3b/커넥터/U1(각 Phase 2~4), P3 Path, 신규 화면, 인증/배포, telemetry, 시맨틱 검색.
+
+### 수용 기준
+
+- [ ] CI 3 job 정의가 로컬 회귀 명령과 동일 게이트를 실행
+- [ ] 4개 매핑 각각: 샘플 CSV 반입 성공 → 해당 화면 파생 뷰 반영 → rollback 시 소멸 (테스트 고정)
+- [ ] `related_ip_ids` 있는 이벤트는 휴리스틱 없이 정확 귀속 (테스트 고정)
+- [ ] 라운드트립·glossary 커버리지·전체 회귀 green, validate-data 오류 0
 
 ## 다음 단계 기준 문서
 

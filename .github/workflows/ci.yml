@@ -1,0 +1,63 @@
+# 얇은 CI — 로컬 회귀 명령(CURRENT_TASK.md)과 동일한 게이트를 PR/push마다 실행한다.
+# PG 통합(pgvector 컨테이너) job은 후속 확장 — POSTGRES_TEST_DSN 게이트 테스트는 자동 skip.
+# 56 참조 디렉토리는 CI에 없으므로 test_converter_roundtrip도 기존 skipif로 자동 skip.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync --frozen
+      - run: uv run pytest -p no:cacheprovider
+      - run: uv run ruff check backend tests tools
+      - run: uv run mypy
+      - run: uv run python -m backend.cli.main validate-data
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test
+      - run: npm run lint
+
+  contracts:
+    # 계약 단일 소스(Pydantic) → JSON Schema / openapi / frontend 타입 드리프트 검출.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: uv sync --frozen
+      - run: uv run python -m backend.ontology.schema_export
+      - run: uv run python -m backend.api.openapi_export
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run gen:api
+        working-directory: frontend
+      - run: git diff --exit-code
