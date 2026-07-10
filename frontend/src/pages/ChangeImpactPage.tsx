@@ -39,7 +39,7 @@ export function ChangeImpactPage() {
     queryFn: fetchChangeImpactOptions,
   });
   // 데모 스토리 등 외부 딥링크(?ip=&knob=...)로 사전 구성 실행을 지원한다.
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const initialIp = searchParams.get("ip") ?? "";
   const [ipId, setIpId] = useState(initialIp);
   const [knobId, setKnobId] = useState(searchParams.get("knob") ?? "");
@@ -134,14 +134,31 @@ export function ChangeImpactPage() {
             type="button"
             className="run-btn"
             disabled={!ipId}
-            onClick={() =>
+            onClick={() => {
               setParams({
                 ipId,
                 knobId: knobId || undefined,
                 capabilityId: capabilityId || undefined,
                 mode: mode || undefined,
-              })
-            }
+              });
+              // URL=상태: 실행한 분석을 링크로 공유·재현할 수 있게 역동기화.
+              setSearchParams(
+                (previous) => {
+                  const next = new URLSearchParams(previous);
+                  next.set("ip", ipId);
+                  for (const [key, value] of [
+                    ["knob", knobId],
+                    ["capability", capabilityId],
+                    ["mode", mode],
+                  ] as const) {
+                    if (value) next.set(key, value);
+                    else next.delete(key);
+                  }
+                  return next;
+                },
+                { replace: true },
+              );
+            }}
           >
             {t.run}
           </button>
@@ -150,7 +167,11 @@ export function ChangeImpactPage() {
 
       {params === null && <p className="status-msg">{t.idle_hint}</p>}
       {result.isFetching && <p className="status-msg">{ko.app.loading}</p>}
-      {result.isError && <p className="status-msg">{ko.app.error}</p>}
+      {result.isError && (
+        <p className="status-msg" role="alert">
+          {t.analysis_failed}
+        </p>
+      )}
       {params !== null && result.data && !result.isFetching && (
         <ImpactResult result={result.data} />
       )}

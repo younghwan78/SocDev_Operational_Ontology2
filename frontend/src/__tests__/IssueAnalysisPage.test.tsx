@@ -105,11 +105,11 @@ beforeEach(() => {
   );
 });
 
-function renderPage() {
+function renderPage(initialEntry = "/issues") {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <IssueAnalysisPage />
       </MemoryRouter>
     </QueryClientProvider>,
@@ -143,5 +143,14 @@ describe("IssueAnalysisPage", () => {
     expect(screen.queryByText("issue_isp_hdr_latency_closed_unverified_u")).not.toBeInTheDocument();
     expect(screen.queryByText("uhd60_recording_eis_on")).not.toBeInTheDocument();
     expect(screen.queryByText("project_u")).not.toBeInTheDocument();
+  });
+});
+
+describe("URL=상태 재현", () => {
+  it("?q= 로 진입하면 검색 입력과 목록 필터가 재현된다", async () => {
+    renderPage("/issues?q=없는검색어");
+    const input = (await screen.findByLabelText("검색")) as HTMLInputElement;
+    expect(input.value).toBe("없는검색어");
+    expect(screen.queryByText("HDR 경로 지연 (검증 없이 종결)")).not.toBeInTheDocument();
   });
 });

@@ -5,7 +5,7 @@
  * 빨갛게 드러나는 것이 이 화면의 존재 이유다.
  */
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   fetchIssueRCA,
@@ -44,13 +44,39 @@ const VERIFICATION_FILTERS: { value: string; label: string }[] = [
 ];
 
 export function IssueAnalysisPage() {
-  const [searchParams] = useSearchParams();
-  const [projectFilter, setProjectFilter] = useState<string | undefined>();
-  const [verificationFilter, setVerificationFilter] = useState<string | undefined>();
-  // Ask SoC 등 외부에서 ?issue=<id>로 딥링크 진입을 지원한다.
-  const [selectedIssue, setSelectedIssue] = useState<string | null>(
-    searchParams.get("issue"),
-  );
+  // URL=상태: 필터/검색/선택을 URL에 반영 — 새로고침·공유가 화면을 재현한다.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const projectFilter = searchParams.get("project") ?? undefined;
+  const verificationFilter = searchParams.get("verification") ?? undefined;
+  const selectedIssue = searchParams.get("issue");
+  const urlQuery = searchParams.get("q") ?? "";
+  const [queryDraft, setQueryDraft] = useState(urlQuery);
+  const updateParams = (patch: Record<string, string | null>) => {
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+        for (const [key, value] of Object.entries(patch)) {
+          if (value === null) next.delete(key);
+          else next.set(key, value);
+        }
+        return next;
+      },
+      { replace: true },
+    );
+  };
+  // 300ms debounce로 q를 URL에 반영 (타이핑마다 히스토리 오염 방지).
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (queryDraft !== urlQuery) updateParams({ q: queryDraft || null });
+    }, 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryDraft]);
+  const setProjectFilter = (value: string | undefined) =>
+    updateParams({ project: value ?? null });
+  const setVerificationFilter = (value: string | undefined) =>
+    updateParams({ verification: value ?? null });
+  const setSelectedIssue = (value: string | null) => updateParams({ issue: value });
 
   const valueLabel = useValueLabels();
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
@@ -63,6 +89,14 @@ export function IssueAnalysisPage() {
     queryFn: () => fetchIssueRCA(selectedIssue!),
     enabled: selectedIssue !== null,
   });
+
+  const query = urlQuery.trim().toLowerCase();
+  const visibleIssues = (issues.data ?? []).filter(
+    (issue) =>
+      !query ||
+      issue.title.toLowerCase().includes(query) ||
+      issue.issue_type.toLowerCase().includes(query),
+  );
 
   if (issues.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (issues.isError) return <p className="status-msg">{ko.app.error}</p>;
@@ -106,15 +140,28 @@ export function IssueAnalysisPage() {
             {option.label}
           </button>
         ))}
+        <label className="filter-label" htmlFor="issue-search">
+          {t.search_label}
+        </label>
+        <input
+          id="issue-search"
+          type="search"
+          className="search-input"
+          value={queryDraft}
+          placeholder={t.search_placeholder}
+          autoComplete="off"
+          spellCheck={false}
+          onChange={(event) => setQueryDraft(event.target.value)}
+        />
       </div>
 
       <div className="rca-layout">
         <div className="card issue-list">
           <h2 className="card-title">
-            {t.list_title} ({(issues.data ?? []).length})
+            {t.list_title} ({visibleIssues.length})
           </h2>
           <CollapsibleList
-            items={issues.data ?? []}
+            items={visibleIssues}
             limit={12}
             render={(issue: IssueSummary) => (
               <button

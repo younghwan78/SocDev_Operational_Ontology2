@@ -276,3 +276,17 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
   white-space: nowrap;
 }
 .posture-weak { color: var(--danger); border-color: var(--danger-soft); font-weight: 600; }
+
+/* heatmap 스케일 — 시나리오 열·헤더 sticky, 종합 열 구분 (표시용, 룰 아님) */
+.heatmap-scroll { max-height: 70vh; overflow: auto; }
+.heatmap thead th { position: sticky; top: 0; background: var(--surface); z-index: 2; }
+.heatmap .heatmap-scenario { position: sticky; left: 0; background: var(--surface); z-index: 1; }
+.heatmap thead th.heatmap-scenario { z-index: 3; }
+.heatmap tbody tr:hover .heatmap-scenario { background: var(--accent-soft); }
+.heatmap .heatmap-overall { background: var(--accent-soft); border-left: 2px solid var(--accent); }
+.heatmap-toolbar { flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+
+.search-input {
+  padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px;
+  font-size: 13px; min-width: 200px; background: var(--surface); color: inherit;
+}

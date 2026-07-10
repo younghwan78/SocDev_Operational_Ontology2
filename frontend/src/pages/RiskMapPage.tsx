@@ -4,7 +4,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   fetchProjects,
   fetchRiskHeatmap,
@@ -35,14 +35,37 @@ type Selection = { scenarioId: string; ipId: string | null };
 
 export function RiskMapPage() {
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
-  const projectId = selectedProject ?? projects.data?.[0]?.id;
+  // URL=상태: 탭/선택/등급 필터를 URL에 반영 — 새로고침·공유가 화면을 재현한다.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const projectId = searchParams.get("project") ?? projects.data?.[0]?.id;
+  const gradeFilter = searchParams.get("grade") ?? "all";
+  const cellParam = searchParams.get("cell");
+  const selection: Selection | null = cellParam
+    ? {
+        scenarioId: cellParam.split(":")[0],
+        ipId: cellParam.split(":")[1] === "overall" ? null : (cellParam.split(":")[1] ?? null),
+      }
+    : null;
+  const updateParams = (patch: Record<string, string | null>) => {
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+        for (const [key, value] of Object.entries(patch)) {
+          if (value === null) next.delete(key);
+          else next.set(key, value);
+        }
+        return next;
+      },
+      { replace: true },
+    );
+  };
+  const setSelection = (next: Selection | null) =>
+    updateParams({ cell: next ? `${next.scenarioId}:${next.ipId ?? "overall"}` : null });
   const heatmap = useQuery({
     queryKey: ["risk-heatmap", projectId],
     queryFn: () => fetchRiskHeatmap(projectId),
     enabled: Boolean(projectId),
   });
-  const [selection, setSelection] = useState<Selection | null>(null);
   const [askDraft, setAskDraft] = useState("");
   const navigate = useNavigate();
   const label = useLabels();
@@ -53,6 +76,12 @@ export function RiskMapPage() {
     return <p className="status-msg">{ko.app.error}</p>;
 
   const { columns, rows, focus } = heatmap.data;
+  const visibleRows =
+    gradeFilter === "high"
+      ? rows.filter((row) => row.overall_grade === "high")
+      : gradeFilter === "medium"
+        ? rows.filter((row) => row.overall_grade !== "low")
+        : rows;
   const selectedRow = selection
     ? rows.find((row) => row.scenario_id === selection.scenarioId)
     : undefined;
@@ -90,23 +119,38 @@ export function RiskMapPage() {
             type="button"
             title={project.id}
             className={`chip chip-btn ${project.id === projectId ? "active" : ""}`}
-            onClick={() => {
-              setSelectedProject(project.id);
-              setSelection(null);
-            }}
+            onClick={() => updateParams({ project: project.id, cell: null })}
           >
             {project.name}
           </button>
         ))}
-        <span className="legend">
-          <span className="risk-high">{GRADE_SYMBOL.high}</span> {t.grade_high}{" "}
-          <span className="risk-medium">{GRADE_SYMBOL.medium}</span> {t.grade_medium}{" "}
-          <span className="risk-low">{GRADE_SYMBOL.low}</span> {t.grade_low}
-        </span>
       </div>
 
       <div className="risk-layout">
         <div className="card heatmap-card">
+          <div className="head heatmap-toolbar">
+            <span className="legend">
+              <span className="risk-high">{GRADE_SYMBOL.high}</span> {t.grade_high}{" "}
+              <span className="risk-medium">{GRADE_SYMBOL.medium}</span> {t.grade_medium}{" "}
+              <span className="risk-low">{GRADE_SYMBOL.low}</span> {t.grade_low}
+            </span>
+            {(
+              [
+                ["all", t.grade_filter_all],
+                ["medium", t.grade_filter_medium_up],
+                ["high", t.grade_filter_high],
+              ] as const
+            ).map(([value, chipLabel]) => (
+              <button
+                key={value}
+                type="button"
+                className={`chip chip-btn ${gradeFilter === value ? "active" : ""}`}
+                onClick={() => updateParams({ grade: value === "all" ? null : value })}
+              >
+                {chipLabel}
+              </button>
+            ))}
+          </div>
           <div className="heatmap-scroll">
             <table className="heatmap">
               <thead>
@@ -117,11 +161,11 @@ export function RiskMapPage() {
                       {column.ip_name}
                     </th>
                   ))}
-                  <th>{t.overall_column}</th>
+                  <th className="heatmap-overall">{t.overall_column}</th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row) => (
+                {visibleRows.map((row) => (
                   <HeatmapRow
                     key={row.scenario_id}
                     row={row}
@@ -200,7 +244,7 @@ function HeatmapRow({
           </td>
         );
       })}
-      <td>
+      <td className="heatmap-overall">
         <button
           type="button"
           title={`${row.overall_grade_ko} — ${row.scenario_id}`}
