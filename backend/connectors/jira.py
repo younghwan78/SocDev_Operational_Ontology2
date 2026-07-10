@@ -1,0 +1,147 @@
+"""JIRA read-only 커넥터 — 이슈 JSON → ingest 행 정규화.
+
+- 필드 매핑은 코드가 아니라 설정 YAML(`jira_field_map.yaml`) — 사내 스키마 확정 시
+  코드 수정 없이 값만 교체한다. 컬럼 대상은 기존 ingest 매핑의 한국어 열 이름.
+- 커넥터는 직접 저장 금지: `IngestService.ingest_rows(origin=INTEGRATED)`로만 진입.
+- 자격 증명은 환경변수만 (JIRA_BASE_URL / JIRA_API_TOKEN) — 코드/설정에 비밀 없음.
+
+설계: internal_docs/design/12_jira_connector.md
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import urllib.parse
+import urllib.request
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Protocol, runtime_checkable
+
+import yaml
+
+from backend.ingest.service import IngestReport, IngestService
+from backend.ontology.common import SourceOrigin
+
+DEFAULT_FIELD_MAP = Path(__file__).with_name("jira_field_map.yaml")
+
+
+class ConnectorError(Exception):
+    pass
+
+
+@runtime_checkable
+class JiraClientProtocol(Protocol):
+    """JIRA 검색 계약 — 실 REST 또는 fixture payload."""
+
+    def search_issues(self) -> list[dict[str, Any]]: ...
+
+
+class FakeJiraClient:
+    """fixture JSON(payload) 기반 클라이언트 — 사외/테스트 검증 경로."""
+
+    def __init__(self, payload_path: Path) -> None:
+        self._path = payload_path
+
+    def search_issues(self) -> list[dict[str, Any]]:
+        data = json.loads(self._path.read_text(encoding="utf-8"))
+        issues = data.get("issues", data if isinstance(data, list) else [])
+        if not isinstance(issues, list):
+            raise ConnectorError("payload에 issues 배열이 없습니다")
+        return issues
+
+
+class JiraHttpClient:
+    """실 JIRA REST 클라이언트 (얇음) — 사내 검증 대상, 테스트 비대상.
+
+    환경변수: JIRA_BASE_URL, JIRA_API_TOKEN. jql은 생성자 인자.
+    """
+
+    def __init__(self, jql: str, max_results: int = 100) -> None:
+        self._base_url = os.environ.get("JIRA_BASE_URL")
+        self._token = os.environ.get("JIRA_API_TOKEN")
+        if not self._base_url or not self._token:
+            raise ConnectorError("JIRA_BASE_URL/JIRA_API_TOKEN 환경변수가 필요합니다")
+        self._jql = jql
+        self._max_results = max_results
+
+    def search_issues(self) -> list[dict[str, Any]]:
+        query = urllib.parse.urlencode({"jql": self._jql, "maxResults": self._max_results})
+        request = urllib.request.Request(
+            f"{self._base_url}/rest/api/2/search?{query}",
+            headers={"Authorization": f"Bearer {self._token}"},
+        )
+        with urllib.request.urlopen(request) as response:  # noqa: S310 — 사내 배포 URL
+            payload = json.load(response)
+        issues = payload.get("issues", [])
+        return issues if isinstance(issues, list) else []
+
+
+@dataclass(frozen=True)
+class JiraFieldMap:
+    """설정 YAML — ingest 한국어 열 ← JIRA dotted 경로 + 값 정규화 + 고정값."""
+
+    issue_mapping: str
+    columns: dict[str, str]
+    value_maps: dict[str, dict[str, str]] = field(default_factory=dict)
+    constants: dict[str, str] = field(default_factory=dict)
+
+    @classmethod
+    def load(cls, path: Path | None = None) -> JiraFieldMap:
+        raw = yaml.safe_load((path or DEFAULT_FIELD_MAP).read_text(encoding="utf-8"))
+        if not isinstance(raw, dict) or "columns" not in raw:
+            raise ConnectorError("필드 매핑 YAML에 columns가 필요합니다")
+        return cls(
+            issue_mapping=str(raw.get("issue_mapping", "issues")),
+            columns={str(k): str(v) for k, v in raw["columns"].items()},
+            value_maps={
+                str(col): {str(k): str(v) for k, v in mapping.items()}
+                for col, mapping in (raw.get("value_maps") or {}).items()
+            },
+            constants={str(k): str(v) for k, v in (raw.get("constants") or {}).items()},
+        )
+
+
+def extract_path(payload: dict[str, Any], dotted: str) -> str:
+    """dotted 경로로 dict/list를 내려간다 — 누락은 빈 문자열(행 검증이 거부 처리)."""
+    node: Any = payload
+    for part in dotted.split("."):
+        if isinstance(node, dict):
+            node = node.get(part)
+        elif isinstance(node, list) and part.isdigit() and int(part) < len(node):
+            node = node[int(part)]
+        else:
+            return ""
+        if node is None:
+            return ""
+    return str(node)
+
+
+class JiraConnector:
+    def __init__(self, client: JiraClientProtocol, field_map: JiraFieldMap) -> None:
+        self._client = client
+        self._map = field_map
+
+    def rows(self) -> tuple[list[dict[str, str]], list[str]]:
+        """JIRA 이슈 → (ingest 행, 외부 키 refs). 정규화만 — 저장 없음."""
+        rows: list[dict[str, str]] = []
+        refs: list[str] = []
+        for issue in self._client.search_issues():
+            row: dict[str, str] = dict(self._map.constants)
+            for column, dotted in self._map.columns.items():
+                value = extract_path(issue, dotted)
+                normalized = self._map.value_maps.get(column, {}).get(value, value)
+                row[column] = normalized
+            rows.append(row)
+            refs.append(f"jira:{issue.get('key', row.get('이슈 ID', '?'))}")
+        return rows, refs
+
+    def sync(self, ingest: IngestService, *, source_name: str = "jira-sync") -> IngestReport:
+        rows, refs = self.rows()
+        return ingest.ingest_rows(
+            source_name,
+            rows,
+            self._map.issue_mapping,
+            origin=SourceOrigin.INTEGRATED,
+            row_refs=refs,
+        )

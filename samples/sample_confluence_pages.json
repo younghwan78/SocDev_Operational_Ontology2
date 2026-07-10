@@ -1,0 +1,17 @@
+{
+  "comment": "Confluence 페이지 fixture — SemanticChunk 검색 후보 반입용 (증거 아님).",
+  "pages": [
+    {
+      "id": "9001",
+      "title": "UHD60 EIS 전력 최적화 회의록 (W28)",
+      "body": "ISP 전력 예산 초과 논의. 저조도 멀티프레임 경로의 M2M 재인출이 유력 원인 후보. 실측 계획 W30 합의.",
+      "project_id": "project_v"
+    },
+    {
+      "id": "9002",
+      "title": "Thermal 설계 가이드 — 지속 부하 시나리오",
+      "body": "버스트 전력 모델은 지속 부하 발열을 과소 예측한다. export/스트리밍류 시나리오는 별도 지속 부하 모델을 사용할 것.",
+      "project_id": "project_w"
+    }
+  ]
+}

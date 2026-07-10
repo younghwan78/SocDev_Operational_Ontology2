@@ -77,6 +77,11 @@ def batch_ref(batch_id: str, filename: str, row_number: int) -> str:
     return f"{BATCH_REF_PREFIX}:{batch_id}:{filename}#row{row_number}"
 
 
+def external_ref(batch_id: str, external_key: str) -> str:
+    """커넥터 행의 계보 — rollback 접두(import:<batch>:)를 유지하며 외부 키를 담는다."""
+    return f"{BATCH_REF_PREFIX}:{batch_id}:{external_key}"
+
+
 class MemoryIngestWriter:
     """개발/테스트용 — InMemoryRepository에 직접 추가/제거."""
 
@@ -198,15 +203,33 @@ class IngestService:
         return list(MAPPINGS.values())
 
     def ingest(self, filename: str, content: bytes, mapping_name: str) -> IngestReport:
+        try:
+            rows = parse_tabular(filename, content)
+        except TabularParseError as exc:
+            raise IngestError(str(exc)) from exc
+        return self.ingest_rows(filename, rows, mapping_name)
+
+    def ingest_rows(
+        self,
+        source_name: str,
+        rows: list[dict[str, str]],
+        mapping_name: str,
+        *,
+        origin: SourceOrigin = SourceOrigin.IMPORTED,
+        row_refs: list[str] | None = None,
+    ) -> IngestReport:
+        """정규화된 행을 배치로 반입한다 — CSV/XLSX와 커넥터(integrated)의 공용 경로.
+
+        `row_refs[i]`가 있으면 계보에 외부 키를 담는다 (예: `jira:PROJ-123` →
+        `import:<batch>:jira:PROJ-123`). rollback 접두 계약은 동일하게 유지된다.
+        """
         mapping = MAPPINGS.get(mapping_name)
         if mapping is None:
             raise IngestError(
                 f"알 수 없는 매핑: {mapping_name} (사용 가능: {', '.join(sorted(MAPPINGS))})"
             )
-        try:
-            rows = parse_tabular(filename, content)
-        except TabularParseError as exc:
-            raise IngestError(str(exc)) from exc
+        if row_refs is not None and len(row_refs) != len(rows):
+            raise IngestError("row_refs 길이가 행 수와 다릅니다")
 
         model = COLLECTIONS[mapping.target_collection][1]
         batch_id = f"batch_{uuid.uuid4().hex[:10]}"
@@ -226,9 +249,13 @@ class IngestService:
             except (ValueError, TypeError) as exc:
                 rejected.append(RejectedRow(row_number=index, reason=f"형 변환 실패: {exc}"))
                 continue
+            if row_refs is not None:
+                ref = external_ref(batch_id, row_refs[index - 1])
+            else:
+                ref = batch_ref(batch_id, source_name, index)
             record["source"] = SourceMeta(
-                origin=SourceOrigin.IMPORTED,
-                ref=batch_ref(batch_id, filename, index),
+                origin=origin,
+                ref=ref,
                 ingested_at=now,
             ).model_dump(mode="json")
             try:
@@ -250,7 +277,7 @@ class IngestService:
 
         batch = IngestBatch(
             id=batch_id,
-            filename=filename,
+            filename=source_name,
             mapping_name=mapping.name,
             target_collection=mapping.target_collection,
             accepted_count=len(accepted),

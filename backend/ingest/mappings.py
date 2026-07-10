@@ -213,6 +213,26 @@ MAPPINGS: dict[str, IngestMapping] = {
             "확신도",
         },
     ),
+    "semantic_chunks": IngestMapping(
+        # Confluence 등 문서 페이지의 검색 후보 반입 — 증거가 아니라 후보 지위(§3).
+        name="semantic_chunks",
+        label_ko="시맨틱 청크(검색 후보)",
+        target_collection="semantic_chunks",
+        column_map={
+            "청크 ID": "id",
+            "본문": "chunk_text",
+            "출처 ID": "source_id",
+            "출처 유형": "source_type",
+            "프로젝트 ID": "project_id",
+            "임베딩 상태": "embedding_status",
+            "근거 확신도": "evidence_confidence",
+            "관련 시나리오": "scenario_ids",
+            "관련 IP": "ip_ids",
+        },
+        list_columns={"scenario_ids": ";", "ip_ids": ";"},
+        defaults={"embedding_status": "pending", "evidence_confidence": "low"},
+        required_columns={"청크 ID", "본문", "출처 ID", "출처 유형"},
+    ),
     "evidence_catalog": IngestMapping(
         name="evidence_catalog",
         label_ko="근거 카탈로그",

@@ -1,5 +1,32 @@
 # CHANGELOG
 
+## 사내 실운영 준비 Phase 3 — JIRA/Confluence 커넥터 사외 선행분 (2026-07-11)
+
+> 설계: `internal_docs/design/12_jira_connector.md`. Stage 19의 사외 가능 부분을 앞당김 —
+> 커넥터 아키텍처·매핑·테스트를 fixture/mock으로 완성. 사내 후속: 보안 승인·실 자격증명·
+> 실 스키마 매핑 값·주기 실행.
+
+### 추가
+
+- **`backend/connectors/`**: `JiraClientProtocol`/`FakeJiraClient`(fixture payload)/
+  `JiraHttpClient`(env 기반 얇은 실 클라이언트, 비밀은 환경변수만). **필드 매핑은 설정
+  YAML**(`jira_field_map.yaml`: dotted 경로 + value_maps 값 정규화 + constants) — 사내
+  스키마 확정 시 코드 수정 없이 교체. Confluence 페이지 → `SemanticChunk` **검색 후보**
+  반입(`semantic_chunks` 매핑 신설, 증거 지위 아님 §3).
+- **커넥터는 ingest 경유만**: `IngestService.ingest_rows(origin, row_refs)` 일반화 —
+  CSV와 커넥터의 공용 경로. `origin=integrated`, 계보는 rollback 접두를 유지하며 외부
+  키 합성(`import:<batch>:jira:<KEY>`). CSV 경로 동작 불변(기존 테스트 회귀 고정).
+- **CLI**: `sync-jira --payload <fixture>|--jql <실서버> [--mapping-file] [--execute]`,
+  `sync-confluence --payload`. 기본 dry-run(비영속 검증), `--execute`는 PostgreSQL DSN 필수.
+
+### 검증
+
+```text
+backend 185 passed / 9 skipped · ruff · mypy(61) pass · validate-data 오류 0.
+test_connectors 7케이스(정규화/값맵/커스텀 YAML/integrated 계보/위험 지도 반영/rollback).
+E2E(CLI): sync-jira dry-run 3건 수용 · sync-confluence dry-run 2건 수용 · 인자 누락 거부.
+```
+
 ## 사내 실운영 준비 Phase 2 — 결정 재진입 B3b (2026-07-11)
 
 > 설계: `internal_docs/design/11_decision_reentry.md`. 원점 4층 루프(review→decision)를

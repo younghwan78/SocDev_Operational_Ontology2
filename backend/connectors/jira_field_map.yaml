@@ -1,0 +1,34 @@
+# JIRA 필드 매핑 — 사내 JIRA 스키마 확정 시 이 파일의 값만 교체한다 (코드 수정 없음).
+# columns: ingest 매핑(backend/ingest/mappings.py)의 한국어 열 ← JIRA 응답 dotted 경로.
+# 설계: internal_docs/design/12_jira_connector.md §2.2
+issue_mapping: issues
+columns:
+  이슈 ID: key
+  제목: fields.summary
+  유형: fields.issuetype.name
+  상태: fields.status.name
+  심각도: fields.priority.name
+  증상: fields.description
+  # 사내 스키마 확정 전 임시 규약 — 프로젝트/시나리오/IP는 라벨·커스텀필드로 전달한다.
+  프로젝트 ID: fields.labels.0
+  영향 시나리오: fields.customfield_scenarios
+  영향 IP: fields.customfield_ips
+  교훈: fields.customfield_lesson
+value_maps:
+  상태:
+    Open: open
+    "In Progress": open
+    Reopened: open
+    Resolved: resolved
+    Closed: closed
+    Done: done
+  심각도:
+    Highest: critical
+    High: high
+    Medium: medium
+    Low: low
+    Lowest: low
+  유형:
+    Bug: defect
+constants:
+  확신도: medium

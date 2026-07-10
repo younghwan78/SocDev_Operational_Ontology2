@@ -1,0 +1,47 @@
+{
+  "comment": "JIRA REST /rest/api/2/search 응답 형태 fixture — 사외 dry-run/테스트용. 사내 스키마 확정 시 jira_field_map.yaml만 교체.",
+  "issues": [
+    {
+      "key": "MMIP-101",
+      "fields": {
+        "summary": "UHD60 EIS 녹화 중 ISP 전력 예산 초과",
+        "issuetype": {"name": "Bug"},
+        "status": {"name": "In Progress"},
+        "priority": {"name": "High"},
+        "description": "UHD60 EIS 녹화 30분 지속 시 ISP 전력이 예산 대비 8% 초과 — 저조도에서 심화.",
+        "labels": ["project_v"],
+        "customfield_scenarios": "uhd60_recording_eis_on",
+        "customfield_ips": "ip_isp",
+        "customfield_lesson": ""
+      }
+    },
+    {
+      "key": "MMIP-102",
+      "fields": {
+        "summary": "DPU underrun이 preview+UI 동시 출력에서 재현",
+        "issuetype": {"name": "Bug"},
+        "status": {"name": "Closed"},
+        "priority": {"name": "Medium"},
+        "description": "preview 위 UI 오버레이 조합에서 간헐 underrun. QoS 조정 후 재현 안 됨.",
+        "labels": ["project_v"],
+        "customfield_scenarios": "video_mode_panel_underrun_prevention",
+        "customfield_ips": "ip_dpu",
+        "customfield_lesson": "동시 출력 트래픽은 QoS 기본값 설계 입력에 포함해야 한다."
+      }
+    },
+    {
+      "key": "MMIP-103",
+      "fields": {
+        "summary": "MFC 장시간 export thermal 마진 부족",
+        "issuetype": {"name": "Bug"},
+        "status": {"name": "Open"},
+        "priority": {"name": "Highest"},
+        "description": "video export 지속 부하에서 thermal 마진 5% 미만 — 고온 환경 미검증.",
+        "labels": ["project_w"],
+        "customfield_scenarios": "video_editor_export",
+        "customfield_ips": "ip_mfc",
+        "customfield_lesson": ""
+      }
+    }
+  ]
+}

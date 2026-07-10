@@ -169,6 +169,117 @@ def ingest_rollback(
     console.print(f"롤백 완료: {removed}건 제거")
 
 
+@app.command("sync-jira")
+def sync_jira(
+    payload: Path | None = typer.Option(
+        None, "--payload", help="JIRA 응답 fixture JSON — 사외/dry-run 검증 경로"
+    ),
+    jql: str | None = typer.Option(
+        None, "--jql", help="실 JIRA JQL (JIRA_BASE_URL/JIRA_API_TOKEN 환경변수 필요)"
+    ),
+    mapping_file: Path | None = typer.Option(
+        None, "--mapping-file", help="필드 매핑 YAML (기본: backend/connectors/jira_field_map.yaml)"
+    ),
+    execute: bool = typer.Option(
+        False, "--execute", help="Postgres(DSN)로 실제 반입 — 기본은 dry-run(비영속 검증)"
+    ),
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (--execute 시 필요)"),
+) -> None:
+    """JIRA 이슈를 ingest 배치로 동기화한다 — 커넥터는 저장하지 않고 ingest 경유만."""
+    from backend.connectors.jira import (
+        ConnectorError,
+        FakeJiraClient,
+        JiraConnector,
+        JiraFieldMap,
+        JiraHttpClient,
+    )
+    from backend.ingest.service import IngestService, MemoryIngestWriter
+
+    try:
+        field_map = JiraFieldMap.load(mapping_file)
+        if payload is not None:
+            client: object = FakeJiraClient(payload)
+        elif jql:
+            client = JiraHttpClient(jql)
+        else:
+            console.print("[red]--payload 또는 --jql 중 하나가 필요합니다[/red]")
+            raise typer.Exit(code=1)
+        connector = JiraConnector(client, field_map)  # type: ignore[arg-type]
+
+        if execute:
+            import os
+
+            if not (dsn or os.environ.get("SOC_ONTOLOGY_DSN")):
+                console.print("[red]--execute는 PostgreSQL DSN이 필요합니다 (in-memory 반입은 비영속)[/red]")
+                raise typer.Exit(code=1)
+            from backend.db.connection import get_connection
+            from backend.ingest.service import PostgresIngestWriter
+
+            with get_connection(dsn) as conn:
+                report = connector.sync(IngestService(PostgresIngestWriter(conn)))
+        else:
+            repo = InMemoryRepository.from_fixtures(DEFAULT_FIXTURES)
+            report = connector.sync(IngestService(MemoryIngestWriter(repo)))
+            console.print("[yellow]dry-run — 정규화·검증만 수행됨 (저장되지 않음)[/yellow]")
+    except ConnectorError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+    console.print(
+        f"배치 {report.batch.id} (매핑 {report.batch.mapping_name}, origin=integrated): "
+        f"수용 {report.batch.accepted_count}건 / 거부 {report.batch.rejected_count}건"
+    )
+    for rejected in report.rejected_rows:
+        console.print(f"[red]{rejected.row_number}행[/red] {rejected.reason}")
+    if report.rejected_rows:
+        raise typer.Exit(code=1)
+
+
+@app.command("sync-confluence")
+def sync_confluence(
+    payload: Path = typer.Option(..., "--payload", help="Confluence 페이지 fixture JSON"),
+    execute: bool = typer.Option(
+        False, "--execute", help="Postgres(DSN)로 실제 반입 — 기본은 dry-run(비영속 검증)"
+    ),
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (--execute 시 필요)"),
+) -> None:
+    """Confluence 페이지를 SemanticChunk 검색 후보로 동기화한다 (증거 아님 — §3)."""
+    from backend.connectors.confluence import (
+        ConfluenceConnector,
+        ConfluenceError,
+        FakeConfluenceClient,
+    )
+    from backend.ingest.service import IngestService, MemoryIngestWriter
+
+    try:
+        connector = ConfluenceConnector(FakeConfluenceClient(payload))
+        if execute:
+            import os
+
+            if not (dsn or os.environ.get("SOC_ONTOLOGY_DSN")):
+                console.print("[red]--execute는 PostgreSQL DSN이 필요합니다[/red]")
+                raise typer.Exit(code=1)
+            from backend.db.connection import get_connection
+            from backend.ingest.service import PostgresIngestWriter
+
+            with get_connection(dsn) as conn:
+                report = connector.sync(IngestService(PostgresIngestWriter(conn)))
+        else:
+            repo = InMemoryRepository.from_fixtures(DEFAULT_FIXTURES)
+            report = connector.sync(IngestService(MemoryIngestWriter(repo)))
+            console.print("[yellow]dry-run — 정규화·검증만 수행됨 (저장되지 않음)[/yellow]")
+    except ConfluenceError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+    console.print(
+        f"배치 {report.batch.id} (semantic_chunks, origin=integrated): "
+        f"수용 {report.batch.accepted_count}건 / 거부 {report.batch.rejected_count}건"
+    )
+    for rejected in report.rejected_rows:
+        console.print(f"[red]{rejected.row_number}행[/red] {rejected.reason}")
+
+
 def main() -> None:
     app()
 
