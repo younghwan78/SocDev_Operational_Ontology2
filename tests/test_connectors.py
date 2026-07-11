@@ -213,3 +213,44 @@ def test_incremental_jql_composition() -> None:
         == '(project = MM) AND updated >= "2026-07-11 09:30"'
     )
     assert incremental_jql("", "2026-07-11T09:30:00") == 'updated >= "2026-07-11 09:30"'
+
+
+def test_week_columns_convert_dates(tmp_path: Path) -> None:
+    """J3 — field map의 week_columns가 JIRA 날짜를 ISO 주차로 변환한다."""
+    from backend.connectors.jira import iso_week
+
+    assert iso_week("2026-07-11T09:30:00.000+0900") == "28"
+    assert iso_week("2026-01-01") == "1"
+    assert iso_week("") == ""
+    assert iso_week("not-a-date") == ""
+
+    custom = tmp_path / "map.yaml"
+    custom.write_text(
+        """
+issue_mapping: issues
+columns:
+  이슈 ID: key
+  제목: fields.title
+  유형: fields.kind
+  상태: fields.state
+  증상: fields.detail
+  프로젝트 ID: fields.project
+week_columns:
+  최근 활동 주차: fields.updated
+  목표 주차: fields.duedate
+constants:
+  확신도: low
+""",
+        encoding="utf-8",
+    )
+    payload = tmp_path / "payload.json"
+    payload.write_text(
+        '{"issues": [{"key": "X-9", "fields": {"title": "t", "kind": "defect",'
+        ' "state": "open", "detail": "d", "project": "project_u",'
+        ' "updated": "2026-07-11T09:30:00.000+0900", "duedate": "2026-07-03"}}]}',
+        encoding="utf-8",
+    )
+    connector = JiraConnector(FakeJiraClient(payload), JiraFieldMap.load(custom))
+    rows, _ = connector.rows()
+    assert rows[0]["최근 활동 주차"] == "28"
+    assert rows[0]["목표 주차"] == "27"

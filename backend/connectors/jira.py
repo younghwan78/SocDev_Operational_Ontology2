@@ -105,12 +105,17 @@ class JiraHttpClient:
 
 @dataclass(frozen=True)
 class JiraFieldMap:
-    """설정 YAML — ingest 한국어 열 ← JIRA dotted 경로 + 값 정규화 + 고정값."""
+    """설정 YAML — ingest 한국어 열 ← JIRA dotted 경로 + 값 정규화 + 고정값.
+
+    week_columns: 날짜 필드(updated/duedate 등)를 ISO 주차로 변환하는 열 —
+    J3 신선도·일정 신호의 입력 (14_ingest_reality_gaps.md §2).
+    """
 
     issue_mapping: str
     columns: dict[str, str]
     value_maps: dict[str, dict[str, str]] = field(default_factory=dict)
     constants: dict[str, str] = field(default_factory=dict)
+    week_columns: dict[str, str] = field(default_factory=dict)  # 열 ← 날짜 dotted 경로
 
     @classmethod
     def load(cls, path: Path | None = None) -> JiraFieldMap:
@@ -125,7 +130,20 @@ class JiraFieldMap:
                 for col, mapping in (raw.get("value_maps") or {}).items()
             },
             constants={str(k): str(v) for k, v in (raw.get("constants") or {}).items()},
+            week_columns={
+                str(k): str(v) for k, v in (raw.get("week_columns") or {}).items()
+            },
         )
+
+
+def iso_week(value: str) -> str:
+    """ISO 날짜/시각 문자열 → ISO 주차 문자열. 파싱 불가는 빈 문자열(열 생략)."""
+    from datetime import date
+
+    try:
+        return str(date.fromisoformat(value.strip()[:10]).isocalendar().week)
+    except ValueError:
+        return ""
 
 
 def extract_path(payload: dict[str, Any], dotted: str) -> str:
@@ -158,6 +176,8 @@ class JiraConnector:
                 value = extract_path(issue, dotted)
                 normalized = self._map.value_maps.get(column, {}).get(value, value)
                 row[column] = normalized
+            for column, dotted in self._map.week_columns.items():
+                row[column] = iso_week(extract_path(issue, dotted))
             rows.append(row)
             refs.append(f"jira:{issue.get('key', row.get('이슈 ID', '?'))}")
         return rows, refs

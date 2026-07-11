@@ -389,6 +389,8 @@ MODEL_FIELD_LABELS: dict[str, dict[str, str]] = {
         "residual_risk": "잔존 리스크",
         "reusable_lesson": "재사용 교훈",
         "resolved_week": "종결 주차",
+        "updated_week": "최근 활동 주차",
+        "due_week": "목표 주차",
     },
     "RootCause": {
         "cause_type": "원인 유형",

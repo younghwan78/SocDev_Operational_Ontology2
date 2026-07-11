@@ -113,6 +113,8 @@ MAPPINGS: dict[str, IngestMapping] = {
             "잔존 리스크": "residual_risk",
             "교훈": "reusable_lesson",
             "해결 주차": "resolved_week",
+            "최근 활동 주차": "updated_week",
+            "목표 주차": "due_week",
         },
         list_columns={
             "evidence_refs": ";",
@@ -123,7 +125,7 @@ MAPPINGS: dict[str, IngestMapping] = {
             "root_causes.evidence_refs": ";",
             "verifying_test_ids": ";",
         },
-        int_columns={"resolved_week"},
+        int_columns={"resolved_week", "updated_week", "due_week"},
         single_item_lists={"root_causes"},
         required_columns={"이슈 ID", "프로젝트 ID", "제목", "유형", "상태", "증상", "확신도"},
         label_domains={

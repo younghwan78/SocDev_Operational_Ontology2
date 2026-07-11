@@ -123,3 +123,62 @@ def test_deterministic(service) -> None:
 def test_unknown_issue_raises(service) -> None:
     with pytest.raises(IssueNotFoundError):
         service.chain("issue_없음")
+
+
+def test_freshness_stale_and_overdue_signals() -> None:
+    """J3 — 미해결+무활동=정체, 목표 주차 경과=지연. 종결 이슈는 판정하지 않는다."""
+    from pathlib import Path
+
+    from backend.loaders.repository import InMemoryRepository
+    from backend.ontology.event import Issue
+    from backend.services.rca import RCAService
+
+    fixtures = Path(__file__).resolve().parents[1] / "fixtures"
+    repo = InMemoryRepository.from_fixtures(fixtures)
+    base = {
+        "project_id": "project_u",
+        "title": "신선도 테스트",
+        "issue_type": "underrun",
+        "status": "open",
+        "symptom": "s",
+        "confidence": "medium",
+    }
+    # 기준 주차는 데이터 최신 활동 주차 — 이 이슈로 W50을 만들어 통제한다.
+    repo.add_objects(
+        "issues",
+        [
+            Issue.model_validate(
+                {**base, "id": "issue_fresh_anchor", "updated_week": 50}
+            ),
+            Issue.model_validate(
+                {**base, "id": "issue_fresh_stale", "updated_week": 45}
+            ),
+            Issue.model_validate(
+                {**base, "id": "issue_fresh_overdue", "updated_week": 49, "due_week": 48}
+            ),
+            Issue.model_validate(
+                {
+                    **base,
+                    "id": "issue_fresh_closed",
+                    "status": "closed",
+                    "updated_week": 40,
+                    "due_week": 41,
+                }
+            ),
+        ],
+    )
+    summaries = {s.issue_id: s for s in RCAService(repo).list_issues()}
+
+    stale = summaries["issue_fresh_stale"]
+    assert stale.stale and not stale.overdue
+    assert stale.freshness_ko and "정체" in stale.freshness_ko and "W45" in stale.freshness_ko
+
+    overdue = summaries["issue_fresh_overdue"]
+    assert overdue.overdue and not overdue.stale
+    assert overdue.freshness_ko and "지연" in overdue.freshness_ko and "W48" in overdue.freshness_ko
+
+    anchor = summaries["issue_fresh_anchor"]
+    assert not anchor.stale and not anchor.overdue and anchor.freshness_ko is None
+
+    closed = summaries["issue_fresh_closed"]
+    assert not closed.stale and not closed.overdue, "종결 이슈는 신선도 판정 제외"

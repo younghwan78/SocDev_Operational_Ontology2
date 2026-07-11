@@ -2414,6 +2414,17 @@
           "confidence": {
             "$ref": "#/components/schemas/Confidence"
           },
+          "due_week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Week"
+          },
           "evidence_refs": {
             "items": {
               "type": "string"
@@ -2528,6 +2539,17 @@
             "title": "Title",
             "type": "string"
           },
+          "updated_week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated Week"
+          },
           "verifying_test_ids": {
             "items": {
               "type": "string"
@@ -2571,6 +2593,17 @@
             "title": "Confidence",
             "type": "string"
           },
+          "freshness_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freshness Ko"
+          },
           "issue_id": {
             "title": "Issue Id",
             "type": "string"
@@ -2578,6 +2611,11 @@
           "issue_type": {
             "title": "Issue Type",
             "type": "string"
+          },
+          "overdue": {
+            "default": false,
+            "title": "Overdue",
+            "type": "boolean"
           },
           "project_id": {
             "title": "Project Id",
@@ -2589,6 +2627,11 @@
             },
             "title": "Scenario Ids",
             "type": "array"
+          },
+          "stale": {
+            "default": false,
+            "title": "Stale",
+            "type": "boolean"
           },
           "status": {
             "title": "Status",

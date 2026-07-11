@@ -147,6 +147,18 @@
     "confidence": {
       "$ref": "#/$defs/Confidence"
     },
+    "due_week": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Due Week"
+    },
     "evidence_refs": {
       "items": {
         "type": "string"
@@ -266,6 +278,18 @@
     "title": {
       "title": "Title",
       "type": "string"
+    },
+    "updated_week": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Updated Week"
     },
     "verifying_test_ids": {
       "items": {

@@ -176,6 +176,16 @@ export function IssueAnalysisPage() {
                 <span className={`badge ${VERIFICATION_BADGE[issue.verification] ?? "badge-info"}`}>
                   {issue.verification_ko}
                 </span>
+                {issue.stale && (
+                  <span className="badge badge-warn" title={issue.freshness_ko ?? ""}>
+                    {t.stale_badge}
+                  </span>
+                )}
+                {issue.overdue && (
+                  <span className="badge badge-danger" title={issue.freshness_ko ?? ""}>
+                    {t.overdue_badge}
+                  </span>
+                )}
                 <span className="title">{issue.title}</span>
                 <span className="desc" title={`${issue.issue_type} · ${issue.status}`}>
                   {valueLabel("issue_type", issue.issue_type)} · {t.status_label}:{" "}

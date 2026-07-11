@@ -36,6 +36,11 @@ VERIFICATION_LABELS: dict[str, str] = {
 
 _CLOSED_STATUSES = {"closed", "resolved", "done"}
 
+# J3 신선도 룰 (14_ingest_reality_gaps.md §2) — 미해결 + N주 무활동 = 정체.
+# 수치 점수가 아니라 날짜 사실에 근거한 정성 신호다. 기준 주차는 데이터의
+# 최신 활동 주차(결정론) — 벽시계를 쓰지 않아 fixture 우주에서도 성립한다.
+_STALE_WEEKS = 4
+
 TEST_TYPE_LABELS: dict[str, str] = {
     "regression": "회귀",
     "scenario": "시나리오",
@@ -95,6 +100,10 @@ class IssueSummary(BaseModel):
     verification: str  # verified | unverified | no_tests
     verification_ko: str
     closed_without_verification: bool
+    # J3 신선도·일정 신호 — 판정 근거(주차)를 문구에 명시한다.
+    stale: bool = False
+    overdue: bool = False
+    freshness_ko: str | None = None
 
 
 class RCAChain(BaseModel):
@@ -142,12 +151,51 @@ class RCAService:
                 collected[obj.id] = obj
         return sorted(collected.values(), key=lambda t: t.id)
 
+    def _reference_week(self) -> int | None:
+        """기준 주차 = 데이터의 최신 활동 주차 — 벽시계 없는 결정론 '지금'."""
+        weeks: list[int] = []
+        for issue in self._issues():
+            weeks += [
+                w for w in (issue.resolved_week, issue.updated_week, issue.due_week) if w
+            ]
+        for obj in self._repo.list("tests"):
+            if isinstance(obj, Test) and obj.executed_week:
+                weeks.append(obj.executed_week)
+        for obj in self._repo.list("development_events"):
+            week = getattr(obj, "week", None)
+            if week:
+                weeks.append(week)
+        return max(weeks, default=None)
+
+    @staticmethod
+    def _freshness(
+        issue: Issue, reference_week: int | None
+    ) -> tuple[bool, bool, str | None]:
+        """J3 정체/지연 판정 — (stale, overdue, 판정 근거 문구)."""
+        if reference_week is None or issue.status in _CLOSED_STATUSES:
+            return False, False, None
+        notes: list[str] = []
+        stale = bool(
+            issue.updated_week is not None
+            and reference_week - issue.updated_week >= _STALE_WEEKS
+        )
+        if stale:
+            notes.append(
+                f"정체 — 최근 활동 W{issue.updated_week}, 기준 W{reference_week}"
+                f" ({_STALE_WEEKS}주 이상 무활동)"
+            )
+        overdue = bool(issue.due_week is not None and issue.due_week < reference_week)
+        if overdue:
+            notes.append(f"지연 — 목표 W{issue.due_week} 경과 (기준 W{reference_week})")
+        return stale, overdue, " · ".join(notes) or None
+
     # ---- 이슈 목록 ----
 
     def list_issues(
         self, project_id: str | None = None, verification: str | None = None
     ) -> list[IssueSummary]:
         summaries: list[IssueSummary] = []
+        reference_week = self._reference_week()
         for issue in self._issues():
             if project_id and issue.project_id != project_id:
                 continue
@@ -156,6 +204,7 @@ class RCAService:
             if verification and status != verification:
                 continue
             closed_unverified = issue.status in _CLOSED_STATUSES and status != "verified"
+            stale, overdue, freshness_ko = self._freshness(issue, reference_week)
             summaries.append(
                 IssueSummary(
                     issue_id=issue.id,
@@ -168,6 +217,9 @@ class RCAService:
                     verification=status,
                     verification_ko=VERIFICATION_LABELS[status],
                     closed_without_verification=closed_unverified,
+                    stale=stale,
+                    overdue=overdue,
+                    freshness_ko=freshness_ko,
                 )
             )
         # 경고(닫혔는데 미검증)가 먼저, 그다음 프로젝트/ID 순 — 결정론 정렬.

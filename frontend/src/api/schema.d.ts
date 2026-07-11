@@ -1646,6 +1646,8 @@ export interface components {
         Issue: {
             affected_scope?: components["schemas"]["AffectedScope"];
             confidence: components["schemas"]["Confidence"];
+            /** Due Week */
+            due_week?: number | null;
             /** Evidence Refs */
             evidence_refs?: string[];
             /** Fix Description */
@@ -1677,6 +1679,8 @@ export interface components {
             symptom: string;
             /** Title */
             title: string;
+            /** Updated Week */
+            updated_week?: number | null;
             /** Verifying Test Ids */
             verifying_test_ids?: string[];
             /** Workaround */
@@ -1691,14 +1695,26 @@ export interface components {
             closed_without_verification: boolean;
             /** Confidence */
             confidence: string;
+            /** Freshness Ko */
+            freshness_ko?: string | null;
             /** Issue Id */
             issue_id: string;
             /** Issue Type */
             issue_type: string;
+            /**
+             * Overdue
+             * @default false
+             */
+            overdue: boolean;
             /** Project Id */
             project_id: string;
             /** Scenario Ids */
             scenario_ids?: string[];
+            /**
+             * Stale
+             * @default false
+             */
+            stale: boolean;
             /** Status */
             status: string;
             /** Title */

@@ -190,3 +190,8 @@ class Issue(OntologyObject):
     residual_risk: str | None = None
     reusable_lesson: str | None = None
     resolved_week: int | None = None
+    # J3 신선도·일정 (optional — 56 유래 데이터는 없이 통과, 14_ingest_reality_gaps.md §2):
+    # 사내 JIRA의 updated/duedate에서 유도(반입은 ISO 주차, synthetic은 우주 주차).
+    # 정체/지연 판정은 서비스 계층의 결정론 룰 — 여기 저장하지 않는다.
+    updated_week: int | None = None
+    due_week: int | None = None

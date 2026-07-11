@@ -151,6 +151,8 @@ export const ko = {
     badge_yellow: "미검증/미기록",
     scenario_link: "시나리오 보기",
     status_label: "상태",
+    stale_badge: "정체",
+    overdue_badge: "지연",
     week_prefix: "W",
   },
   risk: {
