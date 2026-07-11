@@ -49,6 +49,13 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <NavLink to="/" className="app-title">
+          {/* 브랜드 마크 — 위험 지도(타일) 모티프 */}
+          <svg className="brand-mark" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <rect x="0" y="0" width="8" height="8" rx="2.2" fill="#e5484d" />
+            <rect x="10" y="0" width="8" height="8" rx="2.2" fill="#f0a63d" />
+            <rect x="0" y="10" width="8" height="8" rx="2.2" fill="#30a46c" />
+            <rect x="10" y="10" width="8" height="8" rx="2.2" fill="#7c8cf8" />
+          </svg>
           {ko.app.title}
         </NavLink>
         <nav className="app-nav">

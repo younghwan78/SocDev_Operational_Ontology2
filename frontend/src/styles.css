@@ -1,18 +1,26 @@
+/* W3 팔레트 — 관제 코크핏: 차가운 종이톤 배경 + 딥 인디고 악센트 + 다크 헤더(양 테마 공통).
+   위험색 의미(빨강=위험/노랑=주의/초록=정상)는 불변. */
 :root {
-  --bg: #f5f6f8;
+  --bg: #eef1f6;
   --surface: #ffffff;
-  --border: #dfe3e8;
-  --text: #1f2933;
-  --text-dim: #616e7c;
-  --accent: #1f6feb;
-  --accent-soft: #e7f0fe;
+  --border: #d9dfe8;
+  --text: #182230;
+  --text-dim: #5d6b7e;
+  --accent: #4655d4;
+  --accent-soft: #e9ecfc;
   --warn: #b54708;
-  --warn-soft: #fdf1e2;
+  --warn-soft: #fcf0dd;
   --danger: #b42318;
-  --danger-soft: #fdecea;
+  --danger-soft: #fdeae7;
   --ok: #067647;
-  --ok-soft: #e6f4ee;
-  --muted: #616e7c;
+  --ok-soft: #e2f3ea;
+  --muted: #5d6b7e;
+  /* 다크 헤더 — 테마와 무관한 앱 정체성 */
+  --header-bg: #141c28;
+  --header-text: #eef2f7;
+  --header-dim: #93a3b8;
+  --header-border: #26303f;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 1px rgba(15, 23, 42, 0.03);
   /* W2: heatmap 열 카테고리 틴트 (기능/컴퓨트/시스템) — 위험색·악센트와 무충돌 */
   --tint-func: rgba(100, 116, 139, 0.05);
   --tint-comp: rgba(124, 92, 219, 0.06);
@@ -24,20 +32,25 @@
 /* 다크 모드 (P2) — 변수 이중화, 의미색 대비 유지 */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f1419;
-    --surface: #1a2027;
-    --border: #323b45;
+    --bg: #0d1117;
+    --surface: #171e27;
+    --border: #2c3543;
     --text: #e3e8ee;
     --text-dim: #99a5b1;
     --muted: #99a5b1;
-    --accent: #549bf5;
-    --accent-soft: #1b2c45;
+    --accent: #8b98f8;
+    --accent-soft: #222c50;
     --warn: #f5a623;
     --warn-soft: #3a2c14;
     --danger: #ef6a5e;
     --danger-soft: #42201c;
     --ok: #3fb97f;
     --ok-soft: #16321f;
+    --header-bg: #10161f;
+    --header-text: #eef2f7;
+    --header-dim: #8494aa;
+    --header-border: #212b39;
+    --shadow-card: none;
     --tint-func: rgba(148, 163, 184, 0.09);
     --tint-comp: rgba(157, 128, 235, 0.12);
     --tint-sys: rgba(45, 191, 179, 0.1);
@@ -49,26 +62,40 @@
 body { margin: 0; background: var(--bg); color: var(--text); }
 
 .app { min-height: 100vh; display: flex; flex-direction: column; }
+/* W3 헤더 — 양 테마 공통 다크 슬레이트, 앱의 시각 정체성 앵커 */
 .app-header {
   display: flex; align-items: center; gap: 24px;
-  padding: 12px 24px; background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  padding: 11px 24px; background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
   position: sticky; top: 0; z-index: 10;
 }
-.app-title { font-size: 17px; font-weight: 700; color: var(--text); text-decoration: none; }
-.app-nav a { color: var(--text-dim); text-decoration: none; font-size: 14px; }
-.app-nav a:hover { color: var(--accent); }
+.app-title {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-size: 15.5px; font-weight: 750; letter-spacing: -0.01em;
+  color: var(--header-text); text-decoration: none; white-space: nowrap;
+}
+.brand-mark { flex: none; display: block; }
+.app-nav a { color: var(--header-dim); text-decoration: none; font-size: 13.5px; padding: 4px 2px; }
+.app-nav a:hover { color: var(--header-text); }
+.app-nav a.active { color: var(--header-text); font-weight: 700; box-shadow: inset 0 -2px 0 var(--accent); }
+.nav-group-label { border-left-color: var(--header-border); color: var(--header-dim); }
+.nav-demo { color: #f0a63d !important; font-weight: 600; }
 /* W1: 폭 상한 없음 — 브라우저 크기를 그대로 따른다. 긴 산문만 ch 상한(가독성). */
 .app-main { flex: 1; padding: 20px clamp(16px, 2.5vw, 40px); width: 100%; }
 
-h1 { font-size: 20px; margin: 0 0 16px; }
+h1 { font-size: 21px; font-weight: 750; letter-spacing: -0.015em; margin: 0 0 14px; }
 h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 
 .card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 16px; margin-bottom: 14px;
+  border-radius: 12px; padding: 16px; margin-bottom: 14px;
+  box-shadow: var(--shadow-card);
 }
-.card-title { font-size: 14px; font-weight: 700; margin: 0 0 10px; }
+/* 카드 타이틀 = 계기판 레이블 — 본문과 위계 분리 */
+.card-title {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+  color: var(--text-dim); margin: 0 0 10px;
+}
 
 .filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
 .filter-label { font-size: 13px; color: var(--text-dim); }
@@ -137,11 +164,10 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 
 .status-msg { padding: 24px; text-align: center; color: var(--text-dim); font-size: 14px; }
 .section-note { font-size: 12.5px; color: var(--text-dim); margin: 0 0 8px; }
-.app-nav { display: flex; gap: 16px; }
-.app-nav a.active { color: var(--accent); font-weight: 700; }
+.app-nav { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
 
 /* --- Stage 8: 위험 지도 + 내비 재편 --- */
-.nav-disabled { color: var(--text-dim); opacity: 0.45; font-size: 14px; cursor: not-allowed; }
+.nav-disabled { color: var(--header-dim); opacity: 0.45; font-size: 14px; cursor: not-allowed; }
 .nav-group-label {
   color: var(--text-dim); font-size: 11.5px; text-transform: none;
   border-left: 1px solid var(--border); padding-left: 16px; align-self: center;
@@ -165,22 +191,36 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .heatmap-card { padding: 8px; }
 .heatmap-scroll { overflow-x: auto; }
 .heatmap { border-collapse: collapse; width: 100%; font-size: 13px; }
-.heatmap th, .heatmap td { padding: 4px 6px; text-align: center; border-bottom: 1px solid var(--border); }
-.heatmap thead th { font-size: 12px; color: var(--text-dim); font-weight: 600; white-space: nowrap; }
-.heatmap .heatmap-scenario { text-align: left; max-width: 260px; }
+.heatmap th, .heatmap td { padding: 3px 4px; text-align: center; border-bottom: 1px solid var(--border); }
+.heatmap thead th { font-size: 12px; color: var(--text-dim); font-weight: 600; white-space: nowrap; padding: 4px 6px; }
+.heatmap .heatmap-scenario { text-align: left; max-width: 320px; padding-left: 8px; }
 .heatmap tbody tr:hover { background: var(--accent-soft); }
 .heatmap-na { color: var(--border); }
 
+/* W3: 셀 = 채움 타일 — 등급 소프트색 배경 + 심볼 병행(색약 대응). 지도로 읽힌다. */
 .cell-btn {
   background: none; border: none; cursor: pointer; font: inherit;
-  font-size: 15px; padding: 2px 6px; border-radius: 6px; line-height: 1.2;
+  font-size: 13px; padding: 4px 6px; border-radius: 7px; line-height: 1.3;
+  display: block; width: 100%; min-width: 44px; font-weight: 700;
 }
-.cell-btn:hover { background: var(--accent-soft); }
-.cell-btn.cell-selected { outline: 2px solid var(--accent); }
+.cell-btn.risk-high { background: var(--danger-soft); }
+.cell-btn.risk-medium { background: var(--warn-soft); }
+.cell-btn.risk-low { background: var(--ok-soft); }
+.cell-btn:hover { box-shadow: inset 0 0 0 1.5px currentColor; }
+.cell-btn.cell-selected { outline: 2px solid var(--accent); outline-offset: 1px; }
 .cell-btn.scenario-name {
   font-size: 13px; text-align: left; font-weight: 600; color: var(--text);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; display: block;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;
+  min-width: 0; padding: 4px 6px;
 }
+.cell-btn.scenario-name:hover { box-shadow: none; text-decoration: underline; }
+/* 종합 열 타일은 링으로 무게 강조 (표시용, 룰 아님) */
+.heatmap-overall .cell-btn.risk-high,
+.heatmap-overall .cell-btn.risk-medium,
+.heatmap-overall .cell-btn.risk-low {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 45%, transparent);
+}
+.heatmap-overall .cell-btn:hover { box-shadow: inset 0 0 0 1.5px currentColor; }
 
 .link-btn {
   background: none; border: none; color: var(--accent); cursor: pointer;
@@ -263,7 +303,6 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 }
 .story-bar .story-title { font-weight: 700; font-size: 14px; color: var(--accent); }
 .story-bar .story-desc { font-size: 13px; color: var(--text); flex: 1; min-width: 200px; }
-.nav-demo { color: var(--warn) !important; font-weight: 600; }
 
 /* 출처 지도 — origin 세그먼트 막대 */
 .source-collection-list { display: flex; flex-direction: column; gap: 12px; }
