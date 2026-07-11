@@ -51,7 +51,8 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .app-title { font-size: 17px; font-weight: 700; color: var(--text); text-decoration: none; }
 .app-nav a { color: var(--text-dim); text-decoration: none; font-size: 14px; }
 .app-nav a:hover { color: var(--accent); }
-.app-main { flex: 1; padding: 20px 24px; max-width: 1200px; width: 100%; margin: 0 auto; }
+/* W1: 폭 상한 없음 — 브라우저 크기를 그대로 따른다. 긴 산문만 ch 상한(가독성). */
+.app-main { flex: 1; padding: 20px clamp(16px, 2.5vw, 40px); width: 100%; }
 
 h1 { font-size: 20px; margin: 0 0 16px; }
 h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
@@ -150,7 +151,7 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .legend { margin-left: auto; font-size: 12.5px; color: var(--text-dim); }
 .legend span { font-size: 13px; }
 
-.risk-layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+.risk-layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 14px; align-items: start; }
 @media (max-width: 1100px) { .risk-layout { grid-template-columns: 1fr; } }
 .risk-side { display: flex; flex-direction: column; gap: 0; }
 
@@ -242,7 +243,7 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 }
 .ask-input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
 .home-ask { margin-bottom: 14px; }
-.ask-answer { font-size: 14.5px; line-height: 1.7; margin: 6px 0 10px; white-space: pre-line; }
+.ask-answer { font-size: 14.5px; line-height: 1.7; margin: 6px 0 10px; white-space: pre-line; max-width: 80ch; }
 .ask-cited { background: var(--accent-soft); border-radius: 8px; padding: 10px; }
 .ask-notes summary { font-size: 12.5px; color: var(--text-dim); cursor: pointer; margin-top: 8px; }
 
