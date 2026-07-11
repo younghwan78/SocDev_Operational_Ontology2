@@ -118,6 +118,12 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .badge-ok { background: var(--ok-soft); color: var(--ok); }
 
 .scenario-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+/* E3: 리뷰 팩 섹션 펼침 */
+.pack-section summary { cursor: pointer; list-style: none; }
+.pack-section summary::-webkit-details-marker { display: none; }
+.pack-section summary:hover .chip { border: 1px solid var(--accent); }
+.pack-item { margin: 4px 0 4px 14px; padding-left: 10px; border-left: 2px solid var(--border); }
+
 /* E1: 과제 카드 = 필터 버튼 */
 .project-card { cursor: pointer; text-align: left; font: inherit; }
 .project-card:hover { border-color: var(--accent); }

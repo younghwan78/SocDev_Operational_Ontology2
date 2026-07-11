@@ -318,6 +318,7 @@ export const ko = {
     predicted: "예측·에뮬",
     absent: "부재",
     export_csv: "결정 템플릿 CSV 복사",
+    download_csv: "결정 템플릿 CSV 내려받기",
     upload_decisions: "채운 결정 CSV 반입",
     uploading_decisions: "반입 중…",
     decisions_section: "이 팩 프로젝트의 결정",

@@ -141,35 +141,61 @@ export function ReviewPage() {
         )}
       </div>
 
-      <p className="section-note">
-        {t.counts
-          .replace("{e}", String(index.data.event_counts[String(active)] ?? 0))
-          .replace("{a}", String(index.data.activity_counts[String(active)] ?? 0))
-          .replace("{r}", String(index.data.request_counts[String(active)] ?? 0))}
-      </p>
+      {/* E3 주간 상황판 — 클릭=해당 섹션 이동 */}
+      <div className="stat-strip">
+        {(
+          [
+            ["rv-events", t.events_section, index.data.event_counts[String(active)] ?? 0],
+            ["rv-activities", t.activities_section, index.data.activity_counts[String(active)] ?? 0],
+            ["rv-requests", t.requests_section, index.data.request_counts[String(active)] ?? 0],
+          ] as const
+        ).map(([id, sectionLabel, count]) => (
+          <button
+            key={id}
+            type="button"
+            className="stat"
+            onClick={() =>
+              document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+          >
+            <b>{count}</b>
+            <span>{sectionLabel}</span>
+          </button>
+        ))}
+      </div>
 
       {snapshot.isPending && <p className="status-msg">{ko.app.loading}</p>}
       {snapshot.data && (
         <div>
-          <div className="card">
+          <div className="card" id="rv-events">
             <h2 className="card-title">{t.events_section}</h2>
             {snapshot.data.events.length === 0 && <p className="section-note">{ko.app.empty}</p>}
             {snapshot.data.events.map((event) => (
               <div key={event.id} className="list-item">
                 <div className="head">
-                  <span className="badge badge-info" title={event.severity}>
-                    {valueLabel("severity", event.severity)}
-                  </span>
+                  {event.severity && (
+                    <span className="badge badge-info" title={event.severity}>
+                      {valueLabel("severity", event.severity)}
+                    </span>
+                  )}
                   <span className="title">{event.title}</span>
                   <span className="badge badge-ok" title={event.status}>
                     {valueLabel("event_status", event.status)}
                   </span>
+                  {event.schedule_signal &&
+                    ["at_risk", "delayed", "window_closing"].includes(
+                      event.schedule_signal,
+                    ) && (
+                      <span className="badge badge-warn" title={event.schedule_signal}>
+                        {valueLabel("schedule_signal", event.schedule_signal)}
+                      </span>
+                    )}
                 </div>
                 <p className="desc">{event.description}</p>
               </div>
             ))}
           </div>
-          <div className="card">
+          <div className="card" id="rv-activities">
             <h2 className="card-title">{t.activities_section}</h2>
             {snapshot.data.activities.length === 0 && (
               <p className="section-note">{ko.app.empty}</p>
@@ -186,7 +212,7 @@ export function ReviewPage() {
               </div>
             ))}
           </div>
-          <div className="card">
+          <div className="card" id="rv-requests">
             <h2 className="card-title">{t.requests_section}</h2>
             {snapshot.data.requests.length === 0 && <p className="section-note">{ko.app.empty}</p>}
             {snapshot.data.requests.map((request) => (
@@ -270,6 +296,18 @@ function ReviewPackDetail({ packId }: { packId: string }) {
       setCopied(tp.copy_failed);
     }
   };
+  // E3: 파일로 내려받기 — 클립보드보다 엑셀 왕복에 자연스럽다 (BOM 포함).
+  const downloadCsv = () => {
+    const blob = new Blob(["﻿" + toDecisionCsv(data) + "\r\n"], {
+      type: "text/csv;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${data.pack_id}_decisions.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div>
@@ -290,6 +328,9 @@ function ReviewPackDetail({ packId }: { packId: string }) {
         </span>
       </div>
       <div className="chip-row">
+        <button type="button" className="link-btn" onClick={downloadCsv}>
+          {tp.download_csv}
+        </button>
         <button type="button" className="link-btn" onClick={copyCsv}>
           {tp.export_csv}
         </button>
@@ -317,6 +358,12 @@ function ReviewPackDetail({ packId }: { packId: string }) {
           <span className="badge badge-ok">
             {ko.ingest.accepted} {uploadReport.batch.accepted_count}
           </span>{" "}
+          <span className="badge badge-info">
+            {ko.ingest.updated} {uploadReport.batch.updated_count ?? 0}
+          </span>{" "}
+          <span className="badge badge-info">
+            {ko.ingest.unchanged} {uploadReport.batch.unchanged_count ?? 0}
+          </span>{" "}
           <span
             className={`badge ${(uploadReport.batch.rejected_count ?? 0) > 0 ? "badge-danger" : "badge-info"}`}
           >
@@ -342,13 +389,23 @@ function ReviewPackDetail({ packId }: { packId: string }) {
           </div>
           {scenario.sections.length === 0 && <p className="desc">{tp.empty_sections}</p>}
           {scenario.sections.map((section) => (
-            <p key={section.kind} className="desc">
-              <span className="chip">
-                {section.kind_ko} ({section.items.length})
-              </span>{" "}
-              {section.items[0]?.statement}
-              {section.items.length > 1 ? " …" : ""}
-            </p>
+            <details key={section.kind} className="pack-section">
+              <summary className="desc">
+                <span className="chip">
+                  {section.kind_ko} ({section.items.length})
+                </span>{" "}
+                {section.items[0]?.statement}
+                {section.items.length > 1 ? " …" : ""}
+              </summary>
+              {section.items.map((item, index) => (
+                <p key={index} className="desc pack-item" title={item.basis[0]?.ref_id ?? ""}>
+                  {item.statement}
+                  {item.strength_ko && (
+                    <span className="badge badge-info"> {item.strength_ko}</span>
+                  )}
+                </p>
+              ))}
+            </details>
           ))}
         </div>
       ))}
