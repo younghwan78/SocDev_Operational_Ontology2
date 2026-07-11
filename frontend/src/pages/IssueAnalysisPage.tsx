@@ -400,16 +400,21 @@ function TypeDistribution({
 function RCAFlow({ chainData }: { chainData: RCAChain }) {
   const valueLabel = useValueLabels();
   // I2 위계: 문제(빨강/노랑) 스텝은 펼치고, 정상(초록)은 한 줄 요약으로 접는다.
-  const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
-  useEffect(() => {
-    setOpenMap(
-      Object.fromEntries(chainData.nodes.map((node) => [node.step, node.badge !== "green"])),
-    );
-  }, [chainData.issue_id, chainData.nodes]);
+  // 이슈가 바뀌면 override를 render 중 리셋 (effect 아님 — AskPage draft 패턴).
+  const [openState, setOpenState] = useState<{
+    issueId: string;
+    map: Record<string, boolean>;
+  }>({ issueId: chainData.issue_id, map: {} });
+  if (openState.issueId !== chainData.issue_id) {
+    setOpenState({ issueId: chainData.issue_id, map: {} });
+  }
+  const openMap = openState.map;
+  const setOpenMap = (map: Record<string, boolean>) =>
+    setOpenState({ issueId: chainData.issue_id, map });
   const setAll = (open: boolean) =>
     setOpenMap(Object.fromEntries(chainData.nodes.map((node) => [node.step, open])));
   const openStep = (step: string) => {
-    setOpenMap((previous) => ({ ...previous, [step]: true }));
+    setOpenMap({ ...openMap, [step]: true });
     document
       .getElementById(`rca-step-${step}`)
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -470,10 +475,10 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
             node={node}
             open={openMap[node.step] ?? node.badge !== "green"}
             onToggle={() =>
-              setOpenMap((previous) => ({
-                ...previous,
-                [node.step]: !(previous[node.step] ?? node.badge !== "green"),
-              }))
+              setOpenMap({
+                ...openMap,
+                [node.step]: !(openMap[node.step] ?? node.badge !== "green"),
+              })
             }
           />
         ))}

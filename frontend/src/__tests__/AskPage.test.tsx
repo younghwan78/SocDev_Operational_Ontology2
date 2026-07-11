@@ -58,6 +58,14 @@ beforeEach(() => {
     vi.fn((input: Request) => {
       const url = typeof input === "string" ? input : input.url;
       if (url.includes("/api/v1/ask/presets")) return jsonResponse(presets);
+      if (url.includes("/api/v1/ask/preview"))
+        return jsonResponse({
+          question: askResult.question,
+          cards: askResult.cards,
+          unmatched_terms: [],
+        });
+      if (url.includes("/api/v1/ask/history")) return jsonResponse([]);
+      if (url.includes("/api/v1/ask/faq")) return jsonResponse([]);
       if (url.includes("/api/v1/ask")) return jsonResponse(askResult);
       return jsonResponse([]);
     }),
@@ -105,5 +113,81 @@ describe("AskPage", () => {
     expect(
       screen.queryByText("issue_isp_hdr_latency_closed_unverified_u"),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("A2 인라인 각주 + A5 FAQ", () => {
+  it("본문 [id] 마커가 각주 칩으로 렌더링되고 클릭 대상이 된다", async () => {
+    const withMarkers = {
+      ...askResult,
+      provider: "claude_cli",
+      answer:
+        "UHD60 시나리오가 높음 등급입니다 [uhd60_recording_eis_on]. HDR 이슈 이력도 있습니다 [issue_isp_hdr_latency_closed_unverified_u].",
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: Request) => {
+        const url = typeof input === "string" ? input : input.url;
+        if (url.includes("/ask/presets")) return jsonResponse(presets);
+        if (url.includes("/ask/preview"))
+          return jsonResponse({ question: "", cards: withMarkers.cards, unmatched_terms: [] });
+        if (url.includes("/ask/history")) return jsonResponse([]);
+        if (url.includes("/ask/faq")) return jsonResponse([]);
+        if (url.includes("/api/v1/ask")) return jsonResponse(withMarkers);
+        return jsonResponse([]);
+      }),
+    );
+    renderPage();
+    fireEvent.click(await screen.findByText(presets[0].question));
+    const fn1 = await screen.findByRole("button", { name: "1" });
+    const fn2 = screen.getByRole("button", { name: "2" });
+    expect(fn1).toHaveAttribute("title", "UHD60 녹화 (EIS)");
+    expect(fn2).toHaveAttribute("title", "HDR 경로 지연");
+    // 마커 원문([id])은 화면 텍스트로 노출되지 않는다
+    expect(screen.queryByText(/\[uhd60_recording_eis_on\]/)).not.toBeInTheDocument();
+  });
+
+  it("대기 화면에 FAQ와 최근 질문이 표시되고 클릭 시 재질의한다", async () => {
+    const faq = [
+      {
+        question: "전력 문제가 반복된 IP는?",
+        count: 3,
+        last_asked: "2026-07-12T09:00:00+00:00",
+        last_confidence: "medium",
+        answer_preview: "전력 관련 이슈 요약…",
+      },
+    ];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: Request) => {
+        const url = typeof input === "string" ? input : input.url;
+        if (url.includes("/ask/presets")) return jsonResponse(presets);
+        if (url.includes("/ask/preview"))
+          return jsonResponse({ question: "", cards: askResult.cards, unmatched_terms: [] });
+        if (url.includes("/ask/history"))
+          return jsonResponse([
+            {
+              id: "ask_1",
+              question: "발열 이슈?",
+              normalized: "발열 이슈?",
+              provider: "deterministic",
+              confidence: "low",
+              answer: "요약",
+              citations: [],
+              duration_ms: 5,
+              created_at: "2026-07-12T08:00:00+00:00",
+            },
+          ]);
+        if (url.includes("/ask/faq")) return jsonResponse(faq);
+        if (url.includes("/api/v1/ask")) return jsonResponse(askResult);
+        return jsonResponse([]);
+      }),
+    );
+    renderPage();
+    expect(await screen.findByText("전력 문제가 반복된 IP는?")).toBeInTheDocument();
+    expect(screen.getByText("×3")).toBeInTheDocument();
+    expect(screen.getByText("발열 이슈?")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("전력 문제가 반복된 IP는?"));
+    expect(await screen.findByText(/수집된 객체 기준의 요약/)).toBeInTheDocument();
   });
 });

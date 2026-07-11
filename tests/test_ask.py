@@ -178,3 +178,30 @@ def test_inline_markers_merged_into_citations(repo) -> None:
     result = runner.ask("UHD60 recording 위험")
     assert result.provider == "fake"
     assert result.citations == [first, second]
+
+
+def test_ask_log_and_faq_roundtrip(monkeypatch) -> None:
+    """A5 — 질의가 로그에 남고 FAQ가 횟수 기준으로 집계된다 (LLM 없이)."""
+    from backend.agents.runner import PROVIDERS_ENV
+    from backend.api.app import create_app
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv(PROVIDERS_ENV, "deterministic")  # 규칙: 테스트는 LLM 없이
+    client = TestClient(create_app())
+    for _ in range(2):
+        response = client.post("/api/v1/ask", json={"question": "전력 문제가 반복된 IP는?"})
+        assert response.status_code == 200
+    client.post("/api/v1/ask", json={"question": "발열 이슈가 있었던 시나리오는?"})
+
+    history = client.get("/api/v1/ask/history").json()
+    assert len(history) == 3
+    assert history[0]["question"] == "발열 이슈가 있었던 시나리오는?"
+    assert history[0]["answer"], "답변 전문이 보존돼야 한다"
+
+    faq = client.get("/api/v1/ask/faq").json()
+    assert faq[0]["question"] == "전력 문제가 반복된 IP는?"
+    assert faq[0]["count"] == 2
+    assert faq[0]["answer_preview"]
+
+    preview = client.get("/api/v1/ask/preview", params={"q": "전력 문제"}).json()
+    assert preview["cards"], "프리뷰는 결정론 카드를 즉시 반환한다"

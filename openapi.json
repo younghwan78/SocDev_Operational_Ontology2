@@ -387,6 +387,104 @@
         "title": "AskCard",
         "type": "object"
       },
+      "AskLogEntry": {
+        "additionalProperties": false,
+        "description": "질의 1건의 기록 — 답변 전문과 인용을 보존한다.",
+        "properties": {
+          "answer": {
+            "title": "Answer",
+            "type": "string"
+          },
+          "citations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "duration_ms": {
+            "default": 0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "normalized": {
+            "title": "Normalized",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "question",
+          "normalized",
+          "provider",
+          "confidence",
+          "answer",
+          "created_at"
+        ],
+        "title": "AskLogEntry",
+        "type": "object"
+      },
+      "AskPreview": {
+        "additionalProperties": false,
+        "description": "A3 즉시 프리뷰 — 결정론 검색 결과만 (LLM 대기 없이 카드를 먼저 보여준다).",
+        "properties": {
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/AskCard"
+            },
+            "title": "Cards",
+            "type": "array"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "unmatched_terms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unmatched Terms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "question",
+          "cards"
+        ],
+        "title": "AskPreview",
+        "type": "object"
+      },
       "AskRequest": {
         "description": "Ask SoC 질의 요청.",
         "properties": {
@@ -461,6 +559,13 @@
           "question": {
             "title": "Question",
             "type": "string"
+          },
+          "unmatched_terms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unmatched Terms",
+            "type": "array"
           },
           "validation_notes": {
             "items": {
@@ -1996,6 +2101,41 @@
           "description"
         ],
         "title": "ExpectedReviewOutput",
+        "type": "object"
+      },
+      "FAQEntry": {
+        "additionalProperties": false,
+        "description": "자주 묻는 질문 — normalized 기준 집계, 최신 답변 미리보기 동반.",
+        "properties": {
+          "answer_preview": {
+            "title": "Answer Preview",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "last_asked": {
+            "title": "Last Asked",
+            "type": "string"
+          },
+          "last_confidence": {
+            "title": "Last Confidence",
+            "type": "string"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question",
+          "count",
+          "last_asked",
+          "last_confidence",
+          "answer_preview"
+        ],
+        "title": "FAQEntry",
         "type": "object"
       },
       "GroundedStatement": {
@@ -5950,7 +6090,7 @@
     },
     "/api/v1/ask": {
       "post": {
-        "description": "Ask SoC 질의 — 검색(결정론) → LLM 근거 인용 답변 (데이터 수정 아님).\n\nLLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.",
+        "description": "Ask SoC 질의 — 검색(결정론) → LLM 근거 인용 답변 (데이터 수정 아님).\n\nLLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.\n결과는 질의 로그(감사 기록·FAQ 원천)에 남는다 — 신규 쓰기 API 아님.",
         "operationId": "ask_api_v1_ask_post",
         "requestBody": {
           "content": {
@@ -5987,6 +6127,100 @@
         "summary": "Ask"
       }
     },
+    "/api/v1/ask/faq": {
+      "get": {
+        "description": "자주 묻는 질문 — 질의 로그의 결정론 집계 (좋은 예제 목록).",
+        "operationId": "ask_faq_api_v1_ask_faq_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 8,
+              "maximum": 30,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FAQEntry"
+                  },
+                  "title": "Response Ask Faq Api V1 Ask Faq Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask Faq"
+      }
+    },
+    "/api/v1/ask/history": {
+      "get": {
+        "description": "최근 질의 이력 (감사 로그, 읽기 전용).",
+        "operationId": "ask_history_api_v1_ask_history_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AskLogEntry"
+                  },
+                  "title": "Response Ask History Api V1 Ask History Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask History"
+      }
+    },
     "/api/v1/ask/presets": {
       "get": {
         "description": "프리셋 질문 5종 — 원점 문서 데모 질문.",
@@ -6011,6 +6245,48 @@
           }
         },
         "summary": "Ask Presets"
+      }
+    },
+    "/api/v1/ask/preview": {
+      "get": {
+        "description": "A3 즉시 프리뷰 — 결정론 검색 카드만 (LLM 대기 전에 카드를 먼저 보여준다).",
+        "operationId": "ask_preview_api_v1_ask_preview_get",
+        "parameters": [
+          {
+            "description": "질문",
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "description": "질문",
+              "title": "Q",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskPreview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask Preview"
       }
     },
     "/api/v1/change-impact": {

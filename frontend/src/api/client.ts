@@ -164,6 +164,30 @@ export async function postAsk(question: string): Promise<AskResult> {
   return data;
 }
 
+export type AskPreview = components["schemas"]["AskPreview"];
+export type AskLogEntry = components["schemas"]["AskLogEntry"];
+export type AskFaqEntry = components["schemas"]["FAQEntry"];
+
+export async function fetchAskPreview(question: string): Promise<AskPreview> {
+  const { data, error } = await client.GET("/api/v1/ask/preview", {
+    params: { query: { q: question } },
+  });
+  if (error || !data) throw new Error("ask preview 조회 실패");
+  return data;
+}
+
+export async function fetchAskHistory(): Promise<AskLogEntry[]> {
+  const { data, error } = await client.GET("/api/v1/ask/history");
+  if (error || !data) throw new Error("ask history 조회 실패");
+  return data;
+}
+
+export async function fetchAskFaq(): Promise<AskFaqEntry[]> {
+  const { data, error } = await client.GET("/api/v1/ask/faq");
+  if (error || !data) throw new Error("ask faq 조회 실패");
+  return data;
+}
+
 export interface ChangeImpactParams {
   ipId: string;
   knobId?: string;

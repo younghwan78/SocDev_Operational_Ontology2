@@ -14,7 +14,14 @@ from typing import Any
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 
-from backend.agents.ask_runner import PRESET_QUESTIONS, AskResult, AskRunner
+from backend.agents.ask_log import (
+    AskLogEntry,
+    AskLogStoreProtocol,
+    FAQEntry,
+    InMemoryAskLog,
+    build_entry,
+)
+from backend.agents.ask_runner import PRESET_QUESTIONS, AskPreview, AskResult, AskRunner
 from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
 from backend.agents.runner import AdvisoryRunner
 from backend.ingest.service import (
@@ -95,6 +102,7 @@ class AppServices:
     advisory: AdvisoryRunner
     ask: AskRunner
     run_store: RunStoreProtocol
+    ask_log: AskLogStoreProtocol
     ingest: IngestService
 
 
@@ -103,12 +111,14 @@ def build_services(
 ) -> AppServices:
     backend_kind = "memory"
     run_store: RunStoreProtocol = InMemoryRunStore()
+    ask_log: AskLogStoreProtocol = InMemoryAskLog()
     ingest_service: IngestService | None = None
     if repo is None:
         dsn = os.environ.get("SOC_ONTOLOGY_DSN")
         if dsn:
             import psycopg
 
+            from backend.agents.ask_log import PostgresAskLog
             from backend.agents.run_store import PostgresRunStore
             from backend.db.repository import PostgresRepository
             from backend.ingest.service import PostgresIngestWriter
@@ -116,6 +126,7 @@ def build_services(
             conn = psycopg.connect(dsn)
             repo = PostgresRepository(conn)
             run_store = PostgresRunStore(conn)
+            ask_log = PostgresAskLog(conn)
             ingest_service = IngestService(PostgresIngestWriter(conn))
             backend_kind = "postgres"
         else:
@@ -143,6 +154,7 @@ def build_services(
         advisory=AdvisoryRunner(repo, run_store),
         ask=AskRunner(repo),
         run_store=run_store,
+        ask_log=ask_log,
         ingest=ingest_service,
     )
 
@@ -408,13 +420,31 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         """프리셋 질문 5종 — 원점 문서 데모 질문."""
         return PRESET_QUESTIONS
 
+    @app.get(f"{prefix}/ask/preview", response_model=AskPreview)
+    def ask_preview(q: str = Query(description="질문")) -> AskPreview:
+        """A3 즉시 프리뷰 — 결정론 검색 카드만 (LLM 대기 전에 카드를 먼저 보여준다)."""
+        return services.ask.preview(q)
+
+    @app.get(f"{prefix}/ask/history", response_model=list[AskLogEntry])
+    def ask_history(limit: int = Query(default=20, ge=1, le=100)) -> list[AskLogEntry]:
+        """최근 질의 이력 (감사 로그, 읽기 전용)."""
+        return services.ask_log.recent(limit)
+
+    @app.get(f"{prefix}/ask/faq", response_model=list[FAQEntry])
+    def ask_faq(limit: int = Query(default=8, ge=1, le=30)) -> list[FAQEntry]:
+        """자주 묻는 질문 — 질의 로그의 결정론 집계 (좋은 예제 목록)."""
+        return services.ask_log.faq(limit)
+
     @app.post(f"{prefix}/ask", response_model=AskResult)
     def ask(request: AskRequest) -> AskResult:
         """Ask SoC 질의 — 검색(결정론) → LLM 근거 인용 답변 (데이터 수정 아님).
 
         LLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.
+        결과는 질의 로그(감사 기록·FAQ 원천)에 남는다 — 신규 쓰기 API 아님.
         """
-        return services.ask.ask(request.question)
+        result = services.ask.ask(request.question)
+        services.ask_log.save(build_entry(result))
+        return result
 
     @app.post(f"{prefix}/ingest/file", response_model=IngestReport)
     async def ingest_file(

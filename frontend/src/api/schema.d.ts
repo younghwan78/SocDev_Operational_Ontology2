@@ -38,8 +38,49 @@ export interface paths {
          * @description Ask SoC 질의 — 검색(결정론) → LLM 근거 인용 답변 (데이터 수정 아님).
          *
          *     LLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.
+         *     결과는 질의 로그(감사 기록·FAQ 원천)에 남는다 — 신규 쓰기 API 아님.
          */
         post: operations["ask_api_v1_ask_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ask/faq": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ask Faq
+         * @description 자주 묻는 질문 — 질의 로그의 결정론 집계 (좋은 예제 목록).
+         */
+        get: operations["ask_faq_api_v1_ask_faq_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ask/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ask History
+         * @description 최근 질의 이력 (감사 로그, 읽기 전용).
+         */
+        get: operations["ask_history_api_v1_ask_history_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -58,6 +99,26 @@ export interface paths {
          * @description 프리셋 질문 5종 — 원점 문서 데모 질문.
          */
         get: operations["ask_presets_api_v1_ask_presets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ask/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ask Preview
+         * @description A3 즉시 프리뷰 — 결정론 검색 카드만 (LLM 대기 전에 카드를 먼저 보여준다).
+         */
+        get: operations["ask_preview_api_v1_ask_preview_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -854,6 +915,47 @@ export interface components {
             title: string;
         };
         /**
+         * AskLogEntry
+         * @description 질의 1건의 기록 — 답변 전문과 인용을 보존한다.
+         */
+        AskLogEntry: {
+            /** Answer */
+            answer: string;
+            /** Citations */
+            citations?: string[];
+            /** Confidence */
+            confidence: string;
+            /** Created At */
+            created_at: string;
+            /**
+             * Duration Ms
+             * @default 0
+             */
+            duration_ms: number;
+            /** Id */
+            id: string;
+            /** Model Name */
+            model_name?: string | null;
+            /** Normalized */
+            normalized: string;
+            /** Provider */
+            provider: string;
+            /** Question */
+            question: string;
+        };
+        /**
+         * AskPreview
+         * @description A3 즉시 프리뷰 — 결정론 검색 결과만 (LLM 대기 없이 카드를 먼저 보여준다).
+         */
+        AskPreview: {
+            /** Cards */
+            cards: components["schemas"]["AskCard"][];
+            /** Question */
+            question: string;
+            /** Unmatched Terms */
+            unmatched_terms?: string[];
+        };
+        /**
          * AskRequest
          * @description Ask SoC 질의 요청.
          */
@@ -895,6 +997,8 @@ export interface components {
             provider: string;
             /** Question */
             question: string;
+            /** Unmatched Terms */
+            unmatched_terms?: string[];
             /** Validation Notes */
             validation_notes?: string[];
         };
@@ -1493,6 +1597,22 @@ export interface components {
             not_final_decision: boolean;
             /** Output Type */
             output_type: string;
+        };
+        /**
+         * FAQEntry
+         * @description 자주 묻는 질문 — normalized 기준 집계, 최신 답변 미리보기 동반.
+         */
+        FAQEntry: {
+            /** Answer Preview */
+            answer_preview: string;
+            /** Count */
+            count: number;
+            /** Last Asked */
+            last_asked: string;
+            /** Last Confidence */
+            last_confidence: string;
+            /** Question */
+            question: string;
         };
         /**
          * GroundedStatement
@@ -3015,6 +3135,68 @@ export interface operations {
             };
         };
     };
+    ask_faq_api_v1_ask_faq_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FAQEntry"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ask_history_api_v1_ask_history_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AskLogEntry"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     ask_presets_api_v1_ask_presets_get: {
         parameters: {
             query?: never;
@@ -3033,6 +3215,38 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     }[];
+                };
+            };
+        };
+    };
+    ask_preview_api_v1_ask_preview_get: {
+        parameters: {
+            query: {
+                /** @description 질문 */
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AskPreview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

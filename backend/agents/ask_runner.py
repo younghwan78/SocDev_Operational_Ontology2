@@ -117,6 +117,16 @@ class AskCard(BaseModel):
     matched_terms: list[str] = Field(default_factory=list)
 
 
+class AskPreview(BaseModel):
+    """A3 즉시 프리뷰 — 결정론 검색 결과만 (LLM 대기 없이 카드를 먼저 보여준다)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    question: str
+    cards: list[AskCard]
+    unmatched_terms: list[str] = Field(default_factory=list)
+
+
 class AskResult(BaseModel):
     """질의 응답 파생 뷰 — 저장하지 않음 (감사 노트 포함)."""
 
@@ -431,6 +441,11 @@ class AskRunner:
         )
 
     # ---- 실행 ----
+
+    def preview(self, question: str) -> AskPreview:
+        """결정론 검색만 — POST /ask 완료 전 카드를 즉시 표시하기 위한 경로."""
+        cards, unmatched = self._search(question)
+        return AskPreview(question=question, cards=cards, unmatched_terms=unmatched)
 
     def ask(self, question: str) -> AskResult:
         started = time.monotonic()
