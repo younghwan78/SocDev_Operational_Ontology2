@@ -26,7 +26,12 @@
 - **J4 이슈↔문서 연결**: `Issue.doc_refs`(외부 문서 URL/키), `SemanticChunk.
   related_issue_ids`(페이지가 언급하는 이슈 키 — Confluence `issue_keys` 반입).
   RCA 상세에 "관련 문서 후보(증거 아님)" 섹션 — 후보 지위, 증거 승격은 큐레이션.
-- **범위 외(승인 대기)**: quarantine 저장 컬렉션 — 설계 문서 §4.
+- **quarantine 보류 풀 (J1 2단계, 같은 날 후속 승인)**: 거부 행을 원본 열 값
+  그대로 저장(`ingest_quarantine` — ingest 스테이징, 온톨로지 아님). 반입 센터
+  "큐레이션 대기열" 카드 — 매핑별 수정용 CSV(원본 값+사유), 같은 id 재반입 성공 시
+  자동 해소, 원 배치 rollback 시 함께 제거. `GET /ingest/quarantine`(읽기 전용),
+  마이그레이션 0004. 실서버 왕복 검증(거부→보류→수정 재반입→해소).
+- **범위 외(미착수)**: upsert 버전 이력, 다과제 project_ids 복수화 — 설계 문서 §4.
 
 ## UI G1~G3 — 변경 영향 재설계: 영향 전파 지도 (2026-07-11)
 

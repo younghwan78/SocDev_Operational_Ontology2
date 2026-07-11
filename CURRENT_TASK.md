@@ -4,16 +4,16 @@
 
 **활성 Stage 없음 — 반입 J1~J4(사내 데이터 현실 갭 교정) 완료 (2026-07-11).**
 
-> J1 품질 리포트(연결률/미등재 값/참조 경고/거부 행 CSV) / J2 upsert 증분 동기화
-> (신규·갱신·변동 없음, --since auto, pagination, env prefix — 실서버 왕복 검증) /
+> J1 품질 리포트+큐레이션 루프(거부 행 CSV·quarantine 보류 풀 — 재반입 자동 해소) /
+> J2 upsert 증분 동기화(신규·갱신·변동 없음, --since auto, pagination, env prefix) /
 > J3 신선도·일정 신호(정체/지연 배지, week_columns) / J4 이슈↔문서 연결
-> (doc_refs·related_issue_ids·RCA 관련 문서 후보). 설계:
+> (doc_refs·related_issue_ids·RCA 관련 문서 후보). 전부 실서버 왕복 검증. 설계:
 > `internal_docs/design/14_ingest_reality_gaps.md`. 같은 날 UI W1~W3(코크핏)·
 > G1~G3(변경 영향 전파 지도) 완료. 상세: CHANGELOG.
 >
-> **후속 후보(미착수, 승인 필요)**: quarantine 저장 컬렉션(설계 14 §4), 공통
-> StatusBadge/AsyncSection 리팩터, 목록 가상화(500건+), docs/ 스크린샷 재캡처,
-> Stage 13 트랙 A 또는 Stage 14 잔여(인증/배포/캐시).
+> **후속 후보(미착수, 승인 필요)**: upsert 버전 이력, 다과제 project_ids 복수화
+> (설계 14 §4), 공통 StatusBadge/AsyncSection 리팩터, 목록 가상화(500건+),
+> docs/ 스크린샷 재캡처, Stage 13 트랙 A 또는 Stage 14 잔여(인증/배포/캐시).
 
 ### 직전 완료 — UI 실사용자 재설계 P0~P2 (2026-07-11)
 

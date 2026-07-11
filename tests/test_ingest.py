@@ -438,3 +438,35 @@ def test_quality_report_flags_unlabeled_and_missing_refs(service: IngestService)
     assert any("projects: 'project_없는과제'" in line for line in report.quality.missing_ref_warnings)
     assert report.quality.linkage_total == 2
     assert report.quality.linkage_connected == 1
+
+
+def test_quarantine_stores_rejected_rows_and_resolves_on_reingest(
+    service: IngestService,
+) -> None:
+    """J1 2단계 — 거부 행은 보류 풀에 저장되고, 같은 id 재반입 성공 시 해소된다."""
+    header = "이슈 ID,프로젝트 ID,제목,유형,상태,증상,확신도\n"
+    bad = header + "import_quarantine_case,project_u,증상 없음 행,power_gap,open,,medium\n"
+    report = service.ingest("bad.csv", bad.encode(), "issues")
+    assert report.batch.rejected_count == 1
+
+    pending = service.list_quarantine("issues")
+    assert len(pending) == 1
+    entry = pending[0]
+    assert entry.object_id == "import_quarantine_case"
+    assert entry.row_data["제목"] == "증상 없음 행"
+    assert "필수 열 누락" in entry.reason
+
+    # 고쳐서 재반입 → 수용 + 보류 해소
+    fixed = header + "import_quarantine_case,project_u,증상 없음 행,power_gap,open,증상 채움,medium\n"
+    fixed_report = service.ingest("fixed.csv", fixed.encode(), "issues")
+    assert fixed_report.batch.accepted_count == 1
+    assert service.list_quarantine("issues") == []
+
+
+def test_quarantine_removed_with_batch_rollback(service: IngestService) -> None:
+    header = "이슈 ID,프로젝트 ID,제목,유형,상태,증상,확신도\n"
+    bad = header + ",project_u,ID 없는 행,power_gap,open,증상,medium\n"
+    report = service.ingest("bad.csv", bad.encode(), "issues")
+    assert len(service.list_quarantine("issues")) == 1
+    service.rollback(report.batch.id)
+    assert service.list_quarantine("issues") == []

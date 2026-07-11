@@ -23,6 +23,7 @@ from backend.ingest.service import (
     IngestReport,
     IngestService,
     MemoryIngestWriter,
+    QuarantineEntry,
 )
 from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.repository import InMemoryRepository
@@ -455,6 +456,17 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         if event_id:
             decisions = [d for d in decisions if d.event_id == event_id]
         return sorted(decisions, key=lambda d: d.id)
+
+    @app.get(f"{prefix}/ingest/quarantine", response_model=list[QuarantineEntry])
+    def list_ingest_quarantine(
+        mapping: str | None = Query(default=None, description="매핑 이름 필터"),
+    ) -> list[QuarantineEntry]:
+        """보류 행 목록 (J1 2단계) — 거부 행의 큐레이션 대기열 (읽기 전용).
+
+        수정용 CSV는 프론트가 원본 열 값으로 재구성한다. 같은 id의 행이 수용되면
+        해소되고, 원 배치 rollback 시 함께 제거된다.
+        """
+        return services.ingest.list_quarantine(mapping)
 
     @app.get(f"{prefix}/ingest/batches", response_model=list[IngestBatch])
     def list_ingest_batches() -> list[IngestBatch]:

@@ -311,6 +311,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ingest/quarantine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Ingest Quarantine
+         * @description 보류 행 목록 (J1 2단계) — 거부 행의 큐레이션 대기열 (읽기 전용).
+         *
+         *     수정용 CSV는 프론트가 원본 열 값으로 재구성한다. 같은 id의 행이 수용되면
+         *     해소되고, 원 배치 rollback 시 함께 제거된다.
+         */
+        get: operations["list_ingest_quarantine_api_v1_ingest_quarantine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/issues": {
         parameters: {
             query?: never;
@@ -2069,6 +2092,38 @@ export interface components {
             unlabeled_values?: string[];
         };
         /**
+         * QuarantineEntry
+         * @description 보류 행 (J1 2단계) — 거부 행을 원본 열 값 그대로 저장해 큐레이션 대기열로.
+         *
+         *     온톨로지 객체가 아니라 ingest 스테이징이다. 같은 매핑에서 같은 id의 행이
+         *     나중에 수용되면 resolved로 해소되고, 원 배치 rollback 시 함께 제거된다.
+         */
+        QuarantineEntry: {
+            /** Batch Id */
+            batch_id: string;
+            /** Created At */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Mapping Name */
+            mapping_name: string;
+            /** Object Id */
+            object_id?: string | null;
+            /** Reason */
+            reason: string;
+            /** Row Data */
+            row_data: {
+                [key: string]: string;
+            };
+            /** Row Number */
+            row_number: number;
+            /**
+             * Status
+             * @default pending
+             */
+            status: string;
+        };
+        /**
          * RCAChain
          * @description 이슈 RCA 파생 뷰 — 7단 세로 흐름 (저장하지 않음).
          */
@@ -3342,6 +3397,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IngestMappingInfo"][];
+                };
+            };
+        };
+    };
+    list_ingest_quarantine_api_v1_ingest_quarantine_get: {
+        parameters: {
+            query?: {
+                /** @description 매핑 이름 필터 */
+                mapping?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuarantineEntry"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

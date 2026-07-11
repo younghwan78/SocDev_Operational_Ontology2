@@ -331,6 +331,10 @@ export const ko = {
     unlabeled: "라벨 미등재 값",
     missing_ref: "참조 없음",
     download_rejected: "거부 행 CSV 내려받기 (수정 후 재반입)",
+    quarantine_title: "큐레이션 대기열 (보류 행)",
+    quarantine_note: "거부 행 보관 — 수정 후 재반입하면 자동 해소",
+    quarantine_download: "수정용 CSV 내려받기",
+    quarantine_more: "건 더 있음 — CSV에는 전체 포함",
   },
   evidence: {
     title: "근거 탐색",

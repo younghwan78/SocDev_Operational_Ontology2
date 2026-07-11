@@ -8,11 +8,13 @@ import { useRef, useState } from "react";
 import {
   fetchIngestBatches,
   fetchIngestMappings,
+  fetchIngestQuarantine,
   rollbackIngestBatch,
   uploadIngestFile,
   type IngestMappingInfo,
   type IngestQualityReport,
   type IngestReport,
+  type QuarantineEntry,
 } from "../api/client";
 import { ko } from "../i18n/ko";
 
@@ -20,6 +22,32 @@ const t = ko.ingest;
 
 function csvCell(value: string): string {
   return `"${value.replace(/"/g, '""')}"`;
+}
+
+/** 보류 행 수정용 CSV — 원본 열 값 그대로 + 사유 열. 고쳐서 그대로 재반입하면
+ * 같은 id의 보류 행이 자동 해소된다 (사유 열은 반입 시 무시됨). */
+export function downloadQuarantineCsv(
+  mapping: IngestMappingInfo,
+  entries: QuarantineEntry[],
+) {
+  const columns = [...mapping.columns];
+  const lines = [
+    [...columns, "거부 사유"].map(csvCell).join(","),
+    ...entries.map((entry) =>
+      [...columns.map((column) => entry.row_data[column] ?? ""), entry.reason]
+        .map(csvCell)
+        .join(","),
+    ),
+  ];
+  const blob = new Blob(["﻿" + lines.join("\r\n") + "\r\n"], {
+    type: "text/csv;charset=utf-8",
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${mapping.name}_quarantine.csv`;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 /** 거부 행 사유 CSV — 큐레이션 루프 1단계: 원본에서 해당 행을 고쳐 재반입한다. */
@@ -83,6 +111,10 @@ export function IngestPage() {
   const queryClient = useQueryClient();
   const mappings = useQuery({ queryKey: ["ingest-mappings"], queryFn: fetchIngestMappings });
   const batches = useQuery({ queryKey: ["ingest-batches"], queryFn: fetchIngestBatches });
+  const quarantine = useQuery({
+    queryKey: ["ingest-quarantine"],
+    queryFn: fetchIngestQuarantine,
+  });
   const [mappingName, setMappingName] = useState<string>("");
   const [report, setReport] = useState<IngestReport | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -99,6 +131,7 @@ export function IngestPage() {
     onSuccess: (result) => {
       setReport(result);
       void queryClient.invalidateQueries({ queryKey: ["ingest-batches"] });
+      void queryClient.invalidateQueries({ queryKey: ["ingest-quarantine"] });
     },
   });
 
@@ -107,6 +140,7 @@ export function IngestPage() {
     onSuccess: () => {
       setReport(null);
       void queryClient.invalidateQueries({ queryKey: ["ingest-batches"] });
+      void queryClient.invalidateQueries({ queryKey: ["ingest-quarantine"] });
     },
   });
 
@@ -207,6 +241,57 @@ export function IngestPage() {
           </div>
         )}
       </div>
+
+      {/* J1 2단계: 큐레이션 대기열 — 거부 행 보류 풀. 수정용 CSV로 내려받아 고쳐
+          재반입하면 같은 id의 보류 행이 자동 해소된다. */}
+      {(quarantine.data ?? []).length > 0 && (
+        <div className="card">
+          <div className="head">
+            <h2 className="card-title">
+              {t.quarantine_title} ({(quarantine.data ?? []).length})
+            </h2>
+            <span className="badge badge-warn">{t.quarantine_note}</span>
+          </div>
+          {(mappings.data ?? [])
+            .map((mapping) => ({
+              mapping,
+              entries: (quarantine.data ?? []).filter(
+                (entry) => entry.mapping_name === mapping.name,
+              ),
+            }))
+            .filter(({ entries }) => entries.length > 0)
+            .map(({ mapping, entries }) => (
+              <div key={mapping.name} className="list-item">
+                <div className="head">
+                  <span className="title">{mapping.label_ko}</span>
+                  <span className="chip-count">{entries.length}</span>
+                  <button
+                    type="button"
+                    className="link-btn"
+                    onClick={() => downloadQuarantineCsv(mapping, entries)}
+                  >
+                    {t.quarantine_download}
+                  </button>
+                </div>
+                {entries.slice(0, 5).map((entry) => (
+                  <p key={entry.id} className="desc" title={entry.batch_id}>
+                    <span className="badge badge-warn">
+                      {entry.row_number}
+                      {t.row_suffix}
+                    </span>{" "}
+                    {entry.object_id ? `${entry.object_id} — ` : ""}
+                    {entry.reason}
+                  </p>
+                ))}
+                {entries.length > 5 && (
+                  <p className="section-note">
+                    +{entries.length - 5} {t.quarantine_more}
+                  </p>
+                )}
+              </div>
+            ))}
+        </div>
+      )}
 
       <div className="card">
         <h2 className="card-title">{t.history}</h2>

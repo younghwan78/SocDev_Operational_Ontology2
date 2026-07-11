@@ -60,6 +60,26 @@ class IngestBatch(BaseModel):
     created_at: str
 
 
+class QuarantineEntry(BaseModel):
+    """보류 행 (J1 2단계) — 거부 행을 원본 열 값 그대로 저장해 큐레이션 대기열로.
+
+    온톨로지 객체가 아니라 ingest 스테이징이다. 같은 매핑에서 같은 id의 행이
+    나중에 수용되면 resolved로 해소되고, 원 배치 rollback 시 함께 제거된다.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    batch_id: str
+    mapping_name: str
+    row_number: int
+    object_id: str | None = None  # 행의 id 열 값 — 재반입 해소 매칭 키
+    row_data: dict[str, str]
+    reason: str
+    status: str = "pending"  # pending | resolved
+    created_at: str
+
+
 class QualityReport(BaseModel):
     """J1 반입 품질 리포트 — 결정론 대조, 경고이지 거부가 아니다."""
 
@@ -109,6 +129,15 @@ class IngestWriterProtocol(Protocol):
 
     def remove_by_ids(self, collection: str, ids: list[str]) -> None: ...
 
+    # 보류 풀 (J1 2단계) — ingest 스테이징, 온톨로지 컬렉션 아님
+    def add_quarantine(self, entries: list[QuarantineEntry]) -> None: ...
+
+    def list_quarantine(self, mapping_name: str | None = None) -> list[QuarantineEntry]: ...
+
+    def resolve_quarantine(self, mapping_name: str, object_ids: set[str]) -> int: ...
+
+    def remove_quarantine_by_batch(self, batch_id: str) -> int: ...
+
 
 def batch_ref(batch_id: str, filename: str, row_number: int) -> str:
     return f"{BATCH_REF_PREFIX}:{batch_id}:{filename}#row{row_number}"
@@ -125,6 +154,7 @@ class MemoryIngestWriter:
     def __init__(self, repo: InMemoryRepository) -> None:
         self._repo = repo
         self._batches: list[IngestBatch] = []
+        self._quarantine: list[QuarantineEntry] = []
 
     def add_objects(self, collection: str, objects: list[OntologyObject], batch_id: str) -> None:
         self._repo.add_objects(collection, objects)
@@ -146,6 +176,33 @@ class MemoryIngestWriter:
 
     def known_ids(self, collection: str) -> set[str]:
         return self._repo.ids(collection)
+
+    def add_quarantine(self, entries: list[QuarantineEntry]) -> None:
+        self._quarantine.extend(entries)
+
+    def list_quarantine(self, mapping_name: str | None = None) -> list[QuarantineEntry]:
+        entries = [e for e in self._quarantine if e.status == "pending"]
+        if mapping_name:
+            entries = [e for e in entries if e.mapping_name == mapping_name]
+        return sorted(entries, key=lambda e: (e.mapping_name, e.created_at, e.row_number))
+
+    def resolve_quarantine(self, mapping_name: str, object_ids: set[str]) -> int:
+        resolved = 0
+        for index, entry in enumerate(self._quarantine):
+            if (
+                entry.status == "pending"
+                and entry.mapping_name == mapping_name
+                and entry.object_id
+                and entry.object_id in object_ids
+            ):
+                self._quarantine[index] = entry.model_copy(update={"status": "resolved"})
+                resolved += 1
+        return resolved
+
+    def remove_quarantine_by_batch(self, batch_id: str) -> int:
+        before = len(self._quarantine)
+        self._quarantine = [e for e in self._quarantine if e.batch_id != batch_id]
+        return before - len(self._quarantine)
 
     def existing_payloads(self, collection: str, ids: list[str]) -> dict[str, dict]:
         # Postgres 저장 형식(build_row)과 동일하게 exclude_none — upsert 비교 정규화.
@@ -278,6 +335,79 @@ class PostgresIngestWriter:
         )
         self._conn.commit()
 
+    def add_quarantine(self, entries: list[QuarantineEntry]) -> None:
+        with self._conn.cursor() as cur:
+            for entry in entries:
+                cur.execute(
+                    """
+                    INSERT INTO ingest_quarantine
+                        (id, batch_id, mapping_name, row_number, object_id,
+                         row_data, reason, status, created_at)
+                    VALUES (%s, %s, %s, %s, %s, %s::jsonb, %s, %s, %s)
+                    ON CONFLICT (id) DO NOTHING
+                    """,
+                    (
+                        entry.id,
+                        entry.batch_id,
+                        entry.mapping_name,
+                        entry.row_number,
+                        entry.object_id,
+                        json.dumps(entry.row_data, ensure_ascii=False),
+                        entry.reason,
+                        entry.status,
+                        entry.created_at,
+                    ),
+                )
+        self._conn.commit()
+
+    def list_quarantine(self, mapping_name: str | None = None) -> list[QuarantineEntry]:
+        sql = (
+            "SELECT id, batch_id, mapping_name, row_number, object_id, row_data,"
+            " reason, status, created_at FROM ingest_quarantine WHERE status = 'pending'"
+        )
+        params: tuple = ()
+        if mapping_name:
+            sql += " AND mapping_name = %s"
+            params = (mapping_name,)
+        sql += " ORDER BY mapping_name, created_at, row_number"
+        rows = self._conn.execute(sql, params).fetchall()
+        return [
+            QuarantineEntry(
+                id=row[0],
+                batch_id=row[1],
+                mapping_name=row[2],
+                row_number=row[3],
+                object_id=row[4],
+                row_data=row[5] if isinstance(row[5], dict) else {},
+                reason=row[6],
+                status=row[7],
+                created_at=(
+                    row[8].isoformat() if hasattr(row[8], "isoformat") else str(row[8])
+                ),
+            )
+            for row in rows
+        ]
+
+    def resolve_quarantine(self, mapping_name: str, object_ids: set[str]) -> int:
+        if not object_ids:
+            return 0
+        result = self._conn.execute(
+            """
+            UPDATE ingest_quarantine SET status = 'resolved'
+            WHERE status = 'pending' AND mapping_name = %s AND object_id = ANY(%s)
+            """,
+            (mapping_name, sorted(object_ids)),
+        )
+        self._conn.commit()
+        return result.rowcount or 0
+
+    def remove_quarantine_by_batch(self, batch_id: str) -> int:
+        result = self._conn.execute(
+            "DELETE FROM ingest_quarantine WHERE batch_id = %s", (batch_id,)
+        )
+        self._conn.commit()
+        return result.rowcount or 0
+
 
 class IngestService:
     def __init__(self, writer: IngestWriterProtocol) -> None:
@@ -403,6 +533,33 @@ class IngestService:
         if to_write:
             self._writer.add_objects(mapping.target_collection, to_write, batch_id)
 
+        # J1 2단계 보류 풀: 거부 행을 원본 그대로 저장(큐레이션 대기열) —
+        # 수용된 id와 같은 보류 행은 해소된다 (수정 후 재반입 루프의 자동 마감).
+        id_column = next(
+            (col for col, path in mapping.column_map.items() if path == "id"), None
+        )
+        rejected_numbers = {r.row_number: r.reason for r in rejected}
+        quarantine_entries = [
+            QuarantineEntry(
+                id=f"q_{batch_id}_{index}",
+                batch_id=batch_id,
+                mapping_name=mapping.name,
+                row_number=index,
+                object_id=(row.get(id_column) or "").strip() or None if id_column else None,
+                row_data={k: str(v) for k, v in row.items()},
+                reason=rejected_numbers[index],
+                created_at=now.isoformat(),
+            )
+            for index, row in enumerate(rows, start=1)
+            if index in rejected_numbers
+        ]
+        if quarantine_entries:
+            self._writer.add_quarantine(quarantine_entries)
+        if deduped:
+            self._writer.resolve_quarantine(
+                mapping.name, {obj.id for obj in deduped}
+            )
+
         batch = IngestBatch(
             id=batch_id,
             filename=source_name,
@@ -478,8 +635,12 @@ class IngestService:
 
     def rollback(self, batch_id: str) -> int:
         removed = self._writer.remove_batch(batch_id)
+        self._writer.remove_quarantine_by_batch(batch_id)  # 보류 행도 배치와 함께 제거
         self._writer.update_batch_status(batch_id, "rolled_back")
         return removed
 
     def list_batches(self) -> list[IngestBatch]:
         return self._writer.list_batches()
+
+    def list_quarantine(self, mapping_name: str | None = None) -> list[QuarantineEntry]:
+        return self._writer.list_quarantine(mapping_name)

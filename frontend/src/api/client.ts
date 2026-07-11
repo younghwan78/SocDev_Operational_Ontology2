@@ -248,6 +248,13 @@ export type IngestBatch = components["schemas"]["IngestBatch"];
 export type IngestReport = components["schemas"]["IngestReport"];
 export type IngestQualityReport = components["schemas"]["QualityReport"];
 export type IngestMappingInfo = components["schemas"]["IngestMappingInfo"];
+export type QuarantineEntry = components["schemas"]["QuarantineEntry"];
+
+export async function fetchIngestQuarantine(): Promise<QuarantineEntry[]> {
+  const { data, error } = await client.GET("/api/v1/ingest/quarantine");
+  if (error || !data) throw new Error("보류 행 조회 실패");
+  return data;
+}
 export type Decision = components["schemas"]["Decision"];
 
 export async function fetchIngestMappings(): Promise<IngestMappingInfo[]> {

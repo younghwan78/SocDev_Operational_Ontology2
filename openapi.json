@@ -3574,6 +3574,70 @@
         "title": "QualityReport",
         "type": "object"
       },
+      "QuarantineEntry": {
+        "additionalProperties": false,
+        "description": "보류 행 (J1 2단계) — 거부 행을 원본 열 값 그대로 저장해 큐레이션 대기열로.\n\n온톨로지 객체가 아니라 ingest 스테이징이다. 같은 매핑에서 같은 id의 행이\n나중에 수용되면 resolved로 해소되고, 원 배치 rollback 시 함께 제거된다.",
+        "properties": {
+          "batch_id": {
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "mapping_name": {
+            "title": "Mapping Name",
+            "type": "string"
+          },
+          "object_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Object Id"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "row_data": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Row Data",
+            "type": "object"
+          },
+          "row_number": {
+            "title": "Row Number",
+            "type": "integer"
+          },
+          "status": {
+            "default": "pending",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "batch_id",
+          "mapping_name",
+          "row_number",
+          "row_data",
+          "reason",
+          "created_at"
+        ],
+        "title": "QuarantineEntry",
+        "type": "object"
+      },
       "RCAChain": {
         "additionalProperties": false,
         "description": "이슈 RCA 파생 뷰 — 7단 세로 흐름 (저장하지 않음).",
@@ -6544,6 +6608,59 @@
           }
         },
         "summary": "List Ingest Mappings"
+      }
+    },
+    "/api/v1/ingest/quarantine": {
+      "get": {
+        "description": "보류 행 목록 (J1 2단계) — 거부 행의 큐레이션 대기열 (읽기 전용).\n\n수정용 CSV는 프론트가 원본 열 값으로 재구성한다. 같은 id의 행이 수용되면\n해소되고, 원 배치 rollback 시 함께 제거된다.",
+        "operationId": "list_ingest_quarantine_api_v1_ingest_quarantine_get",
+        "parameters": [
+          {
+            "description": "매핑 이름 필터",
+            "in": "query",
+            "name": "mapping",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "매핑 이름 필터",
+              "title": "Mapping"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/QuarantineEntry"
+                  },
+                  "title": "Response List Ingest Quarantine Api V1 Ingest Quarantine Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Ingest Quarantine"
       }
     },
     "/api/v1/issues": {
