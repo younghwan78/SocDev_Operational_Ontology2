@@ -94,6 +94,8 @@ class IssueSummary(BaseModel):
     title: str
     issue_type: str
     status: str
+    # 이슈 자체 심각도 (optional) — 목록의 우선순위 판단 보조 (I3).
+    severity: str | None = None
     project_id: str
     confidence: str
     scenario_ids: list[str] = Field(default_factory=list)
@@ -215,6 +217,7 @@ class RCAService:
                     title=issue.title,
                     issue_type=issue.issue_type,
                     status=issue.status,
+                    severity=issue.severity,
                     project_id=issue.project_id,
                     confidence=str(issue.confidence),
                     scenario_ids=issue.affected_scope.scenarios,

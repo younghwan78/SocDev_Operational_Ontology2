@@ -458,6 +458,15 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .rca-collapsed { padding-top: 10px; padding-bottom: 10px; }
 .rca-node.rca-red { background: color-mix(in srgb, var(--surface) 94%, #b42318); }
 
+/* I3: 이슈 목록 심각도 도트 — 목록 단계의 우선순위 판단 보조 */
+.sev-dot {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  margin-right: 6px; vertical-align: baseline; background: var(--border);
+}
+.sev-critical, .sev-high { background: var(--danger); }
+.sev-medium { background: var(--warn); }
+.sev-low, .sev-info { background: #98a2b3; }
+
 /* --- Stage 11: Ask SoC --- */
 .ask-form { display: flex; gap: 8px; margin-bottom: 10px; }
 .ask-input {

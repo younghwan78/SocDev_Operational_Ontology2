@@ -164,6 +164,8 @@ export const ko = {
     board_other: "기타",
     expand_all: "전체 펼치기",
     collapse_all: "전체 접기",
+    severity_label: "심각도",
+    scenario_count: "시나리오",
     week_prefix: "W",
   },
   risk: {

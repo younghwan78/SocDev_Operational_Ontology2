@@ -275,10 +275,20 @@ export function IssueAnalysisPage() {
                     {t.overdue_badge}
                   </span>
                 )}
-                <span className="title">{issue.title}</span>
+                <span className="title">
+                  {issue.severity && (
+                    <span
+                      className={`sev-dot sev-${issue.severity}`}
+                      title={`${t.severity_label}: ${valueLabel("severity", issue.severity)}`}
+                    />
+                  )}
+                  {issue.title}
+                </span>
                 <span className="desc" title={`${issue.issue_type} · ${issue.status}`}>
                   {valueLabel("issue_type", issue.issue_type)} · {t.status_label}:{" "}
                   {valueLabel("issue_status", issue.status)}
+                  {(issue.scenario_ids ?? []).length > 0 &&
+                    ` · ${t.scenario_count} ${(issue.scenario_ids ?? []).length}`}
                 </span>
               </button>
             )}

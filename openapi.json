@@ -2635,6 +2635,17 @@
             "title": "Scenario Ids",
             "type": "array"
           },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
           "stale": {
             "default": false,
             "title": "Stale",

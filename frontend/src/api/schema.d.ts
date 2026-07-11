@@ -1735,6 +1735,8 @@ export interface components {
             project_id: string;
             /** Scenario Ids */
             scenario_ids?: string[];
+            /** Severity */
+            severity?: string | null;
             /**
              * Stale
              * @default false
