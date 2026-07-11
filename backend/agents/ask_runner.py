@@ -364,12 +364,20 @@ class AskRunner:
             "아래 '수집된 객체' 목록만 근거로 사용해 질문에 한국어로 답하라.\n"
             "규칙: (1) citations에는 목록의 id만 넣는다 (2) 목록에 없는 사실을 지어내지 않는다 "
             "(3) 근거가 부족하면 confidence를 low/medium으로 낮추고 부족하다고 말한다 "
-            "(4) 결정을 내리지 말고 검토 관점을 제시한다.\n"
+            "(4) 결정을 내리지 말고 검토 관점을 제시한다 "
+            "(5) answer의 각 주장 문장 끝에 근거 객체 id를 대괄호로 표기한다 "
+            "(예: '... 스파이크 이력이 있다 [issue_x].') — 목록의 id만 사용.\n"
             f"질문: {question}\n"
             f"수집된 객체: {json.dumps(card_payload, ensure_ascii=False)}\n"
-            '출력(JSON만): {"answer": "한국어 답변", "citations": ["id", ...], '
+            '출력(JSON만): {"answer": "한국어 답변 (문장 끝 [id] 인용 마커)", '
+            '"citations": ["id", ...], '
             '"confidence": "low|medium|high", "derivation": "도출 과정 한 문장"}'
         )
+
+    @staticmethod
+    def _inline_citation_ids(answer: str) -> list[str]:
+        """답변 본문의 [id] 인용 마커 — 검증 관문과 프론트 각주 렌더링의 공통 계약."""
+        return re.findall(r"\[([a-z0-9_]+)\]", answer)
 
     def _parse(self, text: str) -> _ParsedAnswer:
         stripped = text.strip()
@@ -391,6 +399,10 @@ class AskRunner:
         unresolved = [c for c in parsed.citations if c not in card_ids]
         if unresolved:
             problems.append(f"수집된 객체 밖의 인용: {unresolved[:3]}")
+        # A2: 본문 인라인 마커도 같은 관문 — 카드 밖 id 마커는 거부한다.
+        bad_markers = [m for m in self._inline_citation_ids(parsed.answer) if m not in card_ids]
+        if bad_markers:
+            problems.append(f"본문 인용 마커가 수집된 객체 밖: {bad_markers[:3]}")
         if parsed.confidence not in ("low", "medium", "high"):
             problems.append(f"confidence 값 위반: {parsed.confidence}")
         if parsed.confidence == "high" and len([c for c in parsed.citations if c in card_ids]) < 2:
@@ -446,7 +458,13 @@ class AskRunner:
                 if problems:
                     notes.append(f"{provider.name}: 검증 거부 — {'; '.join(problems[:3])}")
                     continue
-                parsed = candidate
+                # 본문 마커 인용을 citations에 합류 — 목록과 본문이 어긋나지 않게.
+                inline = [
+                    m for m in self._inline_citation_ids(candidate.answer) if m in card_ids
+                ]
+                parsed = candidate.model_copy(
+                    update={"citations": list(dict.fromkeys(candidate.citations + inline))}
+                )
                 provider_name = result.provider
                 model_name = result.model_name
                 break

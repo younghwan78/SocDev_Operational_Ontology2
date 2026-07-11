@@ -147,3 +147,34 @@ def test_korean_domain_terms_bridge_to_english(deterministic_runner) -> None:
 def test_unmatched_terms_reported(deterministic_runner) -> None:
     result = deterministic_runner.ask("magicfoo 관련 전력 이슈?")
     assert "magicfoo" in result.unmatched_terms
+
+
+def test_inline_marker_outside_cards_rejected(repo) -> None:
+    """A2 — 본문 [id] 마커가 수집 목록 밖이면 검증 관문이 거부한다."""
+    cards, _ = AskRunner(repo, providers=[])._search("UHD60 recording 위험")
+    payload = {
+        "answer": "이 시나리오는 위험합니다 [fabricated_object_id]. 길이는 충분히 확보되어 있습니다.",
+        "citations": [cards[0].ref_id],
+        "confidence": "medium",
+        "derivation": "본문 마커 위조",
+    }
+    runner = AskRunner(repo, providers=[FakeProvider(payload)])
+    result = runner.ask("UHD60 recording 위험")
+    assert result.provider == "deterministic"
+    assert any("본문 인용 마커" in note for note in result.validation_notes)
+
+
+def test_inline_markers_merged_into_citations(repo) -> None:
+    """A2 — 본문 마커가 citations 목록에 합류한다 (본문·목록 불일치 방지)."""
+    cards, _ = AskRunner(repo, providers=[])._search("UHD60 recording 위험")
+    first, second = cards[0].ref_id, cards[1].ref_id
+    payload = {
+        "answer": f"첫 근거에서 위험이 확인됩니다 [{first}]. 두 번째 근거도 이를 뒷받침합니다 [{second}].",
+        "citations": [first],  # 목록에는 하나만 — 본문 마커가 보충
+        "confidence": "medium",
+        "derivation": "테스트",
+    }
+    runner = AskRunner(repo, providers=[FakeProvider(payload)])
+    result = runner.ask("UHD60 recording 위험")
+    assert result.provider == "fake"
+    assert result.citations == [first, second]
