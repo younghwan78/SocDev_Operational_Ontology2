@@ -528,6 +528,18 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 
 /* 출처 지도 — origin 세그먼트 막대 */
 .source-collection-list { display: flex; flex-direction: column; gap: 12px; }
+/* E5: 컬렉션 한 줄 행 — 제목 | 막대 | 건수 */
+.source-collection-list:has(.source-row) { gap: 4px; }
+.source-row { display: flex; align-items: center; gap: 10px; padding: 2px 0; }
+.source-name {
+  flex: none; width: 180px; font-size: 12.5px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.source-row .origin-compact { flex: 1; margin-top: 0; }
+.source-count {
+  flex: none; width: 40px; text-align: right; font-size: 12.5px;
+  color: var(--text-dim); font-variant-numeric: tabular-nums;
+}
 .origin-bar { margin-top: 6px; }
 .origin-track {
   display: flex; height: 10px; border-radius: 5px; overflow: hidden;

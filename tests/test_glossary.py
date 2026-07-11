@@ -56,6 +56,7 @@ def test_value_labels_cover_all_fixture_values() -> None:
     domain_fields = [
         ("project_phase", "projects", "phase"),
         ("scenario_domain", "scenarios", "domain"),
+        ("ip_domain", "ip_blocks", "domain"),
         ("ip_category", "ip_blocks", "category"),
         ("issue_status", "issues", "status"),
         ("issue_type", "issues", "issue_type"),

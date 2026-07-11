@@ -410,6 +410,7 @@ export const ko = {
     without_ref: "계보 미기재",
     without_ref_hint: "출처 참조(ref)가 없는 객체 — 가상 데이터는 정상, 실데이터는 보완 대상",
     by_collection: "컬렉션별 출처",
+    by_collection_note: "건수 내림차순 — 막대에 마우스를 올리면 출처별 건수가 표시됩니다",
     col_collection: "컬렉션",
     col_total: "전체",
     real_data: "실데이터",

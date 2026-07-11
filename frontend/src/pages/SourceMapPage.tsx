@@ -1,3 +1,7 @@
+/**
+ * 출처 지도 — E5 폴리싱: 상단 상황판, 컬렉션 밀도 개선(단일 막대·건수순 정렬·
+ * 범례 1회), IP 별칭 도메인 한국어화.
+ */
 import { useQuery } from "@tanstack/react-query";
 import {
   fetchEntityResolution,
@@ -7,6 +11,7 @@ import {
   type UnmatchedToken,
 } from "../api/client";
 import { useLabels } from "../hooks/useLabels";
+import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.source_map;
@@ -15,26 +20,43 @@ export function SourceMapPage() {
   const query = useQuery({ queryKey: ["source-map"], queryFn: fetchSourceMap });
   const entity = useQuery({ queryKey: ["entity-resolution"], queryFn: fetchEntityResolution });
   const label = useLabels();
+  const valueLabel = useValueLabels();
 
   if (query.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (query.isError) return <p className="status-msg">{ko.app.error}</p>;
 
   const { collections, totals } = query.data;
   const realTotal = totals.imported + totals.integrated;
+  const sorted = [...collections].sort((a, b) => b.total - a.total);
 
   return (
     <div>
       <h1>{t.title}</h1>
       <p className="section-note">{t.subtitle}</p>
 
+      {/* E5 상황판 — 전체/합성/반입/연동 */}
+      <div className="stat-strip">
+        <span className="stat">
+          <b>{totals.total}</b>
+          <span>{t.total}</span>
+        </span>
+        <span className="stat">
+          <b>{totals.synthetic}</b>
+          <span>{t.origin_synthetic}</span>
+        </span>
+        <span className="stat">
+          <b>{totals.imported}</b>
+          <span>{t.origin_imported}</span>
+        </span>
+        <span className="stat">
+          <b>{totals.integrated}</b>
+          <span>{t.origin_integrated}</span>
+        </span>
+      </div>
+
       <div className="card">
         <h2 className="card-title">{t.total_summary}</h2>
-        <dl className="kv">
-          <dt>{t.total}</dt>
-          <dd>{totals.total}</dd>
-          <dt>{t.real_data}</dt>
-          <dd>{totals.real_data_note}</dd>
-        </dl>
+        <p className="desc">{totals.real_data_note}</p>
         <OriginBar
           synthetic={totals.synthetic}
           imported={totals.imported}
@@ -45,9 +67,12 @@ export function SourceMapPage() {
       </div>
 
       <div className="card">
-        <h2 className="card-title">{t.by_collection}</h2>
+        <h2 className="card-title">
+          {t.by_collection} ({sorted.length})
+        </h2>
+        <p className="section-note">{t.by_collection_note}</p>
         <div className="source-collection-list">
-          {collections.map((c) => (
+          {sorted.map((c) => (
             <CollectionRow key={c.collection} coverage={c} />
           ))}
         </div>
@@ -63,7 +88,12 @@ export function SourceMapPage() {
             <h3 className="subhead">{t.alias_table}</h3>
             <div className="source-collection-list">
               {entity.data.aliases.map((a) => (
-                <AliasRow key={a.ip_id} entry={a} name={label(a.ip_id)} />
+                <AliasRow
+                  key={a.ip_id}
+                  entry={a}
+                  name={label(a.ip_id)}
+                  domainLabel={valueLabel("ip_domain", a.domain)}
+                />
               ))}
             </div>
             <h3 className="subhead">{t.unmatched_queue}</h3>
@@ -84,13 +114,21 @@ export function SourceMapPage() {
   );
 }
 
-function AliasRow({ entry, name }: { entry: AliasEntry; name: string }) {
+function AliasRow({
+  entry,
+  name,
+  domainLabel,
+}: {
+  entry: AliasEntry;
+  name: string;
+  domainLabel: string;
+}) {
   return (
     <div className="list-item" title={entry.ip_id}>
       <div className="head">
         <span className="title">{name}</span>
-        <span className="chip">
-          {t.alias_domain}: {entry.domain}
+        <span className="chip" title={entry.domain}>
+          {t.alias_domain}: {domainLabel}
         </span>
       </div>
       <p className="desc">
@@ -112,29 +150,24 @@ function UnmatchedChip({ token }: { token: UnmatchedToken }) {
   );
 }
 
+/** E5 밀도: 컬렉션 행은 한 줄(제목 | 막대 | 건수) — 범례는 상단 요약에 1회. */
 function CollectionRow({ coverage }: { coverage: CollectionCoverage }) {
   return (
-    <div className="list-item" title={coverage.collection}>
-      <div className="head">
-        <span className="title">{coverage.collection_ko}</span>
-        <span className="chip">
-          {t.col_total} {coverage.total}
-        </span>
-        {coverage.without_ref > 0 && (
-          <span
-            className="badge badge-warn"
-            title={t.without_ref_hint}
-          >
-            {t.without_ref} {coverage.without_ref}
-          </span>
-        )}
-      </div>
+    <div className="source-row" title={coverage.collection}>
+      <span className="source-name">{coverage.collection_ko}</span>
       <OriginBar
         synthetic={coverage.synthetic}
         imported={coverage.imported}
         integrated={coverage.integrated}
         total={coverage.total}
+        compact
       />
+      <span className="source-count">{coverage.total}</span>
+      {coverage.without_ref > 0 && (
+        <span className="badge badge-warn" title={t.without_ref_hint}>
+          {t.without_ref} {coverage.without_ref}
+        </span>
+      )}
     </div>
   );
 }
@@ -144,15 +177,23 @@ function OriginBar({
   imported,
   integrated,
   total,
+  compact = false,
 }: {
   synthetic: number;
   imported: number;
   integrated: number;
   total: number;
+  compact?: boolean;
 }) {
   const pct = (n: number) => (total > 0 ? (n / total) * 100 : 0);
+  const summary = `${t.origin_synthetic} ${synthetic}, ${t.origin_imported} ${imported}, ${t.origin_integrated} ${integrated}`;
   return (
-    <div className="origin-bar" role="img" aria-label={`${t.origin_synthetic} ${synthetic}, ${t.origin_imported} ${imported}, ${t.origin_integrated} ${integrated}`}>
+    <div
+      className={`origin-bar ${compact ? "origin-compact" : ""}`}
+      role="img"
+      aria-label={summary}
+      title={compact ? summary : undefined}
+    >
       <div className="origin-track">
         {synthetic > 0 && (
           <span className="origin-seg origin-synthetic" style={{ width: `${pct(synthetic)}%` }} />
@@ -164,17 +205,19 @@ function OriginBar({
           <span className="origin-seg origin-integrated" style={{ width: `${pct(integrated)}%` }} />
         )}
       </div>
-      <div className="origin-legend">
-        <span className="origin-key">
-          <span className="origin-dot origin-synthetic" /> {t.origin_synthetic} {synthetic}
-        </span>
-        <span className="origin-key">
-          <span className="origin-dot origin-imported" /> {t.origin_imported} {imported}
-        </span>
-        <span className="origin-key">
-          <span className="origin-dot origin-integrated" /> {t.origin_integrated} {integrated}
-        </span>
-      </div>
+      {!compact && (
+        <div className="origin-legend">
+          <span className="origin-key">
+            <span className="origin-dot origin-synthetic" /> {t.origin_synthetic} {synthetic}
+          </span>
+          <span className="origin-key">
+            <span className="origin-dot origin-imported" /> {t.origin_imported} {imported}
+          </span>
+          <span className="origin-key">
+            <span className="origin-dot origin-integrated" /> {t.origin_integrated} {integrated}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
