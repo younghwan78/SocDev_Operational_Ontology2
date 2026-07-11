@@ -4,7 +4,7 @@
  * 역할별 검토 체크리스트) + 과거 유사 사례. 결정론 결과만 표시하며 모든 항목에 근거가 붙는다.
  */
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   fetchChangeImpact,
@@ -16,6 +16,8 @@ import {
   type SimilarCase,
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
+import { ImpactFlow, type FlowNodeId } from "../components/ImpactFlow";
+import { SplitHandle, useSidePanelWidth } from "../components/SplitLayout";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
 import { Busy } from "../components/Busy";
@@ -199,9 +201,9 @@ export function ChangeImpactPage() {
 /** G2: 계기판 요약 스트립 — 규모를 먼저 보여주고, 클릭하면 해당 섹션으로 이동. */
 function StatStrip({ result }: { result: ChangeImpactResult }) {
   const stats = [
-    { id: "ci-scenarios", label: t.quadrant_scenarios, count: result.impacted_scenarios.length },
-    { id: "ci-kpis", label: t.quadrant_kpis, count: result.impacted_kpis.length },
-    { id: "ci-chained", label: t.quadrant_chained, count: result.chained_ips.length },
+    { id: "ci-flow", label: t.quadrant_scenarios, count: result.impacted_scenarios.length },
+    { id: "ci-flow", label: t.quadrant_kpis, count: result.impacted_kpis.length },
+    { id: "ci-flow", label: t.quadrant_chained, count: result.chained_ips.length },
     { id: "ci-checklist", label: t.stat_roles, count: result.checklist.length },
     { id: "ci-similar", label: t.similar_cases, count: result.similar_cases.length },
   ];
@@ -209,7 +211,7 @@ function StatStrip({ result }: { result: ChangeImpactResult }) {
     <div className="stat-strip">
       {stats.map((stat) => (
         <button
-          key={stat.id}
+          key={stat.label}
           type="button"
           className="stat"
           onClick={() =>
@@ -229,6 +231,20 @@ function StatStrip({ result }: { result: ChangeImpactResult }) {
 function ImpactResult({ result }: { result: ChangeImpactResult }) {
   const label = useLabels();
   const valueLabel = useValueLabels();
+  // 노드 선택도 URL 상태 — 분석+선택 상태를 링크로 공유·재현.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedNode = searchParams.get("node");
+  const setSelectedNode = (id: FlowNodeId | null) =>
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+        if (id) next.set("node", id);
+        else next.delete("node");
+        return next;
+      },
+      { replace: true },
+    );
+  const sidePanel = useSidePanelWidth("ci-side-width");
   const { subject } = result;
   return (
     <div>
@@ -260,83 +276,43 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
 
       <StatStrip result={result} />
 
-      <div className="quadrant-grid">
-        <div className="card" id="ci-scenarios">
-          <h2 className="card-title">
-            {t.quadrant_scenarios} ({result.impacted_scenarios.length})
-          </h2>
-          {result.impacted_scenarios.length === 0 && <p className="desc">{t.no_items}</p>}
-          <CollapsibleList
-            items={result.impacted_scenarios}
-            limit={5}
-            render={(scenario) => (
-              <div key={scenario.scenario_id} className="list-item">
-                <div className="head">
-                  <Link
-                    to={`/scenarios/${scenario.scenario_id}/overview`}
-                    className="chip-link"
-                    title={scenario.scenario_id}
-                  >
-                    {scenario.scenario_name}
-                  </Link>
-                </div>
-                {scenario.reasons.map((reason: BasisItem, index: number) => (
-                  <p key={index} className="desc" title={reason.ref_id}>
-                    <span className="badge badge-info">{reason.rule_ko}</span>{" "}
-                    {reason.description}
-                  </p>
-                ))}
-              </div>
-            )}
+      {/* G1: 영향 전파 지도 + 근거 패널 — 위험 지도와 동일한 상호작용 문법 */}
+      <div
+        className="risk-layout risk-layout-split"
+        style={{ "--side-w": `${sidePanel.width}px` } as CSSProperties}
+      >
+        <div className="card" id="ci-flow">
+          <div className="head">
+            <h2 className="card-title">{t.flow_title}</h2>
+            <span className="section-note">{t.flow_hint}</span>
+          </div>
+          <ImpactFlow
+            result={result}
+            label={label}
+            selected={selectedNode}
+            onSelect={setSelectedNode}
           />
         </div>
-
-        <div className="card" id="ci-kpis">
-          <h2 className="card-title">
-            {t.quadrant_kpis} ({result.impacted_kpis.length})
-          </h2>
-          {result.impacted_kpis.length === 0 && <p className="desc">{t.no_items}</p>}
-          <div className="chip-row">
-            {result.impacted_kpis.map((kpi) => (
-              <span
-                key={kpi.kpi_id}
-                className={`chip ${kpi.via_knob ? "chip-knob" : ""}`}
-                title={
-                  (kpi.via_knob ? `${t.via_knob} · ` : "") +
-                  (kpi.unit ? `${t.unit}: ${kpi.unit}` : kpi.kpi_id)
-                }
-              >
-                {kpi.kpi_id}
-                {kpi.via_knob ? " ★" : ""}
-              </span>
-            ))}
-          </div>
+        <SplitHandle
+          width={sidePanel.width}
+          onResize={sidePanel.update}
+          onReset={sidePanel.reset}
+          label={ko.risk.panel_resize}
+        />
+        <div className="risk-side">
+          <ImpactBasisPanel
+            result={result}
+            nodeId={selectedNode}
+            label={label}
+            onSelect={setSelectedNode}
+          />
         </div>
-
-        <div className="card" id="ci-chained">
-          <h2 className="card-title">
-            {t.quadrant_chained} ({result.chained_ips.length})
-          </h2>
-          {result.chained_ips.length === 0 && <p className="desc">{t.no_items}</p>}
-          {result.chained_ips.map((chained) => (
-            <div key={chained.rule_id} className="list-item">
-              <div className="head">
-                <span className="title" title={chained.ip_id}>
-                  {chained.ip_name}
-                </span>
-                <span className="badge badge-warn">{chained.direction_ko}</span>
-              </div>
-              <p className="desc" title={chained.rule_id}>
-                {t.condition}: {chained.condition} — {chained.rationale}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <ChecklistCard checklist={result.checklist} exportText={result.export_text} />
       </div>
 
-      <div className="card" id="ci-similar">
+      <div className="quadrant-grid">
+        <ChecklistCard checklist={result.checklist} exportText={result.export_text} />
+
+        <div className="card" id="ci-similar">
         <h2 className="card-title">
           {t.similar_cases} ({result.similar_cases.length})
         </h2>
@@ -378,7 +354,179 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
             </div>
           )}
         />
+        </div>
       </div>
+    </div>
+  );
+}
+
+/** G1: 노드 상세/근거 패널 — 그래프 선택에 따라 시나리오·KPI·연쇄 IP·대상 상세를 보인다. */
+function ImpactBasisPanel({
+  result,
+  nodeId,
+  label,
+  onSelect,
+}: {
+  result: ChangeImpactResult;
+  nodeId: FlowNodeId | null;
+  label: (id: string) => string;
+  onSelect: (id: FlowNodeId | null) => void;
+}) {
+  const confidenceLabel: Record<string, string> = {
+    high: ko.risk.grade_high,
+    medium: ko.risk.grade_medium,
+    low: ko.risk.grade_low,
+  };
+
+  const kpiChip = (kpiId: string, viaKnob: boolean) => (
+    <button
+      key={kpiId}
+      type="button"
+      className={`chip chip-btn ${viaKnob ? "chip-knob" : ""}`}
+      title={kpiId}
+      onClick={() => onSelect(`kpi:${kpiId}`)}
+    >
+      {label(kpiId)}
+      {viaKnob ? " ★" : ""}
+    </button>
+  );
+
+  let body: ReactNode = <p className="desc">{t.panel_pick}</p>;
+
+  if (nodeId === "subject") {
+    body = (
+      <div>
+        <div className="head">
+          <span className="title" title={result.subject.ip_id}>
+            {result.subject.summary}
+          </span>
+        </div>
+        <p className="subhead">
+          {t.panel_all_scenarios} ({result.impacted_scenarios.length})
+        </p>
+        <div className="chip-row">
+          {result.impacted_scenarios.map((scenario) => (
+            <button
+              key={scenario.scenario_id}
+              type="button"
+              className="chip chip-btn"
+              title={scenario.scenario_id}
+              onClick={() => onSelect(`sc:${scenario.scenario_id}`)}
+            >
+              {scenario.scenario_name}
+            </button>
+          ))}
+        </div>
+        <p className="subhead">
+          {t.panel_all_kpis} ({result.impacted_kpis.length})
+        </p>
+        <div className="chip-row">
+          {result.impacted_kpis.map((kpi) => kpiChip(kpi.kpi_id, kpi.via_knob ?? false))}
+        </div>
+      </div>
+    );
+  } else if (nodeId?.startsWith("sc:")) {
+    const scenario = result.impacted_scenarios.find(
+      (candidate) => candidate.scenario_id === nodeId.slice(3),
+    );
+    if (scenario) {
+      body = (
+        <div>
+          <div className="head">
+            <span className="title" title={scenario.scenario_id}>
+              {scenario.scenario_name}
+            </span>
+          </div>
+          {scenario.reasons.map((reason: BasisItem, index: number) => (
+            <p key={index} className="desc" title={reason.ref_id}>
+              <span className="badge badge-info">{reason.rule_ko}</span> {reason.description}
+            </p>
+          ))}
+          {(scenario.kpi_ids ?? []).length > 0 && (
+            <>
+              <p className="subhead">{t.panel_kpis}</p>
+              <div className="chip-row">
+                {(scenario.kpi_ids ?? []).map((kpiId) => kpiChip(kpiId, false))}
+              </div>
+            </>
+          )}
+          <Link
+            to={`/scenarios/${scenario.scenario_id}/overview`}
+            className="chip-link"
+            title={scenario.scenario_id}
+          >
+            {ko.risk.open_scenario}
+          </Link>
+        </div>
+      );
+    }
+  } else if (nodeId?.startsWith("kpi:")) {
+    const kpi = result.impacted_kpis.find((candidate) => candidate.kpi_id === nodeId.slice(4));
+    if (kpi) {
+      body = (
+        <div>
+          <div className="head">
+            <span className="title" title={kpi.kpi_id}>
+              {label(kpi.kpi_id)}
+            </span>
+            {kpi.via_knob && <span className="badge badge-warn">{t.via_knob}</span>}
+            {kpi.unit && (
+              <span className="badge badge-info">
+                {t.unit}: {kpi.unit}
+              </span>
+            )}
+          </div>
+          {(kpi.scenario_ids ?? []).length > 0 && (
+            <>
+              <p className="subhead">{t.panel_scenarios}</p>
+              <div className="chip-row">
+                {(kpi.scenario_ids ?? []).map((scenarioId) => (
+                  <button
+                    key={scenarioId}
+                    type="button"
+                    className="chip chip-btn"
+                    title={scenarioId}
+                    onClick={() => onSelect(`sc:${scenarioId}`)}
+                  >
+                    {label(scenarioId)}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+  } else if (nodeId?.startsWith("dep:")) {
+    const dep = result.chained_ips.find((candidate) => candidate.rule_id === nodeId.slice(4));
+    if (dep) {
+      body = (
+        <div>
+          <div className="head">
+            <span className="title" title={dep.ip_id}>
+              {dep.ip_name}
+            </span>
+            <span className="badge badge-warn">{dep.direction_ko}</span>
+          </div>
+          <p className="desc" title={dep.rule_id}>
+            {t.condition}: {dep.condition}
+          </p>
+          <p className="desc">{dep.rationale}</p>
+          <p className="desc" title={dep.relationship}>
+            {t.dep_confidence}:{" "}
+            <span className="badge badge-info">
+              {confidenceLabel[dep.confidence] ?? dep.confidence}
+            </span>
+          </p>
+        </div>
+      );
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2 className="card-title">{t.panel_title}</h2>
+      {body}
     </div>
   );
 }

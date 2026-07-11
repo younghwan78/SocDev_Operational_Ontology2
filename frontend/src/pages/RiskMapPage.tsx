@@ -3,12 +3,7 @@
  * 행=시나리오, 열=IP/시스템 블록, 셀=정성 등급(●◐○). 모든 등급은 근거 패널로 drill-down.
  */
 import { useQuery } from "@tanstack/react-query";
-import {
-  useCallback,
-  useState,
-  type CSSProperties,
-  type PointerEvent as ReactPointerEvent,
-} from "react";
+import { useState, type CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   fetchProjects,
@@ -20,6 +15,7 @@ import {
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
 import { PostureChip } from "../components/PostureChip";
+import { SplitHandle, useSidePanelWidth } from "../components/SplitLayout";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
@@ -58,74 +54,6 @@ const CAT_CLASS: Record<string, string> = {
   system_influence_block: "cat-sys",
 };
 
-// 사이드 패널 폭 — 드래그/키보드로 조절, localStorage에 유지.
-const SIDE_WIDTH_KEY = "risk-side-width";
-const SIDE_WIDTH_DEFAULT = 400;
-const SIDE_WIDTH_MIN = 300;
-const SIDE_WIDTH_MAX = 680;
-const clampSideWidth = (value: number) =>
-  Math.min(SIDE_WIDTH_MAX, Math.max(SIDE_WIDTH_MIN, value));
-
-function useSidePanelWidth() {
-  const [width, setWidth] = useState(() => {
-    const saved = Number(window.localStorage.getItem(SIDE_WIDTH_KEY));
-    return Number.isFinite(saved) && saved > 0 ? clampSideWidth(saved) : SIDE_WIDTH_DEFAULT;
-  });
-  const update = useCallback((next: number) => {
-    const clamped = clampSideWidth(next);
-    setWidth(clamped);
-    window.localStorage.setItem(SIDE_WIDTH_KEY, String(clamped));
-    return clamped;
-  }, []);
-  const reset = useCallback(() => update(SIDE_WIDTH_DEFAULT), [update]);
-  return { width, update, reset };
-}
-
-function SplitHandle({
-  width,
-  onResize,
-  onReset,
-}: {
-  width: number;
-  onResize: (next: number) => void;
-  onReset: () => void;
-}) {
-  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    const startX = event.clientX;
-    const startWidth = width;
-    const target = event.currentTarget;
-    const onMove = (move: PointerEvent) => onResize(startWidth + (startX - move.clientX));
-    const onUp = () => {
-      target.removeEventListener("pointermove", onMove);
-      target.removeEventListener("pointerup", onUp);
-    };
-    target.addEventListener("pointermove", onMove);
-    target.addEventListener("pointerup", onUp);
-  };
-  return (
-    <div
-      className="split-handle"
-      role="separator"
-      aria-orientation="vertical"
-      aria-label={t.panel_resize}
-      aria-valuenow={width}
-      aria-valuemin={SIDE_WIDTH_MIN}
-      aria-valuemax={SIDE_WIDTH_MAX}
-      tabIndex={0}
-      title={t.panel_resize}
-      onPointerDown={onPointerDown}
-      onDoubleClick={onReset}
-      onKeyDown={(event) => {
-        if (event.key === "ArrowLeft") onResize(width + 16);
-        else if (event.key === "ArrowRight") onResize(width - 16);
-        else return;
-        event.preventDefault();
-      }}
-    />
-  );
-}
 
 export function RiskMapPage() {
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
@@ -164,7 +92,7 @@ export function RiskMapPage() {
   const navigate = useNavigate();
   const label = useLabels();
   const valueLabel = useValueLabels();
-  const sidePanel = useSidePanelWidth();
+  const sidePanel = useSidePanelWidth("risk-side-width");
 
   if (projects.isPending || heatmap.isPending)
     return <p className="status-msg">{ko.app.loading}</p>;
@@ -313,6 +241,7 @@ export function RiskMapPage() {
           width={sidePanel.width}
           onResize={sidePanel.update}
           onReset={sidePanel.reset}
+          label={t.panel_resize}
         />
         <div className="risk-side">
           <BasisPanel row={selectedRow} selection={selection} label={label} />

@@ -165,6 +165,16 @@ describe("ChangeImpactPage", () => {
     expect(screen.getByText("UHD60 EIS 전력 격차")).toBeInTheDocument();
   });
 
+  it("그래프 노드 클릭 시 근거 패널에 상세가 표시된다", async () => {
+    await runAnalysis();
+    // 시나리오 노드 → 근거(rule 배지 + 서술)
+    fireEvent.click(screen.getByRole("button", { name: /영향 시나리오: UHD60 녹화/ }));
+    expect(screen.getByText("knob 'pixel_mode'의 관련 시나리오로 명시됨")).toBeInTheDocument();
+    // 연쇄 IP 노드 → 의존 조건
+    fireEvent.click(screen.getByRole("button", { name: /연쇄 IP: MIF \/ Memory/ }));
+    expect(screen.getByText(/픽셀 모드가 높을수록 대역폭 수요 증가/)).toBeInTheDocument();
+  });
+
   it("체크리스트 복사 버튼이 export 텍스트를 클립보드에 쓴다", async () => {
     const writeText = vi.fn(() => Promise.resolve());
     Object.assign(navigator, { clipboard: { writeText } });

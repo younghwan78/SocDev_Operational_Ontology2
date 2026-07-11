@@ -262,6 +262,64 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .q-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .query-sentence .run-btn { margin-left: 8px; }
 
+/* G1: 영향 전파 지도 — 절대 배치 노드 + SVG 간선 (간선 = 근거 규칙) */
+.flow-canvas { position: relative; width: 100%; overflow: hidden; }
+.flow-edges { position: absolute; inset: 0; pointer-events: none; }
+.flow-edge { fill: none; stroke-width: 1.6; opacity: 0.75; transition: opacity 0.15s; }
+.edge-req { stroke: var(--accent); }
+.edge-knob { stroke: var(--warn); }
+.edge-uses { stroke: #8b98a9; }
+.edge-kpi { stroke: var(--border); stroke-width: 1.2; }
+.edge-viaknob { stroke: var(--warn); stroke-dasharray: 5 4; }
+.edge-dep { stroke: #8b98a9; }
+.flow-arrow-head { fill: #8b98a9; }
+.edge-dim { opacity: 0.12; }
+
+.flow-col-head {
+  position: absolute; top: 4px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.05em; color: var(--text-dim); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.flow-node {
+  position: absolute; display: flex; align-items: center; gap: 6px;
+  padding: 0 10px; border-radius: 9px; cursor: pointer; font: inherit;
+  font-size: 12.5px; font-weight: 600; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border);
+  box-shadow: var(--shadow-card); transition: opacity 0.15s, border-color 0.15s;
+}
+.flow-node:hover { border-color: var(--accent); }
+.flow-node .flow-label {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+  text-align: left; flex: 1;
+}
+.flow-node .flow-meta {
+  flex: none; font-size: 11px; color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.flow-subject {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+  font-weight: 700; font-size: 13px;
+}
+.flow-subject .flow-meta { color: rgba(255, 255, 255, 0.8); }
+.flow-subject:hover { border-color: var(--text); }
+.flow-scenario { border-left: 3px solid var(--accent); }
+.flow-kpi { border-left: 3px solid var(--warn); background: var(--bg); }
+.flow-dep { border-left: 3px solid #8b98a9; background: var(--bg); }
+.flow-selected { outline: 2px solid var(--accent); outline-offset: 2px; }
+.flow-dim { opacity: 0.25; }
+
+.flow-legend {
+  display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px;
+  font-size: 11.5px; color: var(--text-dim);
+}
+.flow-legend .lg { display: inline-flex; align-items: center; gap: 5px; }
+.flow-legend .lg::before { content: ""; width: 16px; height: 0; border-top: 2px solid; }
+.lg-req::before { border-color: var(--accent); }
+.lg-knob::before { border-color: var(--warn); }
+.lg-uses::before { border-color: #8b98a9; }
+.lg-viaknob::before { border-color: var(--warn); border-top-style: dashed; }
+.lg-dep::before { border-color: #8b98a9; }
+
 /* G2: 계기판 요약 스트립 — 규모 우선, 클릭=해당 섹션 이동 */
 .stat-strip { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
 .stat {

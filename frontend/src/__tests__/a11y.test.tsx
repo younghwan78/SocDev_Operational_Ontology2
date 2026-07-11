@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AskPage } from "../pages/AskPage";
+import { ChangeImpactPage } from "../pages/ChangeImpactPage";
 import { IngestPage } from "../pages/IngestPage";
 import { IssueAnalysisPage } from "../pages/IssueAnalysisPage";
 
@@ -27,6 +28,19 @@ function stubApi() {
       if (url.includes("/meta/labels")) return jsonResponse({});
       if (url.includes("/meta/glossary"))
         return jsonResponse({ objects: {}, fields: {}, enums: {}, value_labels: {} });
+      if (url.includes("/change-impact/options"))
+        return jsonResponse({
+          ips: [
+            {
+              ip_id: "ip_isp",
+              ip_name: "ISP",
+              category: "functional_mm_ip",
+              knobs: [],
+              capabilities: [],
+              modes: [],
+            },
+          ],
+        });
       if (url.includes("/ingest/mappings"))
         return jsonResponse([
           {
@@ -91,5 +105,8 @@ describe("접근성 smoke (serious/critical 0)", () => {
   });
   it("데이터 반입", async () => {
     await expectNoSeriousViolations(<IngestPage />);
+  });
+  it("변경 영향 (질의 빌더)", async () => {
+    await expectNoSeriousViolations(<ChangeImpactPage />);
   });
 });
