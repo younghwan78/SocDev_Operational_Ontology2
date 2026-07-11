@@ -185,8 +185,22 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .legend span { font-size: 13px; }
 
 .risk-layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 14px; align-items: start; }
-@media (max-width: 1100px) { .risk-layout { grid-template-columns: 1fr; } }
-.risk-side { display: flex; flex-direction: column; gap: 0; }
+/* 스플리터 — 사이드 패널 폭은 CSS 변수(--side-w)로 조절 (드래그/키보드, localStorage 유지) */
+.risk-layout-split { grid-template-columns: minmax(0, 1fr) 8px var(--side-w, 400px); gap: 8px; }
+.split-handle {
+  align-self: stretch; width: 8px; cursor: col-resize; border-radius: 4px;
+  position: relative; touch-action: none;
+}
+.split-handle::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 3px; width: 2px;
+  border-radius: 1px; background: var(--border);
+}
+.split-handle:hover::before, .split-handle:focus-visible::before { background: var(--accent); }
+@media (max-width: 1100px) {
+  .risk-layout, .risk-layout-split { grid-template-columns: 1fr; }
+  .split-handle { display: none; }
+}
+.risk-side { display: flex; flex-direction: column; gap: 0; min-width: 0; }
 
 .heatmap-card { padding: 8px; }
 .heatmap-scroll { overflow-x: auto; }

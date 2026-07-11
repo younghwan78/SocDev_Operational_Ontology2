@@ -69,6 +69,7 @@ function jsonResponse(body: unknown): Response {
 }
 
 beforeEach(() => {
+  window.localStorage.clear();
   vi.stubGlobal(
     "fetch",
     vi.fn((input: Request) => {
@@ -122,6 +123,16 @@ describe("RiskMapPage", () => {
     expect(
       screen.getByText("미해결 이슈 'UHD60 전력 초과' — 증상: 전력 예산 초과"),
     ).toBeInTheDocument();
+  });
+
+  it("사이드 패널 폭을 키보드로 조절하고 localStorage에 유지한다", async () => {
+    renderPage();
+    await screen.findAllByText("UHD60 녹화 (EIS)");
+    const handle = screen.getByRole("separator");
+    expect(handle).toHaveAttribute("aria-valuenow", "400");
+    fireEvent.keyDown(handle, { key: "ArrowLeft" });
+    expect(handle).toHaveAttribute("aria-valuenow", "416");
+    expect(window.localStorage.getItem("risk-side-width")).toBe("416");
   });
 
   it("내부 ID를 화면 텍스트로 노출하지 않는다 (hover 제외)", async () => {

@@ -3,7 +3,12 @@
  * 행=시나리오, 열=IP/시스템 블록, 셀=정성 등급(●◐○). 모든 등급은 근거 패널로 drill-down.
  */
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import {
+  useCallback,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   fetchProjects,
@@ -53,6 +58,75 @@ const CAT_CLASS: Record<string, string> = {
   system_influence_block: "cat-sys",
 };
 
+// 사이드 패널 폭 — 드래그/키보드로 조절, localStorage에 유지.
+const SIDE_WIDTH_KEY = "risk-side-width";
+const SIDE_WIDTH_DEFAULT = 400;
+const SIDE_WIDTH_MIN = 300;
+const SIDE_WIDTH_MAX = 680;
+const clampSideWidth = (value: number) =>
+  Math.min(SIDE_WIDTH_MAX, Math.max(SIDE_WIDTH_MIN, value));
+
+function useSidePanelWidth() {
+  const [width, setWidth] = useState(() => {
+    const saved = Number(window.localStorage.getItem(SIDE_WIDTH_KEY));
+    return Number.isFinite(saved) && saved > 0 ? clampSideWidth(saved) : SIDE_WIDTH_DEFAULT;
+  });
+  const update = useCallback((next: number) => {
+    const clamped = clampSideWidth(next);
+    setWidth(clamped);
+    window.localStorage.setItem(SIDE_WIDTH_KEY, String(clamped));
+    return clamped;
+  }, []);
+  const reset = useCallback(() => update(SIDE_WIDTH_DEFAULT), [update]);
+  return { width, update, reset };
+}
+
+function SplitHandle({
+  width,
+  onResize,
+  onReset,
+}: {
+  width: number;
+  onResize: (next: number) => void;
+  onReset: () => void;
+}) {
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const startX = event.clientX;
+    const startWidth = width;
+    const target = event.currentTarget;
+    const onMove = (move: PointerEvent) => onResize(startWidth + (startX - move.clientX));
+    const onUp = () => {
+      target.removeEventListener("pointermove", onMove);
+      target.removeEventListener("pointerup", onUp);
+    };
+    target.addEventListener("pointermove", onMove);
+    target.addEventListener("pointerup", onUp);
+  };
+  return (
+    <div
+      className="split-handle"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label={t.panel_resize}
+      aria-valuenow={width}
+      aria-valuemin={SIDE_WIDTH_MIN}
+      aria-valuemax={SIDE_WIDTH_MAX}
+      tabIndex={0}
+      title={t.panel_resize}
+      onPointerDown={onPointerDown}
+      onDoubleClick={onReset}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowLeft") onResize(width + 16);
+        else if (event.key === "ArrowRight") onResize(width - 16);
+        else return;
+        event.preventDefault();
+      }}
+    />
+  );
+}
+
 export function RiskMapPage() {
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
   // URL=상태: 탭/선택/등급 필터를 URL에 반영 — 새로고침·공유가 화면을 재현한다.
@@ -90,6 +164,7 @@ export function RiskMapPage() {
   const navigate = useNavigate();
   const label = useLabels();
   const valueLabel = useValueLabels();
+  const sidePanel = useSidePanelWidth();
 
   if (projects.isPending || heatmap.isPending)
     return <p className="status-msg">{ko.app.loading}</p>;
@@ -155,7 +230,10 @@ export function RiskMapPage() {
         ))}
       </div>
 
-      <div className="risk-layout">
+      <div
+        className="risk-layout risk-layout-split"
+        style={{ "--side-w": `${sidePanel.width}px` } as CSSProperties}
+      >
         <div className="card heatmap-card">
           <div className="head heatmap-toolbar">
             <span className="legend">
@@ -231,6 +309,11 @@ export function RiskMapPage() {
           </div>
         </div>
 
+        <SplitHandle
+          width={sidePanel.width}
+          onResize={sidePanel.update}
+          onReset={sidePanel.reset}
+        />
         <div className="risk-side">
           <BasisPanel row={selectedRow} selection={selection} label={label} />
           <FocusCard focus={focus} label={label} />

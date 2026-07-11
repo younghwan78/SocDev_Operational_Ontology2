@@ -147,6 +147,7 @@ export const ko = {
     posture_predicted: "예측",
     posture_absent: "부재",
     panel_hint: "셀 또는 시나리오 이름을 클릭하면 판정 근거가 표시됩니다",
+    panel_resize: "패널 폭 조절 — 드래그 또는 좌우 화살표 키, 더블클릭 초기화",
     open_scenario: "시나리오 상세 보기",
     related_scenarios: "관련 시나리오",
     note: "정성 등급이며 수치 점수가 아닙니다 · 결정 아님",
