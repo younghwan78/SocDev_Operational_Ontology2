@@ -43,6 +43,32 @@ const VERIFICATION_FILTERS: { value: string; label: string }[] = [
   { value: "no_tests", label: t.verification_no_tests },
 ];
 
+// 상황판 플래그 필터 — 숫자 카드 클릭이 곧 필터 (URL=상태).
+const CLOSED_STATUSES = new Set(["closed", "resolved", "done"]);
+const FLAG_FILTERS: Record<string, (issue: IssueSummary) => boolean> = {
+  closed_unverified: (issue) => issue.closed_without_verification,
+  open: (issue) => !CLOSED_STATUSES.has(issue.status),
+  attention: (issue) => Boolean(issue.stale || issue.overdue),
+};
+
+/** 유형별 분포 × 검증 상태 세그먼트 막대 데이터. */
+function typeDistribution(issues: IssueSummary[], limit = 6) {
+  const byType = new Map<string, IssueSummary[]>();
+  for (const issue of issues) {
+    const list = byType.get(issue.issue_type) ?? [];
+    list.push(issue);
+    byType.set(issue.issue_type, list);
+  }
+  const sorted = [...byType.entries()].sort(
+    (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]),
+  );
+  const top = sorted.slice(0, limit);
+  const rest = sorted.slice(limit).flatMap(([, list]) => list);
+  const rows = top.map(([type, list]) => ({ type, issues: list }));
+  if (rest.length > 0) rows.push({ type: "__other__", issues: rest });
+  return rows;
+}
+
 export function IssueAnalysisPage() {
   // URL=상태: 필터/검색/선택을 URL에 반영 — 새로고침·공유가 화면을 재현한다.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -80,9 +106,11 @@ export function IssueAnalysisPage() {
 
   const valueLabel = useValueLabels();
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
+  // 서버 필터는 프로젝트만 — 검증/유형/플래그는 클라이언트에서 걸러
+  // 상황판·칩 카운트가 항상 전체 분포를 보게 한다 (수백 건 규모까지 문제없음).
   const issues = useQuery({
-    queryKey: ["issues", projectFilter, verificationFilter],
-    queryFn: () => fetchIssues({ projectId: projectFilter, verification: verificationFilter }),
+    queryKey: ["issues", projectFilter],
+    queryFn: () => fetchIssues({ projectId: projectFilter }),
   });
   const chain = useQuery({
     queryKey: ["issue-rca", selectedIssue],
@@ -90,13 +118,47 @@ export function IssueAnalysisPage() {
     enabled: selectedIssue !== null,
   });
 
+  const flagFilter = searchParams.get("flag");
+  const typeFilter = searchParams.get("type");
+  const allIssues = issues.data ?? [];
   const query = urlQuery.trim().toLowerCase();
-  const visibleIssues = (issues.data ?? []).filter(
+  const visibleIssues = allIssues.filter(
     (issue) =>
-      !query ||
-      issue.title.toLowerCase().includes(query) ||
-      issue.issue_type.toLowerCase().includes(query),
+      (!verificationFilter || issue.verification === verificationFilter) &&
+      (!typeFilter || issue.issue_type === typeFilter) &&
+      (!flagFilter || (FLAG_FILTERS[flagFilter]?.(issue) ?? true)) &&
+      (!query ||
+        issue.title.toLowerCase().includes(query) ||
+        issue.issue_type.toLowerCase().includes(query)),
   );
+
+  const boardStats = [
+    { key: null, label: t.board_total, count: allIssues.length, danger: false },
+    {
+      key: "closed_unverified",
+      label: t.board_closed_unverified,
+      count: allIssues.filter(FLAG_FILTERS.closed_unverified).length,
+      danger: true,
+    },
+    {
+      key: "open",
+      label: t.board_open,
+      count: allIssues.filter(FLAG_FILTERS.open).length,
+      danger: false,
+    },
+    {
+      key: "attention",
+      label: t.board_attention,
+      count: allIssues.filter(FLAG_FILTERS.attention).length,
+      danger: false,
+    },
+  ];
+  const verificationCounts = new Map<string, number>();
+  for (const issue of allIssues)
+    verificationCounts.set(
+      issue.verification,
+      (verificationCounts.get(issue.verification) ?? 0) + 1,
+    );
 
   if (issues.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (issues.isError) return <p className="status-msg">{ko.app.error}</p>;
@@ -105,6 +167,33 @@ export function IssueAnalysisPage() {
     <div>
       <h1>{t.title}</h1>
       <p className="section-note">{t.subtitle}</p>
+
+      {/* I1 이슈 상황판 — 숫자 카드 클릭 = 필터, 분포 막대 클릭 = 유형 필터 */}
+      <div className="stat-strip">
+        {boardStats.map((stat) => (
+          <button
+            key={stat.label}
+            type="button"
+            className={`stat ${stat.danger && stat.count > 0 ? "stat-danger" : ""} ${
+              flagFilter === stat.key || (stat.key === null && !flagFilter) ? "stat-active" : ""
+            }`}
+            onClick={() => updateParams({ flag: stat.key })}
+          >
+            <b>{stat.count}</b>
+            <span>{stat.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="card dist-card">
+        <h2 className="card-title">{t.board_types}</h2>
+        <TypeDistribution
+          issues={allIssues}
+          activeType={typeFilter}
+          onToggle={(type) => updateParams({ type: typeFilter === type ? null : type })}
+          valueLabel={valueLabel}
+        />
+      </div>
 
       <div className="filter-row">
         <span className="filter-label">{ko.scenario_list.filter_label}</span>
@@ -137,7 +226,7 @@ export function IssueAnalysisPage() {
             className={`chip chip-btn ${verificationFilter === option.value ? "active" : ""}`}
             onClick={() => setVerificationFilter(option.value)}
           >
-            {option.label}
+            {option.label} ({verificationCounts.get(option.value) ?? 0})
           </button>
         ))}
         <label className="filter-label" htmlFor="issue-search">
@@ -204,6 +293,73 @@ export function IssueAnalysisPage() {
             <RCAFlow chainData={chain.data} />
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** I1 — 유형별 가로 세그먼트 막대: 길이=건수, 색 분해=검증 상태. 클릭=유형 필터 토글. */
+function TypeDistribution({
+  issues,
+  activeType,
+  onToggle,
+  valueLabel,
+}: {
+  issues: IssueSummary[];
+  activeType: string | null;
+  onToggle: (type: string) => void;
+  valueLabel: (domain: string, value: string | null | undefined) => string;
+}) {
+  const rows = typeDistribution(issues);
+  if (rows.length === 0) return <p className="desc">{ko.app.empty}</p>;
+  const maxCount = Math.max(...rows.map((row) => row.issues.length));
+  const segments = (list: IssueSummary[]) =>
+    (["no_tests", "unverified", "verified"] as const).map((verification) => ({
+      verification,
+      count: list.filter((issue) => issue.verification === verification).length,
+    }));
+  return (
+    <div className="dist-rows">
+      {rows.map((row) => {
+        const isOther = row.type === "__other__";
+        const label = isOther ? t.board_other : valueLabel("issue_type", row.type);
+        const total = row.issues.length;
+        return (
+          <button
+            key={row.type}
+            type="button"
+            disabled={isOther}
+            title={isOther ? "" : row.type}
+            className={`dist-row ${activeType === row.type ? "dist-active" : ""}`}
+            onClick={() => !isOther && onToggle(row.type)}
+          >
+            <span className="dist-label">{label}</span>
+            <span className="dist-track" style={{ width: `${(total / maxCount) * 100}%` }}>
+              {segments(row.issues).map(
+                (segment) =>
+                  segment.count > 0 && (
+                    <span
+                      key={segment.verification}
+                      className={`dist-seg dist-${segment.verification}`}
+                      style={{ flex: segment.count }}
+                    />
+                  ),
+              )}
+            </span>
+            <span className="dist-count">{total}</span>
+          </button>
+        );
+      })}
+      <div className="origin-legend">
+        <span className="origin-key">
+          <span className="origin-dot dist-no_tests" /> {t.verification_no_tests}
+        </span>
+        <span className="origin-key">
+          <span className="origin-dot dist-unverified" /> {t.verification_unverified}
+        </span>
+        <span className="origin-key">
+          <span className="origin-dot dist-verified" /> {t.verification_verified}
+        </span>
       </div>
     </div>
   );

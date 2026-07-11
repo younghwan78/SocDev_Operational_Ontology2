@@ -156,6 +156,12 @@ export const ko = {
     doc_candidates_title: "관련 문서 후보",
     doc_not_evidence: "증거 아님 — 근거 편입은 큐레이션",
     doc_ref_label: "외부 문서",
+    board_total: "전체",
+    board_closed_unverified: "검증 없는 종결",
+    board_open: "미해결",
+    board_attention: "정체·지연",
+    board_types: "유형별 분포 × 검증 상태",
+    board_other: "기타",
     week_prefix: "W",
   },
   risk: {
