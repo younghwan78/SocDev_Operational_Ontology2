@@ -547,7 +547,11 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
   display: flex; height: 12px; border-radius: 6px; overflow: hidden;
   background: var(--bg); border: 1px solid var(--border); margin: 6px 0;
 }
-.ladder-seg { height: 100%; }
+.ladder-seg { height: 100%; border: none; padding: 0; cursor: pointer; }
+.ladder-seg.ladder-active { outline: 2px solid var(--text); outline-offset: 1px; z-index: 1; }
+.ladder-key { background: none; border: none; cursor: pointer; font: inherit; font-size: 12px; color: var(--text-dim); padding: 2px 4px; border-radius: 6px; }
+.ladder-key:hover { color: var(--accent); }
+.ladder-key-active { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
 .tier-measured_direct { background: var(--ok); }
 .tier-measured_analogous { background: #52b788; }
 .tier-emulated { background: var(--accent); }

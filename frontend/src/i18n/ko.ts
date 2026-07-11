@@ -377,6 +377,9 @@ export const ko = {
     scenario_link: "시나리오 보기",
     measurement: "측정",
     prediction: "예측",
+    search_label: "검색",
+    search_placeholder: "제목 검색",
+    list_title: "근거 목록",
   },
   evidence_ladder: {
     title: "근거 신뢰 분포",
@@ -388,6 +391,7 @@ export const ko = {
     of_total: "건 / 전체",
     strength: "신뢰 등급",
     basis: "판정 근거",
+    filter_hint: "구간을 클릭하면 해당 신뢰 등급으로 목록이 필터됩니다",
     tier_measured_direct: "실측·정합",
     tier_measured_analogous: "실측·유사",
     tier_emulated: "에뮬레이션",
