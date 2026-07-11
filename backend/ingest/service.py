@@ -148,11 +148,12 @@ class MemoryIngestWriter:
         return self._repo.ids(collection)
 
     def existing_payloads(self, collection: str, ids: list[str]) -> dict[str, dict]:
+        # Postgres 저장 형식(build_row)과 동일하게 exclude_none — upsert 비교 정규화.
         payloads: dict[str, dict] = {}
         for object_id in ids:
             obj = self._repo.get(collection, object_id)
             if obj is not None:
-                payloads[object_id] = obj.model_dump(mode="json")
+                payloads[object_id] = obj.model_dump(mode="json", exclude_none=True)
         return payloads
 
     def remove_by_ids(self, collection: str, ids: list[str]) -> None:
@@ -382,9 +383,12 @@ class IngestService:
             if old_payload is None:
                 new_objects.append(obj)
                 continue
+            # 저장 형식(exclude_none)과 같은 정규화로 비교 — source 메타는 배치마다 다르므로 제외.
             old_body = {k: v for k, v in old_payload.items() if k != "source"}
             new_body = {
-                k: v for k, v in obj.model_dump(mode="json").items() if k != "source"
+                k: v
+                for k, v in obj.model_dump(mode="json", exclude_none=True).items()
+                if k != "source"
             }
             if old_body == new_body:
                 unchanged_count += 1
