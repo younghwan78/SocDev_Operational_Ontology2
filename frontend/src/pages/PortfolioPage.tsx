@@ -1,5 +1,10 @@
+/**
+ * 포트폴리오 현황 — 과제 요약 + 주목 레인(6종) + 시나리오×과제 매트릭스.
+ * E1 폴리싱: 레인 상황판(숫자 카드=필터), 과제 칩 필터, URL=상태,
+ * phase 한국어 라벨, 매트릭스 근거 공백 우선 정렬.
+ */
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { fetchPortfolio, type AttentionItem } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
 import { useLabels } from "../hooks/useLabels";
@@ -16,16 +21,43 @@ const LANE_BADGE: Record<string, string> = {
   de_risk_candidate: "badge-warn",
   management_attention: "badge-danger",
 };
+const DANGER_LANES = new Set(["evidence_blocked", "confidence_blocked", "management_attention"]);
 
 export function PortfolioPage() {
   const portfolio = useQuery({ queryKey: ["portfolio"], queryFn: fetchPortfolio });
   const label = useLabels();
+  const valueLabel = useValueLabels();
+  // URL=상태 — 레인/과제 필터를 공유·재현할 수 있게 한다.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const laneFilter = searchParams.get("lane");
+  const projectFilter = searchParams.get("project");
+  const updateParams = (patch: Record<string, string | null>) => {
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+        for (const [key, value] of Object.entries(patch)) {
+          if (value === null) next.delete(key);
+          else next.set(key, value);
+        }
+        return next;
+      },
+      { replace: true },
+    );
+  };
 
   if (portfolio.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (portfolio.isError) return <p className="status-msg">{ko.app.error}</p>;
 
   const { projects, attention, matrix } = portfolio.data;
-  const lanes = [...new Set(attention.map((item) => item.lane))];
+  const byProject = (projectIds: string[] | null | undefined) =>
+    !projectFilter || (projectIds ?? []).includes(projectFilter);
+  const visibleAttention = attention.filter((item) => byProject(item.project_ids));
+  const lanes = [...new Set(visibleAttention.map((item) => item.lane))];
+  const visibleLanes = laneFilter ? lanes.filter((lane) => lane === laneFilter) : lanes;
+  // 근거 공백이 있는 시나리오 먼저 — 볼 이유가 있는 것부터.
+  const visibleMatrix = matrix
+    .filter((cell) => byProject(cell.project_ids))
+    .sort((a, b) => b.gap_count - a.gap_count || a.scenario_name.localeCompare(b.scenario_name));
 
   return (
     <div>
@@ -34,10 +66,24 @@ export function PortfolioPage() {
 
       <div className="scenario-grid">
         {projects.map((summary) => (
-          <div key={summary.project.id} className="card">
+          <button
+            key={summary.project.id}
+            type="button"
+            className={`card project-card ${
+              projectFilter === summary.project.id ? "project-active" : ""
+            }`}
+            title={summary.project.id}
+            onClick={() =>
+              updateParams({
+                project: projectFilter === summary.project.id ? null : summary.project.id,
+              })
+            }
+          >
             <div className="name">
               {summary.project.name}{" "}
-              <span className="badge badge-info">{summary.project.phase}</span>
+              <span className="badge badge-info" title={summary.project.phase}>
+                {valueLabel("project_phase", summary.project.phase)}
+              </span>
             </div>
             <dl className="kv">
               <dt>{t.milestones}</dt>
@@ -47,14 +93,44 @@ export function PortfolioPage() {
               <dt>{t.events}</dt>
               <dd>{summary.event_count}</dd>
             </dl>
-          </div>
+            <p className="desc">{t.project_filter_hint}</p>
+          </button>
         ))}
+      </div>
+
+      {/* E1 상황판 — 레인별 건수, 클릭=필터 */}
+      <div className="stat-strip">
+        <button
+          type="button"
+          className={`stat ${!laneFilter ? "stat-active" : ""}`}
+          onClick={() => updateParams({ lane: null })}
+        >
+          <b>{visibleAttention.length}</b>
+          <span>{t.lane_all}</span>
+        </button>
+        {lanes.map((lane) => {
+          const items = visibleAttention.filter((item) => item.lane === lane);
+          return (
+            <button
+              key={lane}
+              type="button"
+              className={`stat ${DANGER_LANES.has(lane) ? "stat-danger" : ""} ${
+                laneFilter === lane ? "stat-active" : ""
+              }`}
+              onClick={() => updateParams({ lane: laneFilter === lane ? null : lane })}
+            >
+              <b>{items.length}</b>
+              <span>{items[0]?.lane_ko ?? lane}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="card">
         <h2 className="card-title">{t.attention_section}</h2>
-        {lanes.map((lane) => {
-          const items = attention.filter((item) => item.lane === lane);
+        {visibleLanes.length === 0 && <p className="desc">{ko.app.empty}</p>}
+        {visibleLanes.map((lane) => {
+          const items = visibleAttention.filter((item) => item.lane === lane);
           return (
             <div key={lane} className="timeline-week">
               <div className="week-label">
@@ -62,7 +138,7 @@ export function PortfolioPage() {
               </div>
               <CollapsibleList
                 items={items}
-                limit={5}
+                limit={laneFilter ? 15 : 5}
                 render={(item: AttentionItem, index: number) => (
                   <AttentionRow key={`${item.ref_id}-${index}`} item={item} label={label} />
                 )}
@@ -73,9 +149,12 @@ export function PortfolioPage() {
       </div>
 
       <div className="card">
-        <h2 className="card-title">{t.matrix_section}</h2>
+        <h2 className="card-title">
+          {t.matrix_section} ({visibleMatrix.length})
+        </h2>
+        <p className="section-note">{t.matrix_note}</p>
         <div className="scenario-grid">
-          {matrix.map((cell) => (
+          {visibleMatrix.map((cell) => (
             <Link
               key={cell.scenario_id}
               to={`/scenarios/${cell.scenario_id}/overview`}

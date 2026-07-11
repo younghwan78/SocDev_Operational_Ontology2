@@ -286,6 +286,9 @@ export const ko = {
     suggested_roles: "검토 참여 권장 역할",
     related_scenarios: "관련 시나리오",
     note: "참여 권장이며 담당 지정이 아닙니다 · 수치 점수 없음 · 결정 아님",
+    lane_all: "전체 주의 항목",
+    project_filter_hint: "클릭하면 이 과제로 필터",
+    matrix_note: "근거 공백이 있는 시나리오가 먼저 표시됩니다",
   },
   review: {
     title: "리뷰 센터",

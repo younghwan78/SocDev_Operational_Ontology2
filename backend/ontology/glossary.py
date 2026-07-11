@@ -611,6 +611,11 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
 # 새 값이 들어오면 여기 누락이 테스트로 드러난다 (06_stage16_ui_overhaul.md U1).
 
 VALUE_LABELS: dict[str, dict[str, str]] = {
+    "project_phase": {
+        "commercial_early": "양산 초기",
+        "evt_development": "EVT 개발",
+        "spec_selection_architecture_exploration": "스펙 선정·아키텍처 탐색",
+    },
     "ip_category": {
         "functional_mm_ip": "기능 MM IP",
         "compute_ip": "컴퓨트 IP",
