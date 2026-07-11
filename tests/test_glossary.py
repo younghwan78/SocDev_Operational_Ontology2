@@ -54,6 +54,7 @@ def test_value_labels_cover_all_fixture_values() -> None:
 
     # (도메인, 컬렉션, 필드) — 값 도메인이 실재하는 지점 전수.
     domain_fields = [
+        ("ip_category", "ip_blocks", "category"),
         ("issue_status", "issues", "status"),
         ("issue_type", "issues", "issue_type"),
         ("fix_type", "issues", "fix_type"),

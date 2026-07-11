@@ -13,6 +13,10 @@
   --ok: #067647;
   --ok-soft: #e6f4ee;
   --muted: #616e7c;
+  /* W2: heatmap 열 카테고리 틴트 (기능/컴퓨트/시스템) — 위험색·악센트와 무충돌 */
+  --tint-func: rgba(100, 116, 139, 0.05);
+  --tint-comp: rgba(124, 92, 219, 0.06);
+  --tint-sys: rgba(13, 148, 136, 0.06);
   font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
   color-scheme: light;
 }
@@ -34,6 +38,9 @@
     --danger-soft: #42201c;
     --ok: #3fb97f;
     --ok-soft: #16321f;
+    --tint-func: rgba(148, 163, 184, 0.09);
+    --tint-comp: rgba(157, 128, 235, 0.12);
+    --tint-sys: rgba(45, 191, 179, 0.1);
     color-scheme: dark;
   }
 }
@@ -302,13 +309,30 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .posture-weak { color: var(--danger); border-color: var(--danger-soft); font-weight: 600; }
 
 /* heatmap 스케일 — 시나리오 열·헤더 sticky, 종합 열 구분 (표시용, 룰 아님) */
-.heatmap-scroll { max-height: 70vh; overflow: auto; }
-.heatmap thead th { position: sticky; top: 0; background: var(--surface); z-index: 2; }
+.heatmap-scroll { max-height: 74vh; overflow: auto; }
+.heatmap thead th { position: sticky; background: var(--surface); z-index: 2; }
+.heatmap thead tr.cat-row th { top: 0; }
+.heatmap thead tr.col-row th { top: 27px; }
 .heatmap .heatmap-scenario { position: sticky; left: 0; background: var(--surface); z-index: 1; }
 .heatmap thead th.heatmap-scenario { z-index: 3; }
 .heatmap tbody tr:hover .heatmap-scenario { background: var(--accent-soft); }
 .heatmap .heatmap-overall { background: var(--accent-soft); border-left: 2px solid var(--accent); }
 .heatmap-toolbar { flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+
+/* W2: 열 카테고리 시각 구분 — 기능 MM IP / 컴퓨트 IP / 시스템 영향 블록.
+   틴트는 반투명(행 hover가 비쳐 보임), sticky 헤더만 불투명 혼합(color-mix). */
+.heatmap th.cat-head {
+  height: 27px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+  color: var(--text-dim); border-bottom: 1px solid var(--border);
+}
+.heatmap td.cat-func, .heatmap th.cat-func:not(.cat-head) { background: var(--tint-func); }
+.heatmap td.cat-comp, .heatmap th.cat-comp:not(.cat-head) { background: var(--tint-comp); }
+.heatmap td.cat-sys, .heatmap th.cat-sys:not(.cat-head) { background: var(--tint-sys); }
+.heatmap thead th.cat-func { background: color-mix(in srgb, var(--surface) 95%, #64748b); }
+.heatmap thead th.cat-comp { background: color-mix(in srgb, var(--surface) 93%, #7c5cdb); }
+.heatmap thead th.cat-sys { background: color-mix(in srgb, var(--surface) 93%, #0d9488); }
+.heatmap td.cat-start, .heatmap th.cat-start, .heatmap th.cat-head { border-left: 1px solid var(--border); }
+.heatmap th.cat-head:first-of-type { border-left: none; }
 
 .search-input {
   padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px;

@@ -9,12 +9,14 @@ import {
   fetchProjects,
   fetchRiskHeatmap,
   type BasisItem,
+  type HeatmapColumn,
   type ScenarioRiskRow,
   type WeeklyFocusItem,
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
 import { PostureChip } from "../components/PostureChip";
 import { useLabels } from "../hooks/useLabels";
+import { useValueLabels } from "../hooks/useValueLabels";
 import { ko } from "../i18n/ko";
 
 const t = ko.risk;
@@ -32,6 +34,24 @@ const FOCUS_BADGE: Record<string, string> = {
 };
 
 type Selection = { scenarioId: string; ipId: string | null };
+
+/** 카테고리 열 그룹 — 백엔드가 카테고리 순으로 정렬해 내려주므로 연속 구간으로 묶인다. */
+function groupColumns(columns: HeatmapColumn[]) {
+  const groups: { category: string; columns: HeatmapColumn[] }[] = [];
+  for (const column of columns) {
+    const last = groups[groups.length - 1];
+    if (last && last.category === column.category) last.columns.push(column);
+    else groups.push({ category: column.category, columns: [column] });
+  }
+  return groups;
+}
+
+/** 열 카테고리 시각 클래스 — 미지의 카테고리는 무틴트. */
+const CAT_CLASS: Record<string, string> = {
+  functional_mm_ip: "cat-func",
+  compute_ip: "cat-comp",
+  system_influence_block: "cat-sys",
+};
 
 export function RiskMapPage() {
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
@@ -69,6 +89,7 @@ export function RiskMapPage() {
   const [askDraft, setAskDraft] = useState("");
   const navigate = useNavigate();
   const label = useLabels();
+  const valueLabel = useValueLabels();
 
   if (projects.isPending || heatmap.isPending)
     return <p className="status-msg">{ko.app.loading}</p>;
@@ -76,6 +97,14 @@ export function RiskMapPage() {
     return <p className="status-msg">{ko.app.error}</p>;
 
   const { columns, rows, focus } = heatmap.data;
+  const columnGroups = groupColumns(columns);
+  // 그룹 경계 열 인덱스 — 좌측 구분선으로 카테고리 경계를 표시한다.
+  const catStarts = new Set<number>();
+  let offset = 0;
+  for (const group of columnGroups) {
+    if (offset > 0) catStarts.add(offset);
+    offset += group.columns.length;
+  }
   const visibleRows =
     gradeFilter === "high"
       ? rows.filter((row) => row.overall_grade === "high")
@@ -154,14 +183,36 @@ export function RiskMapPage() {
           <div className="heatmap-scroll">
             <table className="heatmap">
               <thead>
-                <tr>
-                  <th className="heatmap-scenario">{t.scenario_column}</th>
-                  {columns.map((column) => (
-                    <th key={column.ip_id} title={column.ip_id}>
+                <tr className="cat-row">
+                  <th className="heatmap-scenario" rowSpan={2}>
+                    {t.scenario_column}
+                  </th>
+                  {columnGroups.map((group) => (
+                    <th
+                      key={group.category}
+                      colSpan={group.columns.length}
+                      className={`cat-head ${CAT_CLASS[group.category] ?? ""}`}
+                      title={group.category}
+                    >
+                      {valueLabel("ip_category", group.category)}
+                    </th>
+                  ))}
+                  <th className="heatmap-overall" rowSpan={2}>
+                    {t.overall_column}
+                  </th>
+                </tr>
+                <tr className="col-row">
+                  {columns.map((column, index) => (
+                    <th
+                      key={column.ip_id}
+                      title={column.ip_id}
+                      className={`${CAT_CLASS[column.category] ?? ""} ${
+                        catStarts.has(index) ? "cat-start" : ""
+                      }`}
+                    >
                       {column.ip_name}
                     </th>
                   ))}
-                  <th className="heatmap-overall">{t.overall_column}</th>
                 </tr>
               </thead>
               <tbody>
@@ -169,7 +220,8 @@ export function RiskMapPage() {
                   <HeatmapRow
                     key={row.scenario_id}
                     row={row}
-                    columnIds={columns.map((column) => column.ip_id)}
+                    columns={columns}
+                    catStarts={catStarts}
                     selection={selection}
                     onSelect={setSelection}
                   />
@@ -190,12 +242,14 @@ export function RiskMapPage() {
 
 function HeatmapRow({
   row,
-  columnIds,
+  columns,
+  catStarts,
   selection,
   onSelect,
 }: {
   row: ScenarioRiskRow;
-  columnIds: string[];
+  columns: HeatmapColumn[];
+  catStarts: Set<number>;
   selection: Selection | null;
   onSelect: (selection: Selection) => void;
 }) {
@@ -221,16 +275,20 @@ function HeatmapRow({
           />
         )}
       </th>
-      {columnIds.map((ipId) => {
+      {columns.map((column, index) => {
+        const ipId = column.ip_id;
+        const tdClass = `${CAT_CLASS[column.category] ?? ""} ${
+          catStarts.has(index) ? "cat-start" : ""
+        }`;
         const cell = cellByIp.get(ipId);
         if (!cell)
           return (
-            <td key={ipId} className="heatmap-na" title={t.not_applicable}>
+            <td key={ipId} className={`heatmap-na ${tdClass}`} title={t.not_applicable}>
               ·
             </td>
           );
         return (
-          <td key={ipId}>
+          <td key={ipId} className={tdClass}>
             <button
               type="button"
               title={`${cell.grade_ko} — ${row.scenario_id} × ${ipId}`}

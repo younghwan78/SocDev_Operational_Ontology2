@@ -76,6 +76,15 @@ beforeEach(() => {
       if (url.includes("/api/v1/projects")) return Promise.resolve(jsonResponse(projects));
       if (url.includes("/api/v1/risk/heatmap")) return Promise.resolve(jsonResponse(heatmap));
       if (url.includes("/api/v1/meta/labels")) return Promise.resolve(jsonResponse(labels));
+      if (url.includes("/api/v1/meta/glossary"))
+        return Promise.resolve(
+          jsonResponse({
+            objects: {},
+            fields: {},
+            enums: {},
+            value_labels: { ip_category: { functional_mm_ip: "기능 MM IP" } },
+          }),
+        );
       return Promise.resolve(jsonResponse([]));
     }),
   );
@@ -99,6 +108,9 @@ describe("RiskMapPage", () => {
     expect(screen.getByText("ISP")).toBeInTheDocument();
     expect(screen.getByText("UHD60 EIS 전력 검토")).toBeInTheDocument();
     expect(screen.getAllByText("●").length).toBeGreaterThan(0);
+    // W2: 열 카테고리 그룹 헤더 — 한국어 라벨, 원문 코드는 hover만.
+    expect(await screen.findByText("기능 MM IP")).toBeInTheDocument();
+    expect(screen.queryByText("functional_mm_ip")).not.toBeInTheDocument();
   });
 
   it("셀 클릭 시 근거 패널로 drill-down 한다", async () => {
