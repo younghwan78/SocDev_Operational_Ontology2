@@ -7,6 +7,7 @@ issues:
   project_id: project_u
   title: High-resolution sensor input overruns CSID/IFE bandwidth budget
   issue_type: bandwidth_overrun
+  severity: high
   status: closed
   symptom: UHD60 EIS recording drops frames when CSID input crosses the planned IFE bandwidth budget.
   confidence: high
@@ -32,6 +33,7 @@ issues:
   project_id: project_u
   title: HDR multi-frame path latency exceeds preview deadline
   issue_type: latency_regression
+  severity: medium
   status: closed
   symptom: Preview latency spikes above the deadline whenever HDR multi-frame blending is on.
   confidence: medium
@@ -55,6 +57,7 @@ issues:
   project_id: project_v
   title: ISP internal M2M passes multiply DDR traffic
   issue_type: bandwidth_overrun
+  severity: high
   status: workaround_applied
   symptom: Emulator run shows M2M re-fetch tripling DDR traffic in low-light multi-frame capture.
   confidence: medium
@@ -78,6 +81,7 @@ issues:
   project_id: project_u
   title: Low-light processing power exceeds camera budget
   issue_type: power_regression
+  severity: medium
   status: open
   symptom: Night-mode capture bursts push ISP power above the camera sustain budget.
   confidence: medium
@@ -95,6 +99,7 @@ issues:
   project_id: project_v
   title: Sensor mode switch breaks HAL buffer geometry
   issue_type: stability
+  severity: high
   status: closed
   symptom: Zoom-driven sensor mode switch intermittently hands the HAL a stale buffer geometry, crashing preview.
   confidence: high
@@ -119,6 +124,7 @@ issues:
   project_id: project_u
   title: Tuning drop degrades image quality after power fix
   issue_type: image_quality_regression
+  severity: medium
   status: closed
   symptom: Field builds after the power-oriented tuning drop show visible texture loss in indoor shots.
   confidence: high
@@ -143,6 +149,7 @@ issues:
   project_id: project_w
   title: AI-ISP preview keeps thermal floor high
   issue_type: thermal_throttling
+  severity: high
   status: under_analysis
   symptom: Extended AI preview sessions on the W emulator keep the thermal model near the throttle threshold.
   confidence: low
@@ -161,6 +168,7 @@ issues:
   project_id: project_u
   title: Camera preview plus UI composition underruns display
   issue_type: real_time_stability
+  severity: high
   status: closed
   symptom: Panel underrun counter rises when camera preview overlaps heavy UI composition.
   confidence: high
@@ -186,6 +194,7 @@ issues:
   project_id: project_v
   title: UHD playback layer composition raises DPU read bandwidth
   issue_type: bandwidth_overrun
+  severity: high
   status: open
   symptom: Layer-heavy UHD playback pushes DPU read BW past the emulator estimate.
   confidence: medium
@@ -202,6 +211,7 @@ issues:
   project_id: project_v
   title: High refresh panel doubles DPU power in mixed mode
   issue_type: power_regression
+  severity: medium
   status: workaround_applied
   symptom: 120Hz panel keeps DPU clock pinned even for static content windows.
   confidence: medium
@@ -224,6 +234,7 @@ issues:
   project_id: project_w
   title: External display adds an unbudgeted memory path
   issue_type: bandwidth_overrun
+  severity: high
   status: under_analysis
   symptom: DisplayPort mirroring draft spec implies a second full-resolution scanout path.
   confidence: low
@@ -240,6 +251,7 @@ issues:
   project_id: project_u
   title: Missing DPU QoS setting drops frames under memory pressure
   issue_type: qos_config
+  severity: medium
   status: closed
   symptom: Frame drops appear when codec export saturates memory while display QoS stays at default.
   confidence: medium
@@ -263,6 +275,7 @@ issues:
   project_id: project_v
   title: Video-mode low clock scaling re-triggers underrun risk
   issue_type: real_time_stability
+  severity: high
   status: closed
   symptom: Aggressive DPU clock floor for DoU re-opens the underrun margin issue seen on Project U.
   confidence: medium
@@ -288,6 +301,7 @@ issues:
   project_id: project_u
   title: 4K60 encode power spikes at GOP boundaries
   issue_type: power_regression
+  severity: medium
   status: closed
   symptom: Encoder power spikes 30% above sustain at every GOP boundary during 4K60 recording.
   confidence: high
@@ -312,6 +326,7 @@ issues:
   project_id: project_u
   title: 8K30 encode violates bitrate-latency constraint
   issue_type: latency_regression
+  severity: medium
   status: open
   symptom: 8K30 recording misses the encode deadline whenever bitrate control clamps to the ceiling.
   confidence: medium
@@ -329,6 +344,7 @@ issues:
   project_id: project_v
   title: HDR playback decode bandwidth above estimation
   issue_type: bandwidth_overrun
+  severity: high
   status: closed
   symptom: HDR streams decode with 20% more DDR reads than the bandwidth estimation sheet.
   confidence: medium
@@ -353,6 +369,7 @@ issues:
   project_id: project_u
   title: Frame drops after thermal throttling during long export
   issue_type: thermal_throttling
+  severity: high
   status: workaround_applied
   symptom: Ten-minute video export throttles the codec clock and drops frames near the end.
   confidence: high
@@ -376,6 +393,7 @@ issues:
   project_id: project_v
   title: Firmware scheduling starves encode under decode load
   issue_type: latency_regression
+  severity: medium
   status: closed
   symptom: Parallel decode sessions delay encode job dispatch beyond the frame budget.
   confidence: high
@@ -400,6 +418,7 @@ issues:
   project_id: project_w
   title: NAL queue batch mode latency unknown for W parallel spec
   issue_type: latency_regression
+  severity: medium
   status: under_analysis
   symptom: W spec draft assumes NAL_Q_BATCH for parallel recording without a latency characterization.
   confidence: low
@@ -417,6 +436,7 @@ issues:
   project_id: project_u
   title: A/V sync drifts during long dual recording
   issue_type: av_sync
+  severity: medium
   status: closed
   symptom: Audio leads video by 80ms after 20 minutes of dual video recording.
   confidence: high
@@ -441,6 +461,7 @@ issues:
   project_id: project_w
   title: Voice call AI path exceeds round-trip latency draft budget
   issue_type: audio_latency
+  severity: medium
   status: open
   symptom: AI noise suppression stage pushes call round-trip latency past the W draft budget.
   confidence: low
@@ -458,6 +479,7 @@ issues:
   project_id: project_u
   title: Low-power audio path handoff fails on resume
   issue_type: stability
+  severity: high
   status: closed
   symptom: Playback resumed from AP sleep occasionally stays on the high-power path.
   confidence: medium
@@ -481,6 +503,7 @@ issues:
   project_id: project_v
   title: Bluetooth audio lags video playback beyond sync window
   issue_type: av_sync
+  severity: medium
   status: workaround_applied
   symptom: BT audio render lags video by a codec-dependent offset outside the sync window.
   confidence: medium
@@ -503,6 +526,7 @@ issues:
   project_id: project_v
   title: Audio underruns under thermal DVFS pressure
   issue_type: stability
+  severity: high
   status: open
   symptom: Sustained thermal throttling starves the audio DMA refill and clicks appear.
   confidence: low
@@ -519,6 +543,7 @@ issues:
   project_id: project_w
   title: VTS wake phrase misses rise with AI denoise enabled
   issue_type: stability
+  severity: high
   status: under_analysis
   symptom: Draft evaluation shows wake-phrase miss rate rising when the always-on AI denoise stage is enabled.
   confidence: low
@@ -536,6 +561,7 @@ issues:
   project_id: project_u
   title: ISP+Codec+DPU concurrency exceeds DDR peak bandwidth
   issue_type: bandwidth_overrun
+  severity: high
   status: closed
   symptom: UHD60 EIS recording with preview and encode active crosses the DDR peak budget in bursts.
   confidence: high
@@ -560,6 +586,7 @@ issues:
   project_id: project_u
   title: NoC QoS priority map missing real-time classes
   issue_type: qos_config
+  severity: medium
   status: closed
   symptom: Display and audio DMA share a best-effort NoC class with bulk codec traffic.
   confidence: high
@@ -584,6 +611,7 @@ issues:
   project_id: project_v
   title: Frame compression disabled leaves bandwidth on the table
   issue_type: bandwidth_overrun
+  severity: high
   status: open
   symptom: APV recording path runs with frame compression off, inflating DDR traffic ~25%.
   confidence: medium
@@ -600,6 +628,7 @@ issues:
   project_id: project_v
   title: Concurrent scenario latency spikes on NoC arbitration
   issue_type: latency_regression
+  severity: medium
   status: closed
   symptom: High-speed recording with AI capture shows periodic latency spikes on the camera NoC path.
   confidence: high
@@ -624,6 +653,7 @@ issues:
   project_id: project_w
   title: Power-saving resume latency breaks camera launch target
   issue_type: resume_latency
+  severity: medium
   status: under_analysis
   symptom: Draft power-state map adds a deep-retention state whose resume path exceeds the camera cold-launch budget.
   confidence: low
@@ -640,6 +670,7 @@ issues:
   project_id: project_w
   title: SystemMMU TLB misses add jitter to high-speed capture
   issue_type: latency_regression
+  severity: medium
   status: open
   symptom: 120fps capture bursts show frame-time jitter correlated with SMMU TLB miss counters in the model.
   confidence: low
@@ -656,6 +687,7 @@ issues:
   project_id: project_u
   title: Display priority inversion during editor export
   issue_type: qos_config
+  severity: medium
   status: workaround_applied
   symptom: Video editor export briefly inverts display DMA priority, flashing artifacts on screen.
   confidence: medium
