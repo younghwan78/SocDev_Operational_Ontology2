@@ -163,6 +163,7 @@ export function ChangeImpactPage() {
                 (previous) => {
                   const next = new URLSearchParams(previous);
                   next.set("ip", ipId);
+                  next.delete("node"); // 이전 분석의 노드 선택은 새 분석과 무관
                   for (const [key, value] of [
                     ["knob", knobId],
                     ["capability", capabilityId],
