@@ -104,6 +104,16 @@ export function IssueAnalysisPage() {
     updateParams({ verification: value ?? null });
   const setSelectedIssue = (value: string | null) => updateParams({ issue: value });
 
+  // 분포 카드 접기 — 선택은 localStorage에 유지 (화면 공간 확보용).
+  const [distOpen, setDistOpen] = useState(
+    () => window.localStorage.getItem("issues-dist-open") !== "0",
+  );
+  const toggleDist = () =>
+    setDistOpen((previous) => {
+      window.localStorage.setItem("issues-dist-open", previous ? "0" : "1");
+      return !previous;
+    });
+
   const valueLabel = useValueLabels();
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
   // 서버 필터는 프로젝트만 — 검증/유형/플래그는 클라이언트에서 걸러
@@ -186,13 +196,25 @@ export function IssueAnalysisPage() {
       </div>
 
       <div className="card dist-card">
-        <h2 className="card-title">{t.board_types}</h2>
-        <TypeDistribution
-          issues={allIssues}
-          activeType={typeFilter}
-          onToggle={(type) => updateParams({ type: typeFilter === type ? null : type })}
-          valueLabel={valueLabel}
-        />
+        <button
+          type="button"
+          className="head rca-head-btn"
+          aria-expanded={distOpen}
+          onClick={toggleDist}
+        >
+          <h2 className="card-title dist-title">{t.board_types}</h2>
+          <span className="rca-toggle-hint">
+            {distOpen ? t.toggle_hide : t.toggle_show} {distOpen ? "−" : "+"}
+          </span>
+        </button>
+        {distOpen && (
+          <TypeDistribution
+            issues={allIssues}
+            activeType={typeFilter}
+            onToggle={(type) => updateParams({ type: typeFilter === type ? null : type })}
+            valueLabel={valueLabel}
+          />
+        )}
       </div>
 
       <div className="filter-row">

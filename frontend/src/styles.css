@@ -337,6 +337,8 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 
 /* I1 이슈 상황판 — 유형별 세그먼트 막대 (길이=건수, 색=검증 상태) */
 .dist-card { padding-bottom: 10px; }
+.dist-title { margin: 0; }
+.rca-toggle-hint { font-size: 12px; }
 .dist-rows { display: flex; flex-direction: column; gap: 4px; }
 .dist-row {
   display: flex; align-items: center; gap: 10px; width: 100%;

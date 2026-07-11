@@ -166,6 +166,8 @@ export const ko = {
     collapse_all: "전체 접기",
     severity_label: "심각도",
     scenario_count: "시나리오",
+    toggle_show: "펼치기",
+    toggle_hide: "접기",
     week_prefix: "W",
   },
   risk: {
