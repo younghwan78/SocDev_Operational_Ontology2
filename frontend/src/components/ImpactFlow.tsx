@@ -15,7 +15,7 @@ const t = ko.change_impact;
 
 export type FlowNodeId = string; // "subject" | "sc:<id>" | "kpi:<id>" | "dep:<rule_id>"
 
-const MAX_COLUMN_NODES = 14;
+const MAX_COLUMN_NODES = 18;
 const ROW_H = 46;
 const NODE_H = 36;
 const PAD_TOP = 30;
