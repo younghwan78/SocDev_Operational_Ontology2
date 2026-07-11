@@ -154,6 +154,7 @@ export function IngestPage() {
 
       <div className="card">
         <h2 className="card-title">{t.upload_section}</h2>
+        <p className="section-note">{t.flow_note}</p>
         <div className="filter-row">
           <label className="filter-label" htmlFor="ingest-mapping">
             {t.mapping_label}
@@ -296,34 +297,46 @@ export function IngestPage() {
       <div className="card">
         <h2 className="card-title">{t.history}</h2>
         {(batches.data ?? []).length === 0 && <p className="section-note">{ko.app.empty}</p>}
-        {(batches.data ?? []).map((batch) => (
-          <div key={batch.id} className="list-item">
-            <div className="head">
-              <span
-                className={`badge ${batch.status === "completed" ? "badge-ok" : "badge-warn"}`}
-              >
-                {batch.status === "completed" ? t.status_completed : t.status_rolled_back}
-              </span>
-              <span className="title" title={batch.id}>
-                {batch.filename}
-              </span>
-              <span className="chip">{batch.mapping_name}</span>
-              <span className="desc">
-                {t.accepted} {batch.accepted_count} · {t.rejected} {batch.rejected_count}
-              </span>
-              {batch.status === "completed" && (
-                <button
-                  type="button"
-                  className="link-btn"
-                  disabled={rollback.isPending}
-                  onClick={() => rollback.mutate(batch.id)}
+        {(batches.data ?? []).map((batch) => {
+          const mappingLabel =
+            mappings.data?.find((m) => m.name === batch.mapping_name)?.label_ko ??
+            batch.mapping_name;
+          return (
+            <div key={batch.id} className="list-item">
+              <div className="head">
+                <span
+                  className={`badge ${batch.status === "completed" ? "badge-ok" : "badge-warn"}`}
                 >
-                  {t.rollback}
-                </button>
-              )}
+                  {batch.status === "completed" ? t.status_completed : t.status_rolled_back}
+                </span>
+                <span className="title" title={batch.id}>
+                  {batch.filename}
+                </span>
+                <span className="chip" title={batch.mapping_name}>
+                  {mappingLabel}
+                </span>
+                <span className="desc">
+                  {t.accepted} {batch.accepted_count} · {t.updated} {batch.updated_count ?? 0}{" "}
+                  · {t.unchanged} {batch.unchanged_count ?? 0} · {t.rejected}{" "}
+                  {batch.rejected_count}
+                </span>
+                <span className="desc" title={batch.created_at}>
+                  {batch.created_at.slice(0, 16).replace("T", " ")}
+                </span>
+                {batch.status === "completed" && (
+                  <button
+                    type="button"
+                    className="link-btn"
+                    disabled={rollback.isPending}
+                    onClick={() => rollback.mutate(batch.id)}
+                  >
+                    {t.rollback}
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

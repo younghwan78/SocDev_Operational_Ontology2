@@ -366,6 +366,8 @@ export const ko = {
     quarantine_note: "거부 행 보관 — 수정 후 재반입하면 자동 해소",
     quarantine_download: "수정용 CSV 내려받기",
     quarantine_more: "건 더 있음 — CSV에는 전체 포함",
+    flow_note:
+      "① 매핑 선택 → ② 템플릿 CSV 내려받기 → ③ 채워서 업로드 → ④ 품질(연결률·경고) 확인 — 같은 ID 재반입은 갱신으로 처리됩니다",
   },
   evidence: {
     title: "근거 탐색",
