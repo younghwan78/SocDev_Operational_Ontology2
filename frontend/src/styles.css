@@ -412,6 +412,51 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
   margin: 8px 0 0; padding: 8px 12px; border-radius: 8px; font-size: 13.5px; font-weight: 600;
   background: var(--danger-soft); color: var(--danger);
 }
+/* I2: 경고 전폭 배너 — 화면의 핵심 발견을 최상단에 */
+.rca-banner {
+  margin: 0 0 12px; padding: 10px 14px; font-size: 14px;
+  border-left: 4px solid var(--danger);
+}
+
+/* I2: RCA 미니맵 스텝퍼 — 끊긴 고리가 한눈에 */
+.rca-stepper-row { display: flex; align-items: flex-start; gap: 12px; margin-top: 10px; }
+.rca-stepper { display: flex; flex: 1; min-width: 0; }
+.step-node {
+  flex: 1; position: relative; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; background: none; border: none;
+  cursor: pointer; font: inherit; padding: 0 2px; min-width: 0;
+}
+.step-node::before {
+  content: ""; position: absolute; top: 7px; left: -50%; width: 100%;
+  height: 2px; background: var(--border);
+}
+.step-node:first-child::before { display: none; }
+.step-dot {
+  width: 14px; height: 14px; border-radius: 50%; z-index: 1;
+  border: 2px solid var(--border); background: var(--surface);
+}
+.step-green .step-dot { border-color: var(--ok); background: var(--ok); }
+.step-yellow .step-dot { border-color: var(--warn); background: var(--warn); }
+.step-red .step-dot {
+  border-color: var(--danger); background: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
+.step-name {
+  font-size: 11px; color: var(--text-dim); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.step-node:hover .step-name { color: var(--accent); }
+.rca-stepper-actions { flex: none; display: flex; gap: 10px; }
+
+/* I2: 스텝 접기 — 정상(초록)은 한 줄 요약, 문제는 펼침+강조 */
+.rca-head-btn {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; width: 100%;
+  background: none; border: none; cursor: pointer; font: inherit;
+  padding: 0; text-align: left;
+}
+.rca-toggle-hint { margin-left: auto; color: var(--text-dim); font-size: 15px; }
+.rca-collapsed { padding-top: 10px; padding-bottom: 10px; }
+.rca-node.rca-red { background: color-mix(in srgb, var(--surface) 94%, #b42318); }
 
 /* --- Stage 11: Ask SoC --- */
 .ask-form { display: flex; gap: 8px; margin-bottom: 10px; }

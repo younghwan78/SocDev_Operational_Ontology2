@@ -162,6 +162,8 @@ export const ko = {
     board_attention: "정체·지연",
     board_types: "유형별 분포 × 검증 상태",
     board_other: "기타",
+    expand_all: "전체 펼치기",
+    collapse_all: "전체 접기",
     week_prefix: "W",
   },
   risk: {

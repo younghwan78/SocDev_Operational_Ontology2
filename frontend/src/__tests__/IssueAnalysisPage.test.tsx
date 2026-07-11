@@ -133,6 +133,8 @@ describe("IssueAnalysisPage", () => {
     expect(
       screen.getByText("검증 테스트 없음 — 해결 여부를 확인할 수 없음"),
     ).toBeInTheDocument();
+    // I2: 정상(초록) 스텝은 접혀 있음 — 전체 펼치기 후 항목 링크가 보인다.
+    fireEvent.click(screen.getByText(ko.issues.expand_all));
     expect(screen.getByText(ko.issues.scenario_link)).toBeInTheDocument();
   });
 

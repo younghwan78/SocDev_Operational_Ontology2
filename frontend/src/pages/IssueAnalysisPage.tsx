@@ -367,8 +367,27 @@ function TypeDistribution({
 
 function RCAFlow({ chainData }: { chainData: RCAChain }) {
   const valueLabel = useValueLabels();
+  // I2 위계: 문제(빨강/노랑) 스텝은 펼치고, 정상(초록)은 한 줄 요약으로 접는다.
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    setOpenMap(
+      Object.fromEntries(chainData.nodes.map((node) => [node.step, node.badge !== "green"])),
+    );
+  }, [chainData.issue_id, chainData.nodes]);
+  const setAll = (open: boolean) =>
+    setOpenMap(Object.fromEntries(chainData.nodes.map((node) => [node.step, open])));
+  const openStep = (step: string) => {
+    setOpenMap((previous) => ({ ...previous, [step]: true }));
+    document
+      .getElementById(`rca-step-${step}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   return (
     <div>
+      {/* 경고는 전폭 배너 — 이 화면의 핵심 발견을 최상단에 */}
+      {chainData.alert_ko && <p className="rca-alert rca-banner">⚠ {chainData.alert_ko}</p>}
+
       <div className="card">
         <div className="head">
           <span className="title" title={chainData.issue_id}>
@@ -384,12 +403,47 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
             {t.verification_label}: {chainData.verification_ko}
           </span>
         </div>
-        {chainData.alert_ko && <p className="rca-alert">⚠ {chainData.alert_ko}</p>}
+        {/* I2 미니맵 — 체인의 끊긴 고리가 한눈에. 클릭=해당 스텝 펼침+이동 */}
+        <div className="rca-stepper-row">
+          <div className="rca-stepper">
+            {chainData.nodes.map((node) => (
+              <button
+                key={node.step}
+                type="button"
+                className={`step-node step-${node.badge}`}
+                title={`${node.step_ko} — ${node.badge_reason_ko}`}
+                aria-label={`${node.step_ko}: ${node.badge_reason_ko}`}
+                onClick={() => openStep(node.step)}
+              >
+                <span className="step-dot" />
+                <span className="step-name">{node.step_ko}</span>
+              </button>
+            ))}
+          </div>
+          <span className="rca-stepper-actions">
+            <button type="button" className="link-btn" onClick={() => setAll(true)}>
+              {t.expand_all}
+            </button>
+            <button type="button" className="link-btn" onClick={() => setAll(false)}>
+              {t.collapse_all}
+            </button>
+          </span>
+        </div>
       </div>
 
       <div className="rca-flow">
         {chainData.nodes.map((node) => (
-          <RCAStep key={node.step} node={node} />
+          <RCAStep
+            key={node.step}
+            node={node}
+            open={openMap[node.step] ?? node.badge !== "green"}
+            onToggle={() =>
+              setOpenMap((previous) => ({
+                ...previous,
+                [node.step]: !(previous[node.step] ?? node.badge !== "green"),
+              }))
+            }
+          />
         ))}
       </div>
 
@@ -422,15 +476,33 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
   );
 }
 
-function RCAStep({ node }: { node: RCANode }) {
+function RCAStep({
+  node,
+  open,
+  onToggle,
+}: {
+  node: RCANode;
+  open: boolean;
+  onToggle: () => void;
+}) {
   return (
-    <div className={`card rca-node rca-${node.badge}`}>
-      <div className="head">
+    <div
+      id={`rca-step-${node.step}`}
+      className={`card rca-node rca-${node.badge} ${open ? "" : "rca-collapsed"}`}
+    >
+      <button
+        type="button"
+        className="head rca-head-btn"
+        aria-expanded={open}
+        onClick={onToggle}
+      >
         <span className="title">{node.step_ko}</span>
         <span className={`badge ${BADGE_CLASS[node.badge]}`}>{BADGE_LABEL[node.badge]}</span>
         <span className="desc">{node.badge_reason_ko}</span>
-      </div>
-      <CollapsibleList
+        <span className="rca-toggle-hint">{open ? "−" : "+"}</span>
+      </button>
+      {open && (
+        <CollapsibleList
         items={node.items ?? []}
         limit={5}
         render={(item: RCAItem, index: number) => (
@@ -461,7 +533,8 @@ function RCAStep({ node }: { node: RCANode }) {
             )}
           </div>
         )}
-      />
+        />
+      )}
     </div>
   );
 }
