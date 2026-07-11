@@ -73,11 +73,13 @@ export function ChangeImpactPage() {
       <h1>{t.title}</h1>
       <p className="section-note">{t.subtitle}</p>
 
-      <div className="card">
-        <div className="filter-row">
-          <label className="filter-label" htmlFor="ci-ip">{t.select_ip}</label>
+      {/* G2: 질의가 곧 문장 — 폼 자체가 분석의 의미를 설명한다. */}
+      <div className="card query-card">
+        <div className="query-sentence">
           <select
             id="ci-ip"
+            className="q-select q-select-ip"
+            aria-label={t.select_ip}
             value={ipId}
             onChange={(event) => {
               setIpId(event.target.value);
@@ -86,55 +88,63 @@ export function ChangeImpactPage() {
               setMode("");
             }}
           >
-            <option value="">{t.none_option}</option>
+            <option value="">{t.q_ip_placeholder}</option>
             {options.data.ips.map((ip) => (
               <option key={ip.ip_id} value={ip.ip_id}>
                 {ip.ip_name}
               </option>
             ))}
           </select>
-          <label className="filter-label" htmlFor="ci-knob">{t.select_knob}</label>
+          <span className="q-text">{t.q_of}</span>
           <select
             id="ci-knob"
+            className="q-select"
+            aria-label={t.select_knob}
             value={knobId}
             onChange={(event) => setKnobId(event.target.value)}
             disabled={!selected || (selected.knobs ?? []).length === 0}
           >
-            <option value="">{t.none_option}</option>
+            <option value="">{t.all_knobs}</option>
             {(selected?.knobs ?? []).map((knob) => (
               <option key={knob.id} value={knob.id}>
                 {knob.name}
               </option>
             ))}
           </select>
-          <label className="filter-label" htmlFor="ci-capability">{t.select_capability}</label>
+          <span className="q-text">{t.q_dot}</span>
           <select
             id="ci-capability"
+            className="q-select"
+            aria-label={t.select_capability}
             value={capabilityId}
             onChange={(event) => setCapabilityId(event.target.value)}
             disabled={!selected || (selected.capabilities ?? []).length === 0}
           >
-            <option value="">{t.none_option}</option>
+            <option value="">{t.all_capabilities}</option>
             {(selected?.capabilities ?? []).map((capability) => (
               <option key={capability.id} value={capability.id}>
                 {capability.name}
               </option>
             ))}
           </select>
-          <label className="filter-label" htmlFor="ci-mode">{t.select_mode}</label>
+          <span className="q-text">{t.q_obj}</span>
           <select
             id="ci-mode"
+            className="q-select"
+            aria-label={t.select_mode}
             value={mode}
             onChange={(event) => setMode(event.target.value)}
             disabled={!selected || (selected.modes ?? []).length === 0}
           >
-            <option value="">{t.none_option}</option>
+            <option value="">{t.all_modes}</option>
             {(selected?.modes ?? []).map((m) => (
               <option key={m} value={m}>
                 {m}
               </option>
             ))}
           </select>
+          <span className="q-text">{t.q_in}</span>
+          <span className="q-text">{t.q_tail}</span>
           <button
             type="button"
             className="run-btn"
@@ -186,6 +196,36 @@ export function ChangeImpactPage() {
   );
 }
 
+/** G2: 계기판 요약 스트립 — 규모를 먼저 보여주고, 클릭하면 해당 섹션으로 이동. */
+function StatStrip({ result }: { result: ChangeImpactResult }) {
+  const stats = [
+    { id: "ci-scenarios", label: t.quadrant_scenarios, count: result.impacted_scenarios.length },
+    { id: "ci-kpis", label: t.quadrant_kpis, count: result.impacted_kpis.length },
+    { id: "ci-chained", label: t.quadrant_chained, count: result.chained_ips.length },
+    { id: "ci-checklist", label: t.stat_roles, count: result.checklist.length },
+    { id: "ci-similar", label: t.similar_cases, count: result.similar_cases.length },
+  ];
+  return (
+    <div className="stat-strip">
+      {stats.map((stat) => (
+        <button
+          key={stat.id}
+          type="button"
+          className="stat"
+          onClick={() =>
+            document
+              .getElementById(stat.id)
+              ?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+        >
+          <b>{stat.count}</b>
+          <span>{stat.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function ImpactResult({ result }: { result: ChangeImpactResult }) {
   const label = useLabels();
   const valueLabel = useValueLabels();
@@ -218,8 +258,10 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
         )}
       </div>
 
+      <StatStrip result={result} />
+
       <div className="quadrant-grid">
-        <div className="card">
+        <div className="card" id="ci-scenarios">
           <h2 className="card-title">
             {t.quadrant_scenarios} ({result.impacted_scenarios.length})
           </h2>
@@ -249,7 +291,7 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
           />
         </div>
 
-        <div className="card">
+        <div className="card" id="ci-kpis">
           <h2 className="card-title">
             {t.quadrant_kpis} ({result.impacted_kpis.length})
           </h2>
@@ -271,7 +313,7 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
           </div>
         </div>
 
-        <div className="card">
+        <div className="card" id="ci-chained">
           <h2 className="card-title">
             {t.quadrant_chained} ({result.chained_ips.length})
           </h2>
@@ -294,7 +336,7 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
         <ChecklistCard checklist={result.checklist} exportText={result.export_text} />
       </div>
 
-      <div className="card">
+      <div className="card" id="ci-similar">
         <h2 className="card-title">
           {t.similar_cases} ({result.similar_cases.length})
         </h2>
@@ -366,7 +408,7 @@ function ChecklistCard({
     }
   };
   return (
-    <div className="card">
+    <div className="card" id="ci-checklist">
       <div className="head">
         <h2 className="card-title">
           {t.quadrant_checklist} ({checklist.length})
