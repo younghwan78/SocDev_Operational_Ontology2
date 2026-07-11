@@ -76,7 +76,7 @@ def test_no_match_returns_empty_citations(deterministic_runner) -> None:
 
 def test_valid_llm_answer_adopted(repo) -> None:
     question = "UHD60 recording에서 현재 가장 위험한 IP는 무엇인가?"
-    cards = AskRunner(repo, providers=[])._search(question)
+    cards, _ = AskRunner(repo, providers=[])._search(question)
     payload = {
         "answer": "UHD60 EIS 시나리오에서 ISP/MFC/DPU 셀이 높음 등급으로 판정되어 있습니다.",
         "citations": [cards[0].ref_id],
@@ -106,7 +106,7 @@ def test_invalid_citation_rejected_falls_back(repo) -> None:
 
 def test_high_confidence_needs_two_citations(repo) -> None:
     question = "UHD60 recording 위험"
-    cards = AskRunner(repo, providers=[])._search(question)
+    cards, _ = AskRunner(repo, providers=[])._search(question)
     payload = {
         "answer": "인용이 하나뿐인데 high confidence를 주장하는 답변입니다.",
         "citations": [cards[0].ref_id],
@@ -130,3 +130,20 @@ def test_deterministic_same_question_same_result(deterministic_runner) -> None:
     a = deterministic_runner.ask("ISP 관련 power issue는 과거 어떤 scenario에서 반복되었나?")
     b = deterministic_runner.ask("ISP 관련 power issue는 과거 어떤 scenario에서 반복되었나?")
     assert a.model_dump(exclude={"duration_ms"}) == b.model_dump(exclude={"duration_ms"})
+
+
+def test_korean_domain_terms_bridge_to_english(deterministic_runner) -> None:
+    """A1 — 한국어 도메인 용어(전력/발열)가 영어 데이터에 닿는다."""
+    result = deterministic_runner.ask("전력 문제가 반복된 IP는 무엇인가?")
+    assert result.cards, "전력→power 브리지로 카드가 수집돼야 한다"
+    # 범용 토큰(ip) 단독 매치였던 면적(area) 카드가 상위를 차지하지 않는다.
+    top_ids = [c.ref_id for c in result.cards[:4]]
+    assert "new_ip_area_cost" not in top_ids
+    matched_all = {m for c in result.cards for m in c.matched_terms}
+    assert "power" in matched_all
+    assert result.unmatched_terms == []
+
+
+def test_unmatched_terms_reported(deterministic_runner) -> None:
+    result = deterministic_runner.ask("magicfoo 관련 전력 이슈?")
+    assert "magicfoo" in result.unmatched_terms

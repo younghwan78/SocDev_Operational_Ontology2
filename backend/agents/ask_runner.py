@@ -61,6 +61,45 @@ _TOKEN_SYNONYMS: dict[str, list[str]] = {
     "risk": ["위험"],
 }
 
+# A1 한↔영 도메인 용어 브리지 — fixture/사내 데이터의 영어 텍스트와 한국어 질문을
+# 잇는 큐레이션 사전 (도메인 일반 지식, synthetic ID 아님). 그룹 내 전 방향 확장.
+_DOMAIN_TERM_GROUPS: list[tuple[str, ...]] = [
+    ("전력", "power"),
+    ("발열", "열", "thermal", "temperature"),
+    ("대역폭", "bandwidth"),
+    ("지연", "latency"),
+    ("화질", "quality"),
+    ("이슈", "문제", "issue"),
+    ("검증", "verification"),
+    ("테스트", "test"),
+    ("녹화", "촬영", "recording"),
+    ("재생", "playback"),
+    ("미리보기", "preview"),
+    ("일정", "schedule"),
+    ("근거", "증거", "evidence"),
+    ("요청", "request"),
+    ("결정", "decision"),
+    ("카메라", "camera"),
+    ("디스플레이", "display"),
+    ("오디오", "audio"),
+    ("코덱", "codec"),
+    ("안정성", "stability"),
+    ("면적", "area"),
+    ("클럭", "clock"),
+    ("주파수", "frequency"),
+    ("메모리", "memory"),
+]
+_DOMAIN_SYNONYMS: dict[str, set[str]] = {}
+for _group in _DOMAIN_TERM_GROUPS:
+    for _term in _group:
+        _DOMAIN_SYNONYMS.setdefault(_term, set()).update(t for t in _group if t != _term)
+
+# 범용 토큰 — 거의 모든 객체에 등장해 변별력이 없다. 가중 하향 + 단독 매치 배제.
+_GENERIC_TOKENS = {
+    "ip", "soc", "kpi", "블록", "무엇", "관련",
+    "scenario", "시나리오", "multimedia", "멀티미디어",
+}
+
 
 class AskCard(BaseModel):
     """질의 관련 객체 카드 — 답변 인용의 대상."""
@@ -91,6 +130,8 @@ class AskResult(BaseModel):
     derivation: str
     citations: list[str] = Field(default_factory=list)
     cards: list[AskCard]
+    # A1: 검색이 놓친 의미 토큰 — 사용자가 질문을 고칠 수 있는 힌트.
+    unmatched_terms: list[str] = Field(default_factory=list)
     validation_notes: list[str] = Field(default_factory=list)
     duration_ms: int = 0
     note_ko: str = "근거 인용 답변이며 결정이 아닙니다 · 인용은 수집된 객체로 한정"
@@ -102,11 +143,23 @@ def _tokens(text: str) -> set[str]:
     expanded = set(tokens)
     for token in tokens:
         expanded.update(_TOKEN_SYNONYMS.get(token, []))
+        expanded.update(_DOMAIN_SYNONYMS.get(token, set()))
         # "8k30" → "8k", "k30" 형태 분해 (해상도·프레임 표기)
         match = re.fullmatch(r"(\d+k)(\d+)", token)
         if match:
             expanded.update({match.group(1), f"k{match.group(2)}", match.group(2)})
     return expanded
+
+
+def _meaningful_query_tokens(question: str) -> set[str]:
+    """미매치 보고 대상 — 라틴/숫자 토큰과 도메인 사전에 있는 한국어 토큰만.
+    (조사·일반 한국어 어절을 노이즈로 보고하지 않기 위한 제한.)"""
+    raw = {t for t in re.findall(r"[0-9a-z]+|[가-힣]+", question.lower()) if len(t) >= 2}
+    return {
+        t
+        for t in raw
+        if (re.fullmatch(r"[0-9a-z]+", t) or t in _DOMAIN_SYNONYMS) and t not in _GENERIC_TOKENS
+    }
 
 
 class _ParsedAnswer(BaseModel):
@@ -133,7 +186,8 @@ class AskRunner:
 
     # ---- 검색 (결정론) ----
 
-    def _search(self, question: str) -> list[AskCard]:
+    def _search(self, question: str) -> tuple[list[AskCard], list[str]]:
+        """(카드, 미매치 토큰) — 미매치는 질문 개선 힌트로 화면에 노출된다."""
         query_tokens = _tokens(question)
         scored: dict[str, tuple[int, AskCard]] = {}
         heatmap = self._risk.heatmap()
@@ -167,9 +221,14 @@ class AskRunner:
                     or ""
                 )
                 status_ko, status_kind = self._status(obj, risk_rows, verification)
-                # 제목 일치 가중 — 제목에 걸린 토큰은 2배로 센다 (수치 점수 아님, 정렬용 순위)
+                # 가중(정렬용 순위, 수치 점수 아님): 변별력 있는 토큰 2, 범용 토큰 1,
+                # 제목 일치는 변별 토큰만 2배 추가 — "ip" 같은 범용어 단독 승리를 막는다.
                 title_tokens = _tokens(str(title))
-                weight = len(matched) + len(query_tokens & title_tokens)
+                specific = [m for m in matched if m not in _GENERIC_TOKENS]
+                weight = 2 * len(specific) + (len(matched) - len(specific))
+                weight += 2 * len(
+                    {m for m in (query_tokens & title_tokens) if m not in _GENERIC_TOKENS}
+                )
                 put(
                     f"{collection}:{obj.id}",
                     weight,
@@ -210,8 +269,36 @@ class AskRunner:
                     ),
                 )
 
-        ordered = sorted(scored.items(), key=lambda entry: (-entry[1][0], entry[0]))
-        return [card for _, (_, card) in ordered[:MAX_CARDS]]
+        # 변별 토큰 매치 카드가 있으면 범용 토큰 단독 매치 카드는 제외한다.
+        entries = list(scored.items())
+        has_specific = any(
+            any(m not in _GENERIC_TOKENS for m in card.matched_terms)
+            for _, (_, card) in entries
+        )
+        if has_specific:
+            entries = [
+                (key, value)
+                for key, value in entries
+                if any(m not in _GENERIC_TOKENS for m in value[1].matched_terms)
+            ]
+        ordered = sorted(entries, key=lambda entry: (-entry[1][0], entry[0]))
+        cards = [card for _, (_, card) in ordered[:MAX_CARDS]]
+
+        # 미매치 토큰 — 확장(동의어/브리지)까지 고려해 진짜 못 찾은 것만 보고한다.
+        matched_union = {term for card in cards for term in card.matched_terms}
+        unmatched = sorted(
+            token
+            for token in _meaningful_query_tokens(question)
+            if not (
+                token in matched_union
+                or (
+                    _DOMAIN_SYNONYMS.get(token, set())
+                    | set(_TOKEN_SYNONYMS.get(token, []))
+                )
+                & matched_union
+            )
+        )
+        return cards, unmatched
 
     def _status(
         self, obj: object, risk_rows: dict, verification: dict
@@ -335,7 +422,7 @@ class AskRunner:
 
     def ask(self, question: str) -> AskResult:
         started = time.monotonic()
-        cards = self._search(question)
+        cards, unmatched = self._search(question)
         card_ids = {card.ref_id for card in cards}
         notes: list[str] = []
         prompt = self._prompt(question, cards)
@@ -376,6 +463,7 @@ class AskRunner:
             derivation=parsed.derivation,
             citations=parsed.citations,
             cards=cards,
+            unmatched_terms=unmatched,
             validation_notes=notes,
             duration_ms=int((time.monotonic() - started) * 1000),
         )
