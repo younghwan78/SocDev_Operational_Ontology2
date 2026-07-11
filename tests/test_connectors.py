@@ -150,3 +150,66 @@ constants:
     connector = JiraConnector(FakeJiraClient(payload), JiraFieldMap.load(custom))
     report = connector.sync(service)
     assert report.batch.accepted_count == 1
+
+
+def test_jira_resync_skips_unchanged_and_replaces_updated(
+    tmp_path: Path, service: IngestService, repo: InMemoryRepository
+) -> None:
+    """R7 — 같은 JIRA 키의 주기적 update: 변동 없음은 건너뛰고, 바뀐 것만 교체한다."""
+    custom = tmp_path / "map.yaml"
+    custom.write_text(
+        """
+issue_mapping: issues
+columns:
+  이슈 ID: key
+  제목: fields.title
+  유형: fields.kind
+  상태: fields.state
+  증상: fields.detail
+  프로젝트 ID: fields.project
+constants:
+  확신도: low
+""",
+        encoding="utf-8",
+    )
+    v1 = tmp_path / "v1.json"
+    v1.write_text(
+        '{"issues": [{"key": "X-1", "fields": {"title": "t1", "kind": "defect",'
+        ' "state": "open", "detail": "d", "project": "project_u"}},'
+        '{"key": "X-2", "fields": {"title": "t2", "kind": "defect",'
+        ' "state": "open", "detail": "d", "project": "project_u"}}]}',
+        encoding="utf-8",
+    )
+    # X-1은 상태 변경(resolved), X-2는 동일 — 갱신 1 / 변동 없음 1이어야 한다.
+    v2 = tmp_path / "v2.json"
+    v2.write_text(
+        '{"issues": [{"key": "X-1", "fields": {"title": "t1", "kind": "defect",'
+        ' "state": "resolved", "detail": "d", "project": "project_u"}},'
+        '{"key": "X-2", "fields": {"title": "t2", "kind": "defect",'
+        ' "state": "open", "detail": "d", "project": "project_u"}}]}',
+        encoding="utf-8",
+    )
+    field_map = JiraFieldMap.load(custom)
+    first = JiraConnector(FakeJiraClient(v1), field_map).sync(service)
+    assert first.batch.accepted_count == 2
+
+    second = JiraConnector(FakeJiraClient(v2), field_map).sync(service)
+    assert second.batch.accepted_count == 0
+    assert second.batch.updated_count == 1
+    assert second.batch.unchanged_count == 1
+    updated = repo.get("issues", "X-1")
+    assert updated is not None and updated.status == "resolved"
+    # 교체된 객체의 계보는 새 배치 + 외부 키를 담는다.
+    assert (updated.source.ref or "").endswith("jira:X-1")
+    assert second.batch.id in (updated.source.ref or "")
+
+
+def test_incremental_jql_composition() -> None:
+    from backend.connectors.jira import incremental_jql
+
+    assert incremental_jql("project = MM", None) == "project = MM"
+    assert (
+        incremental_jql("project = MM", "2026-07-11T09:30:00+00:00")
+        == '(project = MM) AND updated >= "2026-07-11 09:30"'
+    )
+    assert incremental_jql("", "2026-07-11T09:30:00") == 'updated >= "2026-07-11 09:30"'

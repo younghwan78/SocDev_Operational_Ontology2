@@ -2,16 +2,17 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — UI G1~G3(변경 영향 전파 지도) 완료 (2026-07-11).**
+**활성 Stage 없음 — 반입 J1+J2(품질 리포트·증분 동기화) 완료 (2026-07-11).**
 
-> G2 문장형 질의 빌더+요약 스트립 / G1 영향 전파 지도(순수 SVG, 간선=근거) /
-> G3 노드→근거 패널(`?node=`)·화면 재편·docs 개정. 같은 날 W1~W3(유동 폭/열
-> 카테고리/코크핏 정체성/스플리터) 완료. 상세: CHANGELOG.
+> 사내 JIRA 현실 갭 교정: upsert 3분류(신규/갱신/변동 없음)·증분 JQL(--since auto)·
+> pagination·그룹별 env prefix·품질 리포트(연결률/미등재 값/참조 경고)·거부 행 CSV.
+> 설계·잔여(J3 신선도/일정 신호, J4 이슈↔Confluence, quarantine):
+> `internal_docs/design/14_ingest_reality_gaps.md`. 같은 날 UI W1~W3(코크핏)·
+> G1~G3(변경 영향 전파 지도) 완료. 상세: CHANGELOG.
 >
-> **후속 후보(미착수, 승인 필요)**: 공통 StatusBadge/AsyncSection 리팩터(badge 맵
-> 중복·보조 쿼리 무언 실패), 목록 스켈레톤·가상화(500건+), 1280px 분기·프린트,
-> docs/ 스크린샷 재캡처(변경 영향·위험 지도 — 화면이 크게 바뀜), Stage 13 트랙 A
-> 또는 Stage 14 잔여(인증/배포/캐시).
+> **후속 후보(미착수, 승인 필요)**: J3/J4(계약 확장 — 설계 14 §2), 공통
+> StatusBadge/AsyncSection 리팩터, 목록 가상화(500건+), docs/ 스크린샷 재캡처,
+> Stage 13 트랙 A 또는 Stage 14 잔여(인증/배포/캐시).
 
 ### 직전 완료 — UI 실사용자 재설계 P0~P2 (2026-07-11)
 

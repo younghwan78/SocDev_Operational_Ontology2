@@ -2274,7 +2274,7 @@
       },
       "IngestBatch": {
         "additionalProperties": false,
-        "description": "반입 배치 기록.",
+        "description": "반입 배치 기록.\n\nupsert 의미론 (14_ingest_reality_gaps.md §2 J2): 같은 id 재반입 시\naccepted=신규 / updated=내용 변경 교체 / unchanged=변동 없음(쓰지 않음, 계보 유지).\nrollback은 \"그 배치가 현재 소유한 객체 제거\" — 갱신된 객체의 계보는 최신 배치로\n이전되므로 이전 배치 rollback은 그 객체를 건드리지 않는다.",
         "properties": {
           "accepted_count": {
             "title": "Accepted Count",
@@ -2307,6 +2307,16 @@
           "target_collection": {
             "title": "Target Collection",
             "type": "string"
+          },
+          "unchanged_count": {
+            "default": 0,
+            "title": "Unchanged Count",
+            "type": "integer"
+          },
+          "updated_count": {
+            "default": 0,
+            "title": "Updated Count",
+            "type": "integer"
           }
         },
         "required": [
@@ -2369,6 +2379,16 @@
         "properties": {
           "batch": {
             "$ref": "#/components/schemas/IngestBatch"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QualityReport"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "rejected_rows": {
             "items": {
@@ -3470,6 +3490,38 @@
           "relation_summary"
         ],
         "title": "Propagation",
+        "type": "object"
+      },
+      "QualityReport": {
+        "additionalProperties": false,
+        "description": "J1 반입 품질 리포트 — 결정론 대조, 경고이지 거부가 아니다.",
+        "properties": {
+          "linkage_connected": {
+            "default": 0,
+            "title": "Linkage Connected",
+            "type": "integer"
+          },
+          "linkage_total": {
+            "default": 0,
+            "title": "Linkage Total",
+            "type": "integer"
+          },
+          "missing_ref_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Ref Warnings",
+            "type": "array"
+          },
+          "unlabeled_values": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unlabeled Values",
+            "type": "array"
+          }
+        },
+        "title": "QualityReport",
         "type": "object"
       },
       "RCAChain": {

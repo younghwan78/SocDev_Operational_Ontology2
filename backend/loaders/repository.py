@@ -62,6 +62,15 @@ class InMemoryRepository:
         self._collections.setdefault(collection, []).extend(objects)
         self._by_id.setdefault(collection, {}).update({obj.id: obj for obj in objects})
 
+    def remove_by_ids(self, collection: str, object_ids: Sequence[str]) -> None:
+        """반입 upsert 전용 제거 경로 — 같은 id 재반입 시 교체를 위해 기존 객체를 걷어낸다."""
+        targets = set(object_ids)
+        items = self._collections.get(collection, [])
+        self._collections[collection] = [obj for obj in items if obj.id not in targets]
+        by_id = self._by_id.get(collection, {})
+        for object_id in targets:
+            by_id.pop(object_id, None)
+
     def remove_by_ref_prefix(self, ref_prefix: str) -> int:
         """반입 배치 rollback 전용 제거 경로. 제거 건수를 반환한다."""
         removed = 0

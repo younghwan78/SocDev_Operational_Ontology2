@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 반입 J1+J2 — 사내 데이터 현실 대응: 품질 리포트 + 증분 동기화 (2026-07-11)
+
+> 사용자 관찰(사내 JIRA: 라벨/상태 미정비·다과제 공통·그룹별 인스턴스·대량·주기적
+> update) 기반 갭 교정. 설계: `internal_docs/design/14_ingest_reality_gaps.md`.
+
+- **J2 upsert 의미론 통일**: 같은 id 재반입 시 신규/갱신(내용 변경 교체)/변동 없음
+  (쓰지 않음, 계보 유지) 3분류 — 같은 JIRA 키·Confluence URL의 주기적 update에서
+  바뀐 것만 쓴다. in-memory 중복 축적 버그 해소(Postgres UPSERT와 패리티).
+  배치에 `updated_count`/`unchanged_count`(DB 스키마 불변 — payload에서 복원).
+  rollback 의미론 재정의: 배치가 현재 소유한 객체만 제거(설계 문서에 명문화).
+  배치 내 중복 id는 마지막 행 적용(앞선 행 거부 보고).
+- **J2 증분 동기화**: `sync-jira --since auto|<ISO>`(배치 이력에서 마지막 완료 시각
+  유도 → `updated >=` JQL 결합), `JiraHttpClient` startAt pagination,
+  `--env-prefix`(그룹별 인스턴스 분리).
+- **J1 반입 품질 리포트**: 매핑에 선언적 검사 메타데이터(label_domains/ref_checks/
+  linkage_fields) → 배치마다 라벨 미등재 값·참조 무결성 경고·**온톨로지 연결률**
+  (시나리오/IP 미연결=화면에 안 나타나는 죽은 데이터) 보고 — 경고이지 거부 아님.
+  반입 센터: 신규/갱신/변동 없음 카운트 + 품질 섹션 + 거부 행 CSV 내려받기(큐레이션
+  루프 1단계). CLI 출력 동일 체계.
+- **범위 외(승인 대기)**: J3 신선도·일정 신호(계약 확장), J4 이슈↔Confluence 링크,
+  quarantine 저장 컬렉션 — 설계 문서 §4.
+
 ## UI G1~G3 — 변경 영향 재설계: 영향 전파 지도 (2026-07-11)
 
 > 사용자 피드백: 전파 경로가 텍스트 목록으로 흩어져 그래프가 안 보임, 폼이 기계적.

@@ -1579,6 +1579,11 @@ export interface components {
         /**
          * IngestBatch
          * @description 반입 배치 기록.
+         *
+         *     upsert 의미론 (14_ingest_reality_gaps.md §2 J2): 같은 id 재반입 시
+         *     accepted=신규 / updated=내용 변경 교체 / unchanged=변동 없음(쓰지 않음, 계보 유지).
+         *     rollback은 "그 배치가 현재 소유한 객체 제거" — 갱신된 객체의 계보는 최신 배치로
+         *     이전되므로 이전 배치 rollback은 그 객체를 건드리지 않는다.
          */
         IngestBatch: {
             /** Accepted Count */
@@ -1597,6 +1602,16 @@ export interface components {
             status: string;
             /** Target Collection */
             target_collection: string;
+            /**
+             * Unchanged Count
+             * @default 0
+             */
+            unchanged_count: number;
+            /**
+             * Updated Count
+             * @default 0
+             */
+            updated_count: number;
         };
         /**
          * IngestMappingInfo
@@ -1620,6 +1635,7 @@ export interface components {
          */
         IngestReport: {
             batch: components["schemas"]["IngestBatch"];
+            quality?: components["schemas"]["QualityReport"] | null;
             /** Rejected Rows */
             rejected_rows?: components["schemas"]["RejectedRow"][];
         };
@@ -2013,6 +2029,26 @@ export interface components {
             to_project_id: string;
             /** Trigger Role */
             trigger_role: string;
+        };
+        /**
+         * QualityReport
+         * @description J1 반입 품질 리포트 — 결정론 대조, 경고이지 거부가 아니다.
+         */
+        QualityReport: {
+            /**
+             * Linkage Connected
+             * @default 0
+             */
+            linkage_connected: number;
+            /**
+             * Linkage Total
+             * @default 0
+             */
+            linkage_total: number;
+            /** Missing Ref Warnings */
+            missing_ref_warnings?: string[];
+            /** Unlabeled Values */
+            unlabeled_values?: string[];
         };
         /**
          * RCAChain

@@ -51,22 +51,38 @@ class FakeJiraClient:
         return issues
 
 
+def incremental_jql(base_jql: str, since_iso: str | None) -> str:
+    """증분 동기화 JQL — 마지막 동기화 이후 갱신분만 (같은 키의 주기적 update 대응)."""
+    if not since_iso:
+        return base_jql
+    # JIRA JQL은 "yyyy-MM-dd HH:mm" 형식 — ISO의 T/초 이하를 정리한다.
+    stamp = since_iso.replace("T", " ")[:16]
+    clause = f'updated >= "{stamp}"'
+    return f"({base_jql}) AND {clause}" if base_jql.strip() else clause
+
+
 class JiraHttpClient:
     """실 JIRA REST 클라이언트 (얇음) — 사내 검증 대상, 테스트 비대상.
 
-    환경변수: JIRA_BASE_URL, JIRA_API_TOKEN. jql은 생성자 인자.
+    환경변수: {prefix}JIRA_BASE_URL, {prefix}JIRA_API_TOKEN — 그룹별 인스턴스는
+    env_prefix로 분리한다 (예: prefix "CAMERA_" → CAMERA_JIRA_BASE_URL).
+    pagination: startAt 순회로 전량 수집 (대량 인스턴스 대응).
     """
 
-    def __init__(self, jql: str, max_results: int = 100) -> None:
-        self._base_url = os.environ.get("JIRA_BASE_URL")
-        self._token = os.environ.get("JIRA_API_TOKEN")
+    def __init__(self, jql: str, max_results: int = 100, env_prefix: str = "") -> None:
+        self._base_url = os.environ.get(f"{env_prefix}JIRA_BASE_URL")
+        self._token = os.environ.get(f"{env_prefix}JIRA_API_TOKEN")
         if not self._base_url or not self._token:
-            raise ConnectorError("JIRA_BASE_URL/JIRA_API_TOKEN 환경변수가 필요합니다")
+            raise ConnectorError(
+                f"{env_prefix}JIRA_BASE_URL/{env_prefix}JIRA_API_TOKEN 환경변수가 필요합니다"
+            )
         self._jql = jql
         self._max_results = max_results
 
-    def search_issues(self) -> list[dict[str, Any]]:
-        query = urllib.parse.urlencode({"jql": self._jql, "maxResults": self._max_results})
+    def _page(self, start_at: int) -> list[dict[str, Any]]:
+        query = urllib.parse.urlencode(
+            {"jql": self._jql, "maxResults": self._max_results, "startAt": start_at}
+        )
         request = urllib.request.Request(
             f"{self._base_url}/rest/api/2/search?{query}",
             headers={"Authorization": f"Bearer {self._token}"},
@@ -75,6 +91,16 @@ class JiraHttpClient:
             payload = json.load(response)
         issues = payload.get("issues", [])
         return issues if isinstance(issues, list) else []
+
+    def search_issues(self) -> list[dict[str, Any]]:
+        collected: list[dict[str, Any]] = []
+        start_at = 0
+        while True:
+            page = self._page(start_at)
+            collected.extend(page)
+            if len(page) < self._max_results:
+                return collected
+            start_at += self._max_results
 
 
 @dataclass(frozen=True)

@@ -11,6 +11,7 @@ import {
   rollbackIngestBatch,
   uploadIngestFile,
   type IngestMappingInfo,
+  type IngestQualityReport,
   type IngestReport,
 } from "../api/client";
 import { ko } from "../i18n/ko";
@@ -19,6 +20,52 @@ const t = ko.ingest;
 
 function csvCell(value: string): string {
   return `"${value.replace(/"/g, '""')}"`;
+}
+
+/** 거부 행 사유 CSV — 큐레이션 루프 1단계: 원본에서 해당 행을 고쳐 재반입한다. */
+export function downloadRejectedCsv(report: IngestReport) {
+  const lines = [
+    [t.row_suffix, "사유"].map(csvCell).join(","),
+    ...(report.rejected_rows ?? []).map((row) =>
+      [String(row.row_number), row.reason].map(csvCell).join(","),
+    ),
+  ];
+  const blob = new Blob(["﻿" + lines.join("\r\n") + "\r\n"], {
+    type: "text/csv;charset=utf-8",
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${report.batch.filename}_rejected.csv`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function QualitySection({ quality }: { quality: IngestQualityReport }) {
+  return (
+    <div>
+      <p className="subhead">{t.quality_title}</p>
+      {quality.linkage_total > 0 && (
+        <p className="desc">
+          {t.linkage}:{" "}
+          <b>
+            {quality.linkage_connected}/{quality.linkage_total}
+          </b>
+          {quality.linkage_connected < quality.linkage_total && <> — {t.linkage_note}</>}
+        </p>
+      )}
+      {(quality.unlabeled_values ?? []).map((line) => (
+        <p key={line} className="desc">
+          <span className="badge badge-warn">{t.unlabeled}</span> {line}
+        </p>
+      ))}
+      {(quality.missing_ref_warnings ?? []).map((line) => (
+        <p key={line} className="desc">
+          <span className="badge badge-warn">{t.missing_ref}</span> {line}
+        </p>
+      ))}
+    </div>
+  );
 }
 
 export function downloadTemplateCsv(mapping: IngestMappingInfo) {
@@ -126,6 +173,12 @@ export function IngestPage() {
               <span className="badge badge-ok">
                 {t.accepted} {report.batch.accepted_count}
               </span>{" "}
+              <span className="badge badge-info">
+                {t.updated} {report.batch.updated_count ?? 0}
+              </span>{" "}
+              <span className="badge badge-info">
+                {t.unchanged} {report.batch.unchanged_count ?? 0}
+              </span>{" "}
               <span
                 className={`badge ${report.batch.rejected_count > 0 ? "badge-danger" : "badge-info"}`}
               >
@@ -135,6 +188,16 @@ export function IngestPage() {
                 {report.batch.filename}
               </span>
             </p>
+            {report.quality && <QualitySection quality={report.quality} />}
+            {(report.rejected_rows ?? []).length > 0 && (
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => downloadRejectedCsv(report)}
+              >
+                {t.download_rejected}
+              </button>
+            )}
             {(report.rejected_rows ?? []).map((row) => (
               <p key={row.row_number} className="desc rca-alert">
                 {row.row_number}

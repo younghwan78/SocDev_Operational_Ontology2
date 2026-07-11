@@ -246,6 +246,7 @@ export async function fetchValueLabels(): Promise<Record<string, Record<string, 
 
 export type IngestBatch = components["schemas"]["IngestBatch"];
 export type IngestReport = components["schemas"]["IngestReport"];
+export type IngestQualityReport = components["schemas"]["QualityReport"];
 export type IngestMappingInfo = components["schemas"]["IngestMappingInfo"];
 export type Decision = components["schemas"]["Decision"];
 

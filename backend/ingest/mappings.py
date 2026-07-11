@@ -30,6 +30,10 @@ class IngestMapping:
     single_item_lists: set[str] = field(default_factory=set)  # 조립 후 [obj]로 감쌀 필드
     defaults: dict[str, object] = field(default_factory=dict)
     required_columns: set[str] = field(default_factory=set)
+    # J1 품질 리포트 메타데이터 (14_ingest_reality_gaps.md §2) — 검사는 경고, 거부 아님.
+    label_domains: dict[str, str] = field(default_factory=dict)  # 필드 경로 → 값 도메인
+    ref_checks: dict[str, str] = field(default_factory=dict)  # 필드 경로 → 참조 컬렉션
+    linkage_fields: tuple[str, ...] = ()  # 온톨로지 연결률 판단 경로
 
 
 MAPPINGS: dict[str, IngestMapping] = {
@@ -122,6 +126,24 @@ MAPPINGS: dict[str, IngestMapping] = {
         int_columns={"resolved_week"},
         single_item_lists={"root_causes"},
         required_columns={"이슈 ID", "프로젝트 ID", "제목", "유형", "상태", "증상", "확신도"},
+        label_domains={
+            "issue_type": "issue_type",
+            "status": "issue_status",
+            "severity": "severity",
+            "fix_type": "fix_type",
+        },
+        ref_checks={
+            "project_id": "projects",
+            "affected_scope.scenarios": "scenarios",
+            "affected_scope.ip_blocks": "ip_blocks",
+            "affected_scope.system_blocks": "ip_blocks",
+            "verifying_test_ids": "tests",
+        },
+        linkage_fields=(
+            "affected_scope.scenarios",
+            "affected_scope.ip_blocks",
+            "affected_scope.system_blocks",
+        ),
     ),
     "tests": IngestMapping(
         name="tests",
@@ -146,6 +168,13 @@ MAPPINGS: dict[str, IngestMapping] = {
         },
         int_columns={"executed_week"},
         required_columns={"테스트 ID", "프로젝트 ID", "제목", "유형", "결과", "요약"},
+        label_domains={"test_type": "test_type", "result": "test_result"},
+        ref_checks={
+            "project_id": "projects",
+            "linked_scenario_ids": "scenarios",
+            "verifies_issue_ids": "issues",
+        },
+        linkage_fields=("linked_scenario_ids", "verifies_issue_ids"),
     ),
     "development_events": IngestMapping(
         name="development_events",
@@ -179,6 +208,17 @@ MAPPINGS: dict[str, IngestMapping] = {
         },
         int_columns={"week"},
         required_columns={"이벤트 ID", "프로젝트 ID", "제목", "설명", "유형", "분류"},
+        label_domains={
+            "severity": "severity",
+            "status": "event_status",
+            "schedule_signal": "schedule_signal",
+        },
+        ref_checks={
+            "project_id": "projects",
+            "linked_scenario_ids": "scenarios",
+            "related_ip_ids": "ip_blocks",
+        },
+        linkage_fields=("linked_scenario_ids", "related_ip_ids"),
     ),
     "decisions": IngestMapping(
         # 결정 재진입 (B3b) — 리뷰 팩 결정 CSV의 채워진 행을 Decision으로.
@@ -212,6 +252,7 @@ MAPPINGS: dict[str, IngestMapping] = {
             "근거 유형",
             "확신도",
         },
+        ref_checks={"project_id": "projects", "event_id": "development_events"},
     ),
     "semantic_chunks": IngestMapping(
         # Confluence 등 문서 페이지의 검색 후보 반입 — 증거가 아니라 후보 지위(§3).
@@ -232,6 +273,12 @@ MAPPINGS: dict[str, IngestMapping] = {
         list_columns={"scenario_ids": ";", "ip_ids": ";"},
         defaults={"embedding_status": "pending", "evidence_confidence": "low"},
         required_columns={"청크 ID", "본문", "출처 ID", "출처 유형"},
+        ref_checks={
+            "project_id": "projects",
+            "scenario_ids": "scenarios",
+            "ip_ids": "ip_blocks",
+        },
+        linkage_fields=("scenario_ids", "ip_ids"),
     ),
     "evidence_catalog": IngestMapping(
         name="evidence_catalog",
@@ -260,8 +307,32 @@ MAPPINGS: dict[str, IngestMapping] = {
         int_columns={"week"},
         bool_columns={"is_measurement", "is_prediction"},
         required_columns={"근거 ID", "프로젝트 ID", "시나리오 ID", "제목"},
+        label_domains={
+            "evidence_type": "evidence_type",
+            "availability": "availability",
+            "confidence_contribution": "confidence_contribution",
+            "measurement_stage": "measurement_stage",
+            "scenario_match": "scenario_match",
+        },
+        ref_checks={"project_id": "projects", "scenario_id": "scenarios"},
+        linkage_fields=("scenario_id",),
     ),
 }
+
+
+def field_values(record: dict[str, object], field_path: str) -> list[str]:
+    """점 표기 경로의 값을 문자열 리스트로 — 스칼라는 1건, 리스트는 전개, 누락은 빈 리스트."""
+    node: object = record
+    for part in field_path.split("."):
+        if not isinstance(node, dict):
+            return []
+        node = node.get(part)
+        if node is None:
+            return []
+    if isinstance(node, list):
+        return [str(item) for item in node if str(item).strip()]
+    text = str(node).strip()
+    return [text] if text else []
 
 
 def _parse_bool(value: str) -> bool:

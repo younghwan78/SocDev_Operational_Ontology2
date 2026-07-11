@@ -363,3 +363,78 @@ def test_ingest_api_roundtrip() -> None:
         files={"file": ("x.csv", b"a\n1\n", "text/csv")},
     )
     assert bad.status_code == 400
+
+
+# ---- J1/J2: upsert 재동기화 + 품질 리포트 (14_ingest_reality_gaps.md) ----
+
+
+def test_reingest_same_rows_is_unchanged(repo: InMemoryRepository, service: IngestService) -> None:
+    """같은 키/내용 재반입 — 쓰지 않고 건너뛰며(변동 없음) 기존 계보를 유지한다 (R7)."""
+    first = service.ingest("sample_issues.csv", SAMPLE_ISSUES.read_bytes(), "issues")
+    assert first.batch.accepted_count > 0
+    count_after_first = len(repo.list("issues"))
+    first_ref = repo.get("issues", "import_issue_dpu_ui_underrun_v").source.ref
+
+    second = service.ingest("sample_issues.csv", SAMPLE_ISSUES.read_bytes(), "issues")
+    assert second.batch.accepted_count == 0
+    assert second.batch.updated_count == 0
+    assert second.batch.unchanged_count == first.batch.accepted_count
+    # 중복 축적 없음 + 계보는 첫 배치 유지 (이전 배치 rollback이 여전히 소유)
+    assert len(repo.list("issues")) == count_after_first
+    assert repo.get("issues", "import_issue_dpu_ui_underrun_v").source.ref == first_ref
+
+
+def test_reingest_modified_row_replaces_object(
+    repo: InMemoryRepository, service: IngestService
+) -> None:
+    """같은 키·다른 내용 재반입 — 교체(갱신)되고 계보가 새 배치로 이전된다."""
+    header = "이슈 ID,프로젝트 ID,제목,유형,상태,증상,확신도\n"
+    v1 = header + "import_upsert_case,project_u,전력 이슈,power_gap,open,전력 초과,medium\n"
+    v2 = header + "import_upsert_case,project_u,전력 이슈,power_gap,resolved,전력 초과,medium\n"
+
+    first = service.ingest("v1.csv", v1.encode(), "issues")
+    assert first.batch.accepted_count == 1
+    second = service.ingest("v2.csv", v2.encode(), "issues")
+    assert second.batch.accepted_count == 0
+    assert second.batch.updated_count == 1
+    assert second.batch.unchanged_count == 0
+
+    obj = repo.get("issues", "import_upsert_case")
+    assert obj is not None and obj.status == "resolved"
+    assert second.batch.id in (obj.source.ref or "")
+    # rollback 의미론: 첫 배치 rollback은 최신 배치 소유 객체를 건드리지 않는다.
+    assert service.rollback(first.batch.id) == 0
+    assert repo.get("issues", "import_upsert_case") is not None
+    assert service.rollback(second.batch.id) == 1
+    assert repo.get("issues", "import_upsert_case") is None
+
+
+def test_duplicate_ids_within_batch_last_wins(service: IngestService, repo: InMemoryRepository) -> None:
+    header = "이슈 ID,프로젝트 ID,제목,유형,상태,증상,확신도\n"
+    csv_content = (
+        header
+        + "import_dup,project_u,첫 행,power_gap,open,증상 A,medium\n"
+        + "import_dup,project_u,마지막 행,power_gap,open,증상 B,medium\n"
+    )
+    report = service.ingest("dup.csv", csv_content.encode(), "issues")
+    assert report.batch.accepted_count == 1
+    assert report.batch.rejected_count == 1
+    assert "중복 ID" in report.rejected_rows[0].reason
+    assert repo.get("issues", "import_dup").title == "마지막 행"
+
+
+def test_quality_report_flags_unlabeled_and_missing_refs(service: IngestService) -> None:
+    """J1 — 라벨 미등재 값·미존재 참조는 경고로 드러나고, 거부되지 않는다 (R1)."""
+    header = "이슈 ID,프로젝트 ID,제목,유형,상태,증상,확신도,영향 시나리오\n"
+    csv_content = (
+        header
+        + "import_q1,project_u,정상 연결,power_gap,open,증상,medium,uhd60_recording_eis_on\n"
+        + "import_q2,project_없는과제,미지정 라벨,power_gap,In Review,증상,medium,\n"
+    )
+    report = service.ingest("q.csv", csv_content.encode(), "issues")
+    assert report.batch.accepted_count == 2  # 경고는 거부가 아니다
+    assert report.quality is not None
+    assert any("issue_status: 'In Review'" in line for line in report.quality.unlabeled_values)
+    assert any("projects: 'project_없는과제'" in line for line in report.quality.missing_ref_warnings)
+    assert report.quality.linkage_total == 2
+    assert report.quality.linkage_connected == 1
