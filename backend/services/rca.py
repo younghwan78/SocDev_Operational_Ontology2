@@ -122,6 +122,10 @@ class RCAChain(BaseModel):
     closed_without_verification: bool
     alert_ko: str | None = None
     nodes: list[RCANode]
+    # J4: 관련 문서 후보 — 이슈의 외부 문서 참조 + 이 이슈를 언급하는 검색 청크.
+    # 후보 지위(증거 아님) — supporting_basis 편입은 큐레이션을 거친다.
+    doc_refs: list[str] = Field(default_factory=list)
+    doc_candidates: list[RCAItem] = Field(default_factory=list)
 
 
 def _verification_status(issue: Issue, tests: list[Test]) -> str:
@@ -267,7 +271,28 @@ class RCAService:
             closed_without_verification=closed_unverified,
             alert_ko=alert_ko,
             nodes=nodes,
+            doc_refs=issue.doc_refs,
+            doc_candidates=self._doc_candidates(issue),
         )
+
+    def _doc_candidates(self, issue: Issue) -> list[RCAItem]:
+        """J4 — 이 이슈를 언급하는 검색 청크(Confluence 등). 후보이지 증거가 아니다."""
+        from backend.ontology.evidence import SemanticChunk
+
+        items: list[RCAItem] = []
+        for obj in self._repo.list("semantic_chunks"):
+            if not isinstance(obj, SemanticChunk) or issue.id not in obj.related_issue_ids:
+                continue
+            preview = obj.chunk_text.replace("\n", " ")
+            items.append(
+                RCAItem(
+                    title=obj.source_id,
+                    description=preview[:160] + ("…" if len(preview) > 160 else ""),
+                    ref_id=obj.id,
+                    ref_collection="semantic_chunks",
+                )
+            )
+        return sorted(items, key=lambda item: item.ref_id or "")
 
     def _symptom_node(self, issue: Issue) -> RCANode:
         has_evidence = bool(issue.evidence_refs)

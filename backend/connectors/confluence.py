@@ -48,6 +48,7 @@ class ConfluenceConnector:
         refs: list[str] = []
         for page in self._client.fetch_pages():
             page_id = str(page.get("id", ""))
+            issue_keys = page.get("issue_keys", [])
             rows.append(
                 {
                     "청크 ID": f"chunk_confluence_{page_id}",
@@ -55,6 +56,10 @@ class ConfluenceConnector:
                     "출처 ID": page_id,
                     "출처 유형": "confluence_page",
                     "프로젝트 ID": str(page.get("project_id", "")),
+                    # J4: 페이지가 언급하는 이슈 키 — 이슈 상세의 관련 문서 후보 역링크.
+                    "관련 이슈": ";".join(str(key) for key in issue_keys)
+                    if isinstance(issue_keys, list)
+                    else str(issue_keys),
                 }
             )
             refs.append(f"confluence:{page_id}")

@@ -147,6 +147,13 @@
     "confidence": {
       "$ref": "#/$defs/Confidence"
     },
+    "doc_refs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Doc Refs",
+      "type": "array"
+    },
     "due_week": {
       "anyOf": [
         {

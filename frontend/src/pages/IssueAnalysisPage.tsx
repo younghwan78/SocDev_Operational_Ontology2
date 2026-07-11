@@ -236,6 +236,32 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
           <RCAStep key={node.step} node={node} />
         ))}
       </div>
+
+      {/* J4: 관련 문서 후보 — 상세가 Confluence 등 외부 문서에 있는 이슈의 추적 고리 */}
+      {((chainData.doc_refs ?? []).length > 0 ||
+        (chainData.doc_candidates ?? []).length > 0) && (
+        <div className="card">
+          <div className="head">
+            <h2 className="card-title">{t.doc_candidates_title}</h2>
+            <span className="badge badge-warn">{t.doc_not_evidence}</span>
+          </div>
+          {(chainData.doc_refs ?? []).map((ref) => (
+            <p key={ref} className="desc">
+              <span className="badge badge-info">{t.doc_ref_label}</span> {ref}
+            </p>
+          ))}
+          {(chainData.doc_candidates ?? []).map((item, index) => (
+            <div key={`${item.ref_id}-${index}`} className="list-item">
+              <div className="head">
+                <span className="title" title={item.ref_id ?? ""}>
+                  {item.title}
+                </span>
+              </div>
+              <p className="desc">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

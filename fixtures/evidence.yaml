@@ -1430,6 +1430,7 @@ semantic_chunks:
   - sys_mif
   - sys_noc
   - sys_power_clock_thermal
+  related_issue_ids: []
   metadata:
     retrieval_use:
     - similar_issue_search
@@ -1463,6 +1464,7 @@ semantic_chunks:
   - sys_noc
   - sys_smmu
   - sys_power_clock_thermal
+  related_issue_ids: []
   metadata:
     retrieval_use:
     - display_rt_risk_search
@@ -1504,6 +1506,7 @@ semantic_chunks:
   - sys_mif
   - sys_noc
   - sys_smmu
+  related_issue_ids: []
   metadata:
     retrieval_use:
     - architecture_lesson_retrieval
@@ -1535,6 +1538,7 @@ semantic_chunks:
   system_block_ids:
   - sys_mif
   - sys_noc
+  related_issue_ids: []
   metadata:
     evidence_level: L1_context_statement
     retrieval_use:
@@ -1569,6 +1573,7 @@ semantic_chunks:
   system_block_ids:
   - sys_mif
   - sys_noc
+  related_issue_ids: []
   metadata:
     decision_stage: exploration
     retrieval_use:

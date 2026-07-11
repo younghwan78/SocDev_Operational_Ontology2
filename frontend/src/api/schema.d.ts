@@ -1646,6 +1646,8 @@ export interface components {
         Issue: {
             affected_scope?: components["schemas"]["AffectedScope"];
             confidence: components["schemas"]["Confidence"];
+            /** Doc Refs */
+            doc_refs?: string[];
             /** Due Week */
             due_week?: number | null;
             /** Evidence Refs */
@@ -2077,6 +2079,10 @@ export interface components {
             closed_without_verification: boolean;
             /** Confidence */
             confidence: string;
+            /** Doc Candidates */
+            doc_candidates?: components["schemas"]["RCAItem"][];
+            /** Doc Refs */
+            doc_refs?: string[];
             /** Issue Id */
             issue_id: string;
             /** Issue Type */

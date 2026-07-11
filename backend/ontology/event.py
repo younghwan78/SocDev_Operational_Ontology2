@@ -195,3 +195,6 @@ class Issue(OntologyObject):
     # 정체/지연 판정은 서비스 계층의 결정론 룰 — 여기 저장하지 않는다.
     updated_week: int | None = None
     due_week: int | None = None
+    # J4: 외부 문서 참조(Confluence URL/키 등 — JIRA remote link 유래).
+    # 상세가 문서에 있는 이슈의 추적 고리. 후보 지위 — 증거 승격은 큐레이션.
+    doc_refs: list[str] = Field(default_factory=list)

@@ -14,6 +14,8 @@ columns:
   영향 시나리오: fields.customfield_scenarios
   영향 IP: fields.customfield_ips
   교훈: fields.customfield_lesson
+# J4: 문서 링크(remote link/커스텀필드)가 확정되면 columns에 추가한다.
+#   관련 문서: fields.customfield_doclinks   # ";" 병합 문자열 경로
 # J3 신선도·일정 — 날짜 필드를 ISO 주차로 변환해 반입한다.
 week_columns:
   최근 활동 주차: fields.updated

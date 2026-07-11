@@ -148,6 +148,13 @@
       "default": null,
       "title": "Project Id"
     },
+    "related_issue_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Issue Ids",
+      "type": "array"
+    },
     "scenario_group_ids": {
       "items": {
         "type": "string"

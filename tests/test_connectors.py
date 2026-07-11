@@ -254,3 +254,22 @@ constants:
     rows, _ = connector.rows()
     assert rows[0]["최근 활동 주차"] == "28"
     assert rows[0]["목표 주차"] == "27"
+
+
+def test_confluence_issue_keys_become_related_issue_ids(
+    tmp_path: Path, service: IngestService, repo: InMemoryRepository
+) -> None:
+    """J4 — Confluence 페이지의 issue_keys가 청크의 관련 이슈로 반입된다."""
+    from backend.connectors.confluence import ConfluenceConnector, FakeConfluenceClient
+
+    payload = tmp_path / "pages.json"
+    payload.write_text(
+        '{"pages": [{"id": "777", "title": "회의록", "body": "PROJ-1 분석",'
+        ' "project_id": "project_u", "issue_keys": ["PROJ-1", "PROJ-2"]}]}',
+        encoding="utf-8",
+    )
+    report = ConfluenceConnector(FakeConfluenceClient(payload)).sync(service)
+    assert report.batch.accepted_count == 1
+    chunk = repo.get("semantic_chunks", "chunk_confluence_777")
+    assert chunk is not None
+    assert chunk.related_issue_ids == ["PROJ-1", "PROJ-2"]

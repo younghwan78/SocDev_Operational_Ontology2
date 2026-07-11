@@ -2,15 +2,16 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — 반입 J1+J2(품질 리포트·증분 동기화) 완료 (2026-07-11).**
+**활성 Stage 없음 — 반입 J1~J4(사내 데이터 현실 갭 교정) 완료 (2026-07-11).**
 
-> 사내 JIRA 현실 갭 교정: upsert 3분류(신규/갱신/변동 없음)·증분 JQL(--since auto)·
-> pagination·그룹별 env prefix·품질 리포트(연결률/미등재 값/참조 경고)·거부 행 CSV.
-> 설계·잔여(J3 신선도/일정 신호, J4 이슈↔Confluence, quarantine):
+> J1 품질 리포트(연결률/미등재 값/참조 경고/거부 행 CSV) / J2 upsert 증분 동기화
+> (신규·갱신·변동 없음, --since auto, pagination, env prefix — 실서버 왕복 검증) /
+> J3 신선도·일정 신호(정체/지연 배지, week_columns) / J4 이슈↔문서 연결
+> (doc_refs·related_issue_ids·RCA 관련 문서 후보). 설계:
 > `internal_docs/design/14_ingest_reality_gaps.md`. 같은 날 UI W1~W3(코크핏)·
 > G1~G3(변경 영향 전파 지도) 완료. 상세: CHANGELOG.
 >
-> **후속 후보(미착수, 승인 필요)**: J3/J4(계약 확장 — 설계 14 §2), 공통
+> **후속 후보(미착수, 승인 필요)**: quarantine 저장 컬렉션(설계 14 §4), 공통
 > StatusBadge/AsyncSection 리팩터, 목록 가상화(500건+), docs/ 스크린샷 재캡처,
 > Stage 13 트랙 A 또는 Stage 14 잔여(인증/배포/캐시).
 

@@ -59,16 +59,19 @@
 - Confluence: 동일 upsert 경로라 같은 URL 페이지의 재반입은 본문이 같으면 건너뛰고
   다르면 교체된다 — 커넥터 코드 변경 불필요.
 
-### J3. 신선도·일정 신호 (R2·R6) — 계약 소폭 확장, **별도 승인 후**
+### J3. 신선도·일정 신호 (R2·R6) — **구현 완료 (2026-07-11 승인)**
 
-`Issue.updated_week`/`due_week`(optional) 반입 → 결정론 룰 "미해결+N주 무활동=정체",
-"기한 경과+미해결=지연" (날짜 근거가 붙는 정성 신호 — 수치 점수 아님). 변경 규율
-6단계 대상이므로 이 문서로 설계만 남기고 착수는 승인 후.
+`Issue.updated_week`/`due_week`(optional — 56 유래 무변경 통과). field map
+`week_columns`가 JIRA `updated`/`duedate`를 ISO 주차로 변환. 결정론 룰:
+**기준 주차 = 데이터의 최신 활동 주차**(벽시계 없음 — fixture 우주에서도 성립),
+미해결 + 4주(`_STALE_WEEKS`) 무활동 = 정체, 목표 주차 경과 = 지연. 판정 근거
+주차를 문구에 명시 (수치 점수 아님). 이슈 목록에 배지 노출.
 
-### J4. 이슈↔Confluence 연결 (R3) — **별도 승인 후**
+### J4. 이슈↔Confluence 연결 (R3) — **구현 완료 (2026-07-11 승인)**
 
-remote link URL을 `source_refs`로 보존, chunk에 원 이슈 키 태깅 → 이슈 상세/Ask에
-"관련 문서 후보" 제시 (증거 승격은 큐레이션 — §3 원칙 불변).
+`Issue.doc_refs`(외부 문서 URL/키 — remote link 유래, 사내 필드 확정 시 field map
+columns에 추가), `SemanticChunk.related_issue_ids`(Confluence `issue_keys` 반입).
+RCA 상세에 "관련 문서 후보 — 증거 아님" 섹션. 증거 승격은 큐레이션(§3 원칙 불변).
 
 R4(다과제)는 J1 큐레이션(시나리오 연결)으로 흡수 시도 후, 부족하면 `project_ids`
 복수화를 그때 결정한다 — 계약 변경은 마지막 수단.

@@ -115,9 +115,11 @@ MAPPINGS: dict[str, IngestMapping] = {
             "해결 주차": "resolved_week",
             "최근 활동 주차": "updated_week",
             "목표 주차": "due_week",
+            "관련 문서": "doc_refs",
         },
         list_columns={
             "evidence_refs": ";",
+            "doc_refs": ";",
             "affected_scope.scenarios": ";",
             "affected_scope.ip_blocks": ";",
             "affected_scope.system_blocks": ";",
@@ -271,8 +273,9 @@ MAPPINGS: dict[str, IngestMapping] = {
             "근거 확신도": "evidence_confidence",
             "관련 시나리오": "scenario_ids",
             "관련 IP": "ip_ids",
+            "관련 이슈": "related_issue_ids",
         },
-        list_columns={"scenario_ids": ";", "ip_ids": ";"},
+        list_columns={"scenario_ids": ";", "ip_ids": ";", "related_issue_ids": ";"},
         defaults={"embedding_status": "pending", "evidence_confidence": "low"},
         required_columns={"청크 ID", "본문", "출처 ID", "출처 유형"},
         ref_checks={

@@ -153,6 +153,9 @@ export const ko = {
     status_label: "상태",
     stale_badge: "정체",
     overdue_badge: "지연",
+    doc_candidates_title: "관련 문서 후보",
+    doc_not_evidence: "증거 아님 — 근거 편입은 큐레이션",
+    doc_ref_label: "외부 문서",
     week_prefix: "W",
   },
   risk: {

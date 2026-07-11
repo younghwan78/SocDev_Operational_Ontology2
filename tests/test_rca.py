@@ -182,3 +182,55 @@ def test_freshness_stale_and_overdue_signals() -> None:
 
     closed = summaries["issue_fresh_closed"]
     assert not closed.stale and not closed.overdue, "종결 이슈는 신선도 판정 제외"
+
+
+def test_doc_candidates_reverse_link() -> None:
+    """J4 — 이슈를 언급하는 청크가 RCA 상세의 관련 문서 후보로 역링크된다 (증거 아님)."""
+    from pathlib import Path
+
+    from backend.loaders.repository import InMemoryRepository
+    from backend.ontology.event import Issue
+    from backend.ontology.evidence import SemanticChunk
+    from backend.services.rca import RCAService
+
+    fixtures = Path(__file__).resolve().parents[1] / "fixtures"
+    repo = InMemoryRepository.from_fixtures(fixtures)
+    repo.add_objects(
+        "issues",
+        [
+            Issue.model_validate(
+                {
+                    "id": "issue_doc_case",
+                    "project_id": "project_u",
+                    "title": "문서 연결 테스트",
+                    "issue_type": "underrun",
+                    "status": "open",
+                    "symptom": "s",
+                    "confidence": "medium",
+                    "doc_refs": ["https://confluence.local/pages/123"],
+                }
+            )
+        ],
+    )
+    repo.add_objects(
+        "semantic_chunks",
+        [
+            SemanticChunk.model_validate(
+                {
+                    "id": "chunk_confluence_123",
+                    "chunk_text": "underrun 분석 회의록\n" + "x" * 200,
+                    "source_id": "123",
+                    "source_type": "confluence_page",
+                    "embedding_status": "pending",
+                    "evidence_confidence": "low",
+                    "related_issue_ids": ["issue_doc_case"],
+                }
+            )
+        ],
+    )
+    chain = RCAService(repo).chain("issue_doc_case")
+    assert chain.doc_refs == ["https://confluence.local/pages/123"]
+    assert len(chain.doc_candidates) == 1
+    candidate = chain.doc_candidates[0]
+    assert candidate.ref_collection == "semantic_chunks"
+    assert candidate.description.endswith("…"), "본문은 160자 미리보기로 자른다"

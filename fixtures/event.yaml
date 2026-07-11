@@ -3796,6 +3796,7 @@ issues:
     - thermal
   root_causes: []
   verifying_test_ids: []
+  doc_refs: []
 - id: issue_u_display_video_mode_underrun
   source:
     origin: synthetic
@@ -3830,6 +3831,7 @@ issues:
     - display_latency
   root_causes: []
   verifying_test_ids: []
+  doc_refs: []
 - id: issue_u_mfc_video_editor_perf_gap
   source:
     origin: synthetic
@@ -3863,6 +3865,7 @@ issues:
     - codec_power
   root_causes: []
   verifying_test_ids: []
+  doc_refs: []
 - id: issue_w_mmip_area_tradeoff
   source:
     origin: synthetic
@@ -3902,3 +3905,4 @@ issues:
     - underrun_count
   root_causes: []
   verifying_test_ids: []
+  doc_refs: []

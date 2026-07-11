@@ -110,6 +110,9 @@ class SemanticChunk(OntologyObject):
     scenario_ids: list[str] = Field(default_factory=list)
     scenario_group_ids: list[str] = Field(default_factory=list)
     system_block_ids: list[str] = Field(default_factory=list)
+    # J4 (14_ingest_reality_gaps.md §2): 원문이 언급하는 이슈 키 — 이슈 상세의
+    # "관련 문서 후보" 역링크. 후보 지위이며 증거 승격은 큐레이션(§3 원칙).
+    related_issue_ids: list[str] = Field(default_factory=list)
     metadata: ChunkMetadata = Field(default_factory=ChunkMetadata)
 
 

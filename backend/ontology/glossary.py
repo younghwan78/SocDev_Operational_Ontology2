@@ -391,6 +391,7 @@ MODEL_FIELD_LABELS: dict[str, dict[str, str]] = {
         "resolved_week": "종결 주차",
         "updated_week": "최근 활동 주차",
         "due_week": "목표 주차",
+        "doc_refs": "관련 문서",
     },
     "RootCause": {
         "cause_type": "원인 유형",
@@ -444,6 +445,7 @@ MODEL_FIELD_LABELS: dict[str, dict[str, str]] = {
         "ip_ids": "IP ID 목록",
         "kpi_ids": "KPI ID 목록",
         "system_block_ids": "시스템 블록 ID 목록",
+        "related_issue_ids": "관련 이슈",
     },
     "VectorMetadata": {
         "confidence_upgrade_allowed": "확신도 상향 허용",

@@ -2414,6 +2414,13 @@
           "confidence": {
             "$ref": "#/components/schemas/Confidence"
           },
+          "doc_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Doc Refs",
+            "type": "array"
+          },
           "due_week": {
             "anyOf": [
               {
@@ -3589,6 +3596,20 @@
           "confidence": {
             "title": "Confidence",
             "type": "string"
+          },
+          "doc_candidates": {
+            "items": {
+              "$ref": "#/components/schemas/RCAItem"
+            },
+            "title": "Doc Candidates",
+            "type": "array"
+          },
+          "doc_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Doc Refs",
+            "type": "array"
           },
           "issue_id": {
             "title": "Issue Id",
