@@ -212,6 +212,12 @@ export const ko = {
     group_prefix: "그룹",
     kpi_label: "주요 KPI",
     project_label: "관련 프로젝트",
+    domain_label: "도메인",
+    search_label: "검색",
+    search_placeholder: "이름·설명 검색",
+    risk_prefix: "위험 등급",
+    ip_count_prefix: "IP",
+    sys_count_prefix: "시스템",
   },
   action_draft: {
     tab: "실행 초안",

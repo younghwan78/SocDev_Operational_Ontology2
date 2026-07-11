@@ -616,6 +616,13 @@ VALUE_LABELS: dict[str, dict[str, str]] = {
         "evt_development": "EVT 개발",
         "spec_selection_architecture_exploration": "스펙 선정·아키텍처 탐색",
     },
+    "scenario_domain": {
+        "camera_recording": "카메라 녹화",
+        "camera_capture": "카메라 촬영",
+        "display": "디스플레이",
+        "codec": "코덱",
+        "audio": "오디오",
+    },
     "ip_category": {
         "functional_mm_ip": "기능 MM IP",
         "compute_ip": "컴퓨트 IP",
