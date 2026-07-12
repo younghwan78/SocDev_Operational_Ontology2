@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## D1 운영 배포 패키지 — Stage 14 잔여 (2026-07-12)
+
+> 사내 도입의 마지막 기술 관문: 인증/로깅/배포 정의/동기화 운영/runbook.
+> 커밋 단위: D1-1 / D1-2 / D1-3+4 / D1-5.
+
+- **D1-1 API 토큰 인증**: `SOC_API_TOKEN` 설정 시 /health 제외 전 API Bearer 관문
+  (hmac 상수시간, env 요청 시점 읽기). 프론트 openapi-fetch 미들웨어 자동 주입 +
+  401 토큰 게이트 오버레이. 미설정=개발 모드(기존 무변경).
+- **D1-2 구조화 로깅**: `soc.access`/`soc.error` JSON 라인(stdout) — 경로/상태/
+  소요 ms, 토큰·본문 비기록. 감사 3종과 역할 분리.
+- **D1-3 배포 정의**: `deploy/` compose(pgvector+api+nginx)·Dockerfile 2종·
+  .env 템플릿 — 보안 기본값(외부 LLM 차단, API 미노출). 기동=마이그레이션 자동.
+  클린 스택 리허설 통과(빌드→기동→인증/시드/로그 검증→철거).
+- **D1-4 동기화 운영**: `sync-status` CLI — 소스별 마지막 완료·카운트·보류 건수.
+- **D1-5 runbook**: `internal_docs/ops/runbook.md` — 설치/LLM 정책/주기 동기화
+  (cron)/백업/복구·rollback/업그레이드/트러블슈팅.
+
 ## Backend B1~B5 — 사내 실운영 갭 교정 (2026-07-12)
 
 > 목적 대비 재검토 결과: 분석 계약(4질문)·evidence-grounded는 충실하나 운영 축에

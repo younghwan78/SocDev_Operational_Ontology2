@@ -2,12 +2,11 @@
 
 ## 활성 Stage
 
-**D1 운영 배포 패키지 — Stage 14 잔여 (2026-07-12 사용자 승인, D1→D2→D3→D4).**
+**D2 문서 재정비 + 사내 핸드오버 킷 (승인된 D1→D2→D3→D4 순서 진행 중).**
 
-> 단계별 commit: D1-1 API 토큰 인증(SOC_API_TOKEN, /health 제외, 프론트 토큰
-> 게이트) → D1-2 구조화 요청 로깅(JSON 라인) → D1-3 docker-compose 배포 정의
-> (pg+api+fe, env 템플릿) → D1-4 sync-jira 주기 실행 래퍼+sync-status →
-> D1-5 운영 runbook(internal_docs/ops/). 전부 사외 검증 가능.
+> D1 완료(2026-07-12): 인증/로깅/compose 배포(리허설 통과)/sync-status/runbook.
+> D2 범위: docs/ 스크린샷 재캡처(구식화) + 반입 가이드·Ask 가이드 신설 +
+> 사내 핸드오버 문서(보안 체크리스트·JIRA 매핑 워크시트·도입 플랜).
 
 ### 직전 완료 — Backend B1~B5 사내 실운영 갭 교정 (2026-07-12)
 
