@@ -17,7 +17,7 @@ import time
 from pydantic import BaseModel, ConfigDict, Field
 
 from backend.agents.providers.base import LLMProvider, ProviderError
-from backend.agents.runner import DETERMINISTIC, build_provider_chain
+from backend.agents.runner import DETERMINISTIC, apply_external_policy, build_provider_chain
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.event import DevelopmentEvent, Issue, Test
 from backend.ontology.glossary import object_label, value_label
@@ -189,7 +189,11 @@ class AskRunner:
         timeout_s: float = 120.0,
     ) -> None:
         self._repo = repo
-        self._providers = build_provider_chain() if providers is None else providers
+        # allow_external_llm 정책은 Ask 경로에도 동일 적용 (B1 — Advisory와 같은 관문).
+        # 명시 providers(테스트)는 이미 정책 판단을 거친 것으로 본다.
+        self._providers = (
+            apply_external_policy(build_provider_chain()) if providers is None else providers
+        )
         self._timeout_s = timeout_s
         self._risk = RiskService(repo)
         self._rca = RCAService(repo)

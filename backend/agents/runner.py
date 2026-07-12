@@ -52,6 +52,21 @@ def build_provider_chain() -> list[LLMProvider]:
     return chain
 
 
+def allow_external_from_env() -> bool:
+    """allow_external_llm 정책 스위치 (확정 결정사항 1) — 기본 허용, 'false'면 차단."""
+    return os.environ.get(ALLOW_EXTERNAL_ENV, "true").lower() != "false"
+
+
+def apply_external_policy(
+    providers: list[LLMProvider], allow_external: bool | None = None
+) -> list[LLMProvider]:
+    """외부(사외) LLM 정책 필터 — Advisory/Ask 등 모든 LLM 경로가 공유하는 관문."""
+    allowed = allow_external_from_env() if allow_external is None else allow_external
+    if allowed:
+        return providers
+    return [p for p in providers if not p.is_external]
+
+
 class AdvisoryRunner:
     def __init__(
         self,
@@ -65,15 +80,13 @@ class AdvisoryRunner:
         self._run_store = run_store
         self._providers = build_provider_chain() if providers is None else providers
         if allow_external_llm is None:
-            allow_external_llm = os.environ.get(ALLOW_EXTERNAL_ENV, "true").lower() != "false"
+            allow_external_llm = allow_external_from_env()
         self._allow_external = allow_external_llm
         self._timeout_s = timeout_s or float(os.environ.get(TIMEOUT_ENV, "180"))
         self._analysis_service = ScenarioAnalysisService(repo)
 
     def _active_providers(self) -> list[LLMProvider]:
-        if self._allow_external:
-            return self._providers
-        return [p for p in self._providers if not p.is_external]
+        return apply_external_policy(self._providers, self._allow_external)
 
     def _known_ids(self, analysis: ScenarioAnalysis) -> set[str]:
         """supporting_basis 해석에 쓸 ID 집합 — 저장 객체 + 컨텍스트 파생 ID."""

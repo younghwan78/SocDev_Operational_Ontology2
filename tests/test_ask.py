@@ -205,3 +205,19 @@ def test_ask_log_and_faq_roundtrip(monkeypatch) -> None:
 
     preview = client.get("/api/v1/ask/preview", params={"q": "전력 문제"}).json()
     assert preview["cards"], "프리뷰는 결정론 카드를 즉시 반환한다"
+
+
+def test_ask_respects_allow_external_llm_policy(monkeypatch, repo) -> None:
+    """B1 — 정책이 외부 LLM 금지면 Ask 체인에서 외부 provider가 제외된다."""
+    from backend.agents.runner import ALLOW_EXTERNAL_ENV, PROVIDERS_ENV
+
+    monkeypatch.setenv(PROVIDERS_ENV, "claude_cli,openai_compat")
+    monkeypatch.setenv(ALLOW_EXTERNAL_ENV, "false")
+    runner = AskRunner(repo)  # 기본 체인 구성 경로
+    assert all(not p.is_external for p in runner._providers), "외부 provider 제외돼야 함"
+    names = [p.name for p in runner._providers]
+    assert "claude_cli" not in names and "openai_compat" in names
+
+    monkeypatch.setenv(ALLOW_EXTERNAL_ENV, "true")
+    runner_allowed = AskRunner(repo)
+    assert any(p.is_external for p in runner_allowed._providers)

@@ -2,7 +2,14 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — UI E1~E6 탐색 화면 6종 폴리싱 완료 (2026-07-12).**
+**Backend B1~B5 — 사내 실운영 갭 교정 (2026-07-12 사용자 승인).**
+
+> B1 Ask allow_external_llm 정책 적용(우회 수정) / B2 DB 연결 계층
+> (psycopg_pool·요청 단위·autocommit 읽기·재접속) / B3 feedback_items·
+> action_items 재진입 루프(결정 CSV 패턴) / B4 ask_log 기반 LLM 캐시 /
+> B5 목록 페이지네이션 + CI PG 통합 job. 단계별 commit.
+
+### 직전 완료 — UI E1~E6 탐색 화면 6종 폴리싱 (2026-07-12)
 
 > 포트폴리오(레인 상황판·과제 필터)/시나리오(도메인 칩·위험 배지)/리뷰 센터
 > (주간 상황판·팩 열람·CSV 다운로드)/근거 탐색(사다리=필터)/출처 지도(한 줄
