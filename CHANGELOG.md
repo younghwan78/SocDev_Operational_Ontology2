@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## Backend B1~B5 — 사내 실운영 갭 교정 (2026-07-12)
+
+> 목적 대비 재검토 결과: 분석 계약(4질문)·evidence-grounded는 충실하나 운영 축에
+> 차단급 갭. 커밋 단위: B1~B5.
+
+- **B1 정책 준수**: Ask 경로가 `allow_external_llm`을 우회하던 문제 수정 —
+  `apply_external_policy` 공용 관문으로 Advisory와 통일 (확정 결정사항 1).
+- **B2 DB 연결 계층**: 단일 공유 커넥션 → `psycopg_pool`. ConnectionSource 계약
+  (Pooled/Single 어댑터), 4개 스토어 호출 단위 대여/commit/반납. 해소: 동시 요청
+  직렬화·DB 재시작 전면 장애·idle-in-transaction. 실검증: 8병렬 균일 응답,
+  docker restart 자동 복구, idle-in-tx 0건.
+- **B3 행동·피드백 재진입**: action_items 매핑+GET+리뷰 센터 왕복(액션 CSV) —
+  4질문의 '행동' 완결. §2.2 피드백 루프 배선: `RoleAdvisory.feedback_items`
+  (프롬프트 지시 + validator 강제: HW/SW 발신·SE/Arch 수신·근거 필수) + 화면 노출.
+- **B4 LLM 캐시**: 캐시 키=정규화 질문+카드 지문(id+상태 해시) — 데이터 변경 시
+  자동 무효화. cached=True·원 질의 시각 명시(감사), FAQ 횟수 포함,
+  `SOC_ASK_CACHE=false` 비활성.
+- **B5 스케일·CI**: 목록 6종 limit/offset(하위 호환), CI postgres-integration job
+  (pgvector 컨테이너) — PG 게이트 테스트 상시 실행.
+
 ## UI E1~E6 — 탐색 화면 6종 폴리싱 (2026-07-12)
 
 > 확립된 문법(상황판 숫자 카드=필터, 세그먼트 막대, URL=상태, 값 한국어화,

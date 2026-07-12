@@ -2,12 +2,13 @@
 
 ## 활성 Stage
 
-**Backend B1~B5 — 사내 실운영 갭 교정 (2026-07-12 사용자 승인).**
+**활성 Stage 없음 — Backend B1~B5 사내 실운영 갭 교정 완료 (2026-07-12).**
 
-> B1 Ask allow_external_llm 정책 적용(우회 수정) / B2 DB 연결 계층
-> (psycopg_pool·요청 단위·autocommit 읽기·재접속) / B3 feedback_items·
-> action_items 재진입 루프(결정 CSV 패턴) / B4 ask_log 기반 LLM 캐시 /
-> B5 목록 페이지네이션 + CI PG 통합 job. 단계별 commit.
+> B1 Ask 정책 우회 수정 / B2 psycopg_pool 연결 계층(병렬·자동 복구·idle-in-tx 0) /
+> B3 행동(action_items 왕복)·피드백(feedback_items 계약 배선) 재진입 /
+> B4 LLM 캐시(질문+카드 지문, 자동 무효화) / B5 페이지네이션+CI PG job.
+> 상세: CHANGELOG. **잔여(승인 필요)**: API 인증·구조화 로깅(Stage 14),
+> sync-jira 스케줄 가이드, 시맨틱 검색(Stage 18).
 
 ### 직전 완료 — UI E1~E6 탐색 화면 6종 폴리싱 (2026-07-12)
 
