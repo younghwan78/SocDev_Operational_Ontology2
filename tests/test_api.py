@@ -249,3 +249,17 @@ def test_action_items_endpoint() -> None:
         item["source_decision_id"] == "dec_w_area_exploration_initial" for item in filtered
     )
     assert filtered, "fixture 결정의 액션이 조회돼야 한다"
+
+
+def test_list_pagination() -> None:
+    """B5 — limit/offset 페이지네이션 (미지정 시 전량, 하위 호환)."""
+    from backend.api.app import create_app
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_app())
+    full = client.get("/api/v1/issues").json()
+    assert len(full) > 3
+    page = client.get("/api/v1/issues", params={"limit": 2, "offset": 1}).json()
+    assert len(page) == 2
+    assert page[0]["issue_id"] == full[1]["issue_id"]
+    assert client.get("/api/v1/issues", params={"limit": 0}).status_code == 422

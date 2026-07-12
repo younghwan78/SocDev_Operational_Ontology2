@@ -184,6 +184,15 @@ class IngestMappingInfo(BaseModel):
     required_columns: list[str]
 
 
+def _page(items: list, limit: int | None, offset: int) -> list:
+    """B5 목록 페이지네이션 — 미지정 시 전량(하위 호환), 사내 규모 대비 상한 제공."""
+    if offset:
+        items = items[offset:]
+    if limit is not None:
+        items = items[:limit]
+    return items
+
+
 def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     app = FastAPI(
         title="SoC 운영 온톨로지 API",
@@ -237,11 +246,13 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     @app.get(f"{prefix}/scenarios", response_model=list[Scenario])
     def list_scenarios(
         project_id: str | None = Query(default=None, description="프로젝트 필터"),
+        limit: int | None = Query(default=None, ge=1, le=1000),
+        offset: int = Query(default=0, ge=0),
     ) -> list[Scenario]:
         scenarios = [s for s in services.repo.list("scenarios") if isinstance(s, Scenario)]
         if project_id:
             scenarios = [s for s in scenarios if project_id in s.project_relevance]
-        return scenarios
+        return _page(scenarios, limit, offset)
 
     @app.get(f"{prefix}/scenarios/{{scenario_id}}/analysis", response_model=ScenarioAnalysis)
     def scenario_analysis(scenario_id: str) -> ScenarioAnalysis:
@@ -261,6 +272,8 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     def list_events(
         project_id: str | None = Query(default=None),
         week: int | None = Query(default=None),
+        limit: int | None = Query(default=None, ge=1, le=1000),
+        offset: int = Query(default=0, ge=0),
     ) -> list[DevelopmentEvent]:
         events = [
             e for e in services.repo.list("development_events") if isinstance(e, DevelopmentEvent)
@@ -269,7 +282,7 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             events = [e for e in events if e.project_id == project_id]
         if week is not None:
             events = [e for e in events if e.week == week]
-        return events
+        return _page(events, limit, offset)
 
     @app.get(f"{prefix}/events/{{event_id}}", response_model=DevelopmentEvent)
     def get_event(event_id: str) -> DevelopmentEvent:
@@ -283,6 +296,8 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         project_id: str | None = Query(default=None),
         scenario_id: str | None = Query(default=None),
         availability: str | None = Query(default=None),
+        limit: int | None = Query(default=None, ge=1, le=1000),
+        offset: int = Query(default=0, ge=0),
     ) -> list[EvidenceCatalogEntry]:
         entries = [
             e
@@ -295,7 +310,7 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             entries = [e for e in entries if e.scenario_id == scenario_id]
         if availability:
             entries = [e for e in entries if e.availability == availability]
-        return entries
+        return _page(entries, limit, offset)
 
     @app.get(f"{prefix}/evidence/ladder", response_model=EvidenceLadder)
     def evidence_ladder(
@@ -328,9 +343,11 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         verification: str | None = Query(
             default=None, description="verified | unverified | no_tests"
         ),
+        limit: int | None = Query(default=None, ge=1, le=1000),
+        offset: int = Query(default=0, ge=0),
     ) -> list[IssueSummary]:
         """이슈 목록 — 검증 상태 뱃지 포함 (종결+미검증이 먼저)."""
-        return services.rca.list_issues(project_id, verification)
+        return _page(services.rca.list_issues(project_id, verification), limit, offset)
 
     @app.get(f"{prefix}/issues/{{issue_id}}/rca", response_model=RCAChain)
     def issue_rca(issue_id: str) -> RCAChain:
@@ -475,6 +492,8 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     def list_decisions(
         project_id: str | None = Query(default=None),
         event_id: str | None = Query(default=None),
+        limit: int | None = Query(default=None, ge=1, le=1000),
+        offset: int = Query(default=0, ge=0),
     ) -> list[Decision]:
         """결정 목록 — 리뷰 팩의 '이 팩에서 나온 결정' 표시용 (읽기 전용)."""
         decisions = [
@@ -484,12 +503,14 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             decisions = [d for d in decisions if d.project_id == project_id]
         if event_id:
             decisions = [d for d in decisions if d.event_id == event_id]
-        return sorted(decisions, key=lambda d: d.id)
+        return _page(sorted(decisions, key=lambda d: d.id), limit, offset)
 
     @app.get(f"{prefix}/action-items", response_model=list[ActionItem])
     def list_action_items(
         decision_id: str | None = Query(default=None),
         status: str | None = Query(default=None),
+        limit: int | None = Query(default=None, ge=1, le=1000),
+        offset: int = Query(default=0, ge=0),
     ) -> list[ActionItem]:
         """액션 아이템 — 결정 파생 후속 작업 목록 (읽기 전용, B3 행동 재진입)."""
         items = [
@@ -499,7 +520,7 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             items = [a for a in items if a.source_decision_id == decision_id]
         if status:
             items = [a for a in items if a.status == status]
-        return sorted(items, key=lambda a: a.id)
+        return _page(sorted(items, key=lambda a: a.id), limit, offset)
 
     @app.get(f"{prefix}/ingest/quarantine", response_model=list[QuarantineEntry])
     def list_ingest_quarantine(

@@ -3184,6 +3184,8 @@ export interface operations {
             query?: {
                 decision_id?: string | null;
                 status?: string | null;
+                limit?: number | null;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -3420,6 +3422,8 @@ export interface operations {
             query?: {
                 project_id?: string | null;
                 event_id?: string | null;
+                limit?: number | null;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -3472,6 +3476,8 @@ export interface operations {
             query?: {
                 project_id?: string | null;
                 week?: number | null;
+                limit?: number | null;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -3536,6 +3542,8 @@ export interface operations {
                 project_id?: string | null;
                 scenario_id?: string | null;
                 availability?: string | null;
+                limit?: number | null;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -3765,6 +3773,8 @@ export interface operations {
                 project_id?: string | null;
                 /** @description verified | unverified | no_tests */
                 verification?: string | null;
+                limit?: number | null;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -4099,6 +4109,8 @@ export interface operations {
             query?: {
                 /** @description 프로젝트 필터 */
                 project_id?: string | null;
+                limit?: number | null;
+                offset?: number;
             };
             header?: never;
             path?: never;

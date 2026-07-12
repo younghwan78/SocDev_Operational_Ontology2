@@ -1,6 +1,5 @@
 # 얇은 CI — 로컬 회귀 명령(CURRENT_TASK.md)과 동일한 게이트를 PR/push마다 실행한다.
-# PG 통합(pgvector 컨테이너) job은 후속 확장 — POSTGRES_TEST_DSN 게이트 테스트는 자동 skip.
-# 56 참조 디렉토리는 CI에 없으므로 test_converter_roundtrip도 기존 skipif로 자동 skip.
+# 56 참조 디렉토리는 CI에 없으므로 test_converter_roundtrip은 기존 skipif로 자동 skip.
 
 name: ci
 
@@ -39,6 +38,33 @@ jobs:
       - run: npm run build
       - run: npm run test
       - run: npm run lint
+
+  postgres-integration:
+    # B5 — 운영 저장 계층(PG repository/seed/ingest/rollback) 회귀를 CI에서 상시 검증.
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: soc
+          POSTGRES_PASSWORD: soc
+          POSTGRES_DB: soc_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U soc"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync --frozen
+      - run: uv run pytest tests/test_postgres_integration.py -p no:cacheprovider -q
+        env:
+          POSTGRES_TEST_DSN: postgresql://soc:soc@localhost:5432/soc_test
 
   contracts:
     # 계약 단일 소스(Pydantic) → JSON Schema / openapi / frontend 타입 드리프트 검출.
