@@ -155,6 +155,45 @@ def ingest_file(
         raise typer.Exit(code=1)
 
 
+@app.command("sync-status")
+def sync_status(
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (기본: SOC_ONTOLOGY_DSN)"),
+) -> None:
+    """커넥터 동기화 상태 — 소스별 마지막 완료 시각·카운트·보류 건수 (D1-4).
+
+    주기 실행(cron 등) 모니터링용: 마지막 동기화가 오래됐거나 보류가 쌓이면 점검한다.
+    """
+    from backend.db.connection import get_connection
+    from backend.ingest.service import (
+        IngestService,
+        PostgresIngestWriter,
+        summarize_sync_status,
+    )
+
+    with get_connection(dsn) as conn:
+        service = IngestService(PostgresIngestWriter(conn))
+        statuses = summarize_sync_status(service.list_batches(), service.list_quarantine())
+
+    if not statuses:
+        console.print("동기화 이력 없음")
+        raise typer.Exit(code=0)
+    table = Table(title="동기화 상태")
+    table.add_column("소스")
+    table.add_column("매핑")
+    table.add_column("마지막 완료")
+    table.add_column("카운트")
+    table.add_column("보류", justify="right")
+    for status in statuses:
+        table.add_row(
+            status.source,
+            status.mapping_name,
+            status.last_completed_at or "-",
+            status.last_counts or "-",
+            str(status.pending_quarantine),
+        )
+    console.print(table)
+
+
 @app.command("ingest-rollback")
 def ingest_rollback(
     batch_id: str = typer.Option(..., "--batch-id", help="롤백할 배치 ID"),

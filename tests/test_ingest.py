@@ -493,3 +493,43 @@ def test_action_items_reentry_roundtrip(repo: InMemoryRepository, service: Inges
 
     assert service.rollback(report.batch.id) == 1
     assert repo.get("action_items", "import_act_area_followup") is None
+
+
+def test_summarize_sync_status() -> None:
+    """D1-4 — 소스별 마지막 완료 동기화 + 보류 건수 요약 (결정론)."""
+    from backend.ingest.service import (
+        IngestBatch,
+        QuarantineEntry,
+        summarize_sync_status,
+    )
+
+    batches = [
+        IngestBatch(
+            id="b3", filename="jira-sync", mapping_name="issues", target_collection="issues",
+            accepted_count=2, rejected_count=1, updated_count=3, unchanged_count=10,
+            status="completed", created_at="2026-07-12T10:00:00+00:00",
+        ),
+        IngestBatch(
+            id="b2", filename="jira-sync", mapping_name="issues", target_collection="issues",
+            accepted_count=9, rejected_count=0, status="rolled_back",
+            created_at="2026-07-12T09:00:00+00:00",
+        ),
+        IngestBatch(
+            id="b1", filename="confluence-sync", mapping_name="semantic_chunks",
+            target_collection="semantic_chunks", accepted_count=5, rejected_count=0,
+            status="completed", created_at="2026-07-11T08:00:00+00:00",
+        ),
+    ]
+    quarantine = [
+        QuarantineEntry(
+            id="q1", batch_id="b3", mapping_name="issues", row_number=1,
+            row_data={}, reason="필수 열 누락", created_at="2026-07-12T10:00:00+00:00",
+        )
+    ]
+    statuses = summarize_sync_status(batches, quarantine)
+    by_source = {s.source: s for s in statuses}
+    jira = by_source["jira-sync"]
+    assert jira.last_completed_at == "2026-07-12T10:00:00+00:00"  # rolled_back 제외
+    assert jira.last_counts is not None and "갱신 3" in jira.last_counts
+    assert jira.pending_quarantine == 1
+    assert by_source["confluence-sync"].pending_quarantine == 0

@@ -1,0 +1,65 @@
+# SoC 운영 온톨로지 — 사내 배포 정의 (D1-3, Stage 14)
+#
+# 사용:
+#   cd deploy && cp .env.example .env  # 값 채우기 (토큰/비밀번호 필수)
+#   docker compose up -d --build
+#   http://<서버>:${HTTP_PORT} 접속 → 접속 토큰 입력(SOC_API_TOKEN 값)
+#
+# 보안 기본값: 외부 LLM 차단(SOC_ALLOW_EXTERNAL_LLM=false), API는 프론트
+# nginx 뒤에만 존재(호스트 포트 미노출). 운영 절차: internal_docs/ops/runbook.md
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: soc
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      POSTGRES_DB: soc_ontology
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U soc -d soc_ontology"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    restart: unless-stopped
+    environment:
+      SOC_ONTOLOGY_DSN: postgresql://soc:${POSTGRES_PASSWORD:?}@postgres:5432/soc_ontology
+      SOC_API_TOKEN: ${SOC_API_TOKEN:?}
+      SOC_ALLOW_EXTERNAL_LLM: ${SOC_ALLOW_EXTERNAL_LLM:-false}
+      SOC_ADVISORY_PROVIDERS: ${SOC_ADVISORY_PROVIDERS:-openai_compat}
+      SOC_ONPREM_BASE_URL: ${SOC_ONPREM_BASE_URL:-}
+      SOC_ONPREM_API_KEY: ${SOC_ONPREM_API_KEY:-}
+      SOC_ONPREM_MODEL: ${SOC_ONPREM_MODEL:-onprem-default}
+      SOC_ONTOLOGY_POOL_MAX: ${SOC_ONTOLOGY_POOL_MAX:-8}
+      SEED_FIXTURES: ${SEED_FIXTURES:-false}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # 마이그레이션(멱등) → (옵션) fixture 시드 → API 기동.
+    # uvicorn access log는 끄고 구조화 JSON 라인(soc.access)만 남긴다.
+    entrypoint: ["sh", "-ce"]
+    command:
+      - |
+        uv run python -m backend.cli.main db-init
+        if [ "$$SEED_FIXTURES" = "true" ]; then uv run python -m backend.cli.main db-seed; fi
+        exec uv run uvicorn backend.api.app:create_app --factory --host 0.0.0.0 --port 8155 --no-access-log
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.frontend
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

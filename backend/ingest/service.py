@@ -647,3 +647,46 @@ class IngestService:
 
     def list_quarantine(self, mapping_name: str | None = None) -> list[QuarantineEntry]:
         return self._writer.list_quarantine(mapping_name)
+
+
+class SyncSourceStatus(BaseModel):
+    """커넥터 소스별 동기화 상태 — sync-status CLI 표시용 (D1-4)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    source: str  # jira-sync | confluence-sync | ...
+    mapping_name: str
+    last_completed_at: str | None = None
+    last_counts: str | None = None  # "신규 n / 갱신 n / 변동 없음 n / 거부 n"
+    pending_quarantine: int = 0
+
+
+def summarize_sync_status(
+    batches: list[IngestBatch], quarantine: list[QuarantineEntry]
+) -> list[SyncSourceStatus]:
+    """배치 이력 → 소스별 마지막 완료 동기화 요약 (결정론, 별도 상태 저장 없음)."""
+    pending_by_mapping: dict[str, int] = {}
+    for entry in quarantine:
+        pending_by_mapping[entry.mapping_name] = (
+            pending_by_mapping.get(entry.mapping_name, 0) + 1
+        )
+    latest: dict[tuple[str, str], IngestBatch] = {}
+    for batch in batches:  # list_batches는 최신순
+        key = (batch.filename, batch.mapping_name)
+        if batch.status == "completed" and key not in latest:
+            latest[key] = batch
+    statuses = []
+    for (source, mapping_name), batch in sorted(latest.items()):
+        statuses.append(
+            SyncSourceStatus(
+                source=source,
+                mapping_name=mapping_name,
+                last_completed_at=batch.created_at,
+                last_counts=(
+                    f"신규 {batch.accepted_count} / 갱신 {batch.updated_count} / "
+                    f"변동 없음 {batch.unchanged_count} / 거부 {batch.rejected_count}"
+                ),
+                pending_quarantine=pending_by_mapping.get(mapping_name, 0),
+            )
+        )
+    return statuses

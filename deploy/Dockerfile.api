@@ -1,0 +1,16 @@
+# API 컨테이너 — uv 기반 (로컬 개발과 동일한 잠금 파일 사용)
+FROM ghcr.io/astral-sh/uv:python3.11-bookworm-slim
+
+WORKDIR /app
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+
+# 의존성 레이어 캐시 — 코드 변경 시 재설치 없이 재빌드
+COPY pyproject.toml uv.lock README.md ./
+RUN uv sync --frozen --no-dev --no-install-project
+
+COPY backend backend
+COPY fixtures fixtures
+RUN uv sync --frozen --no-dev
+
+EXPOSE 8155
+# command는 docker-compose.yml이 지정 (마이그레이션 → 기동)
