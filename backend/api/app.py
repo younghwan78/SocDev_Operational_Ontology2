@@ -116,18 +116,19 @@ def build_services(
     if repo is None:
         dsn = os.environ.get("SOC_ONTOLOGY_DSN")
         if dsn:
-            import psycopg
-
             from backend.agents.ask_log import PostgresAskLog
             from backend.agents.run_store import PostgresRunStore
+            from backend.db.connection import PooledConnections
             from backend.db.repository import PostgresRepository
             from backend.ingest.service import PostgresIngestWriter
 
-            conn = psycopg.connect(dsn)
-            repo = PostgresRepository(conn)
-            run_store = PostgresRunStore(conn)
-            ask_log = PostgresAskLog(conn)
-            ingest_service = IngestService(PostgresIngestWriter(conn))
+            # B2: 단일 공유 커넥션 → 풀. 호출 단위 대여/commit/반납 —
+            # idle-in-transaction 제거, DB 재시작 자동 복구, 동시 요청 병렬화.
+            source = PooledConnections(dsn)
+            repo = PostgresRepository(source)
+            run_store = PostgresRunStore(source)
+            ask_log = PostgresAskLog(source)
+            ingest_service = IngestService(PostgresIngestWriter(source))
             backend_kind = "postgres"
         else:
             repo = InMemoryRepository.from_fixtures(fixtures_dir)

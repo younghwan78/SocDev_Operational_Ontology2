@@ -14,6 +14,7 @@ from typing import Protocol, runtime_checkable
 import psycopg
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from backend.db.connection import ConnectionSource, as_source
 from backend.ingest.mappings import (
     MAPPINGS,
     IngestMapping,
@@ -218,15 +219,15 @@ class MemoryIngestWriter:
 
 
 class PostgresIngestWriter:
-    """운영용 — ontology_objects + ingest_batches 테이블."""
+    """운영용 — ontology_objects + ingest_batches 테이블. 커넥션은 호출 단위 대여(B2)."""
 
-    def __init__(self, conn: psycopg.Connection) -> None:
-        self._conn = conn
+    def __init__(self, db: psycopg.Connection | ConnectionSource) -> None:
+        self._db = as_source(db)
 
     def add_objects(self, collection: str, objects: list[OntologyObject], batch_id: str) -> None:
         from backend.ingest.yaml_seed import UPSERT_OBJECT, build_row
 
-        with self._conn.cursor() as cur:
+        with self._db.connection() as conn, conn.cursor() as cur:
             for position, obj in enumerate(objects):
                 row = build_row(collection, 100_000 + position, obj)
                 cur.execute(
@@ -242,54 +243,54 @@ class PostgresIngestWriter:
                         row.source_ref,
                     ),
                 )
-        self._conn.commit()
 
     def remove_batch(self, batch_id: str) -> int:
         prefix = f"{BATCH_REF_PREFIX}:{batch_id}:%"
-        result = self._conn.execute(
-            "DELETE FROM ontology_objects WHERE source_ref LIKE %s", (prefix,)
-        )
-        self._conn.commit()
-        return result.rowcount or 0
+        with self._db.connection() as conn:
+            result = conn.execute(
+                "DELETE FROM ontology_objects WHERE source_ref LIKE %s", (prefix,)
+            )
+            return result.rowcount or 0
 
     def record_batch(self, batch: IngestBatch) -> None:
-        self._conn.execute(
-            """
-            INSERT INTO ingest_batches
-                (id, filename, mapping_name, target_collection,
-                 accepted_count, rejected_count, status, created_at, payload)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb)
-            ON CONFLICT (id) DO NOTHING
-            """,
-            (
-                batch.id,
-                batch.filename,
-                batch.mapping_name,
-                batch.target_collection,
-                batch.accepted_count,
-                batch.rejected_count,
-                batch.status,
-                batch.created_at,
-                json.dumps(batch.model_dump(mode="json"), ensure_ascii=False),
-            ),
-        )
-        self._conn.commit()
+        with self._db.connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO ingest_batches
+                    (id, filename, mapping_name, target_collection,
+                     accepted_count, rejected_count, status, created_at, payload)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb)
+                ON CONFLICT (id) DO NOTHING
+                """,
+                (
+                    batch.id,
+                    batch.filename,
+                    batch.mapping_name,
+                    batch.target_collection,
+                    batch.accepted_count,
+                    batch.rejected_count,
+                    batch.status,
+                    batch.created_at,
+                    json.dumps(batch.model_dump(mode="json"), ensure_ascii=False),
+                ),
+            )
 
     def update_batch_status(self, batch_id: str, status: str) -> None:
-        self._conn.execute(
-            "UPDATE ingest_batches SET status = %s WHERE id = %s", (status, batch_id)
-        )
-        self._conn.commit()
+        with self._db.connection() as conn:
+            conn.execute(
+                "UPDATE ingest_batches SET status = %s WHERE id = %s", (status, batch_id)
+            )
 
     def list_batches(self) -> list[IngestBatch]:
         # updated/unchanged 카운트는 테이블 열이 아니라 payload(jsonb)에 있다 — 스키마 불변.
-        rows = self._conn.execute(
-            """
-            SELECT id, filename, mapping_name, target_collection,
-                   accepted_count, rejected_count, status, created_at, payload
-            FROM ingest_batches ORDER BY created_at DESC
-            """
-        ).fetchall()
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT id, filename, mapping_name, target_collection,
+                       accepted_count, rejected_count, status, created_at, payload
+                FROM ingest_batches ORDER BY created_at DESC
+                """
+            ).fetchall()
         batches: list[IngestBatch] = []
         for row in rows:
             payload = row[8] if isinstance(row[8], dict) else {}
@@ -312,31 +313,33 @@ class PostgresIngestWriter:
         return batches
 
     def known_ids(self, collection: str) -> set[str]:
-        rows = self._conn.execute(
-            "SELECT id FROM ontology_objects WHERE collection = %s", (collection,)
-        ).fetchall()
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                "SELECT id FROM ontology_objects WHERE collection = %s", (collection,)
+            ).fetchall()
         return {row[0] for row in rows}
 
     def existing_payloads(self, collection: str, ids: list[str]) -> dict[str, dict]:
         if not ids:
             return {}
-        rows = self._conn.execute(
-            "SELECT id, payload FROM ontology_objects WHERE collection = %s AND id = ANY(%s)",
-            (collection, ids),
-        ).fetchall()
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                "SELECT id, payload FROM ontology_objects WHERE collection = %s AND id = ANY(%s)",
+                (collection, ids),
+            ).fetchall()
         return {row[0]: row[1] for row in rows if isinstance(row[1], dict)}
 
     def remove_by_ids(self, collection: str, ids: list[str]) -> None:
         if not ids:
             return
-        self._conn.execute(
-            "DELETE FROM ontology_objects WHERE collection = %s AND id = ANY(%s)",
-            (collection, ids),
-        )
-        self._conn.commit()
+        with self._db.connection() as conn:
+            conn.execute(
+                "DELETE FROM ontology_objects WHERE collection = %s AND id = ANY(%s)",
+                (collection, ids),
+            )
 
     def add_quarantine(self, entries: list[QuarantineEntry]) -> None:
-        with self._conn.cursor() as cur:
+        with self._db.connection() as conn, conn.cursor() as cur:
             for entry in entries:
                 cur.execute(
                     """
@@ -358,7 +361,6 @@ class PostgresIngestWriter:
                         entry.created_at,
                     ),
                 )
-        self._conn.commit()
 
     def list_quarantine(self, mapping_name: str | None = None) -> list[QuarantineEntry]:
         sql = (
@@ -370,7 +372,8 @@ class PostgresIngestWriter:
             sql += " AND mapping_name = %s"
             params = (mapping_name,)
         sql += " ORDER BY mapping_name, created_at, row_number"
-        rows = self._conn.execute(sql, params).fetchall()
+        with self._db.connection() as conn:
+            rows = conn.execute(sql, params).fetchall()
         return [
             QuarantineEntry(
                 id=row[0],
@@ -391,22 +394,22 @@ class PostgresIngestWriter:
     def resolve_quarantine(self, mapping_name: str, object_ids: set[str]) -> int:
         if not object_ids:
             return 0
-        result = self._conn.execute(
-            """
-            UPDATE ingest_quarantine SET status = 'resolved'
-            WHERE status = 'pending' AND mapping_name = %s AND object_id = ANY(%s)
-            """,
-            (mapping_name, sorted(object_ids)),
-        )
-        self._conn.commit()
-        return result.rowcount or 0
+        with self._db.connection() as conn:
+            result = conn.execute(
+                """
+                UPDATE ingest_quarantine SET status = 'resolved'
+                WHERE status = 'pending' AND mapping_name = %s AND object_id = ANY(%s)
+                """,
+                (mapping_name, sorted(object_ids)),
+            )
+            return result.rowcount or 0
 
     def remove_quarantine_by_batch(self, batch_id: str) -> int:
-        result = self._conn.execute(
-            "DELETE FROM ingest_quarantine WHERE batch_id = %s", (batch_id,)
-        )
-        self._conn.commit()
-        return result.rowcount or 0
+        with self._db.connection() as conn:
+            result = conn.execute(
+                "DELETE FROM ingest_quarantine WHERE batch_id = %s", (batch_id,)
+            )
+            return result.rowcount or 0
 
 
 class IngestService:

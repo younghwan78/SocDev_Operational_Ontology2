@@ -7,6 +7,7 @@ from typing import Protocol, runtime_checkable
 
 import psycopg
 
+from backend.db.connection import ConnectionSource, as_source
 from backend.ontology.relation import AgentRun
 
 
@@ -32,32 +33,35 @@ class InMemoryRunStore:
 
 
 class PostgresRunStore:
-    def __init__(self, conn: psycopg.Connection) -> None:
-        self._conn = conn
+    def __init__(self, db: psycopg.Connection | ConnectionSource) -> None:
+        self._db = as_source(db)
 
     def save(self, run: AgentRun) -> None:
-        self._conn.execute(
-            """
-            INSERT INTO agent_runs (id, scenario_id, status, input_hash, created_at, payload)
-            VALUES (%s, %s, %s, %s, %s, %s::jsonb)
-            ON CONFLICT (id) DO NOTHING
-            """,
-            (
-                run.id,
-                run.scenario_id,
-                run.status,
-                run.input_hash,
-                run.created_at,
-                json.dumps(run.model_dump(mode="json", exclude_none=True), ensure_ascii=False),
-            ),
-        )
-        self._conn.commit()
+        with self._db.connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO agent_runs (id, scenario_id, status, input_hash, created_at, payload)
+                VALUES (%s, %s, %s, %s, %s, %s::jsonb)
+                ON CONFLICT (id) DO NOTHING
+                """,
+                (
+                    run.id,
+                    run.scenario_id,
+                    run.status,
+                    run.input_hash,
+                    run.created_at,
+                    json.dumps(
+                        run.model_dump(mode="json", exclude_none=True), ensure_ascii=False
+                    ),
+                ),
+            )
 
     def list_for_scenario(self, scenario_id: str) -> list[AgentRun]:
-        rows = self._conn.execute(
-            "SELECT payload FROM agent_runs WHERE scenario_id = %s ORDER BY created_at DESC",
-            (scenario_id,),
-        ).fetchall()
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                "SELECT payload FROM agent_runs WHERE scenario_id = %s ORDER BY created_at DESC",
+                (scenario_id,),
+            ).fetchall()
         result = []
         for row in rows:
             payload = row[0] if isinstance(row[0], dict) else json.loads(row[0])

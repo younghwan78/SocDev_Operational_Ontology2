@@ -6,6 +6,7 @@ import json
 
 import psycopg
 
+from backend.db.connection import ConnectionSource, as_source
 from backend.ontology import COLLECTIONS, OntologyObject
 from backend.ontology.scenario import ScenarioRequest
 
@@ -15,10 +16,11 @@ class PostgresRepository:
 
     payload(JSONB)가 모델의 완전한 직렬화본이므로 재구성은 항상 payload에서 한다.
     필터 컬럼(project_id 등)은 SQL 질의 최적화 전용이다.
+    커넥션은 호출 단위로 빌린다 (B2 — 풀/단일 어댑터 공용 계약).
     """
 
-    def __init__(self, conn: psycopg.Connection) -> None:
-        self._conn = conn
+    def __init__(self, db: psycopg.Connection | ConnectionSource) -> None:
+        self._db = as_source(db)
 
     def _model_for(self, collection: str) -> type[OntologyObject]:
         if collection not in COLLECTIONS:
@@ -27,18 +29,20 @@ class PostgresRepository:
 
     def list(self, collection: str) -> list[OntologyObject]:
         model = self._model_for(collection)
-        rows = self._conn.execute(
-            "SELECT payload FROM ontology_objects WHERE collection = %s ORDER BY position",
-            (collection,),
-        ).fetchall()
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                "SELECT payload FROM ontology_objects WHERE collection = %s ORDER BY position",
+                (collection,),
+            ).fetchall()
         return [model.model_validate(_as_dict(row[0])) for row in rows]
 
     def get(self, collection: str, object_id: str) -> OntologyObject | None:
         model = self._model_for(collection)
-        row = self._conn.execute(
-            "SELECT payload FROM ontology_objects WHERE collection = %s AND id = %s",
-            (collection, object_id),
-        ).fetchone()
+        with self._db.connection() as conn:
+            row = conn.execute(
+                "SELECT payload FROM ontology_objects WHERE collection = %s AND id = %s",
+                (collection, object_id),
+            ).fetchone()
         if row is None:
             return None
         return model.model_validate(_as_dict(row[0]))
@@ -46,10 +50,11 @@ class PostgresRepository:
     def ids(self, *collection_keys: str) -> set[str]:
         if not collection_keys:
             return set()
-        rows = self._conn.execute(
-            "SELECT id FROM ontology_objects WHERE collection = ANY(%s)",
-            (list(collection_keys),),
-        ).fetchall()
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                "SELECT id FROM ontology_objects WHERE collection = ANY(%s)",
+                (list(collection_keys),),
+            ).fetchall()
         return {row[0] for row in rows}
 
     def propagation_ids(self) -> set[str]:
@@ -60,9 +65,10 @@ class PostgresRepository:
         return result
 
     def counts(self) -> dict[str, int]:
-        rows = self._conn.execute(
-            "SELECT collection, count(*) FROM ontology_objects GROUP BY collection"
-        ).fetchall()
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                "SELECT collection, count(*) FROM ontology_objects GROUP BY collection"
+            ).fetchall()
         return {row[0]: row[1] for row in rows}
 
 

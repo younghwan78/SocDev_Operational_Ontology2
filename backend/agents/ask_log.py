@@ -17,6 +17,7 @@ import psycopg
 from pydantic import BaseModel, ConfigDict, Field
 
 from backend.agents.ask_runner import AskResult
+from backend.db.connection import ConnectionSource, as_source
 
 
 class AskLogEntry(BaseModel):
@@ -115,32 +116,33 @@ class InMemoryAskLog:
 
 
 class PostgresAskLog:
-    def __init__(self, conn: psycopg.Connection) -> None:
-        self._conn = conn
+    def __init__(self, db: psycopg.Connection | ConnectionSource) -> None:
+        self._db = as_source(db)
 
     def save(self, entry: AskLogEntry) -> None:
-        self._conn.execute(
-            """
-            INSERT INTO ask_log (id, normalized, provider, confidence, created_at, payload)
-            VALUES (%s, %s, %s, %s, %s, %s::jsonb)
-            ON CONFLICT (id) DO NOTHING
-            """,
-            (
-                entry.id,
-                entry.normalized,
-                entry.provider,
-                entry.confidence,
-                entry.created_at,
-                json.dumps(entry.model_dump(mode="json"), ensure_ascii=False),
-            ),
-        )
-        self._conn.commit()
+        with self._db.connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO ask_log (id, normalized, provider, confidence, created_at, payload)
+                VALUES (%s, %s, %s, %s, %s, %s::jsonb)
+                ON CONFLICT (id) DO NOTHING
+                """,
+                (
+                    entry.id,
+                    entry.normalized,
+                    entry.provider,
+                    entry.confidence,
+                    entry.created_at,
+                    json.dumps(entry.model_dump(mode="json"), ensure_ascii=False),
+                ),
+            )
 
     def _load(self, limit: int | None = None) -> list[AskLogEntry]:
         sql = "SELECT payload FROM ask_log ORDER BY created_at DESC"
         if limit is not None:
             sql += f" LIMIT {int(limit)}"
-        rows = self._conn.execute(sql).fetchall()
+        with self._db.connection() as conn:
+            rows = conn.execute(sql).fetchall()
         return [
             AskLogEntry.model_validate(row[0] if isinstance(row[0], dict) else json.loads(row[0]))
             for row in rows
