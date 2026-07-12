@@ -263,3 +263,32 @@ def test_list_pagination() -> None:
     assert len(page) == 2
     assert page[0]["issue_id"] == full[1]["issue_id"]
     assert client.get("/api/v1/issues", params={"limit": 0}).status_code == 422
+
+
+def test_api_token_auth(monkeypatch) -> None:
+    """D1-1 — SOC_API_TOKEN 설정 시 /health 제외 전 API가 Bearer 토큰을 요구한다."""
+    from backend.api.app import API_TOKEN_ENV, create_app
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_app())
+    monkeypatch.setenv(API_TOKEN_ENV, "secret-token")
+    # 무토큰/오토큰 → 401
+    assert client.get("/api/v1/projects").status_code == 401
+    assert (
+        client.get(
+            "/api/v1/projects", headers={"Authorization": "Bearer wrong"}
+        ).status_code
+        == 401
+    )
+    # /health는 모니터링용으로 무인증
+    assert client.get("/api/v1/health").status_code == 200
+    # 올바른 토큰 → 200
+    assert (
+        client.get(
+            "/api/v1/projects", headers={"Authorization": "Bearer secret-token"}
+        ).status_code
+        == 200
+    )
+    # env 해제 → 개발 모드(무인증) 복귀
+    monkeypatch.delenv(API_TOKEN_ENV)
+    assert client.get("/api/v1/projects").status_code == 200

@@ -630,6 +630,14 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
 
+/* D1-1: 토큰 게이트 오버레이 */
+.token-gate {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(2px);
+}
+.token-card { width: min(440px, 90vw); margin: 0; }
+
 /* 접근성 — 공통 포커스 링 (U3) */
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 

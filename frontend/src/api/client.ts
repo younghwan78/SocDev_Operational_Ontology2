@@ -17,6 +17,35 @@ export const client = createClient<paths>({
   fetch: (request) => globalThis.fetch(request),
 });
 
+// D1-1 토큰 인증 — 서버가 SOC_API_TOKEN을 켠 경우에만 의미가 있다.
+// 토큰은 localStorage에 보관하고, 401을 받으면 토큰 게이트 이벤트를 올린다.
+export const API_TOKEN_KEY = "soc-api-token";
+export const AUTH_REQUIRED_EVENT = "soc-auth-required";
+
+export function getApiToken(): string | null {
+  return typeof window === "undefined" ? null : window.localStorage.getItem(API_TOKEN_KEY);
+}
+
+export function setApiToken(token: string): void {
+  window.localStorage.setItem(API_TOKEN_KEY, token.trim());
+}
+
+function notifyAuthRequired(): void {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(AUTH_REQUIRED_EVENT));
+}
+
+client.use({
+  onRequest({ request }) {
+    const token = getApiToken();
+    if (token) request.headers.set("Authorization", `Bearer ${token}`);
+    return request;
+  },
+  onResponse({ response }) {
+    if (response.status === 401) notifyAuthRequired();
+    return response;
+  },
+});
+
 export type Scenario = components["schemas"]["Scenario"];
 export type ScenarioAnalysis = components["schemas"]["ScenarioAnalysis"];
 export type DevelopmentEvent = components["schemas"]["DevelopmentEvent"];
@@ -314,10 +343,16 @@ export async function fetchDecisions(params?: {
 export async function uploadIngestFile(file: File, mapping: string): Promise<IngestReport> {
   const form = new FormData();
   form.append("file", file);
+  const token = getApiToken();
   const response = await globalThis.fetch(
     `${baseUrl}/api/v1/ingest/file?mapping=${encodeURIComponent(mapping)}`,
-    { method: "POST", body: form },
+    {
+      method: "POST",
+      body: form,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    },
   );
+  if (response.status === 401) notifyAuthRequired();
   if (!response.ok) {
     const detail = (await response.json().catch(() => null)) as { detail?: string } | null;
     throw new Error(detail?.detail ?? "반입 실패");

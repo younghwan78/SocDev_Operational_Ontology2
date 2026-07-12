@@ -94,6 +94,12 @@ export const ko = {
     no_items: "해당 없음",
     unit: "단위",
   },
+  auth: {
+    title: "접속 토큰",
+    hint: "서버 관리자에게 받은 접속 토큰을 입력하세요 — 이 브라우저에 저장됩니다",
+    placeholder: "SOC_API_TOKEN 값",
+    save: "저장하고 다시 연결",
+  },
   demo: {
     nav: "데모 스토리",
     scene_label: "장면",

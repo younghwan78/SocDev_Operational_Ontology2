@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { NavLink, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { DemoStoryBar } from "./components/DemoStoryBar";
+import { TokenGate } from "./components/TokenGate";
 import { ko } from "./i18n/ko";
 import { AskPage } from "./pages/AskPage";
 import { ChangeImpactPage } from "./pages/ChangeImpactPage";
@@ -47,6 +48,7 @@ export default function App() {
   }, [navigate]);
   return (
     <div className="app">
+      <TokenGate />
       <header className="app-header">
         <NavLink to="/" className="app-title">
           {/* 브랜드 마크 — 위험 지도(타일) 모티프 */}

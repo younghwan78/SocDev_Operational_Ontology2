@@ -2,16 +2,22 @@
 
 데이터 수정 엔드포인트는 없다. 저장소는 환경에 따라 선택된다:
 SOC_ONTOLOGY_DSN 설정 시 PostgreSQL, 아니면 fixtures 기반 in-memory.
+
+인증(D1-1, Stage 14): SOC_API_TOKEN 설정 시 /health를 제외한 전 API가
+`Authorization: Bearer <token>`을 요구한다. 미설정이면 개발 모드(무인증) —
+사내 배포에서는 반드시 설정한다 (internal_docs/ops/ runbook 참조).
 """
 
 from __future__ import annotations
 
+import hmac
 import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from backend.agents.ask_log import (
@@ -193,6 +199,9 @@ def _page(items: list, limit: int | None, offset: int) -> list:
     return items
 
 
+API_TOKEN_ENV = "SOC_API_TOKEN"
+
+
 def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     app = FastAPI(
         title="SoC 운영 온톨로지 API",
@@ -201,6 +210,21 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     )
     services = build_services(repo)
     prefix = f"/api/{API_VERSION}"
+    health_path = f"{prefix}/health"
+
+    @app.middleware("http")
+    async def require_api_token(request: Request, call_next):  # type: ignore[no-untyped-def]
+        """D1-1 토큰 인증 — env는 요청 시점에 읽는다 (테스트 주입·무중단 교체)."""
+        token = os.environ.get(API_TOKEN_ENV)
+        if token and request.url.path.startswith(prefix) and request.url.path != health_path:
+            supplied = request.headers.get("authorization", "")
+            expected = f"Bearer {token}"
+            if not hmac.compare_digest(supplied, expected):
+                return JSONResponse(
+                    status_code=401,
+                    content={"detail": "인증 필요 — Authorization: Bearer <SOC_API_TOKEN>"},
+                )
+        return await call_next(request)
 
     @app.get(f"{prefix}/health")
     def health() -> dict[str, str]:

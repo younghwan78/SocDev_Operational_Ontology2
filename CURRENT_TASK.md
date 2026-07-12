@@ -2,7 +2,14 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — Backend B1~B5 사내 실운영 갭 교정 완료 (2026-07-12).**
+**D1 운영 배포 패키지 — Stage 14 잔여 (2026-07-12 사용자 승인, D1→D2→D3→D4).**
+
+> 단계별 commit: D1-1 API 토큰 인증(SOC_API_TOKEN, /health 제외, 프론트 토큰
+> 게이트) → D1-2 구조화 요청 로깅(JSON 라인) → D1-3 docker-compose 배포 정의
+> (pg+api+fe, env 템플릿) → D1-4 sync-jira 주기 실행 래퍼+sync-status →
+> D1-5 운영 runbook(internal_docs/ops/). 전부 사외 검증 가능.
+
+### 직전 완료 — Backend B1~B5 사내 실운영 갭 교정 (2026-07-12)
 
 > B1 Ask 정책 우회 수정 / B2 psycopg_pool 연결 계층(병렬·자동 복구·idle-in-tx 0) /
 > B3 행동(action_items 왕복)·피드백(feedback_items 계약 배선) 재진입 /
