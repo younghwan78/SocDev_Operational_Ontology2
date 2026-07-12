@@ -314,6 +314,11 @@ function AskAnswer({
         <span className={`badge ${CONFIDENCE_BADGE[result.confidence] ?? "badge-info"}`}>
           {t.confidence}: {CONFIDENCE_LABEL[result.confidence] ?? result.confidence}
         </span>
+        {result.cached && (
+          <span className="badge badge-info" title={result.validation_notes?.[0] ?? ""}>
+            {t.cached_badge}
+          </span>
+        )}
         <span className="desc">
           {(result.duration_ms / 1000).toFixed(1)}
           {t.seconds_suffix}

@@ -221,3 +221,61 @@ def test_ask_respects_allow_external_llm_policy(monkeypatch, repo) -> None:
     monkeypatch.setenv(ALLOW_EXTERNAL_ENV, "true")
     runner_allowed = AskRunner(repo)
     assert any(p.is_external for p in runner_allowed._providers)
+
+
+def test_ask_cache_reuses_llm_answer_and_invalidates_on_data_change(repo) -> None:
+    """B4 — 같은 질문·같은 카드 지문이면 LLM 재호출 없이 캐시, 데이터 변경 시 무효화."""
+    from backend.agents.ask_log import InMemoryAskLog, ask_with_cache
+
+    calls = {"n": 0}
+
+    class CountingProvider(FakeProvider):
+        def generate(self, prompt, timeout_s):
+            calls["n"] += 1
+            return super().generate(prompt, timeout_s)
+
+    question = "UHD60 recording에서 현재 가장 위험한 IP는 무엇인가?"
+    cards, _ = AskRunner(repo, providers=[])._search(question)
+    payload = {
+        "answer": "UHD60 EIS 시나리오에서 위험 셀이 높음 등급으로 판정되어 있습니다.",
+        "citations": [cards[0].ref_id],
+        "confidence": "medium",
+        "derivation": "위험 지도에서 도출",
+    }
+    runner = AskRunner(repo, providers=[CountingProvider(payload)])
+    store = InMemoryAskLog()
+
+    first = ask_with_cache(runner, store, question)
+    assert first.provider == "fake" and not first.cached
+    assert calls["n"] == 1
+
+    second = ask_with_cache(runner, store, question)
+    assert second.cached and second.provider == "fake"
+    assert second.answer == first.answer
+    assert calls["n"] == 1, "캐시 히트 — LLM 재호출 없음"
+    assert any("캐시 응답" in note for note in second.validation_notes)
+    # 히트도 로그에 남아 FAQ 횟수에 포함된다
+    assert store.faq()[0].count == 2
+
+    # 데이터 변경(카드 상태 변화) → 지문 불일치 → 재호출
+    from backend.ontology.event import Issue
+
+    repo.add_objects(
+        "issues",
+        [
+            Issue.model_validate(
+                {
+                    "id": "issue_cache_invalidate",
+                    "project_id": "project_u",
+                    "title": "UHD60 recording 신규 이슈",
+                    "issue_type": "underrun",
+                    "status": "open",
+                    "symptom": "s",
+                    "confidence": "medium",
+                    "affected_scope": {"scenarios": ["uhd60_recording_eis_on"]},
+                }
+            )
+        ],
+    )
+    third = ask_with_cache(runner, store, question)
+    assert calls["n"] == 2 and not third.cached

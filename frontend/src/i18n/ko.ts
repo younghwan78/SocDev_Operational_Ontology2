@@ -140,6 +140,7 @@ export const ko = {
     history_title: "최근 질문",
     history_empty: "아직 질문 기록이 없습니다",
     seconds_suffix: "초",
+    cached_badge: "캐시 응답",
   },
   issues: {
     title: "이슈 분석",

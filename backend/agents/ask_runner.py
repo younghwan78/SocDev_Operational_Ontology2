@@ -142,6 +142,8 @@ class AskResult(BaseModel):
     cards: list[AskCard]
     # A1: 검색이 놓친 의미 토큰 — 사용자가 질문을 고칠 수 있는 힌트.
     unmatched_terms: list[str] = Field(default_factory=list)
+    # B4: 질의 로그 캐시 응답 여부 — 같은 질문·같은 카드 지문이면 LLM 재호출 없이 재사용.
+    cached: bool = False
     validation_notes: list[str] = Field(default_factory=list)
     duration_ms: int = 0
     note_ko: str = "근거 인용 답변이며 결정이 아닙니다 · 인용은 수집된 객체로 한정"

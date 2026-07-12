@@ -32,7 +32,12 @@ class AskLogEntry(BaseModel):
     model_name: str | None = None
     confidence: str
     answer: str
+    derivation: str = ""
     citations: list[str] = Field(default_factory=list)
+    # B4 캐시 키의 절반 — 카드 지문(id+상태 해시). 데이터가 바뀌면 지문이 바뀌어
+    # 캐시가 자동 무효화된다 (TTL 불필요, 결정론).
+    cards_hash: str | None = None
+    cached: bool = False  # 이 기록 자체가 캐시 응답이었는지 (FAQ 횟수에는 포함)
     duration_ms: int = 0
     created_at: str
 
@@ -53,7 +58,18 @@ def normalize_question(question: str) -> str:
     return re.sub(r"\s+", " ", question.strip().lower())
 
 
-def build_entry(result: AskResult) -> AskLogEntry:
+def cards_fingerprint(cards: list) -> str:
+    """카드 지문 — id·상태가 같으면 같은 근거 국면. 캐시 유효성의 결정론 판정."""
+    import hashlib
+
+    payload = json.dumps(
+        sorted((card.ref_id, card.status_ko or "") for card in cards),
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+
+def build_entry(result: AskResult, cards_hash: str | None = None) -> AskLogEntry:
     return AskLogEntry(
         id=f"ask_{uuid.uuid4().hex[:10]}",
         question=result.question,
@@ -62,10 +78,54 @@ def build_entry(result: AskResult) -> AskLogEntry:
         model_name=result.model_name,
         confidence=result.confidence,
         answer=result.answer,
+        derivation=result.derivation,
         citations=result.citations,
+        cards_hash=cards_hash if cards_hash is not None else cards_fingerprint(result.cards),
+        cached=result.cached,
         duration_ms=result.duration_ms,
         created_at=datetime.now(UTC).isoformat(),
     )
+
+
+ASK_CACHE_ENV = "SOC_ASK_CACHE"  # "false"면 캐시 비활성
+
+
+def ask_with_cache(runner, store: AskLogStoreProtocol, question: str) -> AskResult:
+    """B4 — 질의 로그 캐시를 앞단에 둔 Ask 실행.
+
+    같은 정규화 질문 + 같은 카드 지문의 LLM 답변이 로그에 있으면 재호출 없이
+    재사용한다(cached=True 명시 — 감사 원칙 유지). 결정론 답변은 재계산이 싸므로
+    캐시하지 않는다. 캐시 히트도 로그에 남아 FAQ 횟수에 포함된다.
+    """
+    import os
+
+    enabled = os.environ.get(ASK_CACHE_ENV, "true").lower() != "false"
+    normalized = normalize_question(question)
+    if enabled:
+        preview = runner.preview(question)
+        fingerprint = cards_fingerprint(preview.cards)
+        hit = store.find_cached(normalized, fingerprint)
+        if hit is not None:
+            result = AskResult(
+                question=question,
+                provider=hit.provider,
+                model_name=hit.model_name,
+                answer=hit.answer,
+                confidence=hit.confidence,
+                derivation=hit.derivation,
+                citations=hit.citations,
+                cards=preview.cards,
+                unmatched_terms=preview.unmatched_terms,
+                cached=True,
+                validation_notes=[f"캐시 응답 — 원 질의 {hit.created_at}"],
+                duration_ms=0,
+            )
+            store.save(build_entry(result, cards_hash=fingerprint))
+            return result
+
+    result = runner.ask(question)
+    store.save(build_entry(result))
+    return result
 
 
 def _aggregate_faq(entries: list[AskLogEntry], limit: int) -> list[FAQEntry]:
@@ -100,6 +160,8 @@ class AskLogStoreProtocol(Protocol):
 
     def faq(self, limit: int = 8) -> list[FAQEntry]: ...
 
+    def find_cached(self, normalized: str, cards_hash: str) -> AskLogEntry | None: ...
+
 
 class InMemoryAskLog:
     def __init__(self) -> None:
@@ -113,6 +175,16 @@ class InMemoryAskLog:
 
     def faq(self, limit: int = 8) -> list[FAQEntry]:
         return _aggregate_faq(self._entries, limit)
+
+    def find_cached(self, normalized: str, cards_hash: str) -> AskLogEntry | None:
+        for entry in sorted(self._entries, key=lambda e: e.created_at, reverse=True):
+            if (
+                entry.normalized == normalized
+                and entry.cards_hash == cards_hash
+                and entry.provider != "deterministic"
+            ):
+                return entry
+        return None
 
 
 class PostgresAskLog:
@@ -154,3 +226,21 @@ class PostgresAskLog:
     def faq(self, limit: int = 8) -> list[FAQEntry]:
         # FAQ는 전 이력 집계 — 로그 규모가 커지면 최근 N건 창으로 제한한다.
         return _aggregate_faq(self._load(1000), limit)
+
+    def find_cached(self, normalized: str, cards_hash: str) -> AskLogEntry | None:
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT payload FROM ask_log
+                WHERE normalized = %s AND provider != 'deterministic'
+                ORDER BY created_at DESC LIMIT 20
+                """,
+                (normalized,),
+            ).fetchall()
+        for row in rows:
+            entry = AskLogEntry.model_validate(
+                row[0] if isinstance(row[0], dict) else json.loads(row[0])
+            )
+            if entry.cards_hash == cards_hash:
+                return entry
+        return None

@@ -964,12 +964,24 @@ export interface components {
         AskLogEntry: {
             /** Answer */
             answer: string;
+            /**
+             * Cached
+             * @default false
+             */
+            cached: boolean;
+            /** Cards Hash */
+            cards_hash?: string | null;
             /** Citations */
             citations?: string[];
             /** Confidence */
             confidence: string;
             /** Created At */
             created_at: string;
+            /**
+             * Derivation
+             * @default
+             */
+            derivation: string;
             /**
              * Duration Ms
              * @default 0
@@ -1016,6 +1028,11 @@ export interface components {
         AskResult: {
             /** Answer */
             answer: string;
+            /**
+             * Cached
+             * @default false
+             */
+            cached: boolean;
             /** Cards */
             cards: components["schemas"]["AskCard"][];
             /** Citations */

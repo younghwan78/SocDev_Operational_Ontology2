@@ -19,7 +19,7 @@ from backend.agents.ask_log import (
     AskLogStoreProtocol,
     FAQEntry,
     InMemoryAskLog,
-    build_entry,
+    ask_with_cache,
 )
 from backend.agents.ask_runner import PRESET_QUESTIONS, AskPreview, AskResult, AskRunner
 from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
@@ -443,9 +443,7 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         LLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.
         결과는 질의 로그(감사 기록·FAQ 원천)에 남는다 — 신규 쓰기 API 아님.
         """
-        result = services.ask.ask(request.question)
-        services.ask_log.save(build_entry(result))
-        return result
+        return ask_with_cache(services.ask, services.ask_log, request.question)
 
     @app.post(f"{prefix}/ingest/file", response_model=IngestReport)
     async def ingest_file(

@@ -450,6 +450,22 @@
             "title": "Answer",
             "type": "string"
           },
+          "cached": {
+            "default": false,
+            "title": "Cached",
+            "type": "boolean"
+          },
+          "cards_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cards Hash"
+          },
           "citations": {
             "items": {
               "type": "string"
@@ -463,6 +479,11 @@
           },
           "created_at": {
             "title": "Created At",
+            "type": "string"
+          },
+          "derivation": {
+            "default": "",
+            "title": "Derivation",
             "type": "string"
           },
           "duration_ms": {
@@ -563,6 +584,11 @@
           "answer": {
             "title": "Answer",
             "type": "string"
+          },
+          "cached": {
+            "default": false,
+            "title": "Cached",
+            "type": "boolean"
           },
           "cards": {
             "items": {
