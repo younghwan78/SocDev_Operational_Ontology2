@@ -71,9 +71,13 @@ export function SourceMapPage() {
           {t.by_collection} ({sorted.length})
         </h2>
         <p className="section-note">{t.by_collection_note}</p>
-        <div className="source-collection-list">
+        <div className="source-grid">
           {sorted.map((c) => (
-            <CollectionRow key={c.collection} coverage={c} />
+            <CollectionRow
+              key={c.collection}
+              coverage={c}
+              maxTotal={sorted[0]?.total ?? 1}
+            />
           ))}
         </div>
       </div>
@@ -150,24 +154,43 @@ function UnmatchedChip({ token }: { token: UnmatchedToken }) {
   );
 }
 
-/** E5 밀도: 컬렉션 행은 한 줄(제목 | 막대 | 건수) — 범례는 상단 요약에 1회. */
-function CollectionRow({ coverage }: { coverage: CollectionCoverage }) {
+/** E5+: 막대 길이=건수(최대 대비) — 컬렉션 간 규모가 한눈에 비교되고,
+ * 숫자는 막대 끝에 붙어 시선 이동이 없다 (이슈 상황판 분포 막대와 동일 문법). */
+function CollectionRow({
+  coverage,
+  maxTotal,
+}: {
+  coverage: CollectionCoverage;
+  maxTotal: number;
+}) {
+  const summary = `${t.origin_synthetic} ${coverage.synthetic}, ${t.origin_imported} ${coverage.imported}, ${t.origin_integrated} ${coverage.integrated}`;
   return (
-    <div className="source-row" title={coverage.collection}>
+    <div className="source-row" title={`${coverage.collection} — ${summary}`}>
       <span className="source-name">{coverage.collection_ko}</span>
-      <OriginBar
-        synthetic={coverage.synthetic}
-        imported={coverage.imported}
-        integrated={coverage.integrated}
-        total={coverage.total}
-        compact
-      />
-      <span className="source-count">{coverage.total}</span>
-      {coverage.without_ref > 0 && (
-        <span className="badge badge-warn" title={t.without_ref_hint}>
-          {t.without_ref} {coverage.without_ref}
+      <span className="source-bar-area">
+        <span
+          className="origin-track source-track"
+          role="img"
+          aria-label={summary}
+          style={{ width: `${(coverage.total / Math.max(maxTotal, 1)) * 100}%` }}
+        >
+          {coverage.synthetic > 0 && (
+            <span className="origin-seg origin-synthetic" style={{ flex: coverage.synthetic }} />
+          )}
+          {coverage.imported > 0 && (
+            <span className="origin-seg origin-imported" style={{ flex: coverage.imported }} />
+          )}
+          {coverage.integrated > 0 && (
+            <span className="origin-seg origin-integrated" style={{ flex: coverage.integrated }} />
+          )}
         </span>
-      )}
+        <span className="source-count">{coverage.total}</span>
+        {coverage.without_ref > 0 && (
+          <span className="badge badge-warn" title={t.without_ref_hint}>
+            {t.without_ref} {coverage.without_ref}
+          </span>
+        )}
+      </span>
     </div>
   );
 }
@@ -177,23 +200,16 @@ function OriginBar({
   imported,
   integrated,
   total,
-  compact = false,
 }: {
   synthetic: number;
   imported: number;
   integrated: number;
   total: number;
-  compact?: boolean;
 }) {
   const pct = (n: number) => (total > 0 ? (n / total) * 100 : 0);
   const summary = `${t.origin_synthetic} ${synthetic}, ${t.origin_imported} ${imported}, ${t.origin_integrated} ${integrated}`;
   return (
-    <div
-      className={`origin-bar ${compact ? "origin-compact" : ""}`}
-      role="img"
-      aria-label={summary}
-      title={compact ? summary : undefined}
-    >
+    <div className="origin-bar" role="img" aria-label={summary}>
       <div className="origin-track">
         {synthetic > 0 && (
           <span className="origin-seg origin-synthetic" style={{ width: `${pct(synthetic)}%` }} />
@@ -205,19 +221,17 @@ function OriginBar({
           <span className="origin-seg origin-integrated" style={{ width: `${pct(integrated)}%` }} />
         )}
       </div>
-      {!compact && (
-        <div className="origin-legend">
-          <span className="origin-key">
-            <span className="origin-dot origin-synthetic" /> {t.origin_synthetic} {synthetic}
-          </span>
-          <span className="origin-key">
-            <span className="origin-dot origin-imported" /> {t.origin_imported} {imported}
-          </span>
-          <span className="origin-key">
-            <span className="origin-dot origin-integrated" /> {t.origin_integrated} {integrated}
-          </span>
-        </div>
-      )}
+      <div className="origin-legend">
+        <span className="origin-key">
+          <span className="origin-dot origin-synthetic" /> {t.origin_synthetic} {synthetic}
+        </span>
+        <span className="origin-key">
+          <span className="origin-dot origin-imported" /> {t.origin_imported} {imported}
+        </span>
+        <span className="origin-key">
+          <span className="origin-dot origin-integrated" /> {t.origin_integrated} {integrated}
+        </span>
+      </div>
     </div>
   );
 }

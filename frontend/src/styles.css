@@ -528,16 +528,18 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 
 /* 출처 지도 — origin 세그먼트 막대 */
 .source-collection-list { display: flex; flex-direction: column; gap: 12px; }
-/* E5: 컬렉션 한 줄 행 — 제목 | 막대 | 건수 */
-.source-collection-list:has(.source-row) { gap: 4px; }
-.source-row { display: flex; align-items: center; gap: 10px; padding: 2px 0; }
+/* E5+: 컬렉션 행 — 막대 길이=건수(최대 대비), 숫자는 막대 끝. 와이드에서 2열. */
+.source-grid { display: grid; grid-template-columns: 1fr; gap: 3px 36px; }
+@media (min-width: 1400px) { .source-grid { grid-template-columns: 1fr 1fr; } }
+.source-row { display: flex; align-items: center; gap: 10px; padding: 2px 0; min-width: 0; }
 .source-name {
-  flex: none; width: 180px; font-size: 12.5px;
+  flex: none; width: 170px; font-size: 12.5px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.source-row .origin-compact { flex: 1; margin-top: 0; }
+.source-bar-area { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.source-track { height: 12px; min-width: 3px; border-radius: 4px; }
 .source-count {
-  flex: none; width: 40px; text-align: right; font-size: 12.5px;
+  flex: none; font-size: 12.5px;
   color: var(--text-dim); font-variant-numeric: tabular-nums;
 }
 .origin-bar { margin-top: 6px; }
