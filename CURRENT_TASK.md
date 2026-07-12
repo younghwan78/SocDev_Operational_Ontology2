@@ -2,12 +2,13 @@
 
 ## 활성 Stage
 
-**D3 시맨틱 검색 사외 선행분 (승인된 D1→D2→D3→D4 순서 진행 중).**
+**활성 Stage 없음 — D1~D3 완료 (2026-07-12). D4는 검증 세션 일정 확정 대기.**
 
-> D1·D2 완료(2026-07-12): 운영 배포 패키지 + 문서 재정비·핸드오버 킷.
-> D3 범위: 임베딩 provider 계약(on-prem 호환 + Fake 결정론) → SemanticChunk
-> pgvector 저장(embed-chunks CLI) → Ask 하이브리드 검색(키워드 ∪ 벡터 후보,
-> 인용 관문 불변). 사내 후속: 실제 임베딩 모델 지정만.
+> D1 운영 배포 패키지(인증/로깅/compose 리허설/sync-status/runbook) /
+> D2 문서 재정비(스크린샷 9장 headless 재캡처·ingest 가이드·핸드오버 킷) /
+> D3 시맨틱 검색 사외 선행분(임베딩 provider·embed-chunks·Ask 하이브리드).
+> **D4(검증 세션 자료 — 가설 판정 모드·TAT baseline)는 사내 세션 날짜/형식이
+> 정해지면 착수** (제안서 조건). 사내 도입 절차: internal_docs/ops/handover.md.
 
 ### 직전 완료 — Backend B1~B5 사내 실운영 갭 교정 (2026-07-12)
 

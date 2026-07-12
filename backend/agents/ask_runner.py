@@ -17,6 +17,7 @@ import time
 from pydantic import BaseModel, ConfigDict, Field
 
 from backend.agents.providers.base import LLMProvider, ProviderError
+from backend.agents.providers.embedding import EmbeddingProvider, build_embedding_provider
 from backend.agents.runner import DETERMINISTIC, apply_external_policy, build_provider_chain
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.event import DevelopmentEvent, Issue, Test
@@ -27,6 +28,7 @@ from backend.services.rca import RCAService
 from backend.services.risk import RiskService
 
 MAX_CARDS = 8
+MAX_SEMANTIC_CARDS = 3  # D3: 벡터 후보는 카드 상한 안에서 최대 3장
 MIN_ANSWER_LENGTH = 20
 
 # 원점 문서 §7.3 데모 질문 5종 (한국어화)
@@ -189,6 +191,7 @@ class AskRunner:
         repo: RepositoryProtocol,
         providers: list[LLMProvider] | None = None,
         timeout_s: float = 120.0,
+        embedder: EmbeddingProvider | None = None,
     ) -> None:
         self._repo = repo
         # allow_external_llm 정책은 Ask 경로에도 동일 적용 (B1 — Advisory와 같은 관문).
@@ -196,6 +199,8 @@ class AskRunner:
         self._providers = (
             apply_external_policy(build_provider_chain()) if providers is None else providers
         )
+        # D3 하이브리드: 임베딩 provider는 env 기반(기본 비활성) — 키워드 검색은 불변.
+        self._embedder = embedder if embedder is not None else build_embedding_provider()
         self._timeout_s = timeout_s
         self._risk = RiskService(repo)
         self._rca = RCAService(repo)
@@ -299,6 +304,7 @@ class AskRunner:
             ]
         ordered = sorted(entries, key=lambda entry: (-entry[1][0], entry[0]))
         cards = [card for _, (_, card) in ordered[:MAX_CARDS]]
+        cards = self._merge_semantic_candidates(question, cards)
 
         # 미매치 토큰 — 확장(동의어/브리지)까지 고려해 진짜 못 찾은 것만 보고한다.
         matched_union = {term for card in cards for term in card.matched_terms}
@@ -315,6 +321,39 @@ class AskRunner:
             )
         )
         return cards, unmatched
+
+    def _merge_semantic_candidates(self, question: str, cards: list[AskCard]) -> list[AskCard]:
+        """D3 하이브리드 — 벡터 후보 청크를 키워드 카드와 별도로 최대 3장 합류.
+
+        청크는 후보 지위(증거 아님)를 상태 문구로 명시한다. 임베딩 미구성/실패는
+        조용히 건너뛴다 — 키워드 검색 결과는 불변이며, 인용 관문 규칙도 그대로다.
+        """
+        if self._embedder is None:
+            return cards
+        try:
+            from backend.services.semantic_index import search_chunks
+
+            matches = search_chunks(self._repo, self._embedder, question, MAX_SEMANTIC_CARDS)
+        except Exception:  # noqa: BLE001 — 후보 채널 실패가 질의를 막으면 안 된다
+            return cards
+        existing_ids = {card.ref_id for card in cards}
+        for chunk, similarity in matches:
+            if chunk.id in existing_ids or len(cards) >= MAX_CARDS + MAX_SEMANTIC_CARDS:
+                continue
+            preview = chunk.chunk_text.split("\n", 1)[0]
+            cards.append(
+                AskCard(
+                    ref_id=chunk.id,
+                    collection="semantic_chunks",
+                    collection_ko=object_label("SemanticChunk") or "semantic_chunks",
+                    title=preview[:60] or chunk.source_id,
+                    snippet=chunk.chunk_text.replace("\n", " ")[:160],
+                    status_ko=f"문서 후보 · 증거 아님 (유사도 {similarity:.2f})",
+                    status_kind="info",
+                    matched_terms=["semantic"],
+                )
+            )
+        return cards
 
     def _status(
         self, obj: object, risk_rows: dict, verification: dict

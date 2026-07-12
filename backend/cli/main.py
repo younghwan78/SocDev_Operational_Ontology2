@@ -155,6 +155,50 @@ def ingest_file(
         raise typer.Exit(code=1)
 
 
+@app.command("embed-chunks")
+def embed_chunks_cmd(
+    provider_name: str = typer.Option(
+        "fake", "--provider", help="fake(사외/검증) | openai_compat(사내 on-prem)"
+    ),
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (미지정 시 메모리 검증)"),
+) -> None:
+    """SemanticChunk 임베딩 생성 (D3) — Ask 하이브리드 검색의 벡터 인덱스.
+
+    같은 모델의 벡터가 이미 있으면 건너뛴다(멱등). 청크 반입 후 실행한다.
+    """
+    from backend.agents.providers.embedding import EmbeddingError, build_embedding_provider
+    from backend.ingest.service import IngestService, MemoryIngestWriter
+    from backend.services.semantic_index import embed_chunks
+
+    try:
+        provider = build_embedding_provider(provider_name)
+    except EmbeddingError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(code=1) from exc
+    if provider is None:
+        console.print("[red]--provider는 fake 또는 openai_compat[/red]")
+        raise typer.Exit(code=1)
+
+    import os
+
+    if dsn or os.environ.get("SOC_ONTOLOGY_DSN"):
+        from backend.db.connection import get_connection
+        from backend.db.repository import PostgresRepository
+        from backend.ingest.service import PostgresIngestWriter
+
+        with get_connection(dsn) as conn:
+            created, kept = embed_chunks(
+                PostgresRepository(conn), PostgresIngestWriter(conn), provider
+            )
+    else:
+        repo = InMemoryRepository.from_fixtures(DEFAULT_FIXTURES)
+        writer = MemoryIngestWriter(repo)
+        _ = IngestService(writer)  # 계약 확인용 — 메모리 경로는 비영속 검증
+        created, kept = embed_chunks(repo, writer, provider)
+        console.print("[yellow]DSN 미지정 — 검증만 수행됨 (저장되지 않음)[/yellow]")
+    console.print(f"임베딩 생성 {created}건 / 기존 유지 {kept}건 (모델 {provider.model_name})")
+
+
 @app.command("sync-status")
 def sync_status(
     dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (기본: SOC_ONTOLOGY_DSN)"),

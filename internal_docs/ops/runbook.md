@@ -33,6 +33,10 @@ docker compose up -d --build
 on-prem 미설정이어도 시스템은 **결정론 fallback**으로 항상 동작한다(조회·위험
 지도·RCA·변경 영향은 LLM 무관). 같은 질문 재질의는 캐시로 즉답(`SOC_ASK_CACHE`).
 
+**시맨틱 검색(선택)**: `SOC_EMBED_PROVIDER=openai_compat` + 임베딩 모델 지정 후
+`embed-chunks --provider openai_compat` 실행(청크 반입 후, 멱등) — Ask가 키워드에
+더해 문서 후보(증거 아님)를 벡터로 찾는다. 미설정이면 키워드 검색만으로 동작.
+
 ## 3. JIRA/Confluence 동기화 (주기 실행)
 
 사전 조건: 보안 승인, 서비스 계정 토큰, `backend/connectors/jira_field_map.yaml`
