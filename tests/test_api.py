@@ -292,3 +292,26 @@ def test_api_token_auth(monkeypatch) -> None:
     # env 해제 → 개발 모드(무인증) 복귀
     monkeypatch.delenv(API_TOKEN_ENV)
     assert client.get("/api/v1/projects").status_code == 200
+
+
+def test_access_log_json_lines(caplog) -> None:
+    """D1-2 — 요청당 JSON 한 줄(경로/상태/소요), 토큰 값은 기록되지 않는다."""
+    import json as jsonlib
+    import logging
+
+    from backend.api.app import create_app
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_app())
+    with caplog.at_level(logging.INFO, logger="soc.access"):
+        client.get("/api/v1/projects", headers={"Authorization": "Bearer whatever"})
+    lines = [r.getMessage() for r in caplog.records if r.name == "soc.access"]
+    assert lines, "access 로그 한 줄 이상"
+    entry = jsonlib.loads(lines[-1])
+    assert entry["kind"] == "access"
+    assert entry["method"] == "GET"
+    assert entry["path"] == "/api/v1/projects"
+    assert entry["status"] == 200
+    assert entry["auth"] is True
+    assert isinstance(entry["duration_ms"], int)
+    assert "whatever" not in lines[-1], "토큰 값 비기록"

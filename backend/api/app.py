@@ -30,6 +30,7 @@ from backend.agents.ask_log import (
 from backend.agents.ask_runner import PRESET_QUESTIONS, AskPreview, AskResult, AskRunner
 from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
 from backend.agents.runner import AdvisoryRunner
+from backend.api.observability import RequestTimer, log_error, log_request, setup_logging
 from backend.ingest.service import (
     IngestBatch,
     IngestError,
@@ -225,6 +226,27 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
                     content={"detail": "인증 필요 — Authorization: Bearer <SOC_API_TOKEN>"},
                 )
         return await call_next(request)
+
+    # D1-2 구조화 로깅 — 나중에 등록해 최외곽에서 401 포함 전 응답을 관측한다.
+    setup_logging()
+
+    @app.middleware("http")
+    async def access_log(request: Request, call_next):  # type: ignore[no-untyped-def]
+        timer = RequestTimer()
+        try:
+            response = await call_next(request)
+        except Exception as exc:
+            log_error(request.method, request.url.path, exc, timer.duration_ms())
+            raise
+        if request.url.path.startswith(prefix):
+            log_request(
+                request.method,
+                request.url.path,
+                response.status_code,
+                timer.duration_ms(),
+                authenticated=bool(request.headers.get("authorization")),
+            )
+        return response
 
     @app.get(f"{prefix}/health")
     def health() -> dict[str, str]:
