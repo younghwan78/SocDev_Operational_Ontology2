@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  fetchActionItems,
   fetchDecisions,
   fetchReviewPack,
   fetchReviewPacks,
@@ -413,11 +414,70 @@ function ReviewPackDetail({ packId }: { packId: string }) {
   );
 }
 
+// B3 액션 재진입 계약 — backend `action_items` 매핑과 쌍 (결정 CSV와 동일 왕복 패턴).
+export const ACTION_CSV_HEADER = [
+  "액션 ID",
+  "결정 ID",
+  "제목",
+  "설명",
+  "담당 역할",
+  "기한 단계",
+  "상태",
+  "필요 근거",
+] as const;
+
+export function toActionCsv(decisions: { id: string }[]): string {
+  const rows = [ACTION_CSV_HEADER.map(csvCell).join(",")];
+  for (const decision of decisions) {
+    rows.push(
+      [`act_${decision.id}_a1`, decision.id, "", "", "", "", "open", ""]
+        .map(csvCell)
+        .join(","),
+    );
+  }
+  return rows.join("\r\n");
+}
+
 function PackDecisions({ projectIds }: { projectIds: string[] }) {
+  const valueLabel = useValueLabels();
+  const queryClient = useQueryClient();
   const decisions = useQuery({ queryKey: ["decisions"], queryFn: () => fetchDecisions() });
+  const actions = useQuery({ queryKey: ["action-items"], queryFn: fetchActionItems });
+  const [actionReport, setActionReport] = useState<IngestReport | null>(null);
+  const actionFileRef = useRef<HTMLInputElement>(null);
+  const uploadActions = useMutation({
+    mutationFn: async () => {
+      const file = actionFileRef.current?.files?.[0];
+      if (!file) throw new Error(ko.ingest.file_required);
+      return uploadIngestFile(file, "action_items");
+    },
+    onSuccess: (result) => {
+      setActionReport(result);
+      void queryClient.invalidateQueries({ queryKey: ["action-items"] });
+    },
+  });
+
   const related = (decisions.data ?? []).filter((decision) =>
     projectIds.includes(decision.project_id),
   );
+  const actionsByDecision = new Map<string, typeof actions.data>();
+  for (const action of actions.data ?? []) {
+    const list = actionsByDecision.get(action.source_decision_id) ?? [];
+    list.push(action);
+    actionsByDecision.set(action.source_decision_id, list);
+  }
+  const downloadActionCsv = () => {
+    const blob = new Blob(["﻿" + toActionCsv(related) + "\r\n"], {
+      type: "text/csv;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "action_items_template.csv";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
       <h3 className="card-title">{tp.decisions_section}</h3>
@@ -435,8 +495,57 @@ function PackDecisions({ projectIds }: { projectIds: string[] }) {
               {tp.decision_basis}: {basis.statement}
             </p>
           ))}
+          {/* B3: 결정에서 파생된 액션 — 상태·담당·기한 추적 */}
+          {(actionsByDecision.get(decision.id) ?? []).map((action) => (
+            <p key={action.id} className="desc pack-item" title={action.id}>
+              <span
+                className={`badge ${
+                  action.status === "done"
+                    ? "badge-ok"
+                    : action.status === "blocked"
+                      ? "badge-danger"
+                      : "badge-warn"
+                }`}
+              >
+                {valueLabel("action_status", action.status)}
+              </span>{" "}
+              {action.title} — {valueLabel("role", action.owner_role)} ·{" "}
+              {valueLabel("due_phase", action.due_phase)}
+            </p>
+          ))}
         </div>
       ))}
+      {related.length > 0 && (
+        <div className="chip-row">
+          <button type="button" className="link-btn" onClick={downloadActionCsv}>
+            {tp.download_action_csv}
+          </button>
+          <label className="filter-label" htmlFor="action-csv">
+            {tp.upload_actions}
+          </label>
+          <input id="action-csv" ref={actionFileRef} type="file" accept=".csv,.xlsx" />
+          <button
+            type="button"
+            className="link-btn"
+            disabled={uploadActions.isPending}
+            onClick={() => uploadActions.mutate()}
+          >
+            {uploadActions.isPending ? tp.uploading_actions : tp.upload_actions}
+          </button>
+          {uploadActions.isError && (
+            <span className="badge badge-danger" role="alert">
+              {(uploadActions.error as Error).message}
+            </span>
+          )}
+          {actionReport && (
+            <span className="badge badge-ok" aria-live="polite">
+              {ko.ingest.accepted} {actionReport.batch.accepted_count} · {ko.ingest.updated}{" "}
+              {actionReport.batch.updated_count ?? 0} · {ko.ingest.rejected}{" "}
+              {actionReport.batch.rejected_count}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

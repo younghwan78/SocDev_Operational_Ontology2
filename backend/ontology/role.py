@@ -158,6 +158,9 @@ class RoleAdvisory(OntologyModel):
     recommendation: str
     confidence: Confidence
     missing_information: list[str] = Field(default_factory=list)
+    # B3 §2.2 피드백 루프: HW/SW Development 역할만 채운다 — 구현에서 발견한
+    # 차기 SoC 개선 필요를 SE/SoC Architecture로 전달 (validator가 강제).
+    feedback_items: list[FeedbackItem] = Field(default_factory=list)
     derivation_summary: str | None = None
     not_final_decision: bool = True
 

@@ -97,6 +97,15 @@ OUTPUT_SCHEMA_EXAMPLE = {
     "recommendation": "검토 권고 (최종 결정 아님)",
     "confidence": "low | medium | high",
     "missing_information": ["부족한 정보"],
+    "feedback_items": [
+        {
+            "target_role": "system_engineering | soc_architecture",
+            "description": "구현에서 발견한 차기 SoC 개선 필요 (HW/SW Development 역할만 작성)",
+            "description_derivation": "어떤 컨텍스트 항목에서 도출됐는지",
+            "supporting_basis": ["컨텍스트에_있는_ID"],
+            "confidence": "low | medium | high",
+        }
+    ],
     "derivation_summary": "전체 도출 과정 요약",
 }
 
@@ -126,6 +135,9 @@ def build_prompt(role: RoleAgent, context: dict[str, Any]) -> str:
 3. "추가 분석이 필요하다" 같은 일반론 금지 — 어떤 데이터가 왜 문제인지 구체적으로.
 4. 당신의 역할 책임 경계를 벗어난 결정을 내리지 않는다. 최종 결정이 아니라 검토 조언이다.
 5. 모든 텍스트는 한국어로 작성한다.
+6. feedback_items는 HW/SW Development 역할일 때만 작성한다 — 구현에서 발견한
+   차기 SoC 개선 필요를 System Engineering 또는 SoC Architecture에 전달하며,
+   다른 역할이거나 전달할 것이 없으면 빈 배열로 둔다.
 
 아래 JSON 스키마로만 응답하십시오 (설명 문장, 코드펜스 밖 텍스트 금지):
 ```json

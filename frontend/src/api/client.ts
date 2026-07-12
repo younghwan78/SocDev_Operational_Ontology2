@@ -280,6 +280,13 @@ export async function fetchIngestQuarantine(): Promise<QuarantineEntry[]> {
   return data;
 }
 export type Decision = components["schemas"]["Decision"];
+export type ActionItem = components["schemas"]["ActionItem"];
+
+export async function fetchActionItems(): Promise<ActionItem[]> {
+  const { data, error } = await client.GET("/api/v1/action-items");
+  if (error || !data) throw new Error("action items 조회 실패");
+  return data;
+}
 
 export async function fetchIngestMappings(): Promise<IngestMappingInfo[]> {
   const { data, error } = await client.GET("/api/v1/ingest/mappings");

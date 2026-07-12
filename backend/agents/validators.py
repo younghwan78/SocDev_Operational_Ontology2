@@ -11,6 +11,11 @@ import re
 from pydantic import Field, ValidationError
 
 from backend.ontology.common import Confidence, GroundedStatement, OntologyModel
+from backend.ontology.role import FeedbackItem
+
+# §2.2 역할 계약 — feedback은 HW/SW만 만들고, 수신처는 SE/SoC Architecture만.
+FEEDBACK_SOURCE_ROLES = {"hw_development", "sw_development"}
+FEEDBACK_TARGET_ROLES = {"system_engineering", "soc_architecture"}
 
 
 class AdvisoryDraft(OntologyModel):
@@ -22,6 +27,7 @@ class AdvisoryDraft(OntologyModel):
     recommendation: str
     confidence: Confidence
     missing_information: list[str] = Field(default_factory=list)
+    feedback_items: list[FeedbackItem] = Field(default_factory=list)
     derivation_summary: str | None = None
 
 
@@ -61,9 +67,30 @@ GENERIC_ONLY_PATTERNS = [
 MIN_DESCRIPTION_LENGTH = 15
 
 
-def validate_draft(draft: AdvisoryDraft, known_ids: set[str]) -> list[str]:
+def validate_draft(
+    draft: AdvisoryDraft, known_ids: set[str], role_id: str | None = None
+) -> list[str]:
     """검증 실패 사유 목록을 반환한다. 비어 있으면 통과."""
     problems: list[str] = []
+
+    # B3 §2.2 피드백 계약 — HW/SW 발신 · SE/Arch 수신 · 근거 필수.
+    if draft.feedback_items and role_id is not None and role_id not in FEEDBACK_SOURCE_ROLES:
+        problems.append(
+            f"feedback_items는 HW/SW Development 역할만 생성 가능 (역할: {role_id})"
+        )
+    for index, feedback in enumerate(draft.feedback_items):
+        label = f"feedback_items[{index}]"
+        if feedback.target_role not in FEEDBACK_TARGET_ROLES:
+            problems.append(
+                f"{label}: 수신 역할 위반 — {feedback.target_role} "
+                "(system_engineering/soc_architecture만 허용)"
+            )
+        if not feedback.supporting_basis:
+            problems.append(f"{label}: supporting_basis 비어 있음")
+        elif not [b for b in feedback.supporting_basis if b in known_ids]:
+            problems.append(f"{label}: supporting_basis 전부 미해석 — {feedback.supporting_basis}")
+        if len(feedback.description.strip()) < MIN_DESCRIPTION_LENGTH:
+            problems.append(f"{label}: 서술이 너무 짧음")
 
     if not draft.concerns:
         problems.append("우려(concerns)가 없음 — 근거 문장 최소 1건 필요")

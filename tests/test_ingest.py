@@ -470,3 +470,26 @@ def test_quarantine_removed_with_batch_rollback(service: IngestService) -> None:
     assert len(service.list_quarantine("issues")) == 1
     service.rollback(report.batch.id)
     assert service.list_quarantine("issues") == []
+
+
+def test_action_items_reentry_roundtrip(repo: InMemoryRepository, service: IngestService) -> None:
+    """B3 — 액션 CSV 반입 → ActionItem 저장 → rollback (행동 재진입 루프)."""
+    header = "액션 ID,결정 ID,제목,설명,담당 역할,기한 단계,상태,필요 근거\n"
+    csv_content = (
+        header
+        + "import_act_area_followup,dec_w_area_exploration_initial,면적 근거 후속,"
+        + "RTL 면적 추정 재검증,system_engineering,architecture_exploration,open,"
+        + "evd_w_business_area_pressure\n"
+    )
+    report = service.ingest("actions.csv", csv_content.encode(), "action_items")
+    assert report.batch.accepted_count == 1
+    assert report.quality is not None
+    assert report.quality.linkage_connected == 1  # 결정 연결
+
+    obj = repo.get("action_items", "import_act_area_followup")
+    assert obj is not None
+    assert obj.source_decision_id == "dec_w_area_exploration_initial"
+    assert obj.owner_role == "system_engineering"
+
+    assert service.rollback(report.batch.id) == 1
+    assert repo.get("action_items", "import_act_area_followup") is None

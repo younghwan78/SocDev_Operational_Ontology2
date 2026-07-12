@@ -50,6 +50,61 @@
         "title": "ActionDraft",
         "type": "object"
       },
+      "ActionItem": {
+        "additionalProperties": false,
+        "description": "액션 아이템 — 결정에서 파생된 후속 작업.",
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "due_phase": {
+            "title": "Due Phase",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "owner_role": {
+            "title": "Owner Role",
+            "type": "string"
+          },
+          "required_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Required Evidence",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceMeta"
+          },
+          "source_decision_id": {
+            "title": "Source Decision Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source_decision_id",
+          "title",
+          "description",
+          "owner_role",
+          "due_phase",
+          "status"
+        ],
+        "title": "ActionItem",
+        "type": "object"
+      },
       "ActivityInputContext": {
         "additionalProperties": false,
         "description": "활동 입력 컨텍스트 — 어떤 fixture 근거로 검토했는지.",
@@ -2136,6 +2191,42 @@
           "answer_preview"
         ],
         "title": "FAQEntry",
+        "type": "object"
+      },
+      "FeedbackItem": {
+        "additionalProperties": false,
+        "description": "HW/SW 개발 → System Engineering/SoC Architecture 피드백 (런타임 계약).",
+        "properties": {
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "description_derivation": {
+            "title": "Description Derivation",
+            "type": "string"
+          },
+          "supporting_basis": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supporting Basis",
+            "type": "array"
+          },
+          "target_role": {
+            "title": "Target Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target_role",
+          "description",
+          "description_derivation",
+          "confidence"
+        ],
+        "title": "FeedbackItem",
         "type": "object"
       },
       "GroundedStatement": {
@@ -4471,6 +4562,13 @@
             ],
             "title": "Derivation Summary"
           },
+          "feedback_items": {
+            "items": {
+              "$ref": "#/components/schemas/FeedbackItem"
+            },
+            "title": "Feedback Items",
+            "type": "array"
+          },
           "missing_information": {
             "items": {
               "type": "string"
@@ -6086,6 +6184,73 @@
           }
         },
         "summary": "Action Draft"
+      }
+    },
+    "/api/v1/action-items": {
+      "get": {
+        "description": "액션 아이템 — 결정 파생 후속 작업 목록 (읽기 전용, B3 행동 재진입).",
+        "operationId": "list_action_items_api_v1_action_items_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "decision_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Decision Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ActionItem"
+                  },
+                  "title": "Response List Action Items Api V1 Action Items Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Action Items"
       }
     },
     "/api/v1/ask": {

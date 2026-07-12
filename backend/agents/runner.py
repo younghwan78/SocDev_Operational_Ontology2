@@ -136,6 +136,7 @@ class AdvisoryRunner:
                     recommendation=draft.recommendation,
                     confidence=draft.confidence,
                     missing_information=draft.missing_information,
+                    feedback_items=draft.feedback_items,
                     derivation_summary=draft.derivation_summary,
                 )
             )
@@ -174,7 +175,7 @@ class AdvisoryRunner:
             except DraftParseError as exc:
                 notes.append(f"{role.id}/{provider.name}: 파싱 실패 — {exc}")
                 continue
-            problems = validate_draft(draft, known_ids)
+            problems = validate_draft(draft, known_ids, role_id=role.id)
             if problems:
                 notes.append(
                     f"{role.id}/{provider.name}: 검증 거부 — {'; '.join(problems[:3])}"
@@ -184,7 +185,7 @@ class AdvisoryRunner:
 
         # 최종 fallback — 결정론 어드바이저는 항상 응답한다
         draft = generate_deterministic_draft(role, analysis)
-        problems = validate_draft(draft, known_ids)
+        problems = validate_draft(draft, known_ids, role_id=role.id)
         if problems:
             notes.append(f"{role.id}/{DETERMINISTIC}: 검증 경고 — {'; '.join(problems[:3])}")
         return draft, DETERMINISTIC, None

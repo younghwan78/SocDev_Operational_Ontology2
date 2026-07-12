@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/action-items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Action Items
+         * @description 액션 아이템 — 결정 파생 후속 작업 목록 (읽기 전용, B3 행동 재진입).
+         */
+        get: operations["list_action_items_api_v1_action_items_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/ask": {
         parameters: {
             query?: never;
@@ -766,6 +786,29 @@ export interface components {
             scenario_name: string;
             /** Sections */
             sections: components["schemas"]["DraftSection"][];
+        };
+        /**
+         * ActionItem
+         * @description 액션 아이템 — 결정에서 파생된 후속 작업.
+         */
+        ActionItem: {
+            /** Description */
+            description: string;
+            /** Due Phase */
+            due_phase: string;
+            /** Id */
+            id: string;
+            /** Owner Role */
+            owner_role: string;
+            /** Required Evidence */
+            required_evidence?: string[];
+            source?: components["schemas"]["SourceMeta"];
+            /** Source Decision Id */
+            source_decision_id: string;
+            /** Status */
+            status: string;
+            /** Title */
+            title: string;
         };
         /**
          * ActivityInputContext
@@ -1613,6 +1656,21 @@ export interface components {
             last_confidence: string;
             /** Question */
             question: string;
+        };
+        /**
+         * FeedbackItem
+         * @description HW/SW 개발 → System Engineering/SoC Architecture 피드백 (런타임 계약).
+         */
+        FeedbackItem: {
+            confidence: components["schemas"]["Confidence"];
+            /** Description */
+            description: string;
+            /** Description Derivation */
+            description_derivation: string;
+            /** Supporting Basis */
+            supporting_basis?: string[];
+            /** Target Role */
+            target_role: string;
         };
         /**
          * GroundedStatement
@@ -2493,6 +2551,8 @@ export interface components {
             confidence: components["schemas"]["Confidence"];
             /** Derivation Summary */
             derivation_summary?: string | null;
+            /** Feedback Items */
+            feedback_items?: components["schemas"]["FeedbackItem"][];
             /** Missing Information */
             missing_information?: string[];
             /** Model Name */
@@ -3089,6 +3149,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActionDraft"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_action_items_api_v1_action_items_get: {
+        parameters: {
+            query?: {
+                decision_id?: string | null;
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActionItem"][];
                 };
             };
             /** @description Validation Error */

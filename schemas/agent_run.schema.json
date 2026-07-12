@@ -11,6 +11,42 @@
       "title": "Confidence",
       "type": "string"
     },
+    "FeedbackItem": {
+      "additionalProperties": false,
+      "description": "HW/SW 개발 → System Engineering/SoC Architecture 피드백 (런타임 계약).",
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "description_derivation": {
+          "title": "Description Derivation",
+          "type": "string"
+        },
+        "supporting_basis": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supporting Basis",
+          "type": "array"
+        },
+        "target_role": {
+          "title": "Target Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_role",
+        "description",
+        "description_derivation",
+        "confidence"
+      ],
+      "title": "FeedbackItem",
+      "type": "object"
+    },
     "GroundedStatement": {
       "additionalProperties": false,
       "description": "근거 문장 — 서술/도출 과정/뒷받침 근거/확신도를 항상 함께 갖는다.",
@@ -68,6 +104,13 @@
           ],
           "default": null,
           "title": "Derivation Summary"
+        },
+        "feedback_items": {
+          "items": {
+            "$ref": "#/$defs/FeedbackItem"
+          },
+          "title": "Feedback Items",
+          "type": "array"
         },
         "missing_information": {
           "items": {

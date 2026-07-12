@@ -235,3 +235,50 @@ def test_openai_compat_missing_base_url() -> None:
     provider._base_url = None  # env 무시
     with pytest.raises(ProviderError):
         provider.generate("프롬프트", timeout_s=5)
+
+
+def test_feedback_items_role_contract() -> None:
+    """B3 §2.2 — feedback은 HW/SW 발신, SE/Arch 수신, 근거 필수 (validator 강제)."""
+    from backend.agents.validators import AdvisoryDraft, validate_draft
+
+    base = {
+        "summary": "요약",
+        "concerns": [
+            {
+                "description": "UHD60 전력 근거가 이전 세대 실측뿐이라 마진 판단이 어렵다",
+                "description_derivation": "evidence_catalog 항목에서 도출",
+                "supporting_basis": ["known_ref"],
+                "confidence": "medium",
+            }
+        ],
+        "recommendation": "검토 권고",
+        "confidence": "medium",
+        "feedback_items": [
+            {
+                "target_role": "system_engineering",
+                "description": "차기 SoC에서 ISP 전력 계측 포인트를 스펙에 포함해야 한다",
+                "description_derivation": "전력 근거 공백에서 도출",
+                "supporting_basis": ["known_ref"],
+                "confidence": "medium",
+            }
+        ],
+    }
+    draft = AdvisoryDraft.model_validate(base)
+    assert validate_draft(draft, {"known_ref"}, role_id="hw_development") == []
+    problems = validate_draft(draft, {"known_ref"}, role_id="pm")
+    assert any("HW/SW Development 역할만" in p for p in problems)
+    bad_target = AdvisoryDraft.model_validate(
+        {**base, "feedback_items": [{**base["feedback_items"][0], "target_role": "pm"}]}
+    )
+    problems = validate_draft(bad_target, {"known_ref"}, role_id="hw_development")
+    assert any("수신 역할 위반" in p for p in problems)
+    bad_basis = AdvisoryDraft.model_validate(
+        {
+            **base,
+            "feedback_items": [
+                {**base["feedback_items"][0], "supporting_basis": ["없는_id"]}
+            ],
+        }
+    )
+    problems = validate_draft(bad_basis, {"known_ref"}, role_id="sw_development")
+    assert any("미해석" in p for p in problems)

@@ -258,6 +258,32 @@ MAPPINGS: dict[str, IngestMapping] = {
         },
         ref_checks={"project_id": "projects", "event_id": "development_events"},
     ),
+    "action_items": IngestMapping(
+        # B3 행동 재진입 — 결정에서 파생된 후속 작업의 왕복 (결정 CSV와 동일 패턴).
+        # 담당 역할은 사람이 기입한 값 그대로 (자동 할당 금지 — CLAUDE.md §6.3).
+        name="action_items",
+        label_ko="액션 아이템",
+        target_collection="action_items",
+        column_map={
+            "액션 ID": "id",
+            "결정 ID": "source_decision_id",
+            "제목": "title",
+            "설명": "description",
+            "담당 역할": "owner_role",
+            "기한 단계": "due_phase",
+            "상태": "status",
+            "필요 근거": "required_evidence",
+        },
+        list_columns={"required_evidence": ";"},
+        required_columns={"액션 ID", "결정 ID", "제목", "설명", "담당 역할", "기한 단계", "상태"},
+        label_domains={"status": "action_status", "due_phase": "due_phase", "owner_role": "role"},
+        ref_checks={
+            "source_decision_id": "decisions",
+            "owner_role": "roles",
+            "required_evidence": "evidence",
+        },
+        linkage_fields=("source_decision_id",),
+    ),
     "semantic_chunks": IngestMapping(
         # Confluence 등 문서 페이지의 검색 후보 반입 — 증거가 아니라 후보 지위(§3).
         name="semantic_chunks",

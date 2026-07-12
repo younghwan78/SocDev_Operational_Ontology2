@@ -533,6 +533,7 @@ MODEL_FIELD_LABELS: dict[str, dict[str, str]] = {
         "run_id": "실행 ID",
         "provider": "생성 엔진",
         "model_name": "모델",
+        "feedback_items": "차기 개선 피드백",
         "derivation_summary": "도출 요약",
     },
     "AgentRun": {
@@ -615,6 +616,20 @@ VALUE_LABELS: dict[str, dict[str, str]] = {
         "commercial_early": "양산 초기",
         "evt_development": "EVT 개발",
         "spec_selection_architecture_exploration": "스펙 선정·아키텍처 탐색",
+    },
+    "action_status": {
+        "open": "미착수",
+        "in_progress": "진행 중",
+        "done": "완료",
+        "blocked": "차단",
+        "cancelled": "취소",
+    },
+    "due_phase": {
+        "spec_selection": "스펙 선정",
+        "architecture_exploration": "아키텍처 탐색",
+        "development": "개발",
+        "verification": "검증",
+        "mass_production": "양산",
     },
     "ip_domain": {
         "camera": "카메라",

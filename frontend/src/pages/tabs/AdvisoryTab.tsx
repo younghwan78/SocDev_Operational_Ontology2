@@ -108,6 +108,22 @@ function AdvisoryCard({ advisory }: { advisory: RoleAdvisory }) {
           </div>
         ))}
 
+        {/* B3: §2.2 피드백 루프 가시화 — HW/SW → SE/Arch 차기 개선 전달 */}
+        {(advisory.feedback_items ?? []).map((feedback, index) => (
+          <div key={`fb-${index}`} className="grounded feedback-item">
+            <div>
+              <strong>{t.feedback}</strong> → {label(feedback.target_role)} ({t.confidence}:{" "}
+              {feedback.confidence}): {feedback.description}
+            </div>
+            <div className="derivation">
+              {t.derivation}: {feedback.description_derivation}
+            </div>
+            <div className="derivation">
+              {t.supporting_basis}: {(feedback.supporting_basis ?? []).join(", ")}
+            </div>
+          </div>
+        ))}
+
         {(advisory.required_evidence ?? []).length > 0 && (
           <p className="desc">
             {t.required_evidence}: {(advisory.required_evidence ?? []).join(" · ")}

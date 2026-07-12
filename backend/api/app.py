@@ -35,7 +35,7 @@ from backend.ingest.service import (
 from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.repository import InMemoryRepository
 from backend.ontology import COLLECTIONS, RUNTIME_CONTRACTS
-from backend.ontology.decision import Decision
+from backend.ontology.decision import ActionItem, Decision
 from backend.ontology.event import DevelopmentEvent
 from backend.ontology.evidence import EvidenceCatalogEntry
 from backend.ontology.glossary import export_glossary
@@ -487,6 +487,21 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         if event_id:
             decisions = [d for d in decisions if d.event_id == event_id]
         return sorted(decisions, key=lambda d: d.id)
+
+    @app.get(f"{prefix}/action-items", response_model=list[ActionItem])
+    def list_action_items(
+        decision_id: str | None = Query(default=None),
+        status: str | None = Query(default=None),
+    ) -> list[ActionItem]:
+        """액션 아이템 — 결정 파생 후속 작업 목록 (읽기 전용, B3 행동 재진입)."""
+        items = [
+            a for a in services.repo.list("action_items") if isinstance(a, ActionItem)
+        ]
+        if decision_id:
+            items = [a for a in items if a.source_decision_id == decision_id]
+        if status:
+            items = [a for a in items if a.status == status]
+        return sorted(items, key=lambda a: a.id)
 
     @app.get(f"{prefix}/ingest/quarantine", response_model=list[QuarantineEntry])
     def list_ingest_quarantine(

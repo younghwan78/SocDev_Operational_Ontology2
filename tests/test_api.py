@@ -232,3 +232,20 @@ def test_decisions_endpoint_filters(client) -> None:
     assert isinstance(decisions, list) and decisions, "fixture 결정 1건 이상"
     filtered = client.get("/api/v1/decisions", params={"project_id": "없는_프로젝트"}).json()
     assert filtered == []
+
+
+def test_action_items_endpoint() -> None:
+    """B3 — 결정별 액션 아이템 조회 (읽기 전용)."""
+    from backend.api.app import create_app
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_app())
+    all_items = client.get("/api/v1/action-items").json()
+    assert len(all_items) >= 1
+    filtered = client.get(
+        "/api/v1/action-items", params={"decision_id": "dec_w_area_exploration_initial"}
+    ).json()
+    assert all(
+        item["source_decision_id"] == "dec_w_area_exploration_initial" for item in filtered
+    )
+    assert filtered, "fixture 결정의 액션이 조회돼야 한다"
