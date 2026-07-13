@@ -1,6 +1,21 @@
 # CHANGELOG
 
-## D3 시맨틱 검색 사외 선행분 — Stage 18 앞당김 (2026-07-12)
+## 데모 스토리 8K30 재앵커 (2026-07-13)
+
+- **데모 스토리 4장면을 8K30 Recording KPI 스토리라인으로 재작성**: 기존 장면 1이
+  "최상단 붉은 행 = UHD60"이라 안내했으나 실제 U 과제 heatmap 최상단은 8K30
+  (등급 동률 시 이름순 정렬 — Stage 12 작성 시점부터 불일치, 커밋 `8d27c2c`에서
+  재계산으로 확인). 장면 2=`issue_mfc_8k30_bitrate_latency_u` RCA(검증 노드 red),
+  장면 3=MFC `NAL Queue mode` 변경 영향(장면 2 원인 후보와 직결, 시나리오 3/KPI 12),
+  장면 4=8K30 thermal evidence 질문(인용 5건 전부 8K30 관련, unmatched 0).
+- **장면 연결 고리 문구 보강**: 장면 1 "MFC 셀 클릭 → 미해결 인코딩 이슈",
+  장면 2 "원인 노드 후보 NAL queue batching 확인", 장면 4 "thermal soak 실패 +
+  미확보 근거 → '아직 해결로 판단할 수 없다'는 결론까지 근거로" — 장면 간
+  인과가 배너 문구만으로 이어지도록.
+- **`docs/demo-story.md` 신설**: 진행자용 4장면 대본(보이는 것/할 것/전달 포인트/
+  진행 팁) — index 링크 추가. 이번 주 주목의 8K30 thermal P1 요청 노출을 fixture로
+  검증하고 기재.
+- Ask 프리셋 5종(원점 TAT 기준 질문)은 데모 경로와 독립이라 무변경.
 
 - **임베딩 provider 계약**: Fake(결정론 해시 bag-of-tokens — 사외/테스트) /
   OnPrem(OpenAI 호환 /embeddings — 사내 검증 대상). 기본 비활성(SOC_EMBED_PROVIDER).

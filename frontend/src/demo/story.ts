@@ -18,19 +18,19 @@ export const STORY_SCENES: StoryScene[] = [
     id: "cause",
     title: ko.demo.s2_title,
     description: ko.demo.s2_desc,
-    path: "/issues?issue=issue_u_uhd60_eis_power_gap",
+    path: "/issues?issue=issue_mfc_8k30_bitrate_latency_u",
   },
   {
     id: "impact",
     title: ko.demo.s3_title,
     description: ko.demo.s3_desc,
-    path: "/change-impact?ip=ip_isp&knob=knob_isp_pixel_mode",
+    path: "/change-impact?ip=ip_mfc&knob=knob_mfc_nal_queue",
   },
   {
     id: "evidence",
     title: ko.demo.s4_title,
     description: ko.demo.s4_desc,
-    path: "/ask?q=" + encodeURIComponent("UHD60 thermal issue가 해결됐다고 판단할 evidence는 무엇인가?"),
+    path: "/ask?q=" + encodeURIComponent("8K30 thermal issue가 해결됐다고 판단할 evidence는 무엇인가?"),
   },
 ];
 
