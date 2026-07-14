@@ -238,6 +238,48 @@ def sync_status(
     console.print(table)
 
 
+@app.command("history")
+def history_cmd(
+    collection: str = typer.Option(..., "--collection", help="컬렉션 (예: issues)"),
+    object_id: str = typer.Option(..., "--id", help="객체 ID"),
+    dsn: str | None = typer.Option(None, "--dsn", help="PostgreSQL DSN (기본: SOC_ONTOLOGY_DSN)"),
+) -> None:
+    """객체 버전 이력 + status 전이 (시간 모델 T2) — 영속 이력은 PostgreSQL에만 있다."""
+    from backend.db.connection import get_connection
+    from backend.ingest.service import IngestService, PostgresIngestWriter
+    from backend.ontology import COLLECTIONS
+
+    if collection not in COLLECTIONS:
+        console.print(f"[red]알 수 없는 컬렉션: {collection}[/red]")
+        raise typer.Exit(code=1)
+    with get_connection(dsn) as conn:
+        history = IngestService(PostgresIngestWriter(conn)).history(collection, object_id)
+
+    if not history.versions:
+        console.print("버전 이력 없음 — 캡처 이전 객체이거나 존재하지 않는 ID")
+        raise typer.Exit(code=0)
+    table = Table(title=f"버전 이력: {collection}/{object_id}")
+    table.add_column("버전", justify="right")
+    table.add_column("변경")
+    table.add_column("기록 시각")
+    table.add_column("배치")
+    table.add_column("변경 필드")
+    for version in history.versions:
+        table.add_row(
+            str(version.version),
+            version.change_kind,
+            version.recorded_at,
+            version.batch_id or "-",
+            ", ".join(version.changed_fields) or "-",
+        )
+    console.print(table)
+    for transition in history.status_transitions:
+        console.print(
+            f"status 전이: {transition.from_status or '(생성)'} → {transition.to_status} "
+            f"(v{transition.version}, {transition.recorded_at})"
+        )
+
+
 @app.command("ingest-rollback")
 def ingest_rollback(
     batch_id: str = typer.Option(..., "--batch-id", help="롤백할 배치 ID"),

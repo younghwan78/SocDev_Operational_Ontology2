@@ -315,3 +315,38 @@ def test_access_log_json_lines(caplog) -> None:
     assert entry["auth"] is True
     assert isinstance(entry["duration_ms"], int)
     assert "whatever" not in lines[-1], "토큰 값 비기록"
+
+
+def test_history_unknown_collection_404(client: TestClient) -> None:
+    assert client.get("/api/v1/history/없는_컬렉션/x").status_code == 404
+
+
+def test_history_empty_for_precapture_object(client: TestClient) -> None:
+    """캡처 이전(synthetic) 객체는 빈 이력 200 — 오류가 아니다."""
+    body = client.get("/api/v1/history/issues/이력없는_id").json()
+    assert body["versions"] == []
+    assert body["status_transitions"] == []
+
+
+def test_history_roundtrip_via_ingest(client: TestClient) -> None:
+    """반입 → 갱신 → 이력 조회 (시간 모델 T2)."""
+    header = "이슈 ID,프로젝트 ID,제목,유형,상태,증상,확신도"
+
+    def upload(status: str):
+        csv = (
+            f"{header}\napi_hist_issue,project_u,이력 이슈,underrun,{status},증상,medium\n"
+        ).encode()
+        return client.post(
+            "/api/v1/ingest/file?mapping=issues",
+            files={"file": ("issues.csv", csv, "text/csv")},
+        )
+
+    assert upload("open").status_code == 200
+    assert upload("resolved").status_code == 200
+    body = client.get("/api/v1/history/issues/api_hist_issue").json()
+    assert [v["change_kind"] for v in body["versions"]] == ["created", "updated"]
+    assert body["versions"][1]["changed_fields"] == ["status"]
+    assert [(t["from_status"], t["to_status"]) for t in body["status_transitions"]] == [
+        (None, "open"),
+        ("open", "resolved"),
+    ]

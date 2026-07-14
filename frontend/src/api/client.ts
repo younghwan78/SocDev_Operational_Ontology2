@@ -178,6 +178,21 @@ export async function fetchIssueRCA(issueId: string): Promise<RCAChain> {
   return data;
 }
 
+export type ObjectHistory = components["schemas"]["ObjectHistory"];
+export type ObjectVersion = components["schemas"]["ObjectVersion"];
+export type StatusTransition = components["schemas"]["StatusTransition"];
+
+export async function fetchObjectHistory(
+  collection: string,
+  objectId: string,
+): Promise<ObjectHistory> {
+  const { data, error } = await client.GET("/api/v1/history/{collection}/{object_id}", {
+    params: { path: { collection, object_id: objectId } },
+  });
+  if (error || !data) throw new Error("history 조회 실패");
+  return data;
+}
+
 export type AskResult = components["schemas"]["AskResult"];
 export type AskCard = components["schemas"]["AskCard"];
 

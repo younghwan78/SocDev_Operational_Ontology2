@@ -3363,6 +3363,121 @@
         "title": "MeasurementRequirement",
         "type": "object"
       },
+      "ObjectHistory": {
+        "additionalProperties": false,
+        "description": "이력 조회 응답 — 버전 목록(오름차순) + status 전이 추출.",
+        "properties": {
+          "collection": {
+            "title": "Collection",
+            "type": "string"
+          },
+          "object_id": {
+            "title": "Object Id",
+            "type": "string"
+          },
+          "status_transitions": {
+            "items": {
+              "$ref": "#/components/schemas/StatusTransition"
+            },
+            "title": "Status Transitions",
+            "type": "array"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ObjectVersion"
+            },
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "collection",
+          "object_id"
+        ],
+        "title": "ObjectHistory",
+        "type": "object"
+      },
+      "ObjectVersion": {
+        "additionalProperties": false,
+        "description": "객체 한 버전 — 변경 후 전체 payload 스냅샷. retracted는 payload 없음.",
+        "properties": {
+          "batch_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Id"
+          },
+          "change_kind": {
+            "title": "Change Kind",
+            "type": "string"
+          },
+          "changed_fields": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Changed Fields",
+            "type": "array"
+          },
+          "collection": {
+            "title": "Collection",
+            "type": "string"
+          },
+          "object_id": {
+            "title": "Object Id",
+            "type": "string"
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload"
+          },
+          "recorded_at": {
+            "title": "Recorded At",
+            "type": "string"
+          },
+          "source_origin": {
+            "title": "Source Origin",
+            "type": "string"
+          },
+          "source_updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Updated At"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "collection",
+          "object_id",
+          "version",
+          "change_kind",
+          "recorded_at",
+          "source_origin"
+        ],
+        "title": "ObjectVersion",
+        "type": "object"
+      },
       "OptionAssessment": {
         "additionalProperties": false,
         "description": "옵션 평가 — 역할 관점의 후보 옵션 검토.",
@@ -5560,6 +5675,59 @@
         "title": "StageWindow",
         "type": "object"
       },
+      "StatusTransition": {
+        "additionalProperties": false,
+        "description": "status 필드 전이 — 버전 시퀀스에서 읽기 시점에 결정론 계산 (저장 안 함).",
+        "properties": {
+          "from_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Status"
+          },
+          "object_id": {
+            "title": "Object Id",
+            "type": "string"
+          },
+          "recorded_at": {
+            "title": "Recorded At",
+            "type": "string"
+          },
+          "source_updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Updated At"
+          },
+          "to_status": {
+            "title": "To Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "object_id",
+          "from_status",
+          "to_status",
+          "version",
+          "recorded_at"
+        ],
+        "title": "StatusTransition",
+        "type": "object"
+      },
       "TierBucket": {
         "additionalProperties": false,
         "description": "신뢰 등급별 분포 — 근거 건강도.",
@@ -7060,6 +7228,55 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/v1/history/{collection}/{object_id}": {
+      "get": {
+        "description": "객체 버전 이력 + status 전이 (시간 모델 T2, 읽기 전용).\n\n캡처 이전(synthetic fixture 등) 객체는 버전이 없다 — 빈 이력을 돌려준다.\ntransaction time(recorded_at) 축이다: \"twin이 그 시점에 알던 것\".",
+        "operationId": "object_history_api_v1_history__collection___object_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collection",
+            "required": true,
+            "schema": {
+              "title": "Collection",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "title": "Object Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectHistory"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Object History"
       }
     },
     "/api/v1/ingest/batches": {

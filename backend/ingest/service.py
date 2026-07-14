@@ -15,6 +15,15 @@ import psycopg
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from backend.db.connection import ConnectionSource, as_source
+from backend.ingest.history import (
+    CHANGE_CREATED,
+    CHANGE_RETRACTED,
+    CHANGE_UPDATED,
+    ObjectHistory,
+    ObjectVersion,
+    changed_top_level_fields,
+    extract_status_transitions,
+)
 from backend.ingest.mappings import (
     MAPPINGS,
     IngestMapping,
@@ -139,6 +148,17 @@ class IngestWriterProtocol(Protocol):
 
     def remove_quarantine_by_batch(self, batch_id: str) -> int: ...
 
+    # 버전 이력 (시간 모델 T1, 15_temporal_model.md) — append-only, 삭제 경로 없음
+    def append_versions(self, entries: list[ObjectVersion]) -> None: ...
+
+    def latest_version_numbers(self, collection: str, ids: list[str]) -> dict[str, int]: ...
+
+    def list_versions(self, collection: str, object_id: str) -> list[ObjectVersion]: ...
+
+    def owned_object_keys(self, batch_id: str) -> list[tuple[str, str, str]]:
+        """배치가 현재 소유한 객체 (collection, id, source_origin) — rollback 철회 기록용."""
+        ...
+
 
 def batch_ref(batch_id: str, filename: str, row_number: int) -> str:
     return f"{BATCH_REF_PREFIX}:{batch_id}:{filename}#row{row_number}"
@@ -156,6 +176,7 @@ class MemoryIngestWriter:
         self._repo = repo
         self._batches: list[IngestBatch] = []
         self._quarantine: list[QuarantineEntry] = []
+        self._versions: list[ObjectVersion] = []
 
     def add_objects(self, collection: str, objects: list[OntologyObject], batch_id: str) -> None:
         self._repo.add_objects(collection, objects)
@@ -216,6 +237,36 @@ class MemoryIngestWriter:
 
     def remove_by_ids(self, collection: str, ids: list[str]) -> None:
         self._repo.remove_by_ids(collection, ids)
+
+    def append_versions(self, entries: list[ObjectVersion]) -> None:
+        self._versions.extend(entries)
+
+    def latest_version_numbers(self, collection: str, ids: list[str]) -> dict[str, int]:
+        targets = set(ids)
+        latest: dict[str, int] = {}
+        for entry in self._versions:
+            if entry.collection == collection and entry.object_id in targets:
+                latest[entry.object_id] = max(latest.get(entry.object_id, 0), entry.version)
+        return latest
+
+    def list_versions(self, collection: str, object_id: str) -> list[ObjectVersion]:
+        return sorted(
+            (
+                e
+                for e in self._versions
+                if e.collection == collection and e.object_id == object_id
+            ),
+            key=lambda e: e.version,
+        )
+
+    def owned_object_keys(self, batch_id: str) -> list[tuple[str, str, str]]:
+        prefix = f"{BATCH_REF_PREFIX}:{batch_id}:"
+        keys: list[tuple[str, str, str]] = []
+        for collection, items in self._repo.collections().items():
+            for obj in items:
+                if (obj.source.ref or "").startswith(prefix):
+                    keys.append((collection, obj.id, obj.source.origin.value))
+        return keys
 
 
 class PostgresIngestWriter:
@@ -411,6 +462,92 @@ class PostgresIngestWriter:
             )
             return result.rowcount or 0
 
+    def append_versions(self, entries: list[ObjectVersion]) -> None:
+        with self._db.connection() as conn, conn.cursor() as cur:
+            for entry in entries:
+                cur.execute(
+                    """
+                    INSERT INTO object_versions
+                        (collection, object_id, version, change_kind, recorded_at,
+                         batch_id, source_origin, source_updated_at, changed_fields, payload)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb)
+                    """,
+                    (
+                        entry.collection,
+                        entry.object_id,
+                        entry.version,
+                        entry.change_kind,
+                        entry.recorded_at,
+                        entry.batch_id,
+                        entry.source_origin,
+                        entry.source_updated_at,
+                        entry.changed_fields,
+                        (
+                            json.dumps(entry.payload, ensure_ascii=False)
+                            if entry.payload is not None
+                            else None
+                        ),
+                    ),
+                )
+
+    def latest_version_numbers(self, collection: str, ids: list[str]) -> dict[str, int]:
+        if not ids:
+            return {}
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT object_id, MAX(version) FROM object_versions
+                WHERE collection = %s AND object_id = ANY(%s)
+                GROUP BY object_id
+                """,
+                (collection, ids),
+            ).fetchall()
+        return {row[0]: int(row[1]) for row in rows}
+
+    def list_versions(self, collection: str, object_id: str) -> list[ObjectVersion]:
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT collection, object_id, version, change_kind, recorded_at,
+                       batch_id, source_origin, source_updated_at, changed_fields, payload
+                FROM object_versions
+                WHERE collection = %s AND object_id = %s
+                ORDER BY version
+                """,
+                (collection, object_id),
+            ).fetchall()
+        return [
+            ObjectVersion(
+                collection=row[0],
+                object_id=row[1],
+                version=row[2],
+                change_kind=row[3],
+                recorded_at=(
+                    row[4].isoformat() if hasattr(row[4], "isoformat") else str(row[4])
+                ),
+                batch_id=row[5],
+                source_origin=row[6],
+                source_updated_at=(
+                    row[7].isoformat()
+                    if row[7] is not None and hasattr(row[7], "isoformat")
+                    else (str(row[7]) if row[7] is not None else None)
+                ),
+                changed_fields=list(row[8] or []),
+                payload=row[9] if isinstance(row[9], dict) else None,
+            )
+            for row in rows
+        ]
+
+    def owned_object_keys(self, batch_id: str) -> list[tuple[str, str, str]]:
+        prefix = f"{BATCH_REF_PREFIX}:{batch_id}:%"
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                "SELECT collection, id, source_origin FROM ontology_objects"
+                " WHERE source_ref LIKE %s",
+                (prefix,),
+            ).fetchall()
+        return [(row[0], row[1], row[2]) for row in rows]
+
 
 class IngestService:
     def __init__(self, writer: IngestWriterProtocol) -> None:
@@ -510,6 +647,7 @@ class IngestService:
         )
         new_objects: list[OntologyObject] = []
         updated_objects: list[OntologyObject] = []
+        updated_fields: dict[str, list[str]] = {}
         unchanged_count = 0
         for obj in deduped:
             old_payload = previous.get(obj.id)
@@ -527,6 +665,7 @@ class IngestService:
                 unchanged_count += 1
             else:
                 updated_objects.append(obj)
+                updated_fields[obj.id] = changed_top_level_fields(old_body, new_body)
 
         if updated_objects:
             self._writer.remove_by_ids(
@@ -535,6 +674,30 @@ class IngestService:
         to_write = new_objects + updated_objects
         if to_write:
             self._writer.add_objects(mapping.target_collection, to_write, batch_id)
+
+        # 시간 모델 T1: created/updated 버전 기록 — unchanged는 기록하지 않는다
+        # (로그가 실제 변경량에 비례). append-only — 이 로그를 지우는 경로는 없다.
+        if to_write:
+            latest = self._writer.latest_version_numbers(
+                mapping.target_collection, [obj.id for obj in to_write]
+            )
+            version_entries = [
+                ObjectVersion(
+                    collection=mapping.target_collection,
+                    object_id=obj.id,
+                    version=latest.get(obj.id, 0) + 1,
+                    change_kind=(
+                        CHANGE_CREATED if obj.id not in updated_fields else CHANGE_UPDATED
+                    ),
+                    recorded_at=now.isoformat(),
+                    batch_id=batch_id,
+                    source_origin=origin.value,
+                    changed_fields=updated_fields.get(obj.id, []),
+                    payload=obj.model_dump(mode="json", exclude_none=True),
+                )
+                for obj in to_write
+            ]
+            self._writer.append_versions(version_entries)
 
         # J1 2단계 보류 풀: 거부 행을 원본 그대로 저장(큐레이션 대기열) —
         # 수용된 id와 같은 보류 행은 해소된다 (수정 후 재반입 루프의 자동 마감).
@@ -637,10 +800,47 @@ class IngestService:
         )
 
     def rollback(self, batch_id: str) -> int:
+        # 시간 모델 T1: 제거 전에 현재 소유 객체를 확보해 retracted 버전을 남긴다.
+        # rollback 의미론(현재 소유 객체 제거)은 불변 — 로그는 철회 사실의 기록일 뿐이다.
+        owned = self._writer.owned_object_keys(batch_id)
         removed = self._writer.remove_batch(batch_id)
         self._writer.remove_quarantine_by_batch(batch_id)  # 보류 행도 배치와 함께 제거
         self._writer.update_batch_status(batch_id, "rolled_back")
+        if owned:
+            now_iso = datetime.now(UTC).isoformat()
+            by_collection: dict[str, list[tuple[str, str]]] = {}
+            for collection, object_id, source_origin in owned:
+                by_collection.setdefault(collection, []).append((object_id, source_origin))
+            retractions: list[ObjectVersion] = []
+            for collection, items in by_collection.items():
+                latest = self._writer.latest_version_numbers(
+                    collection, [object_id for object_id, _ in items]
+                )
+                retractions.extend(
+                    ObjectVersion(
+                        collection=collection,
+                        object_id=object_id,
+                        version=latest.get(object_id, 0) + 1,
+                        change_kind=CHANGE_RETRACTED,
+                        recorded_at=now_iso,
+                        batch_id=batch_id,
+                        source_origin=source_origin,
+                        payload=None,
+                    )
+                    for object_id, source_origin in items
+                )
+            self._writer.append_versions(retractions)
         return removed
+
+    def history(self, collection: str, object_id: str) -> ObjectHistory:
+        """객체 버전 이력 + status 전이 (읽기 전용, 결정론)."""
+        versions = self._writer.list_versions(collection, object_id)
+        return ObjectHistory(
+            collection=collection,
+            object_id=object_id,
+            versions=versions,
+            status_transitions=extract_status_transitions(versions),
+        )
 
     def list_batches(self) -> list[IngestBatch]:
         return self._writer.list_batches()

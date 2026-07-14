@@ -312,6 +312,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/history/{collection}/{object_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Object History
+         * @description 객체 버전 이력 + status 전이 (시간 모델 T2, 읽기 전용).
+         *
+         *     캡처 이전(synthetic fixture 등) 객체는 버전이 없다 — 빈 이력을 돌려준다.
+         *     transaction time(recorded_at) 축이다: "twin이 그 시점에 알던 것".
+         */
+        get: operations["object_history_api_v1_history__collection___object_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/ingest/batches": {
         parameters: {
             query?: never;
@@ -2101,6 +2124,48 @@ export interface components {
             variant_id?: string | null;
         };
         /**
+         * ObjectHistory
+         * @description 이력 조회 응답 — 버전 목록(오름차순) + status 전이 추출.
+         */
+        ObjectHistory: {
+            /** Collection */
+            collection: string;
+            /** Object Id */
+            object_id: string;
+            /** Status Transitions */
+            status_transitions?: components["schemas"]["StatusTransition"][];
+            /** Versions */
+            versions?: components["schemas"]["ObjectVersion"][];
+        };
+        /**
+         * ObjectVersion
+         * @description 객체 한 버전 — 변경 후 전체 payload 스냅샷. retracted는 payload 없음.
+         */
+        ObjectVersion: {
+            /** Batch Id */
+            batch_id?: string | null;
+            /** Change Kind */
+            change_kind: string;
+            /** Changed Fields */
+            changed_fields?: string[];
+            /** Collection */
+            collection: string;
+            /** Object Id */
+            object_id: string;
+            /** Payload */
+            payload?: {
+                [key: string]: unknown;
+            } | null;
+            /** Recorded At */
+            recorded_at: string;
+            /** Source Origin */
+            source_origin: string;
+            /** Source Updated At */
+            source_updated_at?: string | null;
+            /** Version */
+            version: number;
+        };
+        /**
          * OptionAssessment
          * @description 옵션 평가 — 역할 관점의 후보 옵션 검토.
          */
@@ -2922,6 +2987,24 @@ export interface components {
             start_week: number;
         };
         /**
+         * StatusTransition
+         * @description status 필드 전이 — 버전 시퀀스에서 읽기 시점에 결정론 계산 (저장 안 함).
+         */
+        StatusTransition: {
+            /** From Status */
+            from_status: string | null;
+            /** Object Id */
+            object_id: string;
+            /** Recorded At */
+            recorded_at: string;
+            /** Source Updated At */
+            source_updated_at?: string | null;
+            /** To Status */
+            to_status: string;
+            /** Version */
+            version: number;
+        };
+        /**
          * TierBucket
          * @description 신뢰 등급별 분포 — 근거 건강도.
          */
@@ -3621,6 +3704,38 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     };
+                };
+            };
+        };
+    };
+    object_history_api_v1_history__collection___object_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection: string;
+                object_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ObjectHistory"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

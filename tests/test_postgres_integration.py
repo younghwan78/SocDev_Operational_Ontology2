@@ -163,3 +163,43 @@ def test_api_parity_memory_vs_postgres(pg_conn, seeded) -> None:
         memory_body = memory_client.get(path).json()
         pg_body = pg_client.get(path).json()
         assert memory_body == pg_body, f"{path}: 백엔드 간 응답 불일치"
+
+
+def test_seed_records_no_versions_on_reseed(pg_conn, seeded) -> None:
+    """시간 모델 수용 기준 2: 동일 fixture 재시드는 버전을 만들지 않는다(시드 멱등)."""
+    from backend.ingest.yaml_seed import seed_fixtures
+
+    before = pg_conn.execute("SELECT count(*) FROM object_versions").fetchone()[0]
+    seed_fixtures(pg_conn, FIXTURES)
+    pg_conn.commit()
+    after = pg_conn.execute("SELECT count(*) FROM object_versions").fetchone()[0]
+    assert before == after
+
+
+def test_postgres_version_chain_parity(pg_conn, seeded) -> None:
+    """시간 모델 수용 기준 1 (PG 경로): created→updated→retracted 체인 + unchanged 무기록."""
+    from backend.ingest.service import IngestService, PostgresIngestWriter
+
+    header = "이슈 ID,프로젝트 ID,제목,유형,상태,증상,확신도"
+
+    def issue_csv(status: str) -> bytes:
+        return f"{header}\npg_hist_issue_1,project_u,PG 이력,underrun,{status},증상,medium\n".encode()
+
+    service = IngestService(PostgresIngestWriter(pg_conn))
+    service.ingest("issues.csv", issue_csv("open"), "issues")
+    unchanged = service.ingest("issues.csv", issue_csv("open"), "issues")
+    assert unchanged.batch.unchanged_count == 1
+    report2 = service.ingest("issues.csv", issue_csv("resolved"), "issues")
+    service.rollback(report2.batch.id)
+
+    history = service.history("issues", "pg_hist_issue_1")
+    assert [(v.version, v.change_kind) for v in history.versions] == [
+        (1, "created"),
+        (2, "updated"),
+        (3, "retracted"),
+    ]
+    assert history.versions[1].changed_fields == ["status"]
+    assert [(t.from_status, t.to_status) for t in history.status_transitions] == [
+        (None, "open"),
+        ("open", "resolved"),
+    ]

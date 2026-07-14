@@ -612,6 +612,11 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
 # 새 값이 들어오면 여기 누락이 테스트로 드러난다 (06_stage16_ui_overhaul.md U1).
 
 VALUE_LABELS: dict[str, dict[str, str]] = {
+    "change_kind": {  # 시간 모델 T1 — 객체 버전 로그의 변경 유형 (15_temporal_model.md)
+        "created": "생성",
+        "updated": "갱신",
+        "retracted": "철회",
+    },
     "project_phase": {
         "commercial_early": "양산 초기",
         "evt_development": "EVT 개발",

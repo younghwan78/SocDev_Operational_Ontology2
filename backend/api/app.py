@@ -31,6 +31,7 @@ from backend.agents.ask_runner import PRESET_QUESTIONS, AskPreview, AskResult, A
 from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
 from backend.agents.runner import AdvisoryRunner
 from backend.api.observability import RequestTimer, log_error, log_request, setup_logging
+from backend.ingest.history import ObjectHistory
 from backend.ingest.service import (
     IngestBatch,
     IngestError,
@@ -583,6 +584,17 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     def list_ingest_batches() -> list[IngestBatch]:
         """반입 이력 (최신순)."""
         return services.ingest.list_batches()
+
+    @app.get(f"{prefix}/history/{{collection}}/{{object_id}}", response_model=ObjectHistory)
+    def object_history(collection: str, object_id: str) -> ObjectHistory:
+        """객체 버전 이력 + status 전이 (시간 모델 T2, 읽기 전용).
+
+        캡처 이전(synthetic fixture 등) 객체는 버전이 없다 — 빈 이력을 돌려준다.
+        transaction time(recorded_at) 축이다: "twin이 그 시점에 알던 것".
+        """
+        if collection not in COLLECTIONS:
+            raise HTTPException(status_code=404, detail=f"알 수 없는 컬렉션: {collection}")
+        return services.ingest.history(collection, object_id)
 
     @app.post(f"{prefix}/ingest/batches/{{batch_id}}/rollback")
     def rollback_ingest_batch(batch_id: str) -> dict[str, int]:

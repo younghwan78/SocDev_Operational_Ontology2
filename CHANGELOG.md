@@ -1,5 +1,33 @@
 # CHANGELOG
 
+## 시간 모델 T1+T2 — append-only 버전 로그 + 전이 조회 (2026-07-14)
+
+> 설계: `internal_docs/design/15_temporal_model.md` (digital twin 갭 분석에서 도출).
+> J2 upsert가 갱신 시 이전 상태를 파괴하는 문제의 비가역성 때문에 Stage 19
+> (JIRA 실동기화) 전에 캡처 계층을 선행 배치.
+
+- **`object_versions` append-only 로그 (마이그레이션 0006)**: 쓰기 관문에서 변경
+  시점마다 전체 payload 스냅샷 + `changed_fields`를 적재. 온톨로지 컬렉션이 아니라
+  감사 인프라(agent_runs 지위) — UPDATE/DELETE 없음, rollback도 로그를 지우지 않는다.
+  시간 축 분리: `recorded_at`=transaction time(twin이 알게 된 시각),
+  `source_updated_at`=원천 주장 시각(optional) — domain time(week)과 합치지 않는다.
+- **캡처 3관문**: `ingest_rows`(신규→created/갱신→updated, **변동 없음은 기록 안 함**
+  — 로그가 실제 변경량에 비례) / `rollback`(제거 객체마다 retracted, payload 없음 —
+  rollback 의미론 자체는 불변) / `db-seed`(payload가 기존과 다를 때만 — 재시드 멱등).
+  changed_fields는 upsert가 이미 갖고 있는 신구 payload 비교의 부산물(추가 조회 0).
+- **`IngestWriterProtocol` 확장**: append_versions / latest_version_numbers /
+  list_versions / owned_object_keys — Memory·Postgres 패리티 (rollback 후 재반입은
+  버전 번호를 이어감: created v1 → retracted v2 → created v3).
+- **전이 조회 (T2)**: `GET /api/v1/history/{collection}/{id}` (읽기 전용 — 버전 목록 +
+  status 전이를 조회 시점에 결정론 추출, retracted 이후 재생성의 from_status 미승계) /
+  CLI `history` / 이슈 상세(RCA)에 "상태 전이 타임라인" 섹션(이력 없으면 숨김) /
+  `VALUE_LABELS.change_kind`(생성/갱신/철회).
+- **범위 외(별도 승인)**: T3 as-of 파생 뷰 재구성, rollback→이전 상태 복원,
+  JIRA changelog 백필, relations/semantic_chunks 투영 버전.
+- 검증: backend 235 passed(신규 test_history.py 9건 + API 3건 + PG 게이트 2건 —
+  soc_test DB에서 11/11) / ruff / mypy / validate-data 오류 0 / frontend 34 tests ·
+  build · lint / openapi+gen:api 재생성. 운영 DB에 0006 적용 완료.
+
 ## 데모 스토리 8K30 재앵커 (2026-07-13)
 
 - **데모 스토리 4장면을 8K30 Recording KPI 스토리라인으로 재작성**: 기존 장면 1이

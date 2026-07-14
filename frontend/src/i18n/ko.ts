@@ -185,6 +185,11 @@ export const ko = {
     toggle_show: "펼치기",
     toggle_hide: "접기",
     week_prefix: "W",
+    history_title: "상태 전이 타임라인",
+    history_note: "반입·동기화로 기록된 버전 이력 — 시스템이 알게 된 시각 기준",
+    history_created: "(생성)",
+    history_version_prefix: "v",
+    history_changed_fields: "변경 필드",
   },
   risk: {
     title: "위험 지도",

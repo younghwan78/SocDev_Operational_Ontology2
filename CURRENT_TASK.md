@@ -2,7 +2,26 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — D1~D3 완료 (2026-07-12). D4는 검증 세션 일정 확정 대기.**
+**활성 Stage 없음 — 시간 모델 T1+T2 완료 (2026-07-14).**
+
+> 설계·구현 상태: `internal_docs/design/15_temporal_model.md` (§8).
+> append-only `object_versions`(마이그레이션 0006) + 캡처 3관문(ingest/rollback/seed)
+> + `GET /history/{collection}/{id}` + CLI `history` + 이슈 상세 전이 타임라인.
+> 운영 DB 0006 적용 완료. 상세: CHANGELOG.
+>
+> **다음 후보 (착수는 사용자 승인)**:
+> - **T3 as-of 재구성** (설계 15 §4.4 — 실데이터 이력이 쌓인 뒤에만 의미) 및
+>   digital twin 갭 후속: KPI 시계열(과제 간 시점 정렬 비교), 프로세스 신호
+>   (전이 이력 기반 정체 판정 정밀화), what-if 주입 — 각각 별도 설계 필요.
+> - D4 검증 세션 자료(사내 세션 일정 확정 시), Stage 13 트랙 A / 14 잔여 / 18 / 19.
+
+### 직전 완료 — 시간 모델 T1+T2 (2026-07-14)
+
+> append-only 버전 로그(0006) / 캡처 3관문(unchanged 무기록·retracted 불삭제·시드
+> 멱등) / IngestWriterProtocol 4메서드 확장(Memory·PG 패리티) / history API·CLI·
+> 이슈 상세 타임라인 / VALUE_LABELS change_kind. backend 235·frontend 34 green.
+
+### 직전 완료 — D1~D3 (2026-07-12), D4는 검증 세션 일정 확정 대기
 
 > D1 운영 배포 패키지(인증/로깅/compose 리허설/sync-status/runbook) /
 > D2 문서 재정비(스크린샷 9장 headless 재캡처·ingest 가이드·핸드오버 킷) /

@@ -10,6 +10,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   fetchIssueRCA,
   fetchIssues,
+  fetchObjectHistory,
   fetchProjects,
   type IssueSummary,
   type RCAChain,
@@ -399,6 +400,11 @@ function TypeDistribution({
 
 function RCAFlow({ chainData }: { chainData: RCAChain }) {
   const valueLabel = useValueLabels();
+  // 시간 모델 T2: 반입·동기화로 캡처된 버전 이력 — synthetic 이슈는 빈 이력(섹션 숨김).
+  const history = useQuery({
+    queryKey: ["issue-history", chainData.issue_id],
+    queryFn: () => fetchObjectHistory("issues", chainData.issue_id),
+  });
   // I2 위계: 문제(빨강/노랑) 스텝은 펼치고, 정상(초록)은 한 줄 요약으로 접는다.
   // 이슈가 바뀌면 override를 render 중 리셋 (effect 아님 — AskPage draft 패턴).
   const [openState, setOpenState] = useState<{
@@ -483,6 +489,45 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
           />
         ))}
       </div>
+
+      {/* 시간 모델 T2: 상태 전이 타임라인 — recorded_at은 twin이 알게 된 시각(transaction time) */}
+      {(history.data?.status_transitions ?? []).length > 0 && (
+        <div className="card">
+          <div className="head">
+            <h2 className="card-title">{t.history_title}</h2>
+          </div>
+          <p className="section-note">{t.history_note}</p>
+          {(history.data?.status_transitions ?? []).map((transition) => {
+            const version = (history.data?.versions ?? []).find(
+              (v) => v.version === transition.version,
+            );
+            return (
+              <div key={transition.version} className="list-item">
+                <div className="head">
+                  <span className="badge badge-info">
+                    {t.history_version_prefix}
+                    {transition.version}
+                  </span>
+                  <span className="title">
+                    {transition.from_status
+                      ? valueLabel("issue_status", transition.from_status)
+                      : t.history_created}{" "}
+                    → {valueLabel("issue_status", transition.to_status)}
+                  </span>
+                  <span className="desc">
+                    {new Date(transition.recorded_at).toLocaleString("ko-KR")}
+                  </span>
+                </div>
+                {(version?.changed_fields ?? []).length > 0 && (
+                  <p className="desc">
+                    {t.history_changed_fields}: {(version?.changed_fields ?? []).join(", ")}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* J4: 관련 문서 후보 — 상세가 Confluence 등 외부 문서에 있는 이슈의 추적 고리 */}
       {((chainData.doc_refs ?? []).length > 0 ||
