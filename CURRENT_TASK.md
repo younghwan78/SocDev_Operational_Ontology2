@@ -2,18 +2,13 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — Digital Twin 갭 후속 4패키지 완료 (2026-07-15).**
+**Digital Twin 후속 2라운드 (2026-07-15 승인·착수) — 설계: `internal_docs/design/17_digital_twin_round2.md`**
 
-> 설계·구현 상태: `internal_docs/design/16_digital_twin_followups.md` (§7).
-> P1 프로세스 신호(재개·전이 기반 정체) / P2 T3 as-of 재구성(설계 15 §4.4 해소)
-> / P3 KPI 시계열(`KPIObservation` 신설 + 마일스톤 정렬 비교) / P4 what-if 주입
-> (ephemeral overlay). backend 260·PG 16·frontend 34 green. 상세: CHANGELOG.
+> Q1 프로세스 전이 모델(단계 정의 + 건너뜀/역행 판정) → Q2 what-if 가정 확장
+> (신규 이슈 주입·주차 시프트·이슈 신호 delta) → Q3 as-of 확대(포트폴리오·변경 영향)
+> → Q4 KPI 시계열 inline SVG 차트. 패키지별 커밋. 공통 원칙은 설계 16 §0 승계.
 >
-> **다음 후보 (착수는 사용자 승인)**:
-> - Digital twin 잔여 갭 (2026-07-14 분석): 프로세스 모델의 단계 전이 정의,
->   what-if 가정 종류 확장(신규 이슈 주입·주차 시프트), as-of 파생 뷰 확대
->   (포트폴리오/변경 영향), KPI 시계열 시각화(차트) — 각각 소규모 설계 필요.
-> - D4 검증 세션 자료(사내 세션 일정 확정 시), Stage 13 트랙 A / 14 잔여 / 18 / 19.
+> **범위 외**: 차트 라이브러리 도입, 변경 영향 as-of UI 노출, D4/Stage 13A/14잔여/18/19.
 
 ### 직전 완료 — Digital Twin 갭 후속 4패키지 (2026-07-15)
 

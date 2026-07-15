@@ -25,6 +25,7 @@ from backend.ontology.event import Issue, Test
 from backend.ontology.glossary import enum_label, value_label
 from backend.ontology.ip import IPBlock
 from backend.ontology.scenario import Scenario
+from backend.services.process_model import TransitionFinding, issue_transition_findings
 
 STEP_LABELS: dict[str, str] = {
     "symptom": "증상",
@@ -63,6 +64,8 @@ class _TransitionSignal:
     last_activity_at: str | None = None
     stale: bool = False
     stale_note: str | None = None
+    # Q1 프로세스 전이 판정 (단계 건너뜀/역행/미등재 — 설계 17 §2)
+    findings: list[TransitionFinding] | None = None
 
 
 def _parse_instant(value: str) -> datetime | None:
@@ -159,6 +162,8 @@ class RCAChain(BaseModel):
     # P1: 종결됐다 다시 열린 이슈 — 전이 근거 문구 동반.
     reopened: bool = False
     reopen_note_ko: str | None = None
+    # Q1: 프로세스 전이 판정 — 단계 건너뜀/역행/미등재 (normal은 포함 안 함).
+    transition_findings: list[TransitionFinding] = Field(default_factory=list)
     nodes: list[RCANode]
     # J4: 관련 문서 후보 — 이슈의 외부 문서 참조 + 이 이슈를 언급하는 검색 청크.
     # 후보 지위(증거 아님) — supporting_basis 편입은 큐레이션을 거친다.
@@ -255,7 +260,9 @@ class RCAService:
         signals: dict[str, _TransitionSignal] = {}
         for object_id, entries in by_object.items():
             signal = _TransitionSignal()
-            for transition in extract_status_transitions(entries):
+            transitions = extract_status_transitions(entries)
+            signal.findings = issue_transition_findings(transitions)
+            for transition in transitions:
                 if (
                     transition.from_status in _CLOSED_STATUSES
                     and transition.to_status not in _CLOSED_STATUSES
@@ -381,6 +388,7 @@ class RCAService:
             alert_ko=alert_ko,
             reopened=bool(signal and signal.reopened),
             reopen_note_ko=signal.reopen_note if signal else None,
+            transition_findings=(signal.findings or []) if signal else [],
             nodes=nodes,
             doc_refs=issue.doc_refs,
             doc_candidates=self._doc_candidates(issue),

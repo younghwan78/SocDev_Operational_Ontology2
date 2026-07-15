@@ -518,6 +518,10 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
             const version = (history.data?.versions ?? []).find(
               (v) => v.version === transition.version,
             );
+            // Q1 프로세스 전이 판정 — version 번호로 매칭 (건너뜀/역행/미등재).
+            const finding = (chainData.transition_findings ?? []).find(
+              (f) => f.version === transition.version,
+            );
             return (
               <div key={transition.version} className="list-item">
                 <div className="head">
@@ -531,10 +535,21 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
                       : t.history_created}{" "}
                     → {valueLabel("issue_status", transition.to_status)}
                   </span>
+                  {finding && (
+                    <span
+                      className={`badge ${
+                        finding.kind === "backward" ? "badge-danger" : "badge-warn"
+                      }`}
+                      title={finding.note_ko}
+                    >
+                      {finding.kind_ko}
+                    </span>
+                  )}
                   <span className="desc">
                     {new Date(transition.recorded_at).toLocaleString("ko-KR")}
                   </span>
                 </div>
+                {finding && <p className="desc">{finding.note_ko}</p>}
                 {(version?.changed_fields ?? []).length > 0 && (
                   <p className="desc">
                     {t.history_changed_fields}: {(version?.changed_fields ?? []).join(", ")}

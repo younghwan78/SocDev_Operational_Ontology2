@@ -2659,6 +2659,8 @@ export interface components {
             status: string;
             /** Title */
             title: string;
+            /** Transition Findings */
+            transition_findings?: components["schemas"]["TransitionFinding"][];
             /** Verification */
             verification: string;
             /** Verification Ko */
@@ -3326,6 +3328,26 @@ export interface components {
             links: components["schemas"]["TraceLink"][];
             /** Object Id */
             object_id: string;
+        };
+        /**
+         * TransitionFinding
+         * @description 전이 하나에 대한 프로세스 적합성 판정 — normal은 만들지 않는다 (잡음 방지).
+         */
+        TransitionFinding: {
+            /** From Status */
+            from_status: string | null;
+            /** Kind */
+            kind: string;
+            /** Kind Ko */
+            kind_ko: string;
+            /** Note Ko */
+            note_ko: string;
+            /** Recorded At */
+            recorded_at: string;
+            /** To Status */
+            to_status: string;
+            /** Version */
+            version: number;
         };
         /**
          * UnmatchedToken

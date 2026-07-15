@@ -4568,6 +4568,13 @@
             "title": "Title",
             "type": "string"
           },
+          "transition_findings": {
+            "items": {
+              "$ref": "#/components/schemas/TransitionFinding"
+            },
+            "title": "Transition Findings",
+            "type": "array"
+          },
           "verification": {
             "title": "Verification",
             "type": "string"
@@ -6418,6 +6425,58 @@
           "links"
         ],
         "title": "TraceabilityResult",
+        "type": "object"
+      },
+      "TransitionFinding": {
+        "additionalProperties": false,
+        "description": "전이 하나에 대한 프로세스 적합성 판정 — normal은 만들지 않는다 (잡음 방지).",
+        "properties": {
+          "from_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Status"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "kind_ko": {
+            "title": "Kind Ko",
+            "type": "string"
+          },
+          "note_ko": {
+            "title": "Note Ko",
+            "type": "string"
+          },
+          "recorded_at": {
+            "title": "Recorded At",
+            "type": "string"
+          },
+          "to_status": {
+            "title": "To Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version",
+          "from_status",
+          "to_status",
+          "kind",
+          "kind_ko",
+          "note_ko",
+          "recorded_at"
+        ],
+        "title": "TransitionFinding",
         "type": "object"
       },
       "UnmatchedToken": {
