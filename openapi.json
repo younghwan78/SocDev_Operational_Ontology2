@@ -2981,6 +2981,49 @@
         "title": "Issue",
         "type": "object"
       },
+      "IssueSignalChange": {
+        "additionalProperties": false,
+        "description": "이슈 신호 delta (Q2) — 주차 기반 신호(상태/정체/지연/검증)의 변화 사실.",
+        "properties": {
+          "appeared": {
+            "default": false,
+            "title": "Appeared",
+            "type": "boolean"
+          },
+          "changes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Changes",
+            "type": "array"
+          },
+          "issue_id": {
+            "title": "Issue Id",
+            "type": "string"
+          },
+          "projected_note_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Projected Note Ko"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "issue_id",
+          "title"
+        ],
+        "title": "IssueSignalChange",
+        "type": "object"
+      },
       "IssueSummary": {
         "additionalProperties": false,
         "description": "이슈 목록 항목 — 검증 상태 뱃지 포함.",
@@ -6875,8 +6918,15 @@
       },
       "WhatIfAssumption": {
         "additionalProperties": false,
-        "description": "가정 1건 — 실재 객체의 단일 필드를 가정 값으로 치환한다.",
+        "description": "가정 1건 — 필드 치환(기존 2종) 또는 주입/시프트(Q2 확장 2종).\n\nkind별 필수 필드 (설계 17 §3):\n- issue_status / event_schedule_signal: value\n- new_issue: target_id(미존재 id) + scenario_ids/ip_ids 각 1건 이상\n- issue_week_shift: week_delta (대상 이슈에 due_week가 있어야 한다)",
         "properties": {
+          "ip_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Ip Ids",
+            "type": "array"
+          },
           "kind": {
             "title": "Kind",
             "type": "string"
@@ -6892,19 +6942,76 @@
             ],
             "title": "Note"
           },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
           "target_id": {
             "title": "Target Id",
             "type": "string"
           },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
           "value": {
-            "title": "Value",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "week_delta": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week Delta"
           }
         },
         "required": [
           "kind",
-          "target_id",
-          "value"
+          "target_id"
         ],
         "title": "WhatIfAssumption",
         "type": "object"
@@ -6980,6 +7087,13 @@
               "$ref": "#/components/schemas/AppliedAssumption"
             },
             "title": "Assumptions",
+            "type": "array"
+          },
+          "changed_issue_signals": {
+            "items": {
+              "$ref": "#/components/schemas/IssueSignalChange"
+            },
+            "title": "Changed Issue Signals",
             "type": "array"
           },
           "changed_rows": {

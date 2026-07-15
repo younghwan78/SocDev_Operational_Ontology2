@@ -28,6 +28,7 @@ def _repo(issue_status: str = "open") -> InMemoryRepository:
             "domain": "camera",
             "scenario_class": "recording",
             "scenario_group_id": "grp_x",
+            "project_relevance": ["proj_u"],
             "uses_ip_blocks": ["ip_x"],
             "customer_request_relevance": "high",
             "development_relevance": "high",
@@ -158,3 +159,105 @@ def test_no_change_assumption_reports_unchanged() -> None:
     )
     assert result.changed_rows == []
     assert result.unchanged_scenario_count == 1
+
+# ---------------------------------------------------------- Q2 확장 (설계 17 §3)
+
+
+def test_new_issue_injection_raises_grade_and_leaves_repo_clean() -> None:
+    """수용 기준 1 — 가정 이슈 주입이 open_issue 룰로 재계산되고 저장소엔 없다."""
+    repo = _repo("resolved")  # 기존 이슈는 해결 상태 — baseline은 과거 패턴(중간)
+    result = WhatIfService(repo).run(
+        [
+            WhatIfAssumption(
+                kind="new_issue",
+                target_id="iss_hypo",
+                scenario_ids=["scn_x"],
+                ip_ids=["ip_x"],
+                severity="high",
+                title="가정: 신규 대역폭 이슈",
+                note="8K30 동시 동작 가정",
+            )
+        ]
+    )
+    row = result.changed_rows[0]
+    assert (row.baseline_grade, row.projected_grade) == ("medium", "high")
+    assert any(
+        b.rule == "open_issue" for c in row.changed_cells for b in c.projected_basis
+    )
+    # 가정 이슈는 overlay에만 존재 — 저장소와 이슈 신호 delta로 확인.
+    assert repo.get("issues", "iss_hypo") is None
+    appeared = [c for c in result.changed_issue_signals if c.appeared]
+    assert [c.issue_id for c in appeared] == ["iss_hypo"]
+    # 에코: 신규 주입은 from 없음 → to=open(기본), confidence 상한 유지.
+    echo = result.assumptions[0]
+    assert (echo.from_value, echo.to_value) == (None, "open")
+    assert echo.confidence == "medium"
+
+
+def test_new_issue_rejects_existing_id_and_bad_refs() -> None:
+    """수용 기준 2 — 기존 id·미존재 참조는 400급 오류, 저장소 불변."""
+    repo = _repo("open")
+    service = WhatIfService(repo)
+    base = {"kind": "new_issue", "scenario_ids": ["scn_x"], "ip_ids": ["ip_x"]}
+    with pytest.raises(InvalidAssumptionError):
+        service.run([WhatIfAssumption(**base, target_id="iss_x")])  # 실데이터와 충돌
+    with pytest.raises(InvalidAssumptionError):
+        service.run(
+            [
+                WhatIfAssumption(
+                    kind="new_issue",
+                    target_id="iss_hypo",
+                    scenario_ids=["없는_시나리오"],
+                    ip_ids=["ip_x"],
+                )
+            ]
+        )
+    with pytest.raises(InvalidAssumptionError):
+        service.run(
+            [WhatIfAssumption(kind="new_issue", target_id="iss_hypo", scenario_ids=["scn_x"], ip_ids=[])]
+        )
+    assert repo.get("issues", "iss_hypo") is None
+
+
+def _repo_with_due_week() -> InMemoryRepository:
+    repo = _repo("open")
+    issue = repo.get("issues", "iss_x")
+    assert isinstance(issue, Issue)
+    shifted = issue.model_copy(update={"due_week": 20, "updated_week": 20})
+    repo.remove_by_ids("issues", ["iss_x"])
+    repo.add_objects("issues", [shifted])
+    return repo
+
+
+def test_week_shift_changes_overdue_signal() -> None:
+    """수용 기준 3 — due_week 시프트가 지연 신호 delta로 나타난다."""
+    repo = _repo_with_due_week()
+    result = WhatIfService(repo).run(
+        [
+            WhatIfAssumption(
+                kind="issue_week_shift", target_id="iss_x", week_delta=-5
+            )
+        ]
+    )
+    echo = result.assumptions[0]
+    assert (echo.field, echo.from_value, echo.to_value) == ("due_week", "20", "15")
+    signal = next(c for c in result.changed_issue_signals if c.issue_id == "iss_x")
+    assert "지연: 아니오 → 예" in signal.changes
+    # 저장소 불변.
+    issue = repo.get("issues", "iss_x")
+    assert isinstance(issue, Issue) and issue.due_week == 20
+
+
+def test_week_shift_requires_delta_and_due_week() -> None:
+    repo = _repo("open")  # iss_x에는 due_week가 없다
+    service = WhatIfService(repo)
+    with pytest.raises(InvalidAssumptionError):
+        service.run(
+            [WhatIfAssumption(kind="issue_week_shift", target_id="iss_x", week_delta=2)]
+        )
+    with pytest.raises(InvalidAssumptionError):
+        service.run(
+            [WhatIfAssumption(kind="issue_week_shift", target_id="iss_x")]
+        )
+    with pytest.raises(InvalidAssumptionError):
+        service.run([WhatIfAssumption(kind="issue_status", target_id="iss_x")])

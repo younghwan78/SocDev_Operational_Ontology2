@@ -2075,6 +2075,25 @@ export interface components {
             workaround?: string | null;
         };
         /**
+         * IssueSignalChange
+         * @description 이슈 신호 delta (Q2) — 주차 기반 신호(상태/정체/지연/검증)의 변화 사실.
+         */
+        IssueSignalChange: {
+            /**
+             * Appeared
+             * @default false
+             */
+            appeared: boolean;
+            /** Changes */
+            changes?: string[];
+            /** Issue Id */
+            issue_id: string;
+            /** Projected Note Ko */
+            projected_note_ko?: string | null;
+            /** Title */
+            title: string;
+        };
+        /**
          * IssueSummary
          * @description 이슈 목록 항목 — 검증 상태 뱃지 포함.
          */
@@ -3493,17 +3512,34 @@ export interface components {
         };
         /**
          * WhatIfAssumption
-         * @description 가정 1건 — 실재 객체의 단일 필드를 가정 값으로 치환한다.
+         * @description 가정 1건 — 필드 치환(기존 2종) 또는 주입/시프트(Q2 확장 2종).
+         *
+         *     kind별 필수 필드 (설계 17 §3):
+         *     - issue_status / event_schedule_signal: value
+         *     - new_issue: target_id(미존재 id) + scenario_ids/ip_ids 각 1건 이상
+         *     - issue_week_shift: week_delta (대상 이슈에 due_week가 있어야 한다)
          */
         WhatIfAssumption: {
+            /** Ip Ids */
+            ip_ids?: string[];
             /** Kind */
             kind: string;
             /** Note */
             note?: string | null;
+            /** Project Id */
+            project_id?: string | null;
+            /** Scenario Ids */
+            scenario_ids?: string[];
+            /** Severity */
+            severity?: string | null;
             /** Target Id */
             target_id: string;
+            /** Title */
+            title?: string | null;
             /** Value */
-            value: string;
+            value?: string | null;
+            /** Week Delta */
+            week_delta?: number | null;
         };
         /**
          * WhatIfCellChange
@@ -3535,6 +3571,8 @@ export interface components {
         WhatIfResult: {
             /** Assumptions */
             assumptions: components["schemas"]["AppliedAssumption"][];
+            /** Changed Issue Signals */
+            changed_issue_signals?: components["schemas"]["IssueSignalChange"][];
             /** Changed Rows */
             changed_rows: components["schemas"]["WhatIfRowChange"][];
             /** Note Ko */

@@ -699,6 +699,23 @@ function WhatIfCard({ chainData }: { chainData: RCAChain }) {
               {t.whatif_unchanged}: {result.unchanged_scenario_count}
             </p>
           )}
+          {/* Q2: 위험 지도에 안 보이는 이슈 신호 변화 (지연/정체/검증/상태) */}
+          {(result.changed_issue_signals ?? []).length > 0 && (
+            <div>
+              <p className="desc">
+                <b>{t.whatif_issue_signals}</b>
+              </p>
+              {(result.changed_issue_signals ?? []).map((signal) => (
+                <p key={signal.issue_id} className="desc" title={signal.issue_id}>
+                  {signal.title}
+                  {signal.appeared
+                    ? ` — ${t.whatif_appeared}`
+                    : `: ${(signal.changes ?? []).join(" · ")}`}
+                  {signal.projected_note_ko ? ` (${signal.projected_note_ko})` : ""}
+                </p>
+              ))}
+            </div>
+          )}
           <p className="section-note">{result.note_ko}</p>
         </div>
       )}

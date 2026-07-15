@@ -181,6 +181,8 @@ export const ko = {
     whatif_confidence: "확신도 상한",
     whatif_no_change: "위험 등급 변화 없음",
     whatif_unchanged: "변화 없는 시나리오",
+    whatif_issue_signals: "이슈 신호 변화",
+    whatif_appeared: "가정 주입으로 등장 (실데이터 아님)",
     doc_candidates_title: "관련 문서 후보",
     doc_not_evidence: "증거 아님 — 근거 편입은 큐레이션",
     doc_ref_label: "외부 문서",
