@@ -53,6 +53,11 @@ from backend.ontology.scenario import Scenario
 from backend.resolve.entity_resolution import EntityResolutionReport, EntityResolutionService
 from backend.resolve.traceability import TraceabilityResult, TraceabilityService
 from backend.services.action_draft import ActionDraft, ActionDraftService
+from backend.services.as_of import (
+    AsOfRiskHeatmap,
+    AsOfService,
+    InvalidTimestampError,
+)
 from backend.services.change_impact import (
     ChangeImpactOptions,
     ChangeImpactResult,
@@ -112,6 +117,7 @@ class AppServices:
     run_store: RunStoreProtocol
     ask_log: AskLogStoreProtocol
     ingest: IngestService
+    as_of: AsOfService
 
 
 def build_services(
@@ -166,6 +172,7 @@ def build_services(
         run_store=run_store,
         ask_log=ask_log,
         ingest=ingest_service,
+        as_of=AsOfService(repo, ingest_service),
     )
 
 
@@ -384,6 +391,23 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     ) -> RiskHeatmap:
         """위험 지도 — 시나리오×IP 정성 등급 + 판정 근거 (수치 점수 없음)."""
         return services.risk.heatmap(project_id)
+
+    @app.get(f"{prefix}/as-of/risk/heatmap", response_model=AsOfRiskHeatmap)
+    def as_of_risk_heatmap(
+        ts: str = Query(description="ISO 8601 시각 — transaction time(twin이 알던 시점)"),
+        project_id: str | None = Query(default=None, description="프로젝트 필터"),
+    ) -> AsOfRiskHeatmap:
+        """T3 as-of 재구성 — ts 시점 상태를 재생해 위험 지도를 재계산 (읽기 전용).
+
+        지도 계약·판정 룰은 현재 뷰와 동일(RiskService 재사용). 근사·가정은 meta에 명시.
+        """
+        try:
+            snapshot_repo, meta = services.as_of.snapshot(ts)
+        except InvalidTimestampError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return AsOfRiskHeatmap(
+            meta=meta, heatmap=RiskService(snapshot_repo).heatmap(project_id)
+        )
 
     @app.get(f"{prefix}/issues", response_model=list[IssueSummary])
     def list_issues(

@@ -350,3 +350,19 @@ def test_history_roundtrip_via_ingest(client: TestClient) -> None:
         (None, "open"),
         ("open", "resolved"),
     ]
+
+def test_as_of_heatmap_bad_timestamp_400(client: TestClient) -> None:
+    assert client.get("/api/v1/as-of/risk/heatmap?ts=어제쯤").status_code == 400
+
+
+def test_as_of_heatmap_roundtrip(client: TestClient) -> None:
+    """P2 — as-of 지도는 현재 지도와 같은 계약, meta에 가정/근사가 명시된다."""
+    # 미래 시점 재생 = 로그 전체 적용 = 현재 상태 — 지도가 정확히 일치해야 한다.
+    response = client.get("/api/v1/as-of/risk/heatmap?ts=2100-01-01T00:00:00Z")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["as_of"].startswith("2100-01-01")
+    assert body["meta"]["precapture_assumed_objects"] > 0  # fixture 우주 전체가 가정
+    assert "가정" in body["meta"]["note_ko"]
+    current = client.get("/api/v1/risk/heatmap").json()
+    assert body["heatmap"] == current

@@ -378,6 +378,69 @@
         "title": "AliasEntry",
         "type": "object"
       },
+      "AsOfMeta": {
+        "additionalProperties": false,
+        "description": "재생 결과의 정직성 메타 — 무엇이 사실이고 무엇이 가정/근사인지.",
+        "properties": {
+          "approximated_objects": {
+            "title": "Approximated Objects",
+            "type": "integer"
+          },
+          "as_of": {
+            "title": "As Of",
+            "type": "string"
+          },
+          "excluded_objects": {
+            "title": "Excluded Objects",
+            "type": "integer"
+          },
+          "note_ko": {
+            "title": "Note Ko",
+            "type": "string"
+          },
+          "precapture_assumed_objects": {
+            "title": "Precapture Assumed Objects",
+            "type": "integer"
+          },
+          "replayed_versions": {
+            "title": "Replayed Versions",
+            "type": "integer"
+          },
+          "skipped_invalid": {
+            "title": "Skipped Invalid",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "as_of",
+          "replayed_versions",
+          "precapture_assumed_objects",
+          "approximated_objects",
+          "excluded_objects",
+          "skipped_invalid",
+          "note_ko"
+        ],
+        "title": "AsOfMeta",
+        "type": "object"
+      },
+      "AsOfRiskHeatmap": {
+        "additionalProperties": false,
+        "description": "as-of 위험 지도 응답 — 지도 계약(RiskHeatmap)은 현재 뷰와 동일.",
+        "properties": {
+          "heatmap": {
+            "$ref": "#/components/schemas/RiskHeatmap"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/AsOfMeta"
+          }
+        },
+        "required": [
+          "meta",
+          "heatmap"
+        ],
+        "title": "AsOfRiskHeatmap",
+        "type": "object"
+      },
       "AskCard": {
         "additionalProperties": false,
         "description": "질의 관련 객체 카드 — 답변 인용의 대상.",
@@ -6506,6 +6569,66 @@
           }
         },
         "summary": "List Action Items"
+      }
+    },
+    "/api/v1/as-of/risk/heatmap": {
+      "get": {
+        "description": "T3 as-of 재구성 — ts 시점 상태를 재생해 위험 지도를 재계산 (읽기 전용).\n\n지도 계약·판정 룰은 현재 뷰와 동일(RiskService 재사용). 근사·가정은 meta에 명시.",
+        "operationId": "as_of_risk_heatmap_api_v1_as_of_risk_heatmap_get",
+        "parameters": [
+          {
+            "description": "ISO 8601 시각 — transaction time(twin이 알던 시점)",
+            "in": "query",
+            "name": "ts",
+            "required": true,
+            "schema": {
+              "description": "ISO 8601 시각 — transaction time(twin이 알던 시점)",
+              "title": "Ts",
+              "type": "string"
+            }
+          },
+          {
+            "description": "프로젝트 필터",
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "프로젝트 필터",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AsOfRiskHeatmap"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "As Of Risk Heatmap"
       }
     },
     "/api/v1/ask": {

@@ -44,6 +44,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/as-of/risk/heatmap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * As Of Risk Heatmap
+         * @description T3 as-of 재구성 — ts 시점 상태를 재생해 위험 지도를 재계산 (읽기 전용).
+         *
+         *     지도 계약·판정 룰은 현재 뷰와 동일(RiskService 재사용). 근사·가정은 meta에 명시.
+         */
+        get: operations["as_of_risk_heatmap_api_v1_as_of_risk_heatmap_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/ask": {
         parameters: {
             query?: never;
@@ -957,6 +979,34 @@ export interface components {
             ip_id: string;
             /** Ip Name */
             ip_name: string;
+        };
+        /**
+         * AsOfMeta
+         * @description 재생 결과의 정직성 메타 — 무엇이 사실이고 무엇이 가정/근사인지.
+         */
+        AsOfMeta: {
+            /** Approximated Objects */
+            approximated_objects: number;
+            /** As Of */
+            as_of: string;
+            /** Excluded Objects */
+            excluded_objects: number;
+            /** Note Ko */
+            note_ko: string;
+            /** Precapture Assumed Objects */
+            precapture_assumed_objects: number;
+            /** Replayed Versions */
+            replayed_versions: number;
+            /** Skipped Invalid */
+            skipped_invalid: number;
+        };
+        /**
+         * AsOfRiskHeatmap
+         * @description as-of 위험 지도 응답 — 지도 계약(RiskHeatmap)은 현재 뷰와 동일.
+         */
+        AsOfRiskHeatmap: {
+            heatmap: components["schemas"]["RiskHeatmap"];
+            meta: components["schemas"]["AsOfMeta"];
         };
         /**
          * AskCard
@@ -3297,6 +3347,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActionItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    as_of_risk_heatmap_api_v1_as_of_risk_heatmap_get: {
+        parameters: {
+            query: {
+                /** @description ISO 8601 시각 — transaction time(twin이 알던 시점) */
+                ts: string;
+                /** @description 프로젝트 필터 */
+                project_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AsOfRiskHeatmap"];
                 };
             };
             /** @description Validation Error */

@@ -10,13 +10,19 @@ source_updated_at은 원천 시스템이 주장하는 시각(있을 때만) — 
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
 
 CHANGE_CREATED = "created"
 CHANGE_UPDATED = "updated"
 CHANGE_RETRACTED = "retracted"
+
+
+class VersionSourceProtocol(Protocol):
+    """버전 로그 읽기 계약 — IngestService가 충족한다 (P1 프로세스 신호·P2 as-of 공유)."""
+
+    def collection_versions(self, collection: str) -> list[ObjectVersion]: ...
 
 
 class ObjectVersion(BaseModel):

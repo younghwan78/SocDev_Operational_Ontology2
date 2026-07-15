@@ -268,6 +268,21 @@ export async function fetchRiskHeatmap(projectId?: string): Promise<RiskHeatmap>
   return data;
 }
 
+// P2 T3 as-of 재구성 — transaction time 시점 재생 위험 지도 (meta에 가정/근사 명시).
+export type AsOfMeta = components["schemas"]["AsOfMeta"];
+export type AsOfRiskHeatmap = components["schemas"]["AsOfRiskHeatmap"];
+
+export async function fetchAsOfRiskHeatmap(
+  ts: string,
+  projectId?: string,
+): Promise<AsOfRiskHeatmap> {
+  const { data, error } = await client.GET("/api/v1/as-of/risk/heatmap", {
+    params: { query: projectId ? { ts, project_id: projectId } : { ts } },
+  });
+  if (error || !data) throw new Error("as-of risk heatmap 조회 실패");
+  return data;
+}
+
 export type SourceCoverage = components["schemas"]["SourceCoverage"];
 export type CollectionCoverage = components["schemas"]["CollectionCoverage"];
 

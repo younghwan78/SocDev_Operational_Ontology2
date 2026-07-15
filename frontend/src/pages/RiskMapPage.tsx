@@ -6,10 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, type CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
+  fetchAsOfRiskHeatmap,
   fetchProjects,
   fetchRiskHeatmap,
+  type AsOfMeta,
   type BasisItem,
   type HeatmapColumn,
+  type RiskHeatmap,
   type ScenarioRiskRow,
   type WeeklyFocusItem,
 } from "../api/client";
@@ -83,9 +86,18 @@ export function RiskMapPage() {
   };
   const setSelection = (next: Selection | null) =>
     updateParams({ cell: next ? `${next.scenarioId}:${next.ipId ?? "overall"}` : null });
-  const heatmap = useQuery({
-    queryKey: ["risk-heatmap", projectId],
-    queryFn: () => fetchRiskHeatmap(projectId),
+  // P2 T3 as-of: URL의 asof(datetime-local 값)가 있으면 시점 재구성 뷰로 전환.
+  const asOfParam = searchParams.get("asof");
+  const asOfTs = asOfParam ? new Date(asOfParam).toISOString() : null;
+  const heatmap = useQuery<{ heatmap: RiskHeatmap; meta: AsOfMeta | null }>({
+    queryKey: ["risk-heatmap", projectId, asOfTs],
+    queryFn: async () => {
+      if (asOfTs) {
+        const result = await fetchAsOfRiskHeatmap(asOfTs, projectId);
+        return { heatmap: result.heatmap, meta: result.meta };
+      }
+      return { heatmap: await fetchRiskHeatmap(projectId), meta: null };
+    },
     enabled: Boolean(projectId),
   });
   const [askDraft, setAskDraft] = useState("");
@@ -99,7 +111,8 @@ export function RiskMapPage() {
   if (projects.isError || heatmap.isError)
     return <p className="status-msg">{ko.app.error}</p>;
 
-  const { columns, rows, focus } = heatmap.data;
+  const { columns, rows, focus } = heatmap.data.heatmap;
+  const asOfMeta = heatmap.data.meta;
   const columnGroups = groupColumns(columns);
   // 그룹 경계 열 인덱스 — 좌측 구분선으로 카테고리 경계를 표시한다.
   const catStarts = new Set<number>();
@@ -156,7 +169,38 @@ export function RiskMapPage() {
             {project.name}
           </button>
         ))}
+        <label className="filter-label" htmlFor="asof-input">
+          {t.asof_label}
+        </label>
+        <input
+          id="asof-input"
+          type="datetime-local"
+          className="search-input"
+          value={asOfParam ?? ""}
+          onChange={(event) => updateParams({ asof: event.target.value || null })}
+        />
+        {asOfParam && (
+          <button
+            type="button"
+            className="chip chip-btn"
+            onClick={() => updateParams({ asof: null })}
+          >
+            {t.asof_clear}
+          </button>
+        )}
       </div>
+
+      {/* as-of 정직성 배너 — 무엇이 사실이고 무엇이 가정/근사인지 숨기지 않는다 */}
+      {asOfMeta && (
+        <p className="section-note rca-banner">
+          ⏱ {t.asof_banner}: {new Date(asOfMeta.as_of).toLocaleString("ko-KR")} —{" "}
+          {t.asof_replayed} {asOfMeta.replayed_versions} · {t.asof_assumed}{" "}
+          {asOfMeta.precapture_assumed_objects} · {t.asof_approx}{" "}
+          {asOfMeta.approximated_objects} · {t.asof_excluded} {asOfMeta.excluded_objects}
+          <br />
+          {asOfMeta.note_ko}
+        </p>
+      )}
 
       <div
         className="risk-layout risk-layout-split"

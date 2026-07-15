@@ -12,11 +12,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from backend.ingest.history import ObjectVersion, extract_status_transitions
+from backend.ingest.history import (
+    ObjectVersion,
+    VersionSourceProtocol,
+    extract_status_transitions,
+)
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.event import Issue, Test
 from backend.ontology.glossary import enum_label, value_label
@@ -49,12 +52,6 @@ _STALE_WEEKS = 4
 # P1 전이 이력 룰 (16_digital_twin_followups.md §2) — transaction time 축.
 # 기준 시점은 이슈 컬렉션 버전 로그의 최신 recorded_at — 역시 벽시계 불사용.
 _STALE_DAYS = 28
-
-
-class VersionSourceProtocol(Protocol):
-    """버전 로그 읽기 계약 — IngestService가 충족한다 (P1·P2 공유)."""
-
-    def collection_versions(self, collection: str) -> list[ObjectVersion]: ...
 
 
 @dataclass
