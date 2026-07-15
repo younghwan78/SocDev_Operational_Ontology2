@@ -268,6 +268,26 @@ export async function fetchRiskHeatmap(projectId?: string): Promise<RiskHeatmap>
   return data;
 }
 
+// P3 KPI 시계열 — domain time(week) 축 과제 간 비교 (결정론, 수치 점수 없음).
+export type KPISeriesResult = components["schemas"]["KPISeriesResult"];
+export type ProjectKPISeries = components["schemas"]["ProjectKPISeries"];
+export type KPISeriesPoint = components["schemas"]["KPISeriesPoint"];
+
+export async function fetchKPISeries(
+  kpiId: string,
+  scenarioId?: string,
+): Promise<KPISeriesResult> {
+  const { data, error } = await client.GET("/api/v1/kpi/series", {
+    params: {
+      query: scenarioId
+        ? { kpi_id: kpiId, scenario_id: scenarioId }
+        : { kpi_id: kpiId },
+    },
+  });
+  if (error || !data) throw new Error("kpi series 조회 실패");
+  return data;
+}
+
 // P2 T3 as-of 재구성 — transaction time 시점 재생 위험 지도 (meta에 가정/근사 명시).
 export type AsOfMeta = components["schemas"]["AsOfMeta"];
 export type AsOfRiskHeatmap = components["schemas"]["AsOfRiskHeatmap"];

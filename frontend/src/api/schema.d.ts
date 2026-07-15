@@ -500,6 +500,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/kpi/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kpi Catalog
+         * @description 관측이 존재하는 KPI 목록 — 시계열 선택기용 (읽기 전용).
+         */
+        get: operations["kpi_catalog_api_v1_kpi_catalog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kpi/series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kpi Series
+         * @description P3 KPI 시계열 — 프로젝트별 주차 궤적 + 추세 사실 서술 (수치 점수 없음).
+         */
+        get: operations["kpi_series_api_v1_kpi_series_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta": {
         parameters: {
             query?: never;
@@ -2027,6 +2067,26 @@ export interface components {
             verification_ko: string;
         };
         /**
+         * KPICatalogEntry
+         * @description 관측이 존재하는 KPI — 선택기용.
+         */
+        KPICatalogEntry: {
+            /** Direction */
+            direction?: string | null;
+            /** Group */
+            group?: string | null;
+            /** Kpi Id */
+            kpi_id: string;
+            /** Observation Count */
+            observation_count: number;
+            /** Project Ids */
+            project_ids: string[];
+            /** Scenario Ids */
+            scenario_ids?: string[];
+            /** Unit */
+            unit?: string | null;
+        };
+        /**
          * KPIDefinition
          * @description KPI 정의 — 방향(높을수록/낮을수록 좋음)과 단위를 갖는 지표.
          */
@@ -2040,6 +2100,50 @@ export interface components {
             source?: components["schemas"]["SourceMeta"];
             /** Unit */
             unit: string;
+        };
+        /**
+         * KPISeriesPoint
+         * @description 시계열의 점 — 원 관측 참조 동반.
+         */
+        KPISeriesPoint: {
+            /** Aligned Week */
+            aligned_week?: number | null;
+            /** Evidence Id */
+            evidence_id?: string | null;
+            /** Measurement Stage */
+            measurement_stage?: string | null;
+            /** Observation Id */
+            observation_id: string;
+            /** Scenario Id */
+            scenario_id?: string | null;
+            /** Source Ref */
+            source_ref?: string | null;
+            /** Unit */
+            unit?: string | null;
+            /** Value */
+            value: number;
+            /** Week */
+            week: number;
+        };
+        /**
+         * KPISeriesResult
+         * @description KPI 하나의 과제 간 비교 응답.
+         */
+        KPISeriesResult: {
+            /** Align Milestone Type */
+            align_milestone_type?: string | null;
+            /** Direction */
+            direction?: string | null;
+            /** Direction Ko */
+            direction_ko?: string | null;
+            /** Group */
+            group?: string | null;
+            /** Kpi Id */
+            kpi_id: string;
+            /** Series */
+            series: components["schemas"]["ProjectKPISeries"][];
+            /** Unit */
+            unit?: string | null;
         };
         /**
          * KnobEffect
@@ -2298,6 +2402,30 @@ export interface components {
             target_product_generation?: string | null;
             /** Type */
             type: string;
+        };
+        /**
+         * ProjectKPISeries
+         * @description 프로젝트 하나의 궤적 + 추세 사실 서술.
+         */
+        ProjectKPISeries: {
+            /** Align Milestone Id */
+            align_milestone_id?: string | null;
+            /** Align Milestone Week */
+            align_milestone_week?: number | null;
+            /** Align Note Ko */
+            align_note_ko?: string | null;
+            /** Points */
+            points: components["schemas"]["KPISeriesPoint"][];
+            /** Project Id */
+            project_id: string;
+            /** Source Refs */
+            source_refs?: string[];
+            /** Trend */
+            trend: string;
+            /** Trend Ko */
+            trend_ko: string;
+            /** Trend Note Ko */
+            trend_note_ko: string;
         };
         /**
          * ProjectScenarioFocus
@@ -4033,6 +4161,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RCAChain"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    kpi_catalog_api_v1_kpi_catalog_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KPICatalogEntry"][];
+                };
+            };
+        };
+    };
+    kpi_series_api_v1_kpi_series_get: {
+        parameters: {
+            query: {
+                /** @description KPI 정의 ID */
+                kpi_id: string;
+                /** @description 시나리오 필터 */
+                scenario_id?: string | null;
+                /** @description 프로젝트 필터 */
+                project_id?: string | null;
+                /** @description 과제 간 시점 정렬 기준 마일스톤 유형 (해당 주차=0 상대 주차) */
+                align_milestone_type?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KPISeriesResult"];
                 };
             };
             /** @description Validation Error */

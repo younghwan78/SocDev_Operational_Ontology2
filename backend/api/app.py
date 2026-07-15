@@ -66,6 +66,12 @@ from backend.services.change_impact import (
     UnknownIPError,
 )
 from backend.services.evidence_ladder import EvidenceLadder, EvidenceLadderService
+from backend.services.kpi_series import (
+    KPICatalogEntry,
+    KPINotFoundError,
+    KPISeriesResult,
+    KPISeriesService,
+)
 from backend.services.portfolio import PortfolioOverview, PortfolioService
 from backend.services.rca import (
     IssueNotFoundError,
@@ -118,6 +124,7 @@ class AppServices:
     ask_log: AskLogStoreProtocol
     ingest: IngestService
     as_of: AsOfService
+    kpi_series: KPISeriesService
 
 
 def build_services(
@@ -173,6 +180,7 @@ def build_services(
         ask_log=ask_log,
         ingest=ingest_service,
         as_of=AsOfService(repo, ingest_service),
+        kpi_series=KPISeriesService(repo),
     )
 
 
@@ -391,6 +399,32 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     ) -> RiskHeatmap:
         """위험 지도 — 시나리오×IP 정성 등급 + 판정 근거 (수치 점수 없음)."""
         return services.risk.heatmap(project_id)
+
+    @app.get(f"{prefix}/kpi/catalog", response_model=list[KPICatalogEntry])
+    def kpi_catalog() -> list[KPICatalogEntry]:
+        """관측이 존재하는 KPI 목록 — 시계열 선택기용 (읽기 전용)."""
+        return services.kpi_series.catalog()
+
+    @app.get(f"{prefix}/kpi/series", response_model=KPISeriesResult)
+    def kpi_series(
+        kpi_id: str = Query(description="KPI 정의 ID"),
+        scenario_id: str | None = Query(default=None, description="시나리오 필터"),
+        project_id: str | None = Query(default=None, description="프로젝트 필터"),
+        align_milestone_type: str | None = Query(
+            default=None,
+            description="과제 간 시점 정렬 기준 마일스톤 유형 (해당 주차=0 상대 주차)",
+        ),
+    ) -> KPISeriesResult:
+        """P3 KPI 시계열 — 프로젝트별 주차 궤적 + 추세 사실 서술 (수치 점수 없음)."""
+        try:
+            return services.kpi_series.series(
+                kpi_id,
+                scenario_id=scenario_id,
+                project_id=project_id,
+                align_milestone_type=align_milestone_type,
+            )
+        except KPINotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.get(f"{prefix}/as-of/risk/heatmap", response_model=AsOfRiskHeatmap)
     def as_of_risk_heatmap(

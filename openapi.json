@@ -3018,6 +3018,74 @@
         "title": "IssueSummary",
         "type": "object"
       },
+      "KPICatalogEntry": {
+        "additionalProperties": false,
+        "description": "관측이 존재하는 KPI — 선택기용.",
+        "properties": {
+          "direction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          },
+          "group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group"
+          },
+          "kpi_id": {
+            "title": "Kpi Id",
+            "type": "string"
+          },
+          "observation_count": {
+            "title": "Observation Count",
+            "type": "integer"
+          },
+          "project_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Project Ids",
+            "type": "array"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "kpi_id",
+          "observation_count",
+          "project_ids"
+        ],
+        "title": "KPICatalogEntry",
+        "type": "object"
+      },
       "KPIDefinition": {
         "additionalProperties": false,
         "description": "KPI 정의 — 방향(높을수록/낮을수록 좋음)과 단위를 갖는 지표.",
@@ -3049,6 +3117,175 @@
           "direction"
         ],
         "title": "KPIDefinition",
+        "type": "object"
+      },
+      "KPISeriesPoint": {
+        "additionalProperties": false,
+        "description": "시계열의 점 — 원 관측 참조 동반.",
+        "properties": {
+          "aligned_week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aligned Week"
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "measurement_stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measurement Stage"
+          },
+          "observation_id": {
+            "title": "Observation Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          },
+          "source_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Ref"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          },
+          "week": {
+            "title": "Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "observation_id",
+          "week",
+          "value"
+        ],
+        "title": "KPISeriesPoint",
+        "type": "object"
+      },
+      "KPISeriesResult": {
+        "additionalProperties": false,
+        "description": "KPI 하나의 과제 간 비교 응답.",
+        "properties": {
+          "align_milestone_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Align Milestone Type"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          },
+          "direction_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction Ko"
+          },
+          "group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group"
+          },
+          "kpi_id": {
+            "title": "Kpi Id",
+            "type": "string"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectKPISeries"
+            },
+            "title": "Series",
+            "type": "array"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "kpi_id",
+          "series"
+        ],
+        "title": "KPISeriesResult",
         "type": "object"
       },
       "KnobEffect": {
@@ -3776,6 +4013,84 @@
           "phase"
         ],
         "title": "Project",
+        "type": "object"
+      },
+      "ProjectKPISeries": {
+        "additionalProperties": false,
+        "description": "프로젝트 하나의 궤적 + 추세 사실 서술.",
+        "properties": {
+          "align_milestone_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Align Milestone Id"
+          },
+          "align_milestone_week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Align Milestone Week"
+          },
+          "align_note_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Align Note Ko"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/KPISeriesPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "trend": {
+            "title": "Trend",
+            "type": "string"
+          },
+          "trend_ko": {
+            "title": "Trend Ko",
+            "type": "string"
+          },
+          "trend_note_ko": {
+            "title": "Trend Note Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id",
+          "points",
+          "trend",
+          "trend_ko",
+          "trend_note_ko"
+        ],
+        "title": "ProjectKPISeries",
         "type": "object"
       },
       "ProjectScenarioFocus": {
@@ -7767,6 +8082,125 @@
           }
         },
         "summary": "Issue Rca"
+      }
+    },
+    "/api/v1/kpi/catalog": {
+      "get": {
+        "description": "관측이 존재하는 KPI 목록 — 시계열 선택기용 (읽기 전용).",
+        "operationId": "kpi_catalog_api_v1_kpi_catalog_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/KPICatalogEntry"
+                  },
+                  "title": "Response Kpi Catalog Api V1 Kpi Catalog Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Kpi Catalog"
+      }
+    },
+    "/api/v1/kpi/series": {
+      "get": {
+        "description": "P3 KPI 시계열 — 프로젝트별 주차 궤적 + 추세 사실 서술 (수치 점수 없음).",
+        "operationId": "kpi_series_api_v1_kpi_series_get",
+        "parameters": [
+          {
+            "description": "KPI 정의 ID",
+            "in": "query",
+            "name": "kpi_id",
+            "required": true,
+            "schema": {
+              "description": "KPI 정의 ID",
+              "title": "Kpi Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "시나리오 필터",
+            "in": "query",
+            "name": "scenario_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "시나리오 필터",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "description": "프로젝트 필터",
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "프로젝트 필터",
+              "title": "Project Id"
+            }
+          },
+          {
+            "description": "과제 간 시점 정렬 기준 마일스톤 유형 (해당 주차=0 상대 주차)",
+            "in": "query",
+            "name": "align_milestone_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "과제 간 시점 정렬 기준 마일스톤 유형 (해당 주차=0 상대 주차)",
+              "title": "Align Milestone Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KPISeriesResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Kpi Series"
       }
     },
     "/api/v1/meta": {

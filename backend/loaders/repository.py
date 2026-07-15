@@ -150,6 +150,7 @@ def check_integrity(repo: RepositoryProtocol) -> list[Finding]:
         ("project_links", "to_project"),
         ("evidence", "project_id"),
         ("semantic_chunks", "project_id"),
+        ("kpi_observations", "project_id"),
     ]
     for collection, field in project_ref_fields:
         for obj in repo.list(collection):
@@ -215,6 +216,12 @@ def check_integrity(repo: RepositoryProtocol) -> list[Finding]:
         require("scenario_requests", "evidence_basis", field_values(obj, "evidence_basis"), evidence_union, level="warning")
     for obj in repo.list("simulation_runs"):
         require("simulation_runs", "event_id", field_values(obj, "event_id"), events)
+
+    # P3 KPI 시계열: 관측 → KPI 정의(hard) / 시나리오·근거(soft)
+    for obj in repo.list("kpi_observations"):
+        require("kpi_observations", "kpi_id", field_values(obj, "kpi_id"), kpis)
+        require("kpi_observations", "scenario_id", field_values(obj, "scenario_id"), scenarios, level="warning")
+        require("kpi_observations", "evidence_id", field_values(obj, "evidence_id"), evidence_union, level="warning")
 
     # Stage 10: 검증 테스트 ↔ 이슈 참조
     issues = repo.ids("issues")

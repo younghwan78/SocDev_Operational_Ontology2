@@ -267,6 +267,12 @@ export const ko = {
     tab_trace: "추적",
     section_basic: "기본 정보",
     section_kpi: "주요 KPI",
+    kpi_series_title: "KPI 시계열 — 과제 간 비교",
+    kpi_series_note:
+      "주차별 관측값의 사실 나열입니다 — 추세는 KPI 방향 기준의 서술이며 점수가 아닙니다",
+    kpi_series_empty: "이 KPI·시나리오 조합의 관측이 없습니다",
+    kpi_series_week: "주차",
+    kpi_series_trend: "추세",
     section_ip: "사용 IP · 의존 시스템 블록",
     section_requests: "시나리오 요청",
     section_gaps: "근거 공백",

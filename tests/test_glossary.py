@@ -72,6 +72,7 @@ def test_value_labels_cover_all_fixture_values() -> None:
         ("availability", "evidence_catalog", "availability"),
         ("confidence_contribution", "evidence_catalog", "confidence_contribution"),
         ("measurement_stage", "evidence_catalog", "measurement_stage"),
+        ("measurement_stage", "kpi_observations", "measurement_stage"),
         ("scenario_match", "evidence_catalog", "scenario_match"),
         ("request_status", "scenario_requests", "status"),
         ("request_priority", "scenario_requests", "priority"),

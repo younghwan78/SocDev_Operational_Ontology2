@@ -1,4 +1,4 @@
-"""event 모듈: 개발 이벤트(구 event + development_event 통합 계약), 이슈, 검증 테스트."""
+"""event 모듈: 개발 이벤트(구 event + development_event 통합 계약), 이슈, 검증 테스트, KPI 관측."""
 
 from __future__ import annotations
 
@@ -164,6 +164,28 @@ class Test(OntologyObject):
     verifies_issue_ids: list[str] = Field(default_factory=list)
     linked_evidence_ids: list[str] = Field(default_factory=list)
     executed_week: int | None = None
+
+
+class KPIObservation(OntologyObject):
+    """KPI 관측 — 특정 주차의 수치 측정값 (시계열의 점).
+
+    domain time(week) 위의 계약이다 — transaction time(버전 로그)과 섞지 않는다.
+    정성 결과·한계 서술은 measurement_evidence의 영역이고, 여기는 시계열이 목적이다
+    (16_digital_twin_followups.md §4). CLAUDE.md §2.3 event 모듈 계약의 코드 반영.
+    """
+
+    project_id: str
+    kpi_id: str  # kpi_definitions 참조
+    week: int  # domain time — 우주/ISO 주차
+    value: float
+    scenario_id: str | None = None
+    variant_id: str | None = None
+    unit: str | None = None  # 비면 KPIDefinition.unit 승계 표시
+    measurement_stage: str | None = None  # evidence_catalog와 동일 값 도메인
+    source_kind: str | None = None
+    source_ref: str | None = None
+    evidence_id: str | None = None  # 근거 연결 (soft)
+    notes: list[str] = Field(default_factory=list)
 
 
 class Issue(OntologyObject):

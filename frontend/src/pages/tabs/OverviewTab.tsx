@@ -1,4 +1,6 @@
-import type { ScenarioAnalysis } from "../../api/client";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { fetchKPISeries, type ScenarioAnalysis } from "../../api/client";
 import { useLabels } from "../../hooks/useLabels";
 import { useValueLabels } from "../../hooks/useValueLabels";
 import { ko } from "../../i18n/ko";
@@ -71,6 +73,13 @@ export function OverviewTab({ analysis }: { analysis: ScenarioAnalysis }) {
           ))}
         </div>
       </div>
+
+      {analysis.kpis.length > 0 && (
+        <KPISeriesSection
+          scenarioId={scenario.id}
+          kpiIds={analysis.kpis.map((kpi) => kpi.id)}
+        />
+      )}
 
       <div className="card">
         <h2 className="card-title">{t.section_ip}</h2>
@@ -164,6 +173,107 @@ export function OverviewTab({ analysis }: { analysis: ScenarioAnalysis }) {
             </div>
           ))}
         </div>
+      )}
+    </div>
+  );
+}
+
+const TREND_BADGE: Record<string, string> = {
+  improved: "badge-ok",
+  worsened: "badge-danger",
+};
+
+/** P3 KPI 시계열 — 주차×프로젝트 표 + 추세 사실 서술 (수치 점수 아님). */
+function KPISeriesSection({
+  scenarioId,
+  kpiIds,
+}: {
+  scenarioId: string;
+  kpiIds: string[];
+}) {
+  const label = useLabels();
+  const valueLabel = useValueLabels();
+  const [selected, setSelected] = useState(kpiIds[0]);
+  const kpiId = kpiIds.includes(selected) ? selected : kpiIds[0];
+  const series = useQuery({
+    queryKey: ["kpi-series", kpiId, scenarioId],
+    queryFn: () => fetchKPISeries(kpiId, scenarioId),
+    enabled: Boolean(kpiId),
+  });
+
+  const data = series.data;
+  const projects = data?.series ?? [];
+  const weeks = [...new Set(projects.flatMap((s) => s.points.map((p) => p.week)))].sort(
+    (a, b) => a - b,
+  );
+
+  return (
+    <div className="card">
+      <h2 className="card-title">{t.kpi_series_title}</h2>
+      <p className="section-note">{t.kpi_series_note}</p>
+      <div className="chip-row">
+        {kpiIds.map((id) => (
+          <button
+            key={id}
+            type="button"
+            className={`chip chip-btn ${id === kpiId ? "active" : ""}`}
+            onClick={() => setSelected(id)}
+          >
+            {id}
+          </button>
+        ))}
+      </div>
+      {series.isPending && <p className="status-msg">{ko.app.loading}</p>}
+      {(series.isError || (data && projects.length === 0)) && (
+        <p className="desc">{t.kpi_series_empty}</p>
+      )}
+      {data && projects.length > 0 && (
+        <>
+          <div className="heatmap-scroll">
+            <table className="heatmap">
+              <thead>
+                <tr>
+                  <th>{t.kpi_series_week}</th>
+                  {projects.map((project) => (
+                    <th key={project.project_id} title={project.project_id}>
+                      {label(project.project_id)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {weeks.map((week) => (
+                  <tr key={week}>
+                    <th>W{week}</th>
+                    {projects.map((project) => {
+                      const point = project.points.find((p) => p.week === week);
+                      return (
+                        <td
+                          key={project.project_id}
+                          title={
+                            point?.measurement_stage
+                              ? `${valueLabel("measurement_stage", point.measurement_stage)} · ${point.observation_id}`
+                              : ""
+                          }
+                        >
+                          {point ? `${point.value}${point.unit ?? ""}` : "·"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {projects.map((project) => (
+            <p key={project.project_id} className="desc">
+              <span className={`badge ${TREND_BADGE[project.trend] ?? "badge-info"}`}>
+                {t.kpi_series_trend}: {project.trend_ko}
+              </span>{" "}
+              {label(project.project_id)} — {project.trend_note_ko}
+            </p>
+          ))}
+        </>
       )}
     </div>
   );

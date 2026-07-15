@@ -23,6 +23,7 @@ OBJECT_LABELS: dict[str, str] = {
     "StageWindow": "개발 단계 구간",
     # scenario
     "KPIDefinition": "KPI 정의",
+    "KPIObservation": "KPI 관측",
     "ScenarioGroup": "시나리오 그룹",
     "Scenario": "시나리오",
     "Variant": "시나리오 변형",
@@ -402,6 +403,13 @@ MODEL_FIELD_LABELS: dict[str, dict[str, str]] = {
         "result": "결과",
         "verifies_issue_ids": "검증 대상 이슈 ID",
         "executed_week": "실행 주차",
+    },
+    "KPIObservation": {
+        "kpi_id": "KPI ID",
+        "value": "관측값",
+        "measurement_stage": "측정 단계",
+        "source_kind": "출처 종류",
+        "evidence_id": "근거 ID",
     },
     "EvidenceCatalogEntry": {
         "confidence_contribution": "확신도 기여",

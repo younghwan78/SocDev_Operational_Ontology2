@@ -1034,3 +1034,125 @@ tests:
   verifies_issue_ids: []
   linked_evidence_ids: [evidence_u_dual_previous_measurement]
   executed_week: 29
+
+# ------------------------------------------------------------ P3 KPI 시계열
+# KPI 관측 (16_digital_twin_followups.md §4) — U(실리콘 실측) vs V(에뮬레이터 예측)의
+# 같은 시나리오·같은 KPI 궤적. 값은 synthetic이며 근거 ref로 앵커한다.
+kpi_observations:
+- id: kpi_obs_u_dou_power_w10
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_u_dou_power_w10'}
+  project_id: project_u
+  kpi_id: dou_power
+  scenario_id: uhd60_recording_eis_on
+  week: 10
+  value: 1450.0
+  unit: mW
+  measurement_stage: current_silicon
+  source_kind: power_dashboard
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_u_dou_power_w10'
+  evidence_id: evidence_u_uhd60_current_power_dashboard
+- id: kpi_obs_u_dou_power_w14
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_u_dou_power_w14'}
+  project_id: project_u
+  kpi_id: dou_power
+  scenario_id: uhd60_recording_eis_on
+  week: 14
+  value: 1385.0
+  unit: mW
+  measurement_stage: current_silicon
+  source_kind: power_dashboard
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_u_dou_power_w14'
+  evidence_id: evidence_u_uhd60_current_power_dashboard
+- id: kpi_obs_u_dou_power_w18
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_u_dou_power_w18'}
+  project_id: project_u
+  kpi_id: dou_power
+  scenario_id: uhd60_recording_eis_on
+  week: 18
+  value: 1320.0
+  unit: mW
+  measurement_stage: current_silicon
+  source_kind: power_dashboard
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_u_dou_power_w18'
+  evidence_id: evidence_u_uhd60_current_power_dashboard
+- id: kpi_obs_u_dou_power_w22
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_u_dou_power_w22'}
+  project_id: project_u
+  kpi_id: dou_power
+  scenario_id: uhd60_recording_eis_on
+  week: 22
+  value: 1290.0
+  unit: mW
+  measurement_stage: current_silicon
+  source_kind: power_dashboard
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_u_dou_power_w22'
+  evidence_id: evidence_u_uhd60_current_power_dashboard
+- id: kpi_obs_v_dou_power_w8
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_v_dou_power_w8'}
+  project_id: project_v
+  kpi_id: dou_power
+  scenario_id: uhd60_recording_eis_on
+  week: 8
+  value: 1520.0
+  unit: mW
+  measurement_stage: emulator
+  source_kind: emulation_report
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_v_dou_power_w8'
+- id: kpi_obs_v_dou_power_w12
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_v_dou_power_w12'}
+  project_id: project_v
+  kpi_id: dou_power
+  scenario_id: uhd60_recording_eis_on
+  week: 12
+  value: 1480.0
+  unit: mW
+  measurement_stage: emulator
+  source_kind: emulation_report
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_v_dou_power_w12'
+- id: kpi_obs_v_dou_power_w16
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_v_dou_power_w16'}
+  project_id: project_v
+  kpi_id: dou_power
+  scenario_id: uhd60_recording_eis_on
+  week: 16
+  value: 1465.0
+  unit: mW
+  measurement_stage: emulator
+  source_kind: emulation_report
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_v_dou_power_w16'
+- id: kpi_obs_u_ddr_bw_w12
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_u_ddr_bw_w12'}
+  project_id: project_u
+  kpi_id: ddr_bw
+  scenario_id: uhd60_recording_eis_on
+  week: 12
+  value: 21.5
+  unit: GBps
+  measurement_stage: current_silicon
+  source_kind: bw_trace
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_u_ddr_bw_w12'
+  evidence_id: evidence_u_apv_bw_trace_partial
+- id: kpi_obs_u_ddr_bw_w16
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_u_ddr_bw_w16'}
+  project_id: project_u
+  kpi_id: ddr_bw
+  scenario_id: uhd60_recording_eis_on
+  week: 16
+  value: 20.8
+  unit: GBps
+  measurement_stage: current_silicon
+  source_kind: bw_trace
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_u_ddr_bw_w16'
+  evidence_id: evidence_u_apv_bw_trace_partial
+- id: kpi_obs_u_ddr_bw_w20
+  source: {origin: synthetic, ref: '58:fixtures/event_58.yaml#kpi_obs_u_ddr_bw_w20'}
+  project_id: project_u
+  kpi_id: ddr_bw
+  scenario_id: uhd60_recording_eis_on
+  week: 20
+  value: 20.2
+  unit: GBps
+  measurement_stage: current_silicon
+  source_kind: bw_trace
+  source_ref: '58:fixtures/event_58.yaml#kpi_obs_u_ddr_bw_w20'
+  evidence_id: evidence_u_apv_bw_trace_partial
