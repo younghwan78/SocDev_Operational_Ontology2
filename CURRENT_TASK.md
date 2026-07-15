@@ -2,17 +2,25 @@
 
 ## 활성 Stage
 
-**Digital Twin 갭 후속 4패키지 (2026-07-15 승인·착수) — 설계: `internal_docs/design/16_digital_twin_followups.md`**
+**활성 Stage 없음 — Digital Twin 갭 후속 4패키지 완료 (2026-07-15).**
 
-> P1 프로세스 신호 정밀화(전이 이력 기반 정체·재개) → P2 T3 as-of 재구성(설계 15 §4.4)
-> → P3 KPI 시계열(`KPIObservation` 계약 신설 + 과제 간 시점 정렬 비교)
-> → P4 what-if 주입(ephemeral overlay + 위험 지도 delta). 패키지별 커밋.
+> 설계·구현 상태: `internal_docs/design/16_digital_twin_followups.md` (§7).
+> P1 프로세스 신호(재개·전이 기반 정체) / P2 T3 as-of 재구성(설계 15 §4.4 해소)
+> / P3 KPI 시계열(`KPIObservation` 신설 + 마일스톤 정렬 비교) / P4 what-if 주입
+> (ephemeral overlay). backend 260·PG 16·frontend 34 green. 상세: CHANGELOG.
 >
-> 하드 제약: 전부 결정론 / 쓰기 경로 신설 없음(P3 fixture·매핑은 기존 ingest 관문) /
-> 수치 점수 금지 / 가정은 assumption+confidence≤medium / 한국어 1급.
->
-> **범위 외**: 차트 라이브러리 도입, as-of 캐시/retention, SimulationRun 계약 사용,
-> JIRA changelog 백필, D4/Stage 13A/14잔여/18/19 (별도 승인).
+> **다음 후보 (착수는 사용자 승인)**:
+> - Digital twin 잔여 갭 (2026-07-14 분석): 프로세스 모델의 단계 전이 정의,
+>   what-if 가정 종류 확장(신규 이슈 주입·주차 시프트), as-of 파생 뷰 확대
+>   (포트폴리오/변경 영향), KPI 시계열 시각화(차트) — 각각 소규모 설계 필요.
+> - D4 검증 세션 자료(사내 세션 일정 확정 시), Stage 13 트랙 A / 14 잔여 / 18 / 19.
+
+### 직전 완료 — Digital Twin 갭 후속 4패키지 (2026-07-15)
+
+> 설계 16: P1 전이 이력 신호(collection_versions·재개 배지·28일 정체) /
+> P2 as-of(재생 규칙 4종 + AsOfMeta 정직성 메타 + 위험 지도 시점 재구성 UI) /
+> P3 KPIObservation 계약+fixture 10점+반입 매핑+시계열 API·표 (운영 DB 재시드) /
+> P4 POST /what-if(가정 2종, RiskService 재사용, 저장소 불변, 1클릭 UI).
 
 ### 직전 완료 — 시간 모델 T1+T2 (2026-07-14)
 

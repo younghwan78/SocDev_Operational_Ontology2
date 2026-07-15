@@ -177,13 +177,20 @@ def test_seed_records_no_versions_on_reseed(pg_conn, seeded) -> None:
 
 
 def test_postgres_version_chain_parity(pg_conn, seeded) -> None:
-    """시간 모델 수용 기준 1 (PG 경로): created→updated→retracted 체인 + unchanged 무기록."""
+    """시간 모델 수용 기준 1 (PG 경로): created→updated→retracted 체인 + unchanged 무기록.
+
+    버전 로그는 append-only라 실행 간에도 누적된다 — 절대 버전 번호를 단언하려면
+    실행마다 처음 보는 id여야 한다 (고정 id는 두 번째 실행부터 v4에서 시작한다).
+    """
+    import uuid
+
     from backend.ingest.service import IngestService, PostgresIngestWriter
 
+    issue_id = f"pg_hist_issue_{uuid.uuid4().hex[:8]}"
     header = "이슈 ID,프로젝트 ID,제목,유형,상태,증상,확신도"
 
     def issue_csv(status: str) -> bytes:
-        return f"{header}\npg_hist_issue_1,project_u,PG 이력,underrun,{status},증상,medium\n".encode()
+        return f"{header}\n{issue_id},project_u,PG 이력,underrun,{status},증상,medium\n".encode()
 
     service = IngestService(PostgresIngestWriter(pg_conn))
     service.ingest("issues.csv", issue_csv("open"), "issues")
@@ -192,7 +199,7 @@ def test_postgres_version_chain_parity(pg_conn, seeded) -> None:
     report2 = service.ingest("issues.csv", issue_csv("resolved"), "issues")
     service.rollback(report2.batch.id)
 
-    history = service.history("issues", "pg_hist_issue_1")
+    history = service.history("issues", issue_id)
     assert [(v.version, v.change_kind) for v in history.versions] == [
         (1, "created"),
         (2, "updated"),
@@ -203,3 +210,6 @@ def test_postgres_version_chain_parity(pg_conn, seeded) -> None:
         (None, "open"),
         ("open", "resolved"),
     ]
+    # P1/P2 공유 읽기 표면 — 컬렉션 단위 조회에도 같은 체인이 보인다 (Memory 패리티).
+    collection_log = service.collection_versions("issues")
+    assert [v.version for v in collection_log if v.object_id == issue_id] == [1, 2, 3]

@@ -1,5 +1,40 @@
 # CHANGELOG
 
+## Digital Twin 갭 후속 4패키지 — as-of·프로세스 신호·KPI 시계열·what-if (2026-07-15)
+
+> 설계: `internal_docs/design/16_digital_twin_followups.md`. 시간 모델 T1+T2가 놓은
+> 시간축 위의 4개 능력 — 전부 결정론, 쓰기 경로 신설 없음, 수치 점수 금지,
+> 가정은 assumption+confidence≤medium. 패키지별 커밋 (P1~P4).
+
+- **P1 프로세스 신호** (`eed9c2e`): `IngestWriterProtocol.collection_versions`
+  (컬렉션 단위 1회 조회 — N+1 금지, P2와 공유) + `RCAService(versions=)` —
+  **재개**(closed→open 전이, 전이 근거 문구) / **전이 기반 정체**(28일 무활동,
+  기준=로그 최신 recorded_at — 벽시계 불사용). 버전 소스 없는 fixture 환경은
+  주차 기반 판정으로 폴백. UI: 이슈 목록 재개 배지 + RCA 재개 배너.
+- **P2 T3 as-of 재구성** (`9af20d9`, 설계 15 §4.4 잔여 해소): `AsOfService.snapshot(ts)`
+  — transaction time 재생 규칙 4종(버전 없음=캡처 이전 가정 / ts 이전 최신 적용 /
+  created 이후=제외 / updated 첫 버전=근사) + `AsOfMeta` 정직성 메타(가정·근사·제외
+  건수 명시). `GET /as-of/risk/heatmap?ts=` — 판정 룰은 RiskService 재사용
+  (기존 읽기 경로 무변경). UI: 위험 지도 시점 재구성 컨트롤 + 배너.
+- **P3 KPI 시계열** (`12902b6`): **`KPIObservation` 계약 신설** (event 모듈 —
+  CLAUDE.md §2.3 계약 드리프트 해소, JSON Schema 재생성) + glossary/무결성 검사/
+  U1 값 커버리지 게이트. fixture: U(실리콘 실측) vs V(에뮬레이터 예측)
+  dou_power·ddr_bw 10점. 반입 매핑 `kpi_observations`(왕복·rollback 검증).
+  `KPISeriesService`: 마일스톤 상대 주차 정렬(비정렬 사유 명시) + direction 기준
+  추세 **사실 서술**. `GET /kpi/catalog`·`/kpi/series` + 시나리오 상세
+  주차×프로젝트 표. 운영 DB 재시드로 반영(시드 멱등 — 신규 10건만 버전 기록).
+- **P4 what-if 주입** (`383c1f8`): `POST /what-if` — 가정 2종(issue_status/
+  event_schedule_signal, VALUE_LABELS 등재 값만)을 **ephemeral overlay**에 적용해
+  RiskService로 재계산, baseline 대비 등급 변화만 반환 (저장소 절대 불변,
+  SimulationRun 미사용). 모든 가정은 assumption 지위+confidence medium 상한 에코,
+  변화 없음도 명시. UI: 이슈 상세 1클릭 "해결되면?/다시 열리면?" 가정 실험 패널.
+- 부수 교정: PG 패리티 테스트의 고정 id가 append-only 로그 누적으로 재실행 시
+  실패하던 결함 → 실행별 고유 id로 수정 + collection_versions PG 패리티 단언 추가.
+- 검증: backend 260 passed(신규 test_process_signals 5 / test_as_of 5 /
+  test_kpi_series 5 / test_what_if 6 + API 5건) / PG 게이트 soc_test 16/16 /
+  ruff / mypy / validate-data 오류 0 / frontend 34 tests · build · lint /
+  openapi+gen:api 재생성. `test_no_write_endpoints`에 what-if 연산 예외 등재.
+
 ## 시간 모델 T1+T2 — append-only 버전 로그 + 전이 조회 (2026-07-14)
 
 > 설계: `internal_docs/design/15_temporal_model.md` (digital twin 갭 분석에서 도출).

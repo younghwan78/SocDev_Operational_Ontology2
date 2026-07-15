@@ -221,4 +221,11 @@ PG 게이트 테스트는 `POSTGRES_TEST_DSN`(soc_test) — 운영 DB 오염 금
 
 ## 7. 구현 상태
 
-- 착수 2026-07-15. 패키지별 커밋, changelog는 최종 커밋에서 일괄 갱신.
+- **P1~P4 전부 구현 완료 (2026-07-15)** — 수용 기준 전 항목 테스트 검증:
+  P1 `eed9c2e` / P2 `9af20d9` / P3 `12902b6` / P4 `383c1f8`. 상세: CHANGELOG.
+- 세부 편차: 없음 (설계 §2~§5 그대로). 부수 교정 1건 — PG 패리티 테스트의
+  고정 id가 append-only 로그 누적으로 재실행 시 실패 → 실행별 고유 id.
+- 운영 DB: 스키마 변경 없음(ontology_objects 범용) — `db-seed` 재실행으로
+  kpi_observations 10건 반영 (시드 멱등 확인: 신규분만 버전 기록).
+- 검증: backend 260 / PG soc_test 16 / frontend 34 / ruff / mypy /
+  validate-data 오류 0 / openapi+gen:api 재생성.
