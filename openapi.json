@@ -2876,6 +2876,17 @@
             "title": "Issue Type",
             "type": "string"
           },
+          "last_activity_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity At"
+          },
           "overdue": {
             "default": false,
             "title": "Overdue",
@@ -2884,6 +2895,11 @@
           "project_id": {
             "title": "Project Id",
             "type": "string"
+          },
+          "reopened": {
+            "default": false,
+            "title": "Reopened",
+            "type": "boolean"
           },
           "scenario_ids": {
             "items": {
@@ -4076,6 +4092,22 @@
           "project_id": {
             "title": "Project Id",
             "type": "string"
+          },
+          "reopen_note_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reopen Note Ko"
+          },
+          "reopened": {
+            "default": false,
+            "title": "Reopened",
+            "type": "boolean"
           },
           "status": {
             "title": "Status",

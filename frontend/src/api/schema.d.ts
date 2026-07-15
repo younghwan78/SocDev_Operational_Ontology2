@@ -1944,6 +1944,8 @@ export interface components {
             issue_id: string;
             /** Issue Type */
             issue_type: string;
+            /** Last Activity At */
+            last_activity_at?: string | null;
             /**
              * Overdue
              * @default false
@@ -1951,6 +1953,11 @@ export interface components {
             overdue: boolean;
             /** Project Id */
             project_id: string;
+            /**
+             * Reopened
+             * @default false
+             */
+            reopened: boolean;
             /** Scenario Ids */
             scenario_ids?: string[];
             /** Severity */
@@ -2408,6 +2415,13 @@ export interface components {
             nodes: components["schemas"]["RCANode"][];
             /** Project Id */
             project_id: string;
+            /** Reopen Note Ko */
+            reopen_note_ko?: string | null;
+            /**
+             * Reopened
+             * @default false
+             */
+            reopened: boolean;
             /** Status */
             status: string;
             /** Title */

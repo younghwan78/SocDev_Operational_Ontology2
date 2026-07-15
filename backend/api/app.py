@@ -153,7 +153,8 @@ def build_services(
         review=ReviewService(repo),
         risk=RiskService(repo),
         change_impact=ChangeImpactService(repo),
-        rca=RCAService(repo),
+        # P1: 전이 이력 신호 — 버전 로그(ingest 관문의 부수 기록)를 읽기 소스로 연결.
+        rca=RCAService(repo, versions=ingest_service),
         source_map=SourceCoverageService(repo),
         entity_resolution=EntityResolutionService(repo),
         action_draft=ActionDraftService(repo),

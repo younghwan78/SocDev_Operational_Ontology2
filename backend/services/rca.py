@@ -10,11 +10,16 @@ internal_docs/design/04_stage10_rca_design.md §3의 결정론 파생 뷰.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Protocol
+
 from pydantic import BaseModel, ConfigDict, Field
 
+from backend.ingest.history import ObjectVersion, extract_status_transitions
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.event import Issue, Test
-from backend.ontology.glossary import enum_label
+from backend.ontology.glossary import enum_label, value_label
 from backend.ontology.ip import IPBlock
 from backend.ontology.scenario import Scenario
 
@@ -40,6 +45,34 @@ _CLOSED_STATUSES = {"closed", "resolved", "done"}
 # 수치 점수가 아니라 날짜 사실에 근거한 정성 신호다. 기준 주차는 데이터의
 # 최신 활동 주차(결정론) — 벽시계를 쓰지 않아 fixture 우주에서도 성립한다.
 _STALE_WEEKS = 4
+
+# P1 전이 이력 룰 (16_digital_twin_followups.md §2) — transaction time 축.
+# 기준 시점은 이슈 컬렉션 버전 로그의 최신 recorded_at — 역시 벽시계 불사용.
+_STALE_DAYS = 28
+
+
+class VersionSourceProtocol(Protocol):
+    """버전 로그 읽기 계약 — IngestService가 충족한다 (P1·P2 공유)."""
+
+    def collection_versions(self, collection: str) -> list[ObjectVersion]: ...
+
+
+@dataclass
+class _TransitionSignal:
+    """이슈 하나의 전이 이력 파생 신호 — 전부 사실 서술 재료."""
+
+    reopened: bool = False
+    reopen_note: str | None = None
+    last_activity_at: str | None = None
+    stale: bool = False
+    stale_note: str | None = None
+
+
+def _parse_instant(value: str) -> datetime | None:
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        return None
 
 TEST_TYPE_LABELS: dict[str, str] = {
     "regression": "회귀",
@@ -106,6 +139,9 @@ class IssueSummary(BaseModel):
     stale: bool = False
     overdue: bool = False
     freshness_ko: str | None = None
+    # P1 전이 이력 신호 — 버전 로그가 있는 이슈(반입/커넥터 유래)만 채워진다.
+    reopened: bool = False
+    last_activity_at: str | None = None
 
 
 class RCAChain(BaseModel):
@@ -123,6 +159,9 @@ class RCAChain(BaseModel):
     verification_ko: str
     closed_without_verification: bool
     alert_ko: str | None = None
+    # P1: 종결됐다 다시 열린 이슈 — 전이 근거 문구 동반.
+    reopened: bool = False
+    reopen_note_ko: str | None = None
     nodes: list[RCANode]
     # J4: 관련 문서 후보 — 이슈의 외부 문서 참조 + 이 이슈를 언급하는 검색 청크.
     # 후보 지위(증거 아님) — supporting_basis 편입은 큐레이션을 거친다.
@@ -139,8 +178,12 @@ def _verification_status(issue: Issue, tests: list[Test]) -> str:
 
 
 class RCAService:
-    def __init__(self, repo: RepositoryProtocol) -> None:
+    def __init__(
+        self, repo: RepositoryProtocol, versions: VersionSourceProtocol | None = None
+    ) -> None:
         self._repo = repo
+        # 버전 소스가 없으면(순수 fixture 환경) 주차 기반 판정만으로 폴백한다.
+        self._versions = versions
 
     def _issues(self) -> list[Issue]:
         return [i for i in self._repo.list("issues") if isinstance(i, Issue)]
@@ -195,6 +238,58 @@ class RCAService:
             notes.append(f"지연 — 목표 W{issue.due_week} 경과 (기준 W{reference_week})")
         return stale, overdue, " · ".join(notes) or None
 
+    def _transition_signals(self) -> dict[str, _TransitionSignal]:
+        """P1 — 이슈 버전 로그에서 재개·전이 기반 정체를 뽑는다 (컬렉션 1회 조회).
+
+        transaction time 축의 사실 서술이다: 기준 시점은 로그의 최신 recorded_at
+        (벽시계 불사용 — 동일 로그 동일 출력).
+        """
+        if self._versions is None:
+            return {}
+        versions = self._versions.collection_versions("issues")
+        if not versions:
+            return {}
+        by_object: dict[str, list[ObjectVersion]] = {}
+        for entry in versions:
+            by_object.setdefault(entry.object_id, []).append(entry)
+        reference = max(v.recorded_at for v in versions)
+        reference_dt = _parse_instant(reference)
+
+        signals: dict[str, _TransitionSignal] = {}
+        for object_id, entries in by_object.items():
+            signal = _TransitionSignal()
+            for transition in extract_status_transitions(entries):
+                if (
+                    transition.from_status in _CLOSED_STATUSES
+                    and transition.to_status not in _CLOSED_STATUSES
+                ):
+                    from_ko = value_label("issue_status", transition.from_status) or (
+                        transition.from_status
+                    )
+                    to_ko = value_label("issue_status", transition.to_status) or (
+                        transition.to_status
+                    )
+                    signal.reopened = True
+                    signal.reopen_note = (
+                        f"재개 — '{from_ko}'→'{to_ko}' "
+                        f"(v{transition.version}, {transition.recorded_at[:10]})"
+                    )
+            last = max(entry.recorded_at for entry in entries)
+            signal.last_activity_at = last
+            last_dt = _parse_instant(last)
+            if (
+                reference_dt is not None
+                and last_dt is not None
+                and (reference_dt - last_dt).days >= _STALE_DAYS
+            ):
+                signal.stale = True
+                signal.stale_note = (
+                    f"정체 — 마지막 기록 활동 {last[:10]} "
+                    f"(기준 {reference[:10]}, {_STALE_DAYS}일 이상 무활동)"
+                )
+            signals[object_id] = signal
+        return signals
+
     # ---- 이슈 목록 ----
 
     def list_issues(
@@ -202,6 +297,7 @@ class RCAService:
     ) -> list[IssueSummary]:
         summaries: list[IssueSummary] = []
         reference_week = self._reference_week()
+        transition_signals = self._transition_signals()
         for issue in self._issues():
             if project_id and issue.project_id != project_id:
                 continue
@@ -211,6 +307,16 @@ class RCAService:
                 continue
             closed_unverified = issue.status in _CLOSED_STATUSES and status != "verified"
             stale, overdue, freshness_ko = self._freshness(issue, reference_week)
+            # P1: 전이 이력 신호와 결합 — 어느 근거로 판정됐는지 문구에 남는다.
+            signal = transition_signals.get(issue.id)
+            notes = [freshness_ko] if freshness_ko else []
+            if signal is not None:
+                if signal.stale and issue.status not in _CLOSED_STATUSES:
+                    stale = True
+                    if signal.stale_note:
+                        notes.append(signal.stale_note)
+                if signal.reopened and signal.reopen_note:
+                    notes.append(signal.reopen_note)
             summaries.append(
                 IssueSummary(
                     issue_id=issue.id,
@@ -226,7 +332,9 @@ class RCAService:
                     closed_without_verification=closed_unverified,
                     stale=stale,
                     overdue=overdue,
-                    freshness_ko=freshness_ko,
+                    freshness_ko=" · ".join(notes) or None,
+                    reopened=bool(signal and signal.reopened),
+                    last_activity_at=signal.last_activity_at if signal else None,
                 )
             )
         # 경고(닫혔는데 미검증)가 먼저, 그다음 프로젝트/ID 순 — 결정론 정렬.
@@ -262,6 +370,7 @@ class RCAService:
                 if verification == "no_tests"
                 else "이슈가 종결 상태이지만 검증 테스트가 전부 통과하지 않았습니다"
             )
+        signal = self._transition_signals().get(issue.id)
         return RCAChain(
             issue_id=issue.id,
             title=issue.title,
@@ -273,6 +382,8 @@ class RCAService:
             verification_ko=VERIFICATION_LABELS[verification],
             closed_without_verification=closed_unverified,
             alert_ko=alert_ko,
+            reopened=bool(signal and signal.reopened),
+            reopen_note_ko=signal.reopen_note if signal else None,
             nodes=nodes,
             doc_refs=issue.doc_refs,
             doc_candidates=self._doc_candidates(issue),

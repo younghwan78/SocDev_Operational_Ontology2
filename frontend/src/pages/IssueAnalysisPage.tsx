@@ -49,7 +49,7 @@ const CLOSED_STATUSES = new Set(["closed", "resolved", "done"]);
 const FLAG_FILTERS: Record<string, (issue: IssueSummary) => boolean> = {
   closed_unverified: (issue) => issue.closed_without_verification,
   open: (issue) => !CLOSED_STATUSES.has(issue.status),
-  attention: (issue) => Boolean(issue.stale || issue.overdue),
+  attention: (issue) => Boolean(issue.stale || issue.overdue || issue.reopened),
 };
 
 /** 유형별 분포 × 검증 상태 세그먼트 막대 데이터. */
@@ -298,6 +298,11 @@ export function IssueAnalysisPage() {
                     {t.overdue_badge}
                   </span>
                 )}
+                {issue.reopened && (
+                  <span className="badge badge-warn" title={issue.freshness_ko ?? ""}>
+                    {t.reopened_badge}
+                  </span>
+                )}
                 <span className="title">
                   {issue.severity && (
                     <span
@@ -430,6 +435,13 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
     <div>
       {/* 경고는 전폭 배너 — 이 화면의 핵심 발견을 최상단에 */}
       {chainData.alert_ko && <p className="rca-alert rca-banner">⚠ {chainData.alert_ko}</p>}
+      {/* P1 프로세스 신호: 재개 이력 — 전이 근거(버전·날짜) 동반 사실 서술 */}
+      {chainData.reopened && (
+        <p className="rca-alert rca-banner">
+          ⚠ {t.reopened_alert}
+          {chainData.reopen_note_ko ? ` — ${chainData.reopen_note_ko}` : ""}
+        </p>
+      )}
 
       <div className="card">
         <div className="head">

@@ -2,18 +2,17 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — 시간 모델 T1+T2 완료 (2026-07-14).**
+**Digital Twin 갭 후속 4패키지 (2026-07-15 승인·착수) — 설계: `internal_docs/design/16_digital_twin_followups.md`**
 
-> 설계·구현 상태: `internal_docs/design/15_temporal_model.md` (§8).
-> append-only `object_versions`(마이그레이션 0006) + 캡처 3관문(ingest/rollback/seed)
-> + `GET /history/{collection}/{id}` + CLI `history` + 이슈 상세 전이 타임라인.
-> 운영 DB 0006 적용 완료. 상세: CHANGELOG.
+> P1 프로세스 신호 정밀화(전이 이력 기반 정체·재개) → P2 T3 as-of 재구성(설계 15 §4.4)
+> → P3 KPI 시계열(`KPIObservation` 계약 신설 + 과제 간 시점 정렬 비교)
+> → P4 what-if 주입(ephemeral overlay + 위험 지도 delta). 패키지별 커밋.
 >
-> **다음 후보 (착수는 사용자 승인)**:
-> - **T3 as-of 재구성** (설계 15 §4.4 — 실데이터 이력이 쌓인 뒤에만 의미) 및
->   digital twin 갭 후속: KPI 시계열(과제 간 시점 정렬 비교), 프로세스 신호
->   (전이 이력 기반 정체 판정 정밀화), what-if 주입 — 각각 별도 설계 필요.
-> - D4 검증 세션 자료(사내 세션 일정 확정 시), Stage 13 트랙 A / 14 잔여 / 18 / 19.
+> 하드 제약: 전부 결정론 / 쓰기 경로 신설 없음(P3 fixture·매핑은 기존 ingest 관문) /
+> 수치 점수 금지 / 가정은 assumption+confidence≤medium / 한국어 1급.
+>
+> **범위 외**: 차트 라이브러리 도입, as-of 캐시/retention, SimulationRun 계약 사용,
+> JIRA changelog 백필, D4/Stage 13A/14잔여/18/19 (별도 승인).
 
 ### 직전 완료 — 시간 모델 T1+T2 (2026-07-14)
 

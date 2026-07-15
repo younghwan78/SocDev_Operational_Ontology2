@@ -169,6 +169,8 @@ export const ko = {
     status_label: "상태",
     stale_badge: "정체",
     overdue_badge: "지연",
+    reopened_badge: "재개",
+    reopened_alert: "재개된 이슈 — 종결 후 다시 열린 이력이 있습니다",
     doc_candidates_title: "관련 문서 후보",
     doc_not_evidence: "증거 아님 — 근거 편입은 큐레이션",
     doc_ref_label: "외부 문서",

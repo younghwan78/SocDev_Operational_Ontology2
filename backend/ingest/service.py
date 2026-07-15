@@ -155,6 +155,13 @@ class IngestWriterProtocol(Protocol):
 
     def list_versions(self, collection: str, object_id: str) -> list[ObjectVersion]: ...
 
+    def collection_versions(self, collection: str) -> list[ObjectVersion]:
+        """컬렉션 전체 버전 로그 — 프로세스 신호(P1)·as-of 재생(P2)의 단일 조회 경로.
+
+        객체별 N+1 조회 금지 — 호출측은 이 결과를 메모리에서 그룹핑한다.
+        """
+        ...
+
     def owned_object_keys(self, batch_id: str) -> list[tuple[str, str, str]]:
         """배치가 현재 소유한 객체 (collection, id, source_origin) — rollback 철회 기록용."""
         ...
@@ -257,6 +264,12 @@ class MemoryIngestWriter:
                 if e.collection == collection and e.object_id == object_id
             ),
             key=lambda e: e.version,
+        )
+
+    def collection_versions(self, collection: str) -> list[ObjectVersion]:
+        return sorted(
+            (e for e in self._versions if e.collection == collection),
+            key=lambda e: (e.object_id, e.version),
         )
 
     def owned_object_keys(self, batch_id: str) -> list[tuple[str, str, str]]:
@@ -504,39 +517,57 @@ class PostgresIngestWriter:
             ).fetchall()
         return {row[0]: int(row[1]) for row in rows}
 
+    _VERSION_COLUMNS = (
+        "collection, object_id, version, change_kind, recorded_at,"
+        " batch_id, source_origin, source_updated_at, changed_fields, payload"
+    )
+
+    @staticmethod
+    def _version_from_row(row: tuple) -> ObjectVersion:
+        return ObjectVersion(
+            collection=row[0],
+            object_id=row[1],
+            version=row[2],
+            change_kind=row[3],
+            recorded_at=(
+                row[4].isoformat() if hasattr(row[4], "isoformat") else str(row[4])
+            ),
+            batch_id=row[5],
+            source_origin=row[6],
+            source_updated_at=(
+                row[7].isoformat()
+                if row[7] is not None and hasattr(row[7], "isoformat")
+                else (str(row[7]) if row[7] is not None else None)
+            ),
+            changed_fields=list(row[8] or []),
+            payload=row[9] if isinstance(row[9], dict) else None,
+        )
+
     def list_versions(self, collection: str, object_id: str) -> list[ObjectVersion]:
         with self._db.connection() as conn:
             rows = conn.execute(
-                """
-                SELECT collection, object_id, version, change_kind, recorded_at,
-                       batch_id, source_origin, source_updated_at, changed_fields, payload
+                f"""
+                SELECT {self._VERSION_COLUMNS}
                 FROM object_versions
                 WHERE collection = %s AND object_id = %s
                 ORDER BY version
                 """,
                 (collection, object_id),
             ).fetchall()
-        return [
-            ObjectVersion(
-                collection=row[0],
-                object_id=row[1],
-                version=row[2],
-                change_kind=row[3],
-                recorded_at=(
-                    row[4].isoformat() if hasattr(row[4], "isoformat") else str(row[4])
-                ),
-                batch_id=row[5],
-                source_origin=row[6],
-                source_updated_at=(
-                    row[7].isoformat()
-                    if row[7] is not None and hasattr(row[7], "isoformat")
-                    else (str(row[7]) if row[7] is not None else None)
-                ),
-                changed_fields=list(row[8] or []),
-                payload=row[9] if isinstance(row[9], dict) else None,
-            )
-            for row in rows
-        ]
+        return [self._version_from_row(row) for row in rows]
+
+    def collection_versions(self, collection: str) -> list[ObjectVersion]:
+        with self._db.connection() as conn:
+            rows = conn.execute(
+                f"""
+                SELECT {self._VERSION_COLUMNS}
+                FROM object_versions
+                WHERE collection = %s
+                ORDER BY object_id, version
+                """,
+                (collection,),
+            ).fetchall()
+        return [self._version_from_row(row) for row in rows]
 
     def owned_object_keys(self, batch_id: str) -> list[tuple[str, str, str]]:
         prefix = f"{BATCH_REF_PREFIX}:{batch_id}:%"
@@ -841,6 +872,10 @@ class IngestService:
             versions=versions,
             status_transitions=extract_status_transitions(versions),
         )
+
+    def collection_versions(self, collection: str) -> list[ObjectVersion]:
+        """컬렉션 전체 버전 로그 — 프로세스 신호·as-of 재생의 읽기 표면 (결정론)."""
+        return self._writer.collection_versions(collection)
 
     def list_batches(self) -> list[IngestBatch]:
         return self._writer.list_batches()
