@@ -1,5 +1,34 @@
 # CHANGELOG
 
+## Digital Twin 후속 2라운드 — 프로세스 전이 모델·what-if 확장·as-of 확대·KPI 차트 (2026-07-16)
+
+> 설계: `internal_docs/design/17_digital_twin_round2.md`. 설계 16의 잔여 갭 4건 —
+> 공통 원칙(결정론/쓰기 경로 신설 없음/수치 점수 금지/가정 상한) 승계. Q1~Q4 커밋.
+
+- **Q1 프로세스 전이 모델** (`0bb9f04`): `process_model.py` — issue_status 전 값을
+  5단계(접수/분석/우회/해결/종결)로 사상하는 명시 계약 + 전이 판정
+  (2단계 이상 전진=**단계 건너뜀**, 후퇴=**역행**(종결발은 재개 참조), 모델 밖
+  상태=**미등재** — 침묵 금지). `RCAChain.transition_findings` + 전이 타임라인
+  판정 배지. normal은 미포함(잡음 방지), 이력 없으면 빈 목록(하위 호환).
+- **Q2 what-if 가정 확장** (`b539b2d`): 가정 4종 — 기존 2종 + **new_issue**
+  (미존재 id 강제, 시나리오/IP 실재 검증, confidence=low 주입, overlay에만 존재)
+  + **issue_week_shift**(due_week 이동, 없으면 400). 신규
+  `changed_issue_signals` delta — 주차 기반 신호(상태/정체/지연/검증) 변화 +
+  가정 이슈 등장 표시 (룰은 RCAService 재사용). UI 패널에 이슈 신호 변화 섹션.
+- **Q3 as-of 확대** (`ba53c16`): `GET /as-of/portfolio/overview`,
+  `GET /as-of/change-impact` — snapshot 재사용 + 기존 서비스 재계산, 오류 계약
+  동일. UI는 포트폴리오에 시점 재구성 컨트롤+배너 (변경 영향 as-of는 API만 —
+  범위 결정).
+- **Q4 KPI 시계열 차트** (`1642cd1`): 라이브러리 없는 inline SVG 멀티시리즈
+  라인 — dataviz 검증 팔레트(`--chart-1..4`, 라이트/다크 surface 각각
+  validate_palette.js PASS), 범례+끝점 직접 라벨+title 툴팁+한국어 aria-label,
+  표 유지(표가 계약). KPI 선택기 = primary ∪ 관측 존재 KPI(건수 병기, 관측
+  우선 기본 선택). 실서버 렌더 확인 (라이트/다크, 1·2시리즈).
+- 검증: backend 269 passed(신규 test_process_model 4 / what-if +4 / API +1) /
+  PG soc_test 16/16 / ruff / mypy / validate-data 오류 0 / frontend 34 tests ·
+  build · lint / openapi+gen:api 재생성. 한국어 전용 게이트의 화살표 함수
+  오탐 1건은 식 재배열로 해소.
+
 ## Digital Twin 갭 후속 4패키지 — as-of·프로세스 신호·KPI 시계열·what-if (2026-07-15)
 
 > 설계: `internal_docs/design/16_digital_twin_followups.md`. 시간 모델 T1+T2가 놓은

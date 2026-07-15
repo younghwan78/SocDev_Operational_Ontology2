@@ -137,4 +137,10 @@ baseline/overlay 각각 `RCAService(repo_x).list_issues()`(버전 소스 없이 
 
 ## 7. 구현 상태
 
-- 착수 2026-07-15. 패키지별 커밋, changelog는 마감 커밋에서 일괄 갱신.
+- **Q1~Q4 전부 구현 완료 (2026-07-16)** — Q1 `0bb9f04` / Q2 `b539b2d` /
+  Q3 `ba53c16` / Q4 `1642cd1`. 상세: CHANGELOG.
+- 세부 편차 1건: Q4에서 KPI 선택기를 primary 고정 → **primary ∪ 관측 존재 KPI**
+  (관측 건수 병기, 관측 우선 기본 선택)로 확장 — 실서버 확인 중 primary에 없는
+  관측 KPI(dou_power)가 선택 불가함을 발견해 교정 (§5 취지 내 확장).
+- 검증: backend 269 / PG soc_test 16 / frontend 34 / ruff / mypy /
+  validate-data 오류 0 / 실서버(8155/5275) 라이트·다크 렌더 확인.

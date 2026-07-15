@@ -2,13 +2,24 @@
 
 ## 활성 Stage
 
-**Digital Twin 후속 2라운드 (2026-07-15 승인·착수) — 설계: `internal_docs/design/17_digital_twin_round2.md`**
+**활성 Stage 없음 — Digital Twin 후속 2라운드 완료 (2026-07-16).**
 
-> Q1 프로세스 전이 모델(단계 정의 + 건너뜀/역행 판정) → Q2 what-if 가정 확장
-> (신규 이슈 주입·주차 시프트·이슈 신호 delta) → Q3 as-of 확대(포트폴리오·변경 영향)
-> → Q4 KPI 시계열 inline SVG 차트. 패키지별 커밋. 공통 원칙은 설계 16 §0 승계.
+> 설계·구현 상태: `internal_docs/design/17_digital_twin_round2.md` (§7).
+> Q1 프로세스 전이 모델(5단계 사상 + 건너뜀/역행/미등재 판정) / Q2 what-if 4종
+> (신규 이슈 주입·주차 시프트·이슈 신호 delta) / Q3 as-of 확대(포트폴리오·변경 영향)
+> / Q4 KPI inline SVG 차트(검증 팔레트). backend 269·PG 16·frontend 34 green.
 >
-> **범위 외**: 차트 라이브러리 도입, 변경 영향 as-of UI 노출, D4/Stage 13A/14잔여/18/19.
+> **다음 후보 (착수는 사용자 승인)**:
+> - Digital twin 심화: 이벤트/요청 등 타 컬렉션 프로세스 모델, what-if 다중 가정
+>   시나리오 저장(가정 세트 재사용 — 저장 계약 필요, 별도 설계), as-of 시점 비교
+>   (두 ts diff), 변경 영향 as-of UI 노출.
+> - D4 검증 세션 자료(사내 세션 일정 확정 시), Stage 13 트랙 A / 14 잔여 / 18 / 19.
+
+### 직전 완료 — Digital Twin 후속 2라운드 (2026-07-16)
+
+> 설계 17: Q1 전이 판정 배지(타임라인) / Q2 new_issue·issue_week_shift·
+> changed_issue_signals / Q3 as-of 포트폴리오 UI + 변경 영향 API /
+> Q4 --chart-1..4 팔레트(라이트·다크 검증) + KPI 선택기 확장(primary ∪ 관측).
 
 ### 직전 완료 — Digital Twin 갭 후속 4패키지 (2026-07-15)
 
