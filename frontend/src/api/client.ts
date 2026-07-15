@@ -287,6 +287,13 @@ export async function runWhatIf(
 export type KPISeriesResult = components["schemas"]["KPISeriesResult"];
 export type ProjectKPISeries = components["schemas"]["ProjectKPISeries"];
 export type KPISeriesPoint = components["schemas"]["KPISeriesPoint"];
+export type KPICatalogEntry = components["schemas"]["KPICatalogEntry"];
+
+export async function fetchKPICatalog(): Promise<KPICatalogEntry[]> {
+  const { data, error } = await client.GET("/api/v1/kpi/catalog");
+  if (error || !data) throw new Error("kpi catalog 조회 실패");
+  return data;
+}
 
 export async function fetchKPISeries(
   kpiId: string,

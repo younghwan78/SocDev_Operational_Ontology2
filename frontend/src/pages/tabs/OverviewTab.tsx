@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { fetchKPISeries, type ScenarioAnalysis } from "../../api/client";
+import {
+  fetchKPICatalog,
+  fetchKPISeries,
+  type ProjectKPISeries,
+  type ScenarioAnalysis,
+} from "../../api/client";
 import { useLabels } from "../../hooks/useLabels";
 import { useValueLabels } from "../../hooks/useValueLabels";
 import { ko } from "../../i18n/ko";
@@ -193,8 +198,17 @@ function KPISeriesSection({
 }) {
   const label = useLabels();
   const valueLabel = useValueLabels();
-  const [selected, setSelected] = useState(kpiIds[0]);
-  const kpiId = kpiIds.includes(selected) ? selected : kpiIds[0];
+  // 선택 후보 = primary KPI ∪ 이 시나리오에 관측이 존재하는 KPI (반입 유래 포함).
+  // 기본 선택은 관측이 있는 KPI 우선 — 빈 차트로 시작하지 않는다.
+  const catalog = useQuery({ queryKey: ["kpi-catalog"], queryFn: fetchKPICatalog });
+  const observed = (catalog.data ?? []).filter((entry) =>
+    (entry.scenario_ids ?? []).includes(scenarioId),
+  );
+  const observedIds = observed.map((entry) => entry.kpi_id);
+  const allIds = [...new Set([...kpiIds, ...observedIds])];
+  const [selected, setSelected] = useState<string | null>(null);
+  const kpiId =
+    selected && allIds.includes(selected) ? selected : (observedIds[0] ?? allIds[0]);
   const series = useQuery({
     queryKey: ["kpi-series", kpiId, scenarioId],
     queryFn: () => fetchKPISeries(kpiId, scenarioId),
@@ -212,16 +226,20 @@ function KPISeriesSection({
       <h2 className="card-title">{t.kpi_series_title}</h2>
       <p className="section-note">{t.kpi_series_note}</p>
       <div className="chip-row">
-        {kpiIds.map((id) => (
-          <button
-            key={id}
-            type="button"
-            className={`chip chip-btn ${id === kpiId ? "active" : ""}`}
-            onClick={() => setSelected(id)}
-          >
-            {id}
-          </button>
-        ))}
+        {allIds.map((id) => {
+          const entry = observed.find((candidate) => candidate.kpi_id === id);
+          return (
+            <button
+              key={id}
+              type="button"
+              className={`chip chip-btn ${id === kpiId ? "active" : ""}`}
+              onClick={() => setSelected(id)}
+            >
+              {id}
+              {entry ? ` · ${entry.observation_count}` : ""}
+            </button>
+          );
+        })}
       </div>
       {series.isPending && <p className="status-msg">{ko.app.loading}</p>}
       {(series.isError || (data && projects.length === 0)) && (
@@ -229,6 +247,27 @@ function KPISeriesSection({
       )}
       {data && projects.length > 0 && (
         <>
+          {/* Q4: ≥2 시리즈면 범례 필수 — 색은 프로젝트(entity)에 고정, 필터와 무관 */}
+          {projects.length > 1 && (
+            <div className="kpi-legend">
+              {projects.map((project, index) => (
+                <span key={project.project_id} title={project.project_id}>
+                  <span
+                    className="dot"
+                    style={{ background: `var(--chart-${Math.min(index + 1, 4)})` }}
+                  />
+                  {label(project.project_id)}
+                </span>
+              ))}
+            </div>
+          )}
+          <KPIChart
+            kpiId={data.kpi_id}
+            unit={data.unit}
+            projects={projects}
+            label={label}
+            valueLabel={valueLabel}
+          />
           <div className="heatmap-scroll">
             <table className="heatmap">
               <thead>
@@ -275,6 +314,149 @@ function KPISeriesSection({
           ))}
         </>
       )}
+    </div>
+  );
+}
+
+/** y축 눈금 — 1/2/5×10^n 근사 (결정론). */
+function niceTicks(min: number, max: number, count = 4): number[] {
+  const span = max - min;
+  if (span <= 0) return [min];
+  const raw = span / count;
+  const pow = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 5, 10].map((m) => m * pow).find((s) => count * s >= span) ?? 10 * pow;
+  const ticks: number[] = [];
+  for (let v = Math.ceil(min / step) * step; v <= max + step / 1e6; v += step) {
+    ticks.push(Number(v.toFixed(6)));
+  }
+  return ticks;
+}
+
+/**
+ * Q4 KPI 라인 차트 — 라이브러리 없는 inline SVG (설계 17 §5).
+ * 색은 CSS 변수(--chart-N, 양 테마 검증 팔레트), 텍스트는 텍스트 토큰만 사용.
+ * 표가 계약이고 차트는 보조 — 데이터 소스는 표와 동일하다.
+ */
+function KPIChart({
+  kpiId,
+  unit,
+  projects,
+  label,
+  valueLabel,
+}: {
+  kpiId: string;
+  unit: string | null | undefined;
+  projects: ProjectKPISeries[];
+  label: (id: string) => string;
+  valueLabel: (domain: string, value: string | null | undefined) => string;
+}) {
+  const allPoints = projects.flatMap((s) => s.points);
+  if (allPoints.length === 0) return null;
+
+  const W = 640;
+  const H = 220;
+  const m = { top: 10, right: 100, bottom: 26, left: 58 };
+  let minW = Math.min(...allPoints.map((p) => p.week));
+  let maxW = Math.max(...allPoints.map((p) => p.week));
+  if (minW === maxW) {
+    minW -= 1;
+    maxW += 1;
+  }
+  let minV = Math.min(...allPoints.map((p) => p.value));
+  let maxV = Math.max(...allPoints.map((p) => p.value));
+  const pad = (maxV - minV) * 0.12 || Math.abs(maxV) * 0.05 || 1;
+  minV -= pad;
+  maxV += pad;
+
+  const x = (week: number) => m.left + ((week - minW) / (maxW - minW)) * (W - m.left - m.right);
+  const y = (value: number) =>
+    H - m.bottom - ((value - minV) / (maxV - minV)) * (H - m.top - m.bottom);
+  const yTicks = niceTicks(minV, maxV);
+  const xTicks = [...new Set(allPoints.map((p) => p.week))].sort((a, b) => a - b);
+  const unitText = unit ?? "";
+  const aria = `${kpiId} 시계열 차트 — ${projects
+    .map((s) => `${label(s.project_id)} 관측 ${s.points.length}건`)
+    .join(", ")}`;
+
+  return (
+    <div className="kpi-chart-wrap">
+      <svg
+        className="kpi-chart"
+        viewBox={`0 0 ${W} ${H}`}
+        role="img"
+        aria-label={aria}
+      >
+        {yTicks.map((tick) => (
+          <g key={tick}>
+            <line
+              className="grid-line"
+              x1={m.left}
+              x2={W - m.right}
+              y1={y(tick)}
+              y2={y(tick)}
+            />
+            <text className="axis-text" x={m.left - 6} y={y(tick) + 3} textAnchor="end">
+              {tick}
+            </text>
+          </g>
+        ))}
+        {xTicks.map((week) => (
+          <text
+            key={week}
+            className="axis-text"
+            x={x(week)}
+            y={H - m.bottom + 16}
+            textAnchor="middle"
+          >
+            W{week}
+          </text>
+        ))}
+        {unitText && (
+          <text className="axis-text" x={m.left - 6} y={m.top} textAnchor="end">
+            {unitText}
+          </text>
+        )}
+        {projects.map((project, index) => {
+          const color = `var(--chart-${Math.min(index + 1, 4)})`;
+          const points = project.points;
+          const last = points[points.length - 1];
+          return (
+            <g key={project.project_id}>
+              {points.length > 1 && (
+                <polyline
+                  className="series-line"
+                  stroke={color}
+                  points={points.map((p) => `${x(p.week)},${y(p.value)}`).join(" ")}
+                />
+              )}
+              {points.map((p) => (
+                <g key={p.observation_id}>
+                  <circle
+                    className="series-dot"
+                    cx={x(p.week)}
+                    cy={y(p.value)}
+                    r={4}
+                    fill={color}
+                  />
+                  {/* hover 히트 타깃 — 마크보다 크게, title=툴팁 */}
+                  <circle className="hit-target" cx={x(p.week)} cy={y(p.value)} r={10}>
+                    <title>
+                      {`${label(project.project_id)} · W${p.week} · ${p.value}${p.unit ?? unitText}` +
+                        (p.measurement_stage
+                          ? ` · ${valueLabel("measurement_stage", p.measurement_stage)}`
+                          : "")}
+                    </title>
+                  </circle>
+                </g>
+              ))}
+              {/* 선택적 직접 라벨 — 시리즈 끝점에 프로젝트명 (텍스트 토큰 사용) */}
+              <text className="end-label" x={x(last.week) + 10} y={y(last.value) + 4}>
+                {label(project.project_id)}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
     </div>
   );
 }
