@@ -851,6 +851,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/what-if": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * What If
+         * @description P4 what-if 가정 실험 — ephemeral overlay 재계산 (데이터 수정 아님).
+         *
+         *     저장소에 쓰지 않는다. 판정 룰은 위험 지도와 동일(RiskService 재사용)이며
+         *     모든 가정은 assumption 지위 + confidence medium 상한으로 에코된다.
+         */
+        post: operations["what_if_api_v1_what_if_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1019,6 +1042,38 @@ export interface components {
             ip_id: string;
             /** Ip Name */
             ip_name: string;
+        };
+        /**
+         * AppliedAssumption
+         * @description 적용된 가정의 에코 — assumption 지위와 confidence 상한을 명시한다.
+         */
+        AppliedAssumption: {
+            /**
+             * Basis Type
+             * @default assumption
+             */
+            basis_type: string;
+            /**
+             * Confidence
+             * @default medium
+             */
+            confidence: string;
+            /** Field */
+            field: string;
+            /** From Value */
+            from_value: string | null;
+            /** Kind */
+            kind: string;
+            /** Kind Ko */
+            kind_ko: string;
+            /** Note */
+            note?: string | null;
+            /** Target Id */
+            target_id: string;
+            /** Target Title */
+            target_title: string;
+            /** To Value */
+            to_value: string;
         };
         /**
          * AsOfMeta
@@ -3414,6 +3469,77 @@ export interface components {
             /** Week */
             week: number;
         };
+        /**
+         * WhatIfAssumption
+         * @description 가정 1건 — 실재 객체의 단일 필드를 가정 값으로 치환한다.
+         */
+        WhatIfAssumption: {
+            /** Kind */
+            kind: string;
+            /** Note */
+            note?: string | null;
+            /** Target Id */
+            target_id: string;
+            /** Value */
+            value: string;
+        };
+        /**
+         * WhatIfCellChange
+         * @description 시나리오×IP 셀의 등급 변화 — 재계산 근거 동반.
+         */
+        WhatIfCellChange: {
+            /** Baseline Grade */
+            baseline_grade: string;
+            /** Baseline Grade Ko */
+            baseline_grade_ko: string;
+            /** Ip Id */
+            ip_id: string;
+            /** Projected Basis */
+            projected_basis: components["schemas"]["BasisItem"][];
+            /** Projected Grade */
+            projected_grade: string;
+            /** Projected Grade Ko */
+            projected_grade_ko: string;
+        };
+        /** WhatIfRequest */
+        WhatIfRequest: {
+            /** Assumptions */
+            assumptions: components["schemas"]["WhatIfAssumption"][];
+        };
+        /**
+         * WhatIfResult
+         * @description 가정 실험 결과 — 변화만 돌려주고, 변화 없음도 명시한다.
+         */
+        WhatIfResult: {
+            /** Assumptions */
+            assumptions: components["schemas"]["AppliedAssumption"][];
+            /** Changed Rows */
+            changed_rows: components["schemas"]["WhatIfRowChange"][];
+            /** Note Ko */
+            note_ko: string;
+            /** Unchanged Scenario Count */
+            unchanged_scenario_count: number;
+        };
+        /**
+         * WhatIfRowChange
+         * @description 시나리오 행의 변화 — 종합 등급과 달라진 셀.
+         */
+        WhatIfRowChange: {
+            /** Baseline Grade */
+            baseline_grade: string;
+            /** Baseline Grade Ko */
+            baseline_grade_ko: string;
+            /** Changed Cells */
+            changed_cells?: components["schemas"]["WhatIfCellChange"][];
+            /** Projected Grade */
+            projected_grade: string;
+            /** Projected Grade Ko */
+            projected_grade_ko: string;
+            /** Scenario Id */
+            scenario_id: string;
+            /** Scenario Name */
+            scenario_name: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -4703,6 +4829,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TraceabilityResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    what_if_api_v1_what_if_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WhatIfRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhatIfResult"];
                 };
             };
             /** @description Validation Error */

@@ -209,7 +209,10 @@ def test_no_write_endpoints(client: TestClient) -> None:
     openapi = client.get("/openapi.json").json()
     for path, operations in openapi["paths"].items():
         is_operation = (
-            path.endswith("/advisory") or path.endswith("/ask") or "/ingest/" in path
+            path.endswith("/advisory")
+            or path.endswith("/ask")
+            or path.endswith("/what-if")  # P4 — ephemeral 가정 실험, 저장 없음
+            or "/ingest/" in path
         )
         allowed = {"get", "post"} if is_operation else {"get"}
         assert set(operations.keys()) <= allowed, f"{path}에 허용 외 메서드 존재"
@@ -366,3 +369,49 @@ def test_as_of_heatmap_roundtrip(client: TestClient) -> None:
     assert "가정" in body["meta"]["note_ko"]
     current = client.get("/api/v1/risk/heatmap").json()
     assert body["heatmap"] == current
+
+def test_what_if_roundtrip(client: TestClient) -> None:
+    """P4 — 가정 실험: 종결 이슈의 재발 가정이 등급 변화로 재계산된다."""
+    response = client.post(
+        "/api/v1/what-if",
+        json={
+            "assumptions": [
+                {
+                    "kind": "issue_status",
+                    "target_id": "issue_isp_csid_bw_overrun_u",
+                    "value": "open",
+                }
+            ]
+        },
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assumption = body["assumptions"][0]
+    assert assumption["basis_type"] == "assumption"
+    assert assumption["confidence"] == "medium"
+    assert assumption["from_value"] == "closed"
+    assert "저장되지 않는다" in body["note_ko"]
+    # 재발 가정이므로 어떤 시나리오든 등급이 오르거나(변화 행) 전부 유지된다 — 구조 검증.
+    assert isinstance(body["changed_rows"], list)
+    assert isinstance(body["unchanged_scenario_count"], int)
+
+
+def test_what_if_unknown_target_404_and_bad_value_400(client: TestClient) -> None:
+    base = {"kind": "issue_status", "value": "open"}
+    missing = client.post(
+        "/api/v1/what-if", json={"assumptions": [{**base, "target_id": "없는_이슈"}]}
+    )
+    assert missing.status_code == 404
+    bad = client.post(
+        "/api/v1/what-if",
+        json={
+            "assumptions": [
+                {
+                    "kind": "issue_status",
+                    "target_id": "issue_isp_csid_bw_overrun_u",
+                    "value": "이상한값",
+                }
+            ]
+        },
+    )
+    assert bad.status_code == 400

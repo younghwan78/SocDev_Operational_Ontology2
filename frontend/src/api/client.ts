@@ -268,6 +268,21 @@ export async function fetchRiskHeatmap(projectId?: string): Promise<RiskHeatmap>
   return data;
 }
 
+// P4 what-if 가정 실험 — ephemeral overlay 재계산 (저장 없음, 가정=assumption 지위).
+export type WhatIfResult = components["schemas"]["WhatIfResult"];
+export type WhatIfAssumptionInput = components["schemas"]["WhatIfAssumption"];
+export type WhatIfRowChange = components["schemas"]["WhatIfRowChange"];
+
+export async function runWhatIf(
+  assumptions: WhatIfAssumptionInput[],
+): Promise<WhatIfResult> {
+  const { data, error } = await client.POST("/api/v1/what-if", {
+    body: { assumptions },
+  });
+  if (error || !data) throw new Error("what-if 실행 실패");
+  return data;
+}
+
 // P3 KPI 시계열 — domain time(week) 축 과제 간 비교 (결정론, 수치 점수 없음).
 export type KPISeriesResult = components["schemas"]["KPISeriesResult"];
 export type ProjectKPISeries = components["schemas"]["ProjectKPISeries"];

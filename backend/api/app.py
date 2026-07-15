@@ -94,6 +94,13 @@ from backend.services.scenario_analysis import (
     TimelineItem,
 )
 from backend.services.source_map import SourceCoverage, SourceCoverageService
+from backend.services.what_if import (
+    InvalidAssumptionError,
+    UnknownTargetError,
+    WhatIfRequest,
+    WhatIfResult,
+    WhatIfService,
+)
 
 API_VERSION = "v1"
 ROOT = Path(__file__).resolve().parents[2]
@@ -125,6 +132,7 @@ class AppServices:
     ingest: IngestService
     as_of: AsOfService
     kpi_series: KPISeriesService
+    what_if: WhatIfService
 
 
 def build_services(
@@ -181,6 +189,7 @@ def build_services(
         ingest=ingest_service,
         as_of=AsOfService(repo, ingest_service),
         kpi_series=KPISeriesService(repo),
+        what_if=WhatIfService(repo),
     )
 
 
@@ -654,6 +663,20 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         if collection not in COLLECTIONS:
             raise HTTPException(status_code=404, detail=f"알 수 없는 컬렉션: {collection}")
         return services.ingest.history(collection, object_id)
+
+    @app.post(f"{prefix}/what-if", response_model=WhatIfResult)
+    def what_if(request: WhatIfRequest) -> WhatIfResult:
+        """P4 what-if 가정 실험 — ephemeral overlay 재계산 (데이터 수정 아님).
+
+        저장소에 쓰지 않는다. 판정 룰은 위험 지도와 동일(RiskService 재사용)이며
+        모든 가정은 assumption 지위 + confidence medium 상한으로 에코된다.
+        """
+        try:
+            return services.what_if.run(request.assumptions)
+        except UnknownTargetError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except InvalidAssumptionError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.post(f"{prefix}/ingest/batches/{{batch_id}}/rollback")
     def rollback_ingest_batch(batch_id: str) -> dict[str, int]:

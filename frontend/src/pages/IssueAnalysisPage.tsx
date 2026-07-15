@@ -12,10 +12,12 @@ import {
   fetchIssues,
   fetchObjectHistory,
   fetchProjects,
+  runWhatIf,
   type IssueSummary,
   type RCAChain,
   type RCAItem,
   type RCANode,
+  type WhatIfResult,
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
 import { useValueLabels } from "../hooks/useValueLabels";
@@ -502,6 +504,9 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
         ))}
       </div>
 
+      {/* P4 what-if: 가정 실험 — ephemeral 재계산, 저장 없음 */}
+      <WhatIfCard chainData={chainData} />
+
       {/* 시간 모델 T2: 상태 전이 타임라인 — recorded_at은 twin이 알게 된 시각(transaction time) */}
       {(history.data?.status_transitions ?? []).length > 0 && (
         <div className="card">
@@ -564,6 +569,122 @@ function RCAFlow({ chainData }: { chainData: RCAChain }) {
               <p className="desc">{item.description}</p>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const GRADE_BADGE: Record<string, string> = {
+  high: "risk-high-badge",
+  medium: "risk-medium-badge",
+  low: "risk-low-badge",
+};
+
+/** P4 what-if — "이 이슈가 해결되면/다시 열리면 위험 지도가 어떻게 변하나" 1클릭 가정 실험. */
+function WhatIfCard({ chainData }: { chainData: RCAChain }) {
+  const valueLabel = useValueLabels();
+  const closed = CLOSED_STATUSES.has(chainData.status);
+  const assumedValue = closed ? "open" : "resolved";
+  const [state, setState] = useState<{
+    issueId: string;
+    status: "idle" | "loading" | "error";
+    result: WhatIfResult | null;
+  }>({ issueId: chainData.issue_id, status: "idle", result: null });
+  // 이슈가 바뀌면 결과를 리셋 (render 중 자기 상태 리셋 패턴 — RCAFlow openState와 동일).
+  if (state.issueId !== chainData.issue_id) {
+    setState({ issueId: chainData.issue_id, status: "idle", result: null });
+  }
+
+  const execute = async () => {
+    setState({ issueId: chainData.issue_id, status: "loading", result: null });
+    try {
+      const result = await runWhatIf([
+        {
+          kind: "issue_status",
+          target_id: chainData.issue_id,
+          value: assumedValue,
+          note: t.whatif_auto_note,
+        },
+      ]);
+      setState({ issueId: chainData.issue_id, status: "idle", result });
+    } catch {
+      setState({ issueId: chainData.issue_id, status: "error", result: null });
+    }
+  };
+
+  const result = state.result;
+  return (
+    <div className="card">
+      <div className="head">
+        <h2 className="card-title">{t.whatif_title}</h2>
+        <span className="badge badge-warn">{t.whatif_assumption_badge}</span>
+      </div>
+      <p className="section-note">{t.whatif_note}</p>
+      <button
+        type="button"
+        className="run-btn"
+        disabled={state.status === "loading"}
+        onClick={execute}
+      >
+        {closed ? t.whatif_button_reopen : t.whatif_button_resolve}
+      </button>
+      {state.status === "loading" && <p className="status-msg">{ko.app.loading}</p>}
+      {state.status === "error" && <p className="status-msg">{ko.app.error}</p>}
+      {result && (
+        <div>
+          {result.assumptions.map((assumption) => (
+            <p key={assumption.target_id} className="desc">
+              {assumption.kind_ko}: '
+              {assumption.from_value
+                ? valueLabel("issue_status", assumption.from_value)
+                : "—"}
+              ' → '{valueLabel("issue_status", assumption.to_value)}' ·{" "}
+              {t.whatif_confidence}: {assumption.confidence}
+            </p>
+          ))}
+          {result.changed_rows.length === 0 && (
+            <p className="desc">
+              {t.whatif_no_change} ({t.whatif_unchanged}:{" "}
+              {result.unchanged_scenario_count})
+            </p>
+          )}
+          {result.changed_rows.map((row) => (
+            <div key={row.scenario_id} className="list-item">
+              <div className="head">
+                <span className="title" title={row.scenario_id}>
+                  {row.scenario_name}
+                </span>
+                <span className={`badge ${GRADE_BADGE[row.baseline_grade] ?? "badge-info"}`}>
+                  {row.baseline_grade_ko}
+                </span>
+                <span>→</span>
+                <span className={`badge ${GRADE_BADGE[row.projected_grade] ?? "badge-info"}`}>
+                  {row.projected_grade_ko}
+                </span>
+                <Link
+                  to={`/scenarios/${row.scenario_id}/overview`}
+                  className="chip-link"
+                  title={row.scenario_id}
+                >
+                  {t.scenario_link}
+                </Link>
+              </div>
+              {(row.changed_cells ?? []).map((cell) => (
+                <p key={cell.ip_id} className="desc" title={cell.ip_id}>
+                  {cell.ip_id}: {cell.baseline_grade_ko} → {cell.projected_grade_ko}
+                  {(cell.projected_basis ?? [])[0] &&
+                    ` — ${(cell.projected_basis ?? [])[0].description}`}
+                </p>
+              ))}
+            </div>
+          ))}
+          {result.changed_rows.length > 0 && (
+            <p className="desc">
+              {t.whatif_unchanged}: {result.unchanged_scenario_count}
+            </p>
+          )}
+          <p className="section-note">{result.note_ko}</p>
         </div>
       )}
     </div>

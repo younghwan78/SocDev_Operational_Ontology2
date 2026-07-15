@@ -378,6 +378,79 @@
         "title": "AliasEntry",
         "type": "object"
       },
+      "AppliedAssumption": {
+        "additionalProperties": false,
+        "description": "적용된 가정의 에코 — assumption 지위와 confidence 상한을 명시한다.",
+        "properties": {
+          "basis_type": {
+            "default": "assumption",
+            "title": "Basis Type",
+            "type": "string"
+          },
+          "confidence": {
+            "default": "medium",
+            "title": "Confidence",
+            "type": "string"
+          },
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "from_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Value"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "kind_ko": {
+            "title": "Kind Ko",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "string"
+          },
+          "target_title": {
+            "title": "Target Title",
+            "type": "string"
+          },
+          "to_value": {
+            "title": "To Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "kind_ko",
+          "target_id",
+          "target_title",
+          "field",
+          "from_value",
+          "to_value"
+        ],
+        "title": "AppliedAssumption",
+        "type": "object"
+      },
       "AsOfMeta": {
         "additionalProperties": false,
         "description": "재생 결과의 정직성 메타 — 무엇이 사실이고 무엇이 가정/근사인지.",
@@ -6740,6 +6813,187 @@
         ],
         "title": "WeeklySnapshot",
         "type": "object"
+      },
+      "WhatIfAssumption": {
+        "additionalProperties": false,
+        "description": "가정 1건 — 실재 객체의 단일 필드를 가정 값으로 치환한다.",
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "target_id",
+          "value"
+        ],
+        "title": "WhatIfAssumption",
+        "type": "object"
+      },
+      "WhatIfCellChange": {
+        "additionalProperties": false,
+        "description": "시나리오×IP 셀의 등급 변화 — 재계산 근거 동반.",
+        "properties": {
+          "baseline_grade": {
+            "title": "Baseline Grade",
+            "type": "string"
+          },
+          "baseline_grade_ko": {
+            "title": "Baseline Grade Ko",
+            "type": "string"
+          },
+          "ip_id": {
+            "title": "Ip Id",
+            "type": "string"
+          },
+          "projected_basis": {
+            "items": {
+              "$ref": "#/components/schemas/BasisItem"
+            },
+            "title": "Projected Basis",
+            "type": "array"
+          },
+          "projected_grade": {
+            "title": "Projected Grade",
+            "type": "string"
+          },
+          "projected_grade_ko": {
+            "title": "Projected Grade Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ip_id",
+          "baseline_grade",
+          "baseline_grade_ko",
+          "projected_grade",
+          "projected_grade_ko",
+          "projected_basis"
+        ],
+        "title": "WhatIfCellChange",
+        "type": "object"
+      },
+      "WhatIfRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfAssumption"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Assumptions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "assumptions"
+        ],
+        "title": "WhatIfRequest",
+        "type": "object"
+      },
+      "WhatIfResult": {
+        "additionalProperties": false,
+        "description": "가정 실험 결과 — 변화만 돌려주고, 변화 없음도 명시한다.",
+        "properties": {
+          "assumptions": {
+            "items": {
+              "$ref": "#/components/schemas/AppliedAssumption"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "changed_rows": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfRowChange"
+            },
+            "title": "Changed Rows",
+            "type": "array"
+          },
+          "note_ko": {
+            "title": "Note Ko",
+            "type": "string"
+          },
+          "unchanged_scenario_count": {
+            "title": "Unchanged Scenario Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "assumptions",
+          "changed_rows",
+          "unchanged_scenario_count",
+          "note_ko"
+        ],
+        "title": "WhatIfResult",
+        "type": "object"
+      },
+      "WhatIfRowChange": {
+        "additionalProperties": false,
+        "description": "시나리오 행의 변화 — 종합 등급과 달라진 셀.",
+        "properties": {
+          "baseline_grade": {
+            "title": "Baseline Grade",
+            "type": "string"
+          },
+          "baseline_grade_ko": {
+            "title": "Baseline Grade Ko",
+            "type": "string"
+          },
+          "changed_cells": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfCellChange"
+            },
+            "title": "Changed Cells",
+            "type": "array"
+          },
+          "projected_grade": {
+            "title": "Projected Grade",
+            "type": "string"
+          },
+          "projected_grade_ko": {
+            "title": "Projected Grade Ko",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_name": {
+            "title": "Scenario Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "scenario_name",
+          "baseline_grade",
+          "baseline_grade_ko",
+          "projected_grade",
+          "projected_grade_ko"
+        ],
+        "title": "WhatIfRowChange",
+        "type": "object"
       }
     }
   },
@@ -8832,6 +9086,45 @@
           }
         },
         "summary": "Traceability"
+      }
+    },
+    "/api/v1/what-if": {
+      "post": {
+        "description": "P4 what-if 가정 실험 — ephemeral overlay 재계산 (데이터 수정 아님).\n\n저장소에 쓰지 않는다. 판정 룰은 위험 지도와 동일(RiskService 재사용)이며\n모든 가정은 assumption 지위 + confidence medium 상한으로 에코된다.",
+        "operationId": "what_if_api_v1_what_if_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatIfRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatIfResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "What If"
       }
     }
   }
