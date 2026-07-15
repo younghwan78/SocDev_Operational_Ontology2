@@ -54,6 +54,8 @@ from backend.resolve.entity_resolution import EntityResolutionReport, EntityReso
 from backend.resolve.traceability import TraceabilityResult, TraceabilityService
 from backend.services.action_draft import ActionDraft, ActionDraftService
 from backend.services.as_of import (
+    AsOfChangeImpact,
+    AsOfPortfolioOverview,
     AsOfRiskHeatmap,
     AsOfService,
     InvalidTimestampError,
@@ -451,6 +453,42 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         return AsOfRiskHeatmap(
             meta=meta, heatmap=RiskService(snapshot_repo).heatmap(project_id)
         )
+
+    @app.get(f"{prefix}/as-of/portfolio/overview", response_model=AsOfPortfolioOverview)
+    def as_of_portfolio_overview(
+        ts: str = Query(description="ISO 8601 시각 — transaction time"),
+    ) -> AsOfPortfolioOverview:
+        """Q3 as-of 포트폴리오 — ts 시점 상태 재생 후 동일 집계 룰로 재계산."""
+        try:
+            snapshot_repo, meta = services.as_of.snapshot(ts)
+        except InvalidTimestampError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return AsOfPortfolioOverview(
+            meta=meta, overview=PortfolioService(snapshot_repo).overview()
+        )
+
+    @app.get(f"{prefix}/as-of/change-impact", response_model=AsOfChangeImpact)
+    def as_of_change_impact(
+        ts: str = Query(description="ISO 8601 시각 — transaction time"),
+        ip_id: str = Query(description="변경 대상 IP 블록"),
+        knob_id: str | None = Query(default=None),
+        capability_id: str | None = Query(default=None),
+        mode: str | None = Query(default=None),
+    ) -> AsOfChangeImpact:
+        """Q3 as-of 변경 영향 — 오류 계약은 현재 표면과 동일 (400 ts / 404 IP / 400 선택)."""
+        try:
+            snapshot_repo, meta = services.as_of.snapshot(ts)
+        except InvalidTimestampError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        try:
+            result = ChangeImpactService(snapshot_repo).analyze(
+                ip_id, knob_id=knob_id, capability_id=capability_id, mode=mode
+            )
+        except UnknownIPError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except InvalidSelectionError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return AsOfChangeImpact(meta=meta, result=result)
 
     @app.get(f"{prefix}/issues", response_model=list[IssueSummary])
     def list_issues(

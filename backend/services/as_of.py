@@ -25,6 +25,8 @@ from backend.ingest.history import CHANGE_CREATED, ObjectVersion, VersionSourceP
 from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.repository import InMemoryRepository
 from backend.ontology import COLLECTIONS, OntologyObject
+from backend.services.change_impact import ChangeImpactResult
+from backend.services.portfolio import PortfolioOverview
 from backend.services.risk import RiskHeatmap
 
 
@@ -49,6 +51,24 @@ class AsOfRiskHeatmap(BaseModel):
 
     meta: AsOfMeta
     heatmap: RiskHeatmap
+
+
+class AsOfPortfolioOverview(BaseModel):
+    """as-of 포트폴리오 (Q3) — 집계 계약은 현재 뷰와 동일."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    meta: AsOfMeta
+    overview: PortfolioOverview
+
+
+class AsOfChangeImpact(BaseModel):
+    """as-of 변경 영향 (Q3) — 순회 룰·계약은 현재 뷰와 동일."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    meta: AsOfMeta
+    result: ChangeImpactResult
 
 
 class InvalidTimestampError(ValueError):

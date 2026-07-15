@@ -5,7 +5,13 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
-import { fetchPortfolio, type AttentionItem } from "../api/client";
+import {
+  fetchAsOfPortfolio,
+  fetchPortfolio,
+  type AsOfMeta,
+  type AttentionItem,
+  type PortfolioOverview,
+} from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
@@ -24,13 +30,25 @@ const LANE_BADGE: Record<string, string> = {
 const DANGER_LANES = new Set(["evidence_blocked", "confidence_blocked", "management_attention"]);
 
 export function PortfolioPage() {
-  const portfolio = useQuery({ queryKey: ["portfolio"], queryFn: fetchPortfolio });
   const label = useLabels();
   const valueLabel = useValueLabels();
   // URL=상태 — 레인/과제 필터를 공유·재현할 수 있게 한다.
   const [searchParams, setSearchParams] = useSearchParams();
   const laneFilter = searchParams.get("lane");
   const projectFilter = searchParams.get("project");
+  // Q3 as-of: URL의 asof가 있으면 시점 재구성 뷰 (위험 지도와 동일 패턴).
+  const asOfParam = searchParams.get("asof");
+  const asOfTs = asOfParam ? new Date(asOfParam).toISOString() : null;
+  const portfolio = useQuery<{ overview: PortfolioOverview; meta: AsOfMeta | null }>({
+    queryKey: ["portfolio", asOfTs],
+    queryFn: async () => {
+      if (asOfTs) {
+        const result = await fetchAsOfPortfolio(asOfTs);
+        return { overview: result.overview, meta: result.meta };
+      }
+      return { overview: await fetchPortfolio(), meta: null };
+    },
+  });
   const updateParams = (patch: Record<string, string | null>) => {
     setSearchParams(
       (previous) => {
@@ -48,7 +66,8 @@ export function PortfolioPage() {
   if (portfolio.isPending) return <p className="status-msg">{ko.app.loading}</p>;
   if (portfolio.isError) return <p className="status-msg">{ko.app.error}</p>;
 
-  const { projects, attention, matrix } = portfolio.data;
+  const { projects, attention, matrix } = portfolio.data.overview;
+  const asOfMeta = portfolio.data.meta;
   const byProject = (projectIds: string[] | null | undefined) =>
     !projectFilter || (projectIds ?? []).includes(projectFilter);
   const visibleAttention = attention.filter((item) => byProject(item.project_ids));
@@ -63,6 +82,39 @@ export function PortfolioPage() {
     <div>
       <h1>{t.title}</h1>
       <p className="section-note">{t.note}</p>
+
+      <div className="filter-row">
+        <label className="filter-label" htmlFor="portfolio-asof-input">
+          {ko.risk.asof_label}
+        </label>
+        <input
+          id="portfolio-asof-input"
+          type="datetime-local"
+          className="search-input"
+          value={asOfParam ?? ""}
+          onChange={(event) => updateParams({ asof: event.target.value || null })}
+        />
+        {asOfParam && (
+          <button
+            type="button"
+            className="chip chip-btn"
+            onClick={() => updateParams({ asof: null })}
+          >
+            {ko.risk.asof_clear}
+          </button>
+        )}
+      </div>
+      {asOfMeta && (
+        <p className="section-note rca-banner">
+          ⏱ {ko.risk.asof_banner}: {new Date(asOfMeta.as_of).toLocaleString("ko-KR")} —{" "}
+          {ko.risk.asof_replayed} {asOfMeta.replayed_versions} · {ko.risk.asof_assumed}{" "}
+          {asOfMeta.precapture_assumed_objects} · {ko.risk.asof_approx}{" "}
+          {asOfMeta.approximated_objects} · {ko.risk.asof_excluded}{" "}
+          {asOfMeta.excluded_objects}
+          <br />
+          {asOfMeta.note_ko}
+        </p>
+      )}
 
       <div className="scenario-grid">
         {projects.map((summary) => (

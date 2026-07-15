@@ -415,3 +415,28 @@ def test_what_if_unknown_target_404_and_bad_value_400(client: TestClient) -> Non
         },
     )
     assert bad.status_code == 400
+
+def test_as_of_portfolio_and_change_impact(client: TestClient) -> None:
+    """Q3 — as-of 확대 표면: 미래 ts 재생은 현재 뷰와 동일, 오류 계약 동일."""
+    portfolio = client.get("/api/v1/as-of/portfolio/overview?ts=2100-01-01T00:00:00Z")
+    assert portfolio.status_code == 200
+    assert portfolio.json()["overview"] == client.get("/api/v1/portfolio/overview").json()
+    assert client.get("/api/v1/as-of/portfolio/overview?ts=어제").status_code == 400
+
+    impact = client.get(
+        "/api/v1/as-of/change-impact",
+        params={"ts": "2100-01-01T00:00:00Z", "ip_id": "ip_isp", "knob_id": "knob_isp_pixel_mode"},
+    )
+    assert impact.status_code == 200
+    current = client.get(
+        "/api/v1/change-impact",
+        params={"ip_id": "ip_isp", "knob_id": "knob_isp_pixel_mode"},
+    ).json()
+    assert impact.json()["result"] == current
+    assert (
+        client.get(
+            "/api/v1/as-of/change-impact",
+            params={"ts": "2100-01-01T00:00:00Z", "ip_id": "없음"},
+        ).status_code
+        == 404
+    )

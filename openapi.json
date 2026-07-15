@@ -451,6 +451,24 @@
         "title": "AppliedAssumption",
         "type": "object"
       },
+      "AsOfChangeImpact": {
+        "additionalProperties": false,
+        "description": "as-of 변경 영향 (Q3) — 순회 룰·계약은 현재 뷰와 동일.",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/AsOfMeta"
+          },
+          "result": {
+            "$ref": "#/components/schemas/ChangeImpactResult"
+          }
+        },
+        "required": [
+          "meta",
+          "result"
+        ],
+        "title": "AsOfChangeImpact",
+        "type": "object"
+      },
       "AsOfMeta": {
         "additionalProperties": false,
         "description": "재생 결과의 정직성 메타 — 무엇이 사실이고 무엇이 가정/근사인지.",
@@ -494,6 +512,24 @@
           "note_ko"
         ],
         "title": "AsOfMeta",
+        "type": "object"
+      },
+      "AsOfPortfolioOverview": {
+        "additionalProperties": false,
+        "description": "as-of 포트폴리오 (Q3) — 집계 계약은 현재 뷰와 동일.",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/AsOfMeta"
+          },
+          "overview": {
+            "$ref": "#/components/schemas/PortfolioOverview"
+          }
+        },
+        "required": [
+          "meta",
+          "overview"
+        ],
+        "title": "AsOfPortfolioOverview",
         "type": "object"
       },
       "AsOfRiskHeatmap": {
@@ -7311,6 +7347,149 @@
           }
         },
         "summary": "List Action Items"
+      }
+    },
+    "/api/v1/as-of/change-impact": {
+      "get": {
+        "description": "Q3 as-of 변경 영향 — 오류 계약은 현재 표면과 동일 (400 ts / 404 IP / 400 선택).",
+        "operationId": "as_of_change_impact_api_v1_as_of_change_impact_get",
+        "parameters": [
+          {
+            "description": "ISO 8601 시각 — transaction time",
+            "in": "query",
+            "name": "ts",
+            "required": true,
+            "schema": {
+              "description": "ISO 8601 시각 — transaction time",
+              "title": "Ts",
+              "type": "string"
+            }
+          },
+          {
+            "description": "변경 대상 IP 블록",
+            "in": "query",
+            "name": "ip_id",
+            "required": true,
+            "schema": {
+              "description": "변경 대상 IP 블록",
+              "title": "Ip Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "knob_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Knob Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "capability_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Capability Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AsOfChangeImpact"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "As Of Change Impact"
+      }
+    },
+    "/api/v1/as-of/portfolio/overview": {
+      "get": {
+        "description": "Q3 as-of 포트폴리오 — ts 시점 상태 재생 후 동일 집계 룰로 재계산.",
+        "operationId": "as_of_portfolio_overview_api_v1_as_of_portfolio_overview_get",
+        "parameters": [
+          {
+            "description": "ISO 8601 시각 — transaction time",
+            "in": "query",
+            "name": "ts",
+            "required": true,
+            "schema": {
+              "description": "ISO 8601 시각 — transaction time",
+              "title": "Ts",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AsOfPortfolioOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "As Of Portfolio Overview"
       }
     },
     "/api/v1/as-of/risk/heatmap": {

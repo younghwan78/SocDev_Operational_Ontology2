@@ -44,6 +44,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/as-of/change-impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * As Of Change Impact
+         * @description Q3 as-of 변경 영향 — 오류 계약은 현재 표면과 동일 (400 ts / 404 IP / 400 선택).
+         */
+        get: operations["as_of_change_impact_api_v1_as_of_change_impact_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/as-of/portfolio/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * As Of Portfolio Overview
+         * @description Q3 as-of 포트폴리오 — ts 시점 상태 재생 후 동일 집계 룰로 재계산.
+         */
+        get: operations["as_of_portfolio_overview_api_v1_as_of_portfolio_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/as-of/risk/heatmap": {
         parameters: {
             query?: never;
@@ -1076,6 +1116,14 @@ export interface components {
             to_value: string;
         };
         /**
+         * AsOfChangeImpact
+         * @description as-of 변경 영향 (Q3) — 순회 룰·계약은 현재 뷰와 동일.
+         */
+        AsOfChangeImpact: {
+            meta: components["schemas"]["AsOfMeta"];
+            result: components["schemas"]["ChangeImpactResult"];
+        };
+        /**
          * AsOfMeta
          * @description 재생 결과의 정직성 메타 — 무엇이 사실이고 무엇이 가정/근사인지.
          */
@@ -1094,6 +1142,14 @@ export interface components {
             replayed_versions: number;
             /** Skipped Invalid */
             skipped_invalid: number;
+        };
+        /**
+         * AsOfPortfolioOverview
+         * @description as-of 포트폴리오 (Q3) — 집계 계약은 현재 뷰와 동일.
+         */
+        AsOfPortfolioOverview: {
+            meta: components["schemas"]["AsOfMeta"];
+            overview: components["schemas"]["PortfolioOverview"];
         };
         /**
          * AsOfRiskHeatmap
@@ -3661,6 +3717,75 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActionItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    as_of_change_impact_api_v1_as_of_change_impact_get: {
+        parameters: {
+            query: {
+                /** @description ISO 8601 시각 — transaction time */
+                ts: string;
+                /** @description 변경 대상 IP 블록 */
+                ip_id: string;
+                knob_id?: string | null;
+                capability_id?: string | null;
+                mode?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AsOfChangeImpact"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    as_of_portfolio_overview_api_v1_as_of_portfolio_overview_get: {
+        parameters: {
+            query: {
+                /** @description ISO 8601 시각 — transaction time */
+                ts: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AsOfPortfolioOverview"];
                 };
             };
             /** @description Validation Error */

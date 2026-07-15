@@ -318,6 +318,17 @@ export async function fetchAsOfRiskHeatmap(
   return data;
 }
 
+// Q3 as-of 확대 — 포트폴리오 (변경 영향 as-of는 API 표면만, UI 노출 보류 — 설계 17 §4).
+export type AsOfPortfolioOverview = components["schemas"]["AsOfPortfolioOverview"];
+
+export async function fetchAsOfPortfolio(ts: string): Promise<AsOfPortfolioOverview> {
+  const { data, error } = await client.GET("/api/v1/as-of/portfolio/overview", {
+    params: { query: { ts } },
+  });
+  if (error || !data) throw new Error("as-of portfolio 조회 실패");
+  return data;
+}
+
 export type SourceCoverage = components["schemas"]["SourceCoverage"];
 export type CollectionCoverage = components["schemas"]["CollectionCoverage"];
 
