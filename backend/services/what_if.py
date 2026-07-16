@@ -140,6 +140,35 @@ class WhatIfResult(BaseModel):
     note_ko: str
 
 
+class WhatIfCandidate(BaseModel):
+    """가정 후보 — 기존 신호에서 도출한 '실험해볼 가치가 있는 질문' (설계 18 §3).
+
+    제안이지 결정이 아니다: 우선순위 점수 없이 룰 순서+id로 정렬하며,
+    (kind, target_id, value/week_delta)를 그대로 POST /what-if에 넣을 수 있다.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str  # "{rule}:{target_id}" — 결정론
+    rule: str
+    rule_ko: str
+    kind: str
+    target_id: str
+    target_title: str
+    project_id: str | None = None
+    value: str | None = None
+    week_delta: int | None = None  # week-shift 후보의 기본값 — UI에서 조정 가능
+    label_ko: str
+    basis_note_ko: str  # 왜 이 후보인가 — 발화한 신호의 사실 서술
+
+
+class WhatIfCandidateList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    candidates: list[WhatIfCandidate]
+    note_ko: str
+
+
 class WhatIfService:
     def __init__(self, repo: RepositoryProtocol) -> None:
         self._repo = repo
@@ -195,6 +224,110 @@ class WhatIfService:
             note_ko=(
                 "가정 기반 재계산 — 실데이터가 아니며 저장되지 않는다. "
                 "판정 룰은 위험 지도·이슈 신호와 동일하다 (결정론, 동일 입력 동일 출력)."
+            ),
+        )
+
+    def candidates(self, project_id: str | None = None) -> WhatIfCandidateList:
+        """가정 후보 도출 (설계 18 §3) — 기존 신호 읽기만, 룰 신설·점수 없음.
+
+        룰 순서 → target_id 정렬 (결정론). 한 이슈가 여러 룰에 걸리면 각각
+        후보가 된다 — 룰이 곧 질문이므로 중복이 아니다.
+        """
+        from backend.ontology.event import DevelopmentEvent, Issue
+        from backend.services.rca import _CLOSED_STATUSES, RCAService
+
+        summaries = RCAService(self._repo).list_issues()
+        if project_id:
+            summaries = [s for s in summaries if s.project_id == project_id]
+        issues_by_id = {
+            o.id: o for o in self._repo.list("issues") if isinstance(o, Issue)
+        }
+
+        unverified: list[WhatIfCandidate] = []
+        open_high: list[WhatIfCandidate] = []
+        due_shift: list[WhatIfCandidate] = []
+        for summary in sorted(summaries, key=lambda s: s.issue_id):
+            if summary.closed_without_verification:
+                unverified.append(
+                    WhatIfCandidate(
+                        id=f"unverified_close:{summary.issue_id}",
+                        rule="unverified_close",
+                        rule_ko="검증 없는 종결",
+                        kind="issue_status",
+                        target_id=summary.issue_id,
+                        target_title=summary.title,
+                        project_id=summary.project_id,
+                        value="open",
+                        label_ko="가정: 이 종결이 잘못이라면(다시 열리면)?",
+                        basis_note_ko=(
+                            f"종결 상태이지만 {summary.verification_ko} — "
+                            "해결 여부를 확인할 수 없다"
+                        ),
+                    )
+                )
+            is_open = summary.status not in _CLOSED_STATUSES
+            if is_open and summary.severity == "high":
+                open_high.append(
+                    WhatIfCandidate(
+                        id=f"open_high_resolve:{summary.issue_id}",
+                        rule="open_high_resolve",
+                        rule_ko="미해결 고심각",
+                        kind="issue_status",
+                        target_id=summary.issue_id,
+                        target_title=summary.title,
+                        project_id=summary.project_id,
+                        value="resolved",
+                        label_ko="가정: 이 이슈가 해결되면?",
+                        basis_note_ko="미해결 상태 · 심각도 높음 — 해결 시 지도가 얼마나 풀리는지 실험",
+                    )
+                )
+            issue = issues_by_id.get(summary.issue_id)
+            if is_open and issue is not None and issue.due_week is not None:
+                due_shift.append(
+                    WhatIfCandidate(
+                        id=f"due_week_shift:{summary.issue_id}",
+                        rule="due_week_shift",
+                        rule_ko="목표 주차 보유",
+                        kind="issue_week_shift",
+                        target_id=summary.issue_id,
+                        target_title=summary.title,
+                        project_id=summary.project_id,
+                        week_delta=-2,
+                        label_ko="가정: 목표 주차가 당겨지면(기본 −2주)?",
+                        basis_note_ko=f"목표 W{issue.due_week} 보유 — 일정 이동이 지연 신호를 바꾸는지 실험",
+                    )
+                )
+
+        events: list[WhatIfCandidate] = []
+        for event in sorted(self._repo.list("development_events"), key=lambda o: o.id):
+            if not isinstance(event, DevelopmentEvent):
+                continue
+            if project_id and event.project_id != project_id:
+                continue
+            signal = event.schedule_signal
+            if signal not in {"at_risk", "window_closing"}:
+                continue
+            signal_ko = value_label("schedule_signal", signal) or signal
+            events.append(
+                WhatIfCandidate(
+                    id=f"event_at_risk:{event.id}",
+                    rule="event_at_risk",
+                    rule_ko="위험 일정 이벤트",
+                    kind="event_schedule_signal",
+                    target_id=event.id,
+                    target_title=event.title,
+                    project_id=event.project_id,
+                    value="on_track",
+                    label_ko="가정: 이 이벤트가 정상 진행되면?",
+                    basis_note_ko=f"일정 신호 '{signal_ko}' — 정상 진행 가정 시 지도 변화 실험",
+                )
+            )
+
+        return WhatIfCandidateList(
+            candidates=[*unverified, *open_high, *due_shift, *events],
+            note_ko=(
+                "기존 신호에서 결정론으로 도출한 실험 후보 — 제안이지 결정이 "
+                "아니며, 우선순위 점수는 없다 (룰 순서 + id 정렬)."
             ),
         )
 

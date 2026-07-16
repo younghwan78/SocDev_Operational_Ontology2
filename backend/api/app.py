@@ -99,6 +99,7 @@ from backend.services.source_map import SourceCoverage, SourceCoverageService
 from backend.services.what_if import (
     InvalidAssumptionError,
     UnknownTargetError,
+    WhatIfCandidateList,
     WhatIfRequest,
     WhatIfResult,
     WhatIfService,
@@ -715,6 +716,11 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         except InvalidAssumptionError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get(f"{prefix}/what-if/candidates", response_model=WhatIfCandidateList)
+    def what_if_candidates(project_id: str | None = None) -> WhatIfCandidateList:
+        """설계 18 W1 — 가정 후보 제안 (결정론 도출, 제안이지 결정이 아니다)."""
+        return services.what_if.candidates(project_id)
 
     @app.post(f"{prefix}/ingest/batches/{{batch_id}}/rollback")
     def rollback_ingest_batch(batch_id: str) -> dict[str, int]:

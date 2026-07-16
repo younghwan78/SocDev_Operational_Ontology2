@@ -416,6 +416,44 @@ def test_what_if_unknown_target_404_and_bad_value_400(client: TestClient) -> Non
     )
     assert bad.status_code == 400
 
+
+def test_what_if_candidates_endpoint(client: TestClient) -> None:
+    """W1 (설계 18) — 가정 후보 제안: 결정론 도출, 후보는 그대로 실행 가능하다."""
+    response = client.get("/api/v1/what-if/candidates")
+    assert response.status_code == 200
+    body = response.json()
+    candidates = body["candidates"]
+    assert candidates, "fixture 우주에는 후보 신호가 존재한다"
+    rules = {c["rule"] for c in candidates}
+    assert rules <= {
+        "unverified_close",
+        "open_high_resolve",
+        "due_week_shift",
+        "event_at_risk",
+    }
+    assert "제안" in body["note_ko"]
+    # project 필터 — 필터 결과는 전체의 부분집합.
+    filtered = client.get("/api/v1/what-if/candidates?project_id=project_u").json()
+    assert {c["id"] for c in filtered["candidates"]} <= {c["id"] for c in candidates}
+    assert all(c["project_id"] == "project_u" for c in filtered["candidates"])
+    # 후보 좌표를 그대로 POST /what-if에 넣으면 400 없이 계산된다.
+    first = candidates[0]
+    roundtrip = client.post(
+        "/api/v1/what-if",
+        json={
+            "assumptions": [
+                {
+                    "kind": first["kind"],
+                    "target_id": first["target_id"],
+                    "value": first["value"],
+                    "week_delta": first["week_delta"],
+                }
+            ]
+        },
+    )
+    assert roundtrip.status_code == 200
+
+
 def test_as_of_portfolio_and_change_impact(client: TestClient) -> None:
     """Q3 — as-of 확대 표면: 미래 ts 재생은 현재 뷰와 동일, 오류 계약 동일."""
     portfolio = client.get("/api/v1/as-of/portfolio/overview?ts=2100-01-01T00:00:00Z")

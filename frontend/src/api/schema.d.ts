@@ -914,6 +914,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/what-if/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What If Candidates
+         * @description 설계 18 W1 — 가정 후보 제안 (결정론 도출, 제안이지 결정이 아니다).
+         */
+        get: operations["what_if_candidates_api_v1_what_if_candidates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3598,6 +3618,44 @@ export interface components {
             week_delta?: number | null;
         };
         /**
+         * WhatIfCandidate
+         * @description 가정 후보 — 기존 신호에서 도출한 '실험해볼 가치가 있는 질문' (설계 18 §3).
+         *
+         *     제안이지 결정이 아니다: 우선순위 점수 없이 룰 순서+id로 정렬하며,
+         *     (kind, target_id, value/week_delta)를 그대로 POST /what-if에 넣을 수 있다.
+         */
+        WhatIfCandidate: {
+            /** Basis Note Ko */
+            basis_note_ko: string;
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Label Ko */
+            label_ko: string;
+            /** Project Id */
+            project_id?: string | null;
+            /** Rule */
+            rule: string;
+            /** Rule Ko */
+            rule_ko: string;
+            /** Target Id */
+            target_id: string;
+            /** Target Title */
+            target_title: string;
+            /** Value */
+            value?: string | null;
+            /** Week Delta */
+            week_delta?: number | null;
+        };
+        /** WhatIfCandidateList */
+        WhatIfCandidateList: {
+            /** Candidates */
+            candidates: components["schemas"]["WhatIfCandidate"][];
+            /** Note Ko */
+            note_ko: string;
+        };
+        /**
          * WhatIfCellChange
          * @description 시나리오×IP 셀의 등급 변화 — 재계산 근거 동반.
          */
@@ -5047,6 +5105,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WhatIfResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    what_if_candidates_api_v1_what_if_candidates_get: {
+        parameters: {
+            query?: {
+                project_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhatIfCandidateList"];
                 };
             };
             /** @description Validation Error */

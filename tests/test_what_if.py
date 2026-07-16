@@ -248,6 +248,108 @@ def test_week_shift_changes_overdue_signal() -> None:
     assert isinstance(issue, Issue) and issue.due_week == 20
 
 
+# ------------------------------------------------- W1 가정 후보 (설계 18 §3)
+
+
+def _candidate_repo() -> InMemoryRepository:
+    """후보 4룰이 각각 발화하는 우주 — 검증 없는 종결 / 미해결 고심각+목표 주차 / 위험 이벤트."""
+    from backend.ontology.event import DevelopmentEvent
+
+    repo = _repo("open")
+    open_issue = repo.get("issues", "iss_x")
+    assert isinstance(open_issue, Issue)
+    high_with_due = open_issue.model_copy(
+        update={"severity": "high", "due_week": 20, "updated_week": 20}
+    )
+    closed_unverified = Issue.model_validate(
+        {
+            "id": "iss_closed",
+            "source": _SRC,
+            "project_id": "proj_u",
+            "title": "검증 없이 종결된 이슈",
+            "issue_type": "bandwidth_overrun",
+            "status": "closed",
+            "symptom": "종결 근거 미기록",
+            "confidence": "low",
+            "affected_scope": {"scenarios": ["scn_x"], "ip_blocks": ["ip_x"]},
+        }
+    )
+    repo.remove_by_ids("issues", ["iss_x"])
+    repo.add_objects("issues", [high_with_due, closed_unverified])
+    repo.add_objects(
+        "development_events",
+        [
+            DevelopmentEvent.model_validate(
+                {
+                    "id": "ev_risk",
+                    "source": _SRC,
+                    "project_id": "proj_u",
+                    "title": "위험 일정 이벤트",
+                    "description": "검토 창이 닫히는 중",
+                    "event_type": "review",
+                    "event_category": "schedule",
+                    "schedule_signal": "at_risk",
+                }
+            )
+        ],
+    )
+    return repo
+
+
+def test_candidates_derived_from_signals() -> None:
+    """수용 기준 1·3 — 4룰이 각각 후보를 내고, 룰 순서 + id 정렬이 결정론이다."""
+    service = WhatIfService(_candidate_repo())
+    result = service.candidates()
+    by_rule = {(c.rule, c.target_id): c for c in result.candidates}
+
+    unverified = by_rule[("unverified_close", "iss_closed")]
+    assert (unverified.kind, unverified.value) == ("issue_status", "open")
+    assert "검증" in unverified.basis_note_ko
+
+    resolve = by_rule[("open_high_resolve", "iss_x")]
+    assert (resolve.kind, resolve.value) == ("issue_status", "resolved")
+
+    shift = by_rule[("due_week_shift", "iss_x")]
+    assert (shift.kind, shift.week_delta) == ("issue_week_shift", -2)
+    assert "W20" in shift.basis_note_ko
+
+    event = by_rule[("event_at_risk", "ev_risk")]
+    assert (event.kind, event.value) == ("event_schedule_signal", "on_track")
+
+    # 룰 순서 고정 + 결정론 (점수 없음).
+    assert [c.rule for c in result.candidates] == [
+        "unverified_close",
+        "open_high_resolve",
+        "due_week_shift",
+        "event_at_risk",
+    ]
+    assert result.candidates == service.candidates().candidates
+
+
+def test_candidates_project_filter() -> None:
+    service = WhatIfService(_candidate_repo())
+    assert len(service.candidates("proj_u").candidates) == 4
+    assert service.candidates("proj_v").candidates == []
+
+
+def test_candidates_are_executable_assumptions() -> None:
+    """수용 기준 2 — 후보 좌표를 그대로 POST /what-if에 넣으면 계산된다."""
+    repo = _candidate_repo()
+    service = WhatIfService(repo)
+    for candidate in service.candidates().candidates:
+        result = service.run(
+            [
+                WhatIfAssumption(
+                    kind=candidate.kind,
+                    target_id=candidate.target_id,
+                    value=candidate.value,
+                    week_delta=candidate.week_delta,
+                )
+            ]
+        )
+        assert result.assumptions[0].target_id == candidate.target_id
+
+
 def test_week_shift_requires_delta_and_due_week() -> None:
     repo = _repo("open")  # iss_x에는 due_week가 없다
     service = WhatIfService(repo)
