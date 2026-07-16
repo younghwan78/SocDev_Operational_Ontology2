@@ -283,6 +283,20 @@ export async function runWhatIf(
   return data;
 }
 
+// W1 (설계 18) — 가정 후보 제안: 기존 신호에서 결정론 도출, 제안이지 결정이 아니다.
+export type WhatIfCandidate = components["schemas"]["WhatIfCandidate"];
+export type WhatIfCandidateList = components["schemas"]["WhatIfCandidateList"];
+
+export async function fetchWhatIfCandidates(
+  projectId?: string,
+): Promise<WhatIfCandidateList> {
+  const { data, error } = await client.GET("/api/v1/what-if/candidates", {
+    params: { query: projectId ? { project_id: projectId } : {} },
+  });
+  if (error || !data) throw new Error("what-if 후보 조회 실패");
+  return data;
+}
+
 // P3 KPI 시계열 — domain time(week) 축 과제 간 비교 (결정론, 수치 점수 없음).
 export type KPISeriesResult = components["schemas"]["KPISeriesResult"];
 export type ProjectKPISeries = components["schemas"]["ProjectKPISeries"];

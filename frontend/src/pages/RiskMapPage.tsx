@@ -9,12 +9,18 @@ import {
   fetchAsOfRiskHeatmap,
   fetchProjects,
   fetchRiskHeatmap,
+  fetchWhatIfCandidates,
+  runWhatIf,
   type AsOfMeta,
   type BasisItem,
   type HeatmapColumn,
   type RiskHeatmap,
   type ScenarioRiskRow,
   type WeeklyFocusItem,
+  type WhatIfAssumptionInput,
+  type WhatIfCandidate,
+  type WhatIfResult,
+  type WhatIfRowChange,
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
 import { PostureChip } from "../components/PostureChip";
@@ -38,6 +44,23 @@ const FOCUS_BADGE: Record<string, string> = {
 };
 
 type Selection = { scenarioId: string; ipId: string | null };
+
+const WHATIF_LIMIT = 10;
+
+/** URL `whatif` 파라미터 → 가정 배열 — 파싱 실패는 빈 세트로 취급 (URL=상태). */
+function parseWhatIfParam(raw: string | null): WhatIfAssumptionInput[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (item): item is WhatIfAssumptionInput =>
+        typeof item === "object" && item !== null && "kind" in item && "target_id" in item,
+    );
+  } catch {
+    return [];
+  }
+}
 
 /** 카테고리 열 그룹 — 백엔드가 카테고리 순으로 정렬해 내려주므로 연속 구간으로 묶인다. */
 function groupColumns(columns: HeatmapColumn[]) {
@@ -89,6 +112,23 @@ export function RiskMapPage() {
   // P2 T3 as-of: URL의 asof(datetime-local 값)가 있으면 시점 재구성 뷰로 전환.
   const asOfParam = searchParams.get("asof");
   const asOfTs = asOfParam ? new Date(asOfParam).toISOString() : null;
+  // W2 (설계 18) 가정 실험 워크벤치: URL whatif=가정 세트(JSON) — 링크 공유가 곧 재현.
+  const whatIfParam = searchParams.get("whatif");
+  const assumptions = parseWhatIfParam(whatIfParam);
+  const [panelOpen, setPanelOpen] = useState(assumptions.length > 0);
+  const setAssumptions = (next: WhatIfAssumptionInput[]) =>
+    // asof와 상호 배타 (설계 18 §4) — 과거 상태 위에 가정을 얹지 않는다.
+    updateParams({ whatif: next.length > 0 ? JSON.stringify(next) : null, asof: null });
+  const whatIf = useQuery<WhatIfResult>({
+    queryKey: ["whatif-run", whatIfParam],
+    queryFn: () => runWhatIf(assumptions),
+    enabled: assumptions.length > 0 && !asOfTs,
+  });
+  const candidates = useQuery({
+    queryKey: ["whatif-candidates", projectId],
+    queryFn: () => fetchWhatIfCandidates(projectId),
+    enabled: panelOpen && Boolean(projectId),
+  });
   const heatmap = useQuery<{ heatmap: RiskHeatmap; meta: AsOfMeta | null }>({
     queryKey: ["risk-heatmap", projectId, asOfTs],
     queryFn: async () => {
@@ -127,6 +167,11 @@ export function RiskMapPage() {
       : gradeFilter === "medium"
         ? rows.filter((row) => row.overall_grade !== "low")
         : rows;
+  // 가정 오버레이 — 변경 행만 투영 표기, 나머지는 평소와 동일 (정직한 구분).
+  const whatIfResult = assumptions.length > 0 && !asOfTs ? whatIf.data : undefined;
+  const changedRowById = new Map<string, WhatIfRowChange>(
+    (whatIfResult?.changed_rows ?? []).map((change) => [change.scenario_id, change]),
+  );
   const selectedRow = selection
     ? rows.find((row) => row.scenario_id === selection.scenarioId)
     : undefined;
@@ -188,6 +233,14 @@ export function RiskMapPage() {
             {t.asof_clear}
           </button>
         )}
+        <button
+          type="button"
+          className={`chip chip-btn ${panelOpen || assumptions.length > 0 ? "active" : ""}`}
+          onClick={() => setPanelOpen(!panelOpen)}
+        >
+          ⚗ {t.whatif_toggle}
+          {assumptions.length > 0 ? ` · ${assumptions.length}` : ""}
+        </button>
       </div>
 
       {/* as-of 정직성 배너 — 무엇이 사실이고 무엇이 가정/근사인지 숨기지 않는다 */}
@@ -200,6 +253,38 @@ export function RiskMapPage() {
           <br />
           {asOfMeta.note_ko}
         </p>
+      )}
+
+      {/* 가정 실험 배너 — 실데이터가 아님을 상시 명시 (설계 18 §4) */}
+      {assumptions.length > 0 && asOfTs && (
+        <p className="section-note rca-banner">⚗ {t.whatif_asof_conflict}</p>
+      )}
+      {assumptions.length > 0 && !asOfTs && (
+        <p className="section-note rca-banner">
+          ⚗ {assumptions.length}
+          {t.whatif_banner}
+          {whatIfResult && (
+            <>
+              {" "}
+              · {t.whatif_result_changed} {whatIfResult.changed_rows.length} ·{" "}
+              {t.whatif_result_unchanged} {whatIfResult.unchanged_scenario_count}
+            </>
+          )}
+        </p>
+      )}
+
+      {panelOpen && (
+        <WhatIfWorkbench
+          candidates={candidates.data?.candidates ?? []}
+          candidatesNote={candidates.data?.note_ko}
+          candidatesPending={candidates.isPending}
+          assumptions={assumptions}
+          result={whatIfResult}
+          resultPending={assumptions.length > 0 && !asOfTs && whatIf.isPending}
+          rows={rows}
+          columns={columns}
+          onChange={setAssumptions}
+        />
       )}
 
       <div
@@ -274,6 +359,7 @@ export function RiskMapPage() {
                     catStarts={catStarts}
                     selection={selection}
                     onSelect={setSelection}
+                    change={changedRowById.get(row.scenario_id)}
                   />
                 ))}
               </tbody>
@@ -302,14 +388,18 @@ function HeatmapRow({
   catStarts,
   selection,
   onSelect,
+  change,
 }: {
   row: ScenarioRiskRow;
   columns: HeatmapColumn[];
   catStarts: Set<number>;
   selection: Selection | null;
   onSelect: (selection: Selection) => void;
+  change?: WhatIfRowChange;
 }) {
   const cellByIp = new Map(row.cells.map((cell) => [cell.ip_id, cell]));
+  // W2 가정 오버레이 — 투영 등급은 기준과 항상 구분 표기한다 (점선 링 + title).
+  const projectedByIp = new Map((change?.changed_cells ?? []).map((c) => [c.ip_id, c]));
   const isSelected = (ipId: string | null) =>
     selection?.scenarioId === row.scenario_id && selection?.ipId === ipId;
   return (
@@ -343,6 +433,23 @@ function HeatmapRow({
               ·
             </td>
           );
+        const projected = projectedByIp.get(ipId);
+        if (projected)
+          return (
+            <td key={ipId} className={tdClass}>
+              <button
+                type="button"
+                title={`${t.whatif_projected_cell}: ${projected.baseline_grade_ko} → ${projected.projected_grade_ko} — ${row.scenario_id} × ${ipId}`}
+                aria-label={`${row.scenario_name} × ${ipId} ${t.whatif_projected_cell}: ${projected.baseline_grade_ko} → ${projected.projected_grade_ko}`}
+                className={`cell-btn cell-projected ${GRADE_CLASS[projected.projected_grade]} ${
+                  isSelected(ipId) ? "cell-selected" : ""
+                }`}
+                onClick={() => onSelect({ scenarioId: row.scenario_id, ipId })}
+              >
+                {GRADE_SYMBOL[projected.projected_grade]}
+              </button>
+            </td>
+          );
         return (
           <td key={ipId} className={tdClass}>
             <button
@@ -360,16 +467,29 @@ function HeatmapRow({
         );
       })}
       <td className="heatmap-overall">
-        <button
-          type="button"
-          title={`${row.overall_grade_ko} — ${row.scenario_id}`}
-          className={`cell-btn ${GRADE_CLASS[row.overall_grade]} ${
-            isSelected(null) ? "cell-selected" : ""
-          }`}
-          onClick={() => onSelect({ scenarioId: row.scenario_id, ipId: null })}
-        >
-          {GRADE_SYMBOL[row.overall_grade]}
-        </button>
+        {change && change.projected_grade !== change.baseline_grade ? (
+          <button
+            type="button"
+            title={`${t.whatif_projected_cell}: ${change.baseline_grade_ko} → ${change.projected_grade_ko} — ${row.scenario_id}`}
+            className={`cell-btn cell-projected ${GRADE_CLASS[change.projected_grade]} ${
+              isSelected(null) ? "cell-selected" : ""
+            }`}
+            onClick={() => onSelect({ scenarioId: row.scenario_id, ipId: null })}
+          >
+            {GRADE_SYMBOL[change.projected_grade]}
+          </button>
+        ) : (
+          <button
+            type="button"
+            title={`${row.overall_grade_ko} — ${row.scenario_id}`}
+            className={`cell-btn ${GRADE_CLASS[row.overall_grade]} ${
+              isSelected(null) ? "cell-selected" : ""
+            }`}
+            onClick={() => onSelect({ scenarioId: row.scenario_id, ipId: null })}
+          >
+            {GRADE_SYMBOL[row.overall_grade]}
+          </button>
+        )}
       </td>
     </tr>
   );
@@ -433,6 +553,269 @@ function BasisPanel({
       <Link to={`/scenarios/${row.scenario_id}/overview`} className="chip-link">
         {t.open_scenario}
       </Link>
+    </div>
+  );
+}
+
+const GRADE_BADGE: Record<string, string> = {
+  high: "risk-high-badge",
+  medium: "risk-medium-badge",
+  low: "risk-low-badge",
+};
+
+/** W2 (설계 18) — 가정 실험 워크벤치: 후보 제안 + 바스켓 + 신규 이슈 주입 폼. */
+function WhatIfWorkbench({
+  candidates,
+  candidatesNote,
+  candidatesPending,
+  assumptions,
+  result,
+  resultPending,
+  rows,
+  columns,
+  onChange,
+}: {
+  candidates: WhatIfCandidate[];
+  candidatesNote?: string;
+  candidatesPending: boolean;
+  assumptions: WhatIfAssumptionInput[];
+  result?: WhatIfResult;
+  resultPending: boolean;
+  rows: ScenarioRiskRow[];
+  columns: HeatmapColumn[];
+  onChange: (next: WhatIfAssumptionInput[]) => void;
+}) {
+  const valueLabel = useValueLabels();
+  // week-shift 후보의 delta 조정값 — 추가 전 로컬 상태 (기본값은 후보가 제공).
+  const [deltas, setDeltas] = useState<Record<string, string>>({});
+  const [issueTitle, setIssueTitle] = useState("");
+  const [scenarioSel, setScenarioSel] = useState<string[]>([]);
+  const [ipSel, setIpSel] = useState<string[]>([]);
+  const [severity, setSeverity] = useState("high");
+
+  const limitReached = assumptions.length >= WHATIF_LIMIT;
+  const isAdded = (candidate: WhatIfCandidate) =>
+    assumptions.some(
+      (a) => a.kind === candidate.kind && a.target_id === candidate.target_id,
+    );
+  const addCandidate = (candidate: WhatIfCandidate) => {
+    const delta =
+      candidate.kind === "issue_week_shift"
+        ? Number(deltas[candidate.id] ?? candidate.week_delta ?? -2)
+        : undefined;
+    onChange([
+      ...assumptions,
+      {
+        kind: candidate.kind,
+        target_id: candidate.target_id,
+        value: candidate.value ?? undefined,
+        week_delta: Number.isFinite(delta) ? delta : candidate.week_delta,
+        note: candidate.label_ko,
+      },
+    ]);
+  };
+  const removeAt = (index: number) =>
+    onChange(assumptions.filter((_, i) => i !== index));
+  const toggle = (list: string[], id: string, set: (next: string[]) => void) =>
+    set(list.includes(id) ? list.filter((v) => v !== id) : [...list, id]);
+  const submitNewIssue = () => {
+    if (!issueTitle.trim() || scenarioSel.length === 0 || ipSel.length === 0) return;
+    onChange([
+      ...assumptions,
+      {
+        kind: "new_issue",
+        target_id: `whatif_new_${Date.now().toString(36)}`,
+        title: issueTitle.trim(),
+        scenario_ids: scenarioSel,
+        ip_ids: ipSel,
+        severity,
+        note: issueTitle.trim(),
+      },
+    ]);
+    setIssueTitle("");
+    setScenarioSel([]);
+    setIpSel([]);
+  };
+  // 에코가 현재 가정 세트와 정합할 때만 에코 라벨 사용 (stale 응답 방지).
+  const echo =
+    result && result.assumptions.length === assumptions.length
+      ? result.assumptions
+      : null;
+
+  return (
+    <div className="card whatif-workbench">
+      <div className="head">
+        <h2 className="card-title">⚗ {t.whatif_panel_title}</h2>
+        <span className="badge badge-warn">{ko.issues.whatif_assumption_badge}</span>
+      </div>
+      <p className="section-note">{t.whatif_panel_note}</p>
+
+      <h3 className="card-subtitle">{t.whatif_active_title}</h3>
+      {assumptions.length === 0 && <p className="desc">{t.whatif_active_empty}</p>}
+      {assumptions.map((assumption, index) => (
+        <div key={`${assumption.kind}-${assumption.target_id}-${index}`} className="list-item">
+          <div className="head">
+            <span className="badge badge-warn">
+              {echo ? echo[index].kind_ko : assumption.kind}
+            </span>
+            <span className="title" title={assumption.target_id}>
+              {echo ? echo[index].target_title : assumption.target_id}
+            </span>
+            {echo && (
+              <span className="desc">
+                {echo[index].from_value ?? "—"} → {echo[index].to_value}
+              </span>
+            )}
+            <button
+              type="button"
+              className="chip chip-btn"
+              aria-label={t.whatif_remove}
+              onClick={() => removeAt(index)}
+            >
+              ✕
+            </button>
+          </div>
+          {assumption.note && <p className="desc">{assumption.note}</p>}
+        </div>
+      ))}
+      {limitReached && <p className="desc">{t.whatif_limit_note}</p>}
+      {assumptions.length > 0 && (
+        <button type="button" className="chip chip-btn" onClick={() => onChange([])}>
+          {t.whatif_clear_all}
+        </button>
+      )}
+
+      {resultPending && <p className="status-msg">{ko.app.loading}</p>}
+      {result && assumptions.length > 0 && (
+        <div>
+          {result.changed_rows.length === 0 && (
+            <p className="desc">
+              {t.whatif_result_no_change} ({t.whatif_result_unchanged}:{" "}
+              {result.unchanged_scenario_count})
+            </p>
+          )}
+          {(result.changed_issue_signals ?? []).length > 0 && (
+            <div>
+              <h3 className="card-subtitle">{t.whatif_signals_title}</h3>
+              {(result.changed_issue_signals ?? []).map((signal) => (
+                <p key={signal.issue_id} className="desc" title={signal.issue_id}>
+                  {signal.title}
+                  {signal.appeared
+                    ? ` — ${t.whatif_appeared}`
+                    : `: ${(signal.changes ?? []).join(" · ")}`}
+                  {signal.projected_note_ko ? ` (${signal.projected_note_ko})` : ""}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <h3 className="card-subtitle">{t.whatif_candidates_title}</h3>
+      {candidatesPending && <p className="status-msg">{ko.app.loading}</p>}
+      {!candidatesPending && candidates.length === 0 && (
+        <p className="desc">{t.whatif_candidates_empty}</p>
+      )}
+      <div className="whatif-cand-list">
+        {candidates.map((candidate) => (
+          <div key={candidate.id} className="list-item">
+            <div className="head">
+              <span className="badge badge-info">{candidate.rule_ko}</span>
+              <span className="title" title={candidate.target_id}>
+                {candidate.target_title}
+              </span>
+              {candidate.kind === "issue_week_shift" && (
+                <label className="filter-label">
+                  {t.whatif_week_delta}
+                  <input
+                    type="number"
+                    className="whatif-delta-input"
+                    value={deltas[candidate.id] ?? String(candidate.week_delta ?? -2)}
+                    onChange={(event) =>
+                      setDeltas({ ...deltas, [candidate.id]: event.target.value })
+                    }
+                  />
+                </label>
+              )}
+              <button
+                type="button"
+                className="chip chip-btn"
+                disabled={isAdded(candidate) || limitReached}
+                onClick={() => addCandidate(candidate)}
+              >
+                {isAdded(candidate) ? t.whatif_added : t.whatif_add}
+              </button>
+            </div>
+            <p className="desc">
+              {candidate.label_ko} — {candidate.basis_note_ko}
+            </p>
+          </div>
+        ))}
+      </div>
+      {candidatesNote && <p className="section-note">{candidatesNote}</p>}
+
+      <h3 className="card-subtitle">{t.whatif_new_issue_title}</h3>
+      <p className="section-note">{t.whatif_new_issue_note}</p>
+      <input
+        type="text"
+        className="search-input whatif-title-input"
+        placeholder={t.whatif_new_issue_label}
+        value={issueTitle}
+        onChange={(event) => setIssueTitle(event.target.value)}
+      />
+      <p className="desc">{t.whatif_new_issue_scenarios}</p>
+      <div className="filter-row">
+        {rows.map((row) => (
+          <button
+            key={row.scenario_id}
+            type="button"
+            title={row.scenario_id}
+            className={`chip chip-btn ${scenarioSel.includes(row.scenario_id) ? "active" : ""}`}
+            onClick={() => toggle(scenarioSel, row.scenario_id, setScenarioSel)}
+          >
+            {row.scenario_name}
+          </button>
+        ))}
+      </div>
+      <p className="desc">{t.whatif_new_issue_ips}</p>
+      <div className="filter-row">
+        {columns.map((column) => (
+          <button
+            key={column.ip_id}
+            type="button"
+            title={column.ip_id}
+            className={`chip chip-btn ${ipSel.includes(column.ip_id) ? "active" : ""}`}
+            onClick={() => toggle(ipSel, column.ip_id, setIpSel)}
+          >
+            {column.ip_name}
+          </button>
+        ))}
+      </div>
+      <p className="desc">{t.whatif_new_issue_severity}</p>
+      <div className="filter-row">
+        {["high", "medium", "low"].map((value) => (
+          <button
+            key={value}
+            type="button"
+            className={`chip chip-btn ${severity === value ? "active" : ""}`}
+            onClick={() => setSeverity(value)}
+          >
+            <span className={`badge ${GRADE_BADGE[value]}`}>
+              {valueLabel("severity", value)}
+            </span>
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        className="run-btn"
+        disabled={
+          !issueTitle.trim() || scenarioSel.length === 0 || ipSel.length === 0 || limitReached
+        }
+        onClick={submitNewIssue}
+      >
+        {t.whatif_new_issue_submit}
+      </button>
     </div>
   );
 }

@@ -666,3 +666,10 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .kpi-chart .hit-target { fill: transparent; }
 .kpi-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12.5px; color: var(--text-dim); margin: 0 0 4px; }
 .kpi-legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: -1px; }
+
+/* W2 (설계 18) 가정 실험 워크벤치 — 투영 셀은 기준과 항상 구분 표기 */
+.cell-projected { outline: 2px dashed var(--warn); outline-offset: 1px; border-radius: 6px; }
+.whatif-workbench .card-subtitle { font-size: 13.5px; margin: 14px 0 6px; color: var(--text-dim); }
+.whatif-cand-list { max-height: 300px; overflow-y: auto; }
+.whatif-delta-input { width: 64px; margin-left: 6px; font: inherit; font-size: 12.5px; padding: 2px 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
+.whatif-title-input { width: min(480px, 100%); margin: 4px 0 8px; }
