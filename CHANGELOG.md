@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## what-if 워크벤치 심화 — 화면 연결·가정 세트 영속화 (2026-07-17)
+
+> 설계: `internal_docs/design/19_whatif_depth.md`. 설계 18의 후속 3건 —
+> 워크벤치를 다른 화면과 잇고, 가정 조합에 이름을 붙여 재사용한다.
+
+- **X1 이슈 상세 → 워크벤치**: WhatIfCard에 "지도에서 실험" 링크 — 1클릭
+  가정을 URL `whatif`로 직렬화해 위험 지도 워크벤치로 (신규 계약 없음).
+- **X2 가정 세트 영속화**: `whatif_sets` 저장 계약 (마이그레이션 0007) —
+  ask_log와 같은 운영 기록 지위, append-only(수정/삭제 API 없음).
+  `POST /what-if/sets`(저장 전 overlay 검증 — 깨진 세트 저장 거부, 오류 계약은
+  POST /what-if와 동일) + `GET /what-if/sets[?project_id=]` + `GET .../{id}`.
+  InMemory/Postgres 스토어 패리티 테스트. 워크벤치에 이름 저장 + 목록 +
+  불러오기(URL 갱신 — 적용은 여전히 ephemeral, 온톨로지 불변).
+- **X3 변경 영향 → 워크벤치**: 영향 결과를 new_issue 가정으로 직렬화하는
+  "가정으로 실험" 링크 — scenario_ids=영향 시나리오, ip_ids=대상+연쇄(시스템
+  블록 포함), severity=medium 기본. 전파 지도가 위험 지도 언어로 번역되며,
+  이미 높음인 행뿐이면 "변화 없음 + 가정 이슈 등장"으로 정직하게 표시.
+- 검증: backend 275 / PG soc_test 12 / ruff / mypy / frontend build·34
+  tests·lint / 실서버 3흐름 확인. 마이그레이션 0007 적용(soc_demo·운영).
+
 ## what-if 워크벤치 — 위험 지도 가정 실험 모드 (2026-07-17)
 
 > 설계: `internal_docs/design/18_whatif_workbench.md`. 배경: 사용자 지적 —

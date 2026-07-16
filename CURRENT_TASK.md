@@ -2,18 +2,15 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — what-if 워크벤치 완료 (2026-07-17).**
+**활성 Stage 없음 — what-if 워크벤치 심화 X1~X3 완료 (2026-07-17).**
 
-> 설계·구현 상태: `internal_docs/design/18_whatif_workbench.md` (§6).
-> W1 가정 후보 제안(`GET /what-if/candidates`, 4룰 결정론 도출) /
-> W2 위험 지도 가정 실험 모드(워크벤치 패널·URL `whatif` 가정 세트 공유·
-> 지도 투영 오버레이·신규 이슈 주입 폼·as-of 상호 배타).
-> backend 273 · frontend 34 · 실서버 확인 green.
+> 설계·구현 상태: `internal_docs/design/19_whatif_depth.md` (§6).
+> X1 이슈 상세→워크벤치 "지도에서 실험" / X2 가정 세트 영속화(`whatif_sets`
+> 마이그레이션 0007, 운영 기록 지위, POST 검증 관문 + 저장/불러오기 UI) /
+> X3 변경 영향→워크벤치 "가정으로 실험"(new_issue 직렬화).
+> backend 275 · PG 12 · frontend 34 · 실서버 3흐름 green.
 >
 > **다음 후보 (착수는 사용자 승인)**:
-> - what-if 심화: 가정 세트 영속화(이름 붙여 저장·팀 공유 — 저장 계약 필요,
->   별도 설계), 이슈 상세 1클릭과 워크벤치 연결(이슈에서 "지도에서 실험" 링크),
->   변경 영향 화면에 knob 가정 통합.
 > - Digital twin 심화: 이벤트/요청 등 타 컬렉션 프로세스 모델, what-if 가정 세트
 >   저장(저장 계약 필요, 별도 설계 — URL 직렬화가 우선 해소), as-of 시점 비교
 >   (두 ts diff), 변경 영향 as-of UI 노출.
