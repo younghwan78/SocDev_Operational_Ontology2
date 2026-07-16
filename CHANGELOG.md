@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 디지털 트윈 데모 가이드 — 시간·프로세스·가정 실험 (2026-07-16)
+
+> 코드 무변경 — 문서·샘플 데이터만. 설계 16·17 기능 전체를 실사용 흐름으로
+> 시연하는 재현 가능한 데모.
+
+- **`docs/demo-digital-twin.md`**: 2주 반입 스토리(수상한 종결 + 무효가 된
+  해결) 위에서 프로세스 신호 → 시점 재구성 → 가정 실험 → KPI 시계열 4장면
+  진행 대본. 배너/배지/판정 문구는 전부 실서버 실행 값으로 검증해 기록.
+- **`samples/demo_twin_w52_issues.csv` / `demo_twin_w52_kpi.csv` /
+  `demo_twin_w53_issues.csv`**: 데모 반입 배치 2주치 — 재개(역행)·단계 건너뜀
+  전이, 검증 없는 종결, dou_power W26/W20 관측을 만든다.
+- 검증: 데모 전용 DB(soc_demo, db-init+db-seed 559건)에서 전 장면 실행 —
+  P1 재개 신호/Q1 전이 판정(건너뜀·역행)/P2·Q3 as-of 3시점(중간→높음→중간,
+  당시 없음 4건 배너)/P4·Q2 what-if 4종 delta/P3·Q4 KPI 차트 2시리즈(반입
+  점 포함) 모두 API·실브라우저 UI에서 확인. 운영 DB(soc_ontology) 무변경.
+
 ## Digital Twin 후속 2라운드 — 프로세스 전이 모델·what-if 확장·as-of 확대·KPI 차트 (2026-07-16)
 
 > 설계: `internal_docs/design/17_digital_twin_round2.md`. 설계 16의 잔여 갭 4건 —

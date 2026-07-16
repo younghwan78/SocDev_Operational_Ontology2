@@ -1,0 +1,3 @@
+이슈 ID,프로젝트 ID,제목,유형,상태,심각도,증상,확신도,근거 참조,영향 시나리오,영향 IP,영향 시스템 블록,영향 KPI,잔존 리스크,해결 주차,최근 활동 주차,목표 주차
+demo_issue_uhd60kpi_ddr_margin_u,project_u,UHD60 KPI 시나리오 DDR 대역폭 마진 목표 미달,bandwidth_overrun,closed,high,"UHD60 recording KPI 측정에서 ISP write burst와 MIF arbitration 창이 겹치며 DDR 대역폭 마진이 목표 아래로 떨어진다.",medium,evidence_u_apv_bw_trace_partial,uhd60_recording_kpi,ip_isp,sys_mif,ddr_bw,분석·조치 기록 없이 종결 — close 근거 미기록.,52,52,54
+demo_issue_abox_resume_regress_u,project_u,resume 직후 오디오 경로 handoff 실패 재발 보고,resume_latency,open,medium,"절전 resume 직후 handoff 실패가 필드에서 다시 재현됐다 — 기존 수정이 무효로 확인되어 이슈를 재개한다.",medium,,video_playback_dou,ip_abox_vts,,,,,52,54

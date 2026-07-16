@@ -50,6 +50,7 @@ Multimedia SoC 개발 운영 온톨로지는 프로젝트·시나리오·IP·이
 ## 문서 목록
 
 - [데모 스토리 — 4장면 진행 가이드](demo-story.md)
+- [디지털 트윈 데모 — 시간·프로세스·가정 실험 진행 가이드](demo-digital-twin.md)
 - [위험 지도 — 홈 화면 읽는 법](risk-map.md)
 - [변경 영향 — 분석 실행과 4분면 해석](change-impact.md)
 - [이슈 분석 — RCA 체인 읽는 법](issues.md)

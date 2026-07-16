@@ -1,0 +1,3 @@
+관측 ID,프로젝트 ID,KPI ID,시나리오 ID,주차,값,단위,측정 단계,출처 종류,출처 참조,근거 ID,비고
+kpi_obs_demo_u_dou_power_w26,project_u,dou_power,uhd60_recording_eis_on,26,1278,mW,current_silicon,power_dashboard,demo:power_dashboard_w26,evidence_u_uhd60_current_power_dashboard,W26 주간 전력 대시보드 반입(데모)
+kpi_obs_demo_v_dou_power_w20,project_v,dou_power,uhd60_recording_eis_on,20,1452,mW,emulator,power_dashboard,demo:power_dashboard_w20,,W20 에뮬레이터 측정 반입(데모)
