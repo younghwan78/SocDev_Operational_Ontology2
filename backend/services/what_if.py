@@ -227,6 +227,15 @@ class WhatIfService:
             ),
         )
 
+    def validate(self, assumptions: list[WhatIfAssumption]) -> list[AppliedAssumption]:
+        """가정 세트 검증 (X2) — overlay 조립만 수행하고 결과는 버린다.
+
+        오류 계약은 run()과 동일 (미존재 대상/미등재 값 등). 깨진 가정 세트가
+        저장되는 것을 막는 관문이다.
+        """
+        _, applied = self._overlay(assumptions)
+        return applied
+
     def candidates(self, project_id: str | None = None) -> WhatIfCandidateList:
         """가정 후보 도출 (설계 18 §3) — 기존 신호 읽기만, 룰 신설·점수 없음.
 

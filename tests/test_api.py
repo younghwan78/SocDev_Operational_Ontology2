@@ -212,6 +212,7 @@ def test_no_write_endpoints(client: TestClient) -> None:
             path.endswith("/advisory")
             or path.endswith("/ask")
             or path.endswith("/what-if")  # P4 — ephemeral 가정 실험, 저장 없음
+            or path.endswith("/what-if/sets")  # X2 — 운영 기록(append-only), 온톨로지 아님
             or "/ingest/" in path
         )
         allowed = {"get", "post"} if is_operation else {"get"}
@@ -452,6 +453,67 @@ def test_what_if_candidates_endpoint(client: TestClient) -> None:
         },
     )
     assert roundtrip.status_code == 200
+
+
+def test_what_if_sets_roundtrip(client: TestClient) -> None:
+    """X2 (설계 19) — 가정 세트 저장→목록→단건 왕복. 온톨로지는 불변."""
+    payload = {
+        "name": "8K30 재발 시나리오",
+        "note": "주간 리뷰 전 공유용",
+        "project_id": "project_u",
+        "assumptions": [
+            {
+                "kind": "issue_status",
+                "target_id": "issue_isp_csid_bw_overrun_u",
+                "value": "open",
+            }
+        ],
+    }
+    saved = client.post("/api/v1/what-if/sets", json=payload)
+    assert saved.status_code == 200
+    body = saved.json()
+    assert body["id"].startswith("wset_")
+    assert body["name"] == payload["name"]
+
+    listed = client.get("/api/v1/what-if/sets?project_id=project_u").json()
+    assert [s["id"] for s in listed][0] == body["id"]  # 최신순
+    single = client.get(f"/api/v1/what-if/sets/{body['id']}")
+    assert single.status_code == 200
+    assert single.json()["assumptions"] == body["assumptions"]
+    # 온톨로지 불변 — 저장은 운영 기록일 뿐, 이슈 상태는 그대로.
+    issues = client.get("/api/v1/issues").json()
+    target = next(i for i in issues if i["issue_id"] == "issue_isp_csid_bw_overrun_u")
+    assert target["status"] == "closed"
+
+
+def test_what_if_sets_reject_broken_assumptions(client: TestClient) -> None:
+    """X2 — 깨진 가정 세트는 저장이 거부된다 (오류 계약은 POST /what-if와 동일)."""
+    missing = client.post(
+        "/api/v1/what-if/sets",
+        json={
+            "name": "깨진 세트",
+            "assumptions": [
+                {"kind": "issue_status", "target_id": "없는_이슈", "value": "open"}
+            ],
+        },
+    )
+    assert missing.status_code == 404
+    bad_value = client.post(
+        "/api/v1/what-if/sets",
+        json={
+            "name": "깨진 세트",
+            "assumptions": [
+                {
+                    "kind": "issue_status",
+                    "target_id": "issue_isp_csid_bw_overrun_u",
+                    "value": "이상한값",
+                }
+            ],
+        },
+    )
+    assert bad_value.status_code == 400
+    unknown = client.get("/api/v1/what-if/sets/wset_없음")
+    assert unknown.status_code == 404
 
 
 def test_as_of_portfolio_and_change_impact(client: TestClient) -> None:

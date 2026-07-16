@@ -7308,6 +7308,111 @@
         ],
         "title": "WhatIfRowChange",
         "type": "object"
+      },
+      "WhatIfSet": {
+        "additionalProperties": false,
+        "description": "저장된 가정 세트 — 이름 붙은 실험 질문 묶음.",
+        "properties": {
+          "assumptions": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfAssumption"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "assumptions",
+          "created_at"
+        ],
+        "title": "WhatIfSet",
+        "type": "object"
+      },
+      "WhatIfSetCreate": {
+        "description": "가정 세트 저장 요청 (X2) — 저장 전 overlay 검증을 통과해야 한다.",
+        "properties": {
+          "assumptions": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfAssumption"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "name": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          }
+        },
+        "required": [
+          "name",
+          "assumptions"
+        ],
+        "title": "WhatIfSetCreate",
+        "type": "object"
       }
     }
   },
@@ -9629,6 +9734,134 @@
           }
         },
         "summary": "What If Candidates"
+      }
+    },
+    "/api/v1/what-if/sets": {
+      "get": {
+        "description": "X2 — 저장된 가정 세트 목록 (최신순).",
+        "operationId": "list_what_if_sets_api_v1_what_if_sets_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WhatIfSet"
+                  },
+                  "title": "Response List What If Sets Api V1 What If Sets Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List What If Sets"
+      },
+      "post": {
+        "description": "X2 (설계 19) — 가정 세트 저장: 운영 기록(append-only), 온톨로지 아님.\n\n저장 전 overlay 조립으로 가정을 검증한다 — 깨진 세트는 저장되지 않는다.\n수정/삭제 API는 없다 (같은 이름 재저장 = 새 기록).",
+        "operationId": "save_what_if_set_api_v1_what_if_sets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatIfSetCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatIfSet"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save What If Set"
+      }
+    },
+    "/api/v1/what-if/sets/{set_id}": {
+      "get": {
+        "description": "X2 — 가정 세트 1건.",
+        "operationId": "get_what_if_set_api_v1_what_if_sets__set_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "set_id",
+            "required": true,
+            "schema": {
+              "title": "Set Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatIfSet"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get What If Set"
       }
     }
   }

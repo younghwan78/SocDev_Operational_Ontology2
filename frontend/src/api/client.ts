@@ -297,6 +297,24 @@ export async function fetchWhatIfCandidates(
   return data;
 }
 
+// X2 (설계 19) — 가정 세트 영속화: 운영 기록(append-only), 적용은 URL 경유 ephemeral.
+export type WhatIfSet = components["schemas"]["WhatIfSet"];
+export type WhatIfSetCreate = components["schemas"]["WhatIfSetCreate"];
+
+export async function fetchWhatIfSets(projectId?: string): Promise<WhatIfSet[]> {
+  const { data, error } = await client.GET("/api/v1/what-if/sets", {
+    params: { query: projectId ? { project_id: projectId } : {} },
+  });
+  if (error || !data) throw new Error("가정 세트 목록 조회 실패");
+  return data;
+}
+
+export async function saveWhatIfSet(body: WhatIfSetCreate): Promise<WhatIfSet> {
+  const { data, error } = await client.POST("/api/v1/what-if/sets", { body });
+  if (error || !data) throw new Error("가정 세트 저장 실패");
+  return data;
+}
+
 // P3 KPI 시계열 — domain time(week) 축 과제 간 비교 (결정론, 수치 점수 없음).
 export type KPISeriesResult = components["schemas"]["KPISeriesResult"];
 export type ProjectKPISeries = components["schemas"]["ProjectKPISeries"];

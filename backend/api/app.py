@@ -99,10 +99,17 @@ from backend.services.source_map import SourceCoverage, SourceCoverageService
 from backend.services.what_if import (
     InvalidAssumptionError,
     UnknownTargetError,
+    WhatIfAssumption,
     WhatIfCandidateList,
     WhatIfRequest,
     WhatIfResult,
     WhatIfService,
+)
+from backend.services.what_if_sets import (
+    InMemoryWhatIfSets,
+    WhatIfSet,
+    WhatIfSetStoreProtocol,
+    build_set,
 )
 
 API_VERSION = "v1"
@@ -136,6 +143,7 @@ class AppServices:
     as_of: AsOfService
     kpi_series: KPISeriesService
     what_if: WhatIfService
+    whatif_sets: WhatIfSetStoreProtocol
 
 
 def build_services(
@@ -144,6 +152,7 @@ def build_services(
     backend_kind = "memory"
     run_store: RunStoreProtocol = InMemoryRunStore()
     ask_log: AskLogStoreProtocol = InMemoryAskLog()
+    whatif_sets: WhatIfSetStoreProtocol = InMemoryWhatIfSets()
     ingest_service: IngestService | None = None
     if repo is None:
         dsn = os.environ.get("SOC_ONTOLOGY_DSN")
@@ -153,6 +162,7 @@ def build_services(
             from backend.db.connection import PooledConnections
             from backend.db.repository import PostgresRepository
             from backend.ingest.service import PostgresIngestWriter
+            from backend.services.what_if_sets import PostgresWhatIfSets
 
             # B2: 단일 공유 커넥션 → 풀. 호출 단위 대여/commit/반납 —
             # idle-in-transaction 제거, DB 재시작 자동 복구, 동시 요청 병렬화.
@@ -160,6 +170,7 @@ def build_services(
             repo = PostgresRepository(source)
             run_store = PostgresRunStore(source)
             ask_log = PostgresAskLog(source)
+            whatif_sets = PostgresWhatIfSets(source)
             ingest_service = IngestService(PostgresIngestWriter(source))
             backend_kind = "postgres"
         else:
@@ -193,6 +204,7 @@ def build_services(
         as_of=AsOfService(repo, ingest_service),
         kpi_series=KPISeriesService(repo),
         what_if=WhatIfService(repo),
+        whatif_sets=whatif_sets,
     )
 
 
@@ -206,6 +218,15 @@ class AskRequest(BaseModel):
     """Ask SoC 질의 요청."""
 
     question: str = Field(min_length=2, description="한국어/영어 혼용 자연어 질의")
+
+
+class WhatIfSetCreate(BaseModel):
+    """가정 세트 저장 요청 (X2) — 저장 전 overlay 검증을 통과해야 한다."""
+
+    name: str = Field(min_length=1, max_length=80)
+    note: str | None = None
+    project_id: str | None = None
+    assumptions: list[WhatIfAssumption] = Field(min_length=1, max_length=10)
 
 
 class IngestMappingInfo(BaseModel):
@@ -721,6 +742,41 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
     def what_if_candidates(project_id: str | None = None) -> WhatIfCandidateList:
         """설계 18 W1 — 가정 후보 제안 (결정론 도출, 제안이지 결정이 아니다)."""
         return services.what_if.candidates(project_id)
+
+    @app.post(f"{prefix}/what-if/sets", response_model=WhatIfSet)
+    def save_what_if_set(request: WhatIfSetCreate) -> WhatIfSet:
+        """X2 (설계 19) — 가정 세트 저장: 운영 기록(append-only), 온톨로지 아님.
+
+        저장 전 overlay 조립으로 가정을 검증한다 — 깨진 세트는 저장되지 않는다.
+        수정/삭제 API는 없다 (같은 이름 재저장 = 새 기록).
+        """
+        try:
+            services.what_if.validate(request.assumptions)
+        except UnknownTargetError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except InvalidAssumptionError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        item = build_set(
+            name=request.name,
+            assumptions=request.assumptions,
+            note=request.note,
+            project_id=request.project_id,
+        )
+        services.whatif_sets.save(item)
+        return item
+
+    @app.get(f"{prefix}/what-if/sets", response_model=list[WhatIfSet])
+    def list_what_if_sets(project_id: str | None = None) -> list[WhatIfSet]:
+        """X2 — 저장된 가정 세트 목록 (최신순)."""
+        return services.whatif_sets.list(project_id)
+
+    @app.get(f"{prefix}/what-if/sets/{{set_id}}", response_model=WhatIfSet)
+    def get_what_if_set(set_id: str) -> WhatIfSet:
+        """X2 — 가정 세트 1건."""
+        item = services.whatif_sets.get(set_id)
+        if item is None:
+            raise HTTPException(status_code=404, detail=f"없는 가정 세트: {set_id}")
+        return item
 
     @app.post(f"{prefix}/ingest/batches/{{batch_id}}/rollback")
     def rollback_ingest_batch(batch_id: str) -> dict[str, int]:

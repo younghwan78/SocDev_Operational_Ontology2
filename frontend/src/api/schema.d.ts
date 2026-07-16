@@ -934,6 +934,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/what-if/sets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List What If Sets
+         * @description X2 — 저장된 가정 세트 목록 (최신순).
+         */
+        get: operations["list_what_if_sets_api_v1_what_if_sets_get"];
+        put?: never;
+        /**
+         * Save What If Set
+         * @description X2 (설계 19) — 가정 세트 저장: 운영 기록(append-only), 온톨로지 아님.
+         *
+         *     저장 전 overlay 조립으로 가정을 검증한다 — 깨진 세트는 저장되지 않는다.
+         *     수정/삭제 API는 없다 (같은 이름 재저장 = 새 기록).
+         */
+        post: operations["save_what_if_set_api_v1_what_if_sets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/what-if/sets/{set_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get What If Set
+         * @description X2 — 가정 세트 1건.
+         */
+        get: operations["get_what_if_set_api_v1_what_if_sets__set_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3714,6 +3761,38 @@ export interface components {
             /** Scenario Name */
             scenario_name: string;
         };
+        /**
+         * WhatIfSet
+         * @description 저장된 가정 세트 — 이름 붙은 실험 질문 묶음.
+         */
+        WhatIfSet: {
+            /** Assumptions */
+            assumptions: components["schemas"]["WhatIfAssumption"][];
+            /** Created At */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Note */
+            note?: string | null;
+            /** Project Id */
+            project_id?: string | null;
+        };
+        /**
+         * WhatIfSetCreate
+         * @description 가정 세트 저장 요청 (X2) — 저장 전 overlay 검증을 통과해야 한다.
+         */
+        WhatIfSetCreate: {
+            /** Assumptions */
+            assumptions: components["schemas"]["WhatIfAssumption"][];
+            /** Name */
+            name: string;
+            /** Note */
+            note?: string | null;
+            /** Project Id */
+            project_id?: string | null;
+        };
     };
     responses: never;
     parameters: never;
@@ -5136,6 +5215,101 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WhatIfCandidateList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_what_if_sets_api_v1_what_if_sets_get: {
+        parameters: {
+            query?: {
+                project_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhatIfSet"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_what_if_set_api_v1_what_if_sets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WhatIfSetCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhatIfSet"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_what_if_set_api_v1_what_if_sets__set_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                set_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhatIfSet"];
                 };
             };
             /** @description Validation Error */

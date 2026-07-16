@@ -2,7 +2,7 @@
  * 위험 지도 홈 — "지금 어떤 시나리오/IP가 위험한가? 근거는?"에 첫 화면에서 답한다.
  * 행=시나리오, 열=IP/시스템 블록, 셀=정성 등급(●◐○). 모든 등급은 근거 패널로 drill-down.
  */
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -10,7 +10,9 @@ import {
   fetchProjects,
   fetchRiskHeatmap,
   fetchWhatIfCandidates,
+  fetchWhatIfSets,
   runWhatIf,
+  saveWhatIfSet,
   type AsOfMeta,
   type BasisItem,
   type HeatmapColumn,
@@ -275,6 +277,7 @@ export function RiskMapPage() {
 
       {panelOpen && (
         <WhatIfWorkbench
+          projectId={projectId}
           candidates={candidates.data?.candidates ?? []}
           candidatesNote={candidates.data?.note_ko}
           candidatesPending={candidates.isPending}
@@ -565,6 +568,7 @@ const GRADE_BADGE: Record<string, string> = {
 
 /** W2 (설계 18) — 가정 실험 워크벤치: 후보 제안 + 바스켓 + 신규 이슈 주입 폼. */
 function WhatIfWorkbench({
+  projectId,
   candidates,
   candidatesNote,
   candidatesPending,
@@ -575,6 +579,7 @@ function WhatIfWorkbench({
   columns,
   onChange,
 }: {
+  projectId?: string;
   candidates: WhatIfCandidate[];
   candidatesNote?: string;
   candidatesPending: boolean;
@@ -711,6 +716,12 @@ function WhatIfWorkbench({
         </div>
       )}
 
+      <WhatIfSetsSection
+        projectId={projectId}
+        assumptions={assumptions}
+        onChange={onChange}
+      />
+
       <h3 className="card-subtitle">{t.whatif_candidates_title}</h3>
       {candidatesPending && <p className="status-msg">{ko.app.loading}</p>}
       {!candidatesPending && candidates.length === 0 && (
@@ -816,6 +827,93 @@ function WhatIfWorkbench({
       >
         {t.whatif_new_issue_submit}
       </button>
+    </div>
+  );
+}
+
+/** X2 (설계 19) — 가정 세트 저장/불러오기: 운영 기록(append-only), 적용은 URL 경유. */
+function WhatIfSetsSection({
+  projectId,
+  assumptions,
+  onChange,
+}: {
+  projectId?: string;
+  assumptions: WhatIfAssumptionInput[];
+  onChange: (next: WhatIfAssumptionInput[]) => void;
+}) {
+  const queryClient = useQueryClient();
+  const sets = useQuery({
+    queryKey: ["whatif-sets", projectId],
+    queryFn: () => fetchWhatIfSets(projectId),
+  });
+  const [name, setName] = useState("");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "error">("idle");
+  const save = async () => {
+    if (!name.trim() || assumptions.length === 0) return;
+    setSaveState("saving");
+    try {
+      await saveWhatIfSet({
+        name: name.trim(),
+        project_id: projectId ?? null,
+        assumptions,
+      });
+      setName("");
+      setSaveState("idle");
+      queryClient.invalidateQueries({ queryKey: ["whatif-sets"] });
+    } catch {
+      setSaveState("error");
+    }
+  };
+
+  return (
+    <div>
+      <h3 className="card-subtitle">{t.whatif_sets_title}</h3>
+      <p className="section-note">{t.whatif_set_note}</p>
+      {assumptions.length > 0 && (
+        <div className="head">
+          <input
+            type="text"
+            className="search-input"
+            placeholder={t.whatif_set_name}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <button
+            type="button"
+            className="chip chip-btn"
+            disabled={!name.trim() || saveState === "saving"}
+            onClick={save}
+          >
+            {t.whatif_set_save}
+          </button>
+        </div>
+      )}
+      {saveState === "error" && <p className="status-msg">{ko.app.error}</p>}
+      {sets.isPending && <p className="status-msg">{ko.app.loading}</p>}
+      {sets.data && sets.data.length === 0 && (
+        <p className="desc">{t.whatif_sets_empty}</p>
+      )}
+      {(sets.data ?? []).map((set) => (
+        <div key={set.id} className="list-item">
+          <div className="head">
+            <span className="title" title={set.id}>
+              {set.name}
+            </span>
+            <span className="desc">
+              {set.assumptions.length}
+              {t.whatif_set_count} · {new Date(set.created_at).toLocaleString("ko-KR")}
+            </span>
+            <button
+              type="button"
+              className="chip chip-btn"
+              onClick={() => onChange(set.assumptions)}
+            >
+              {t.whatif_set_load}
+            </button>
+          </div>
+          {set.note && <p className="desc">{set.note}</p>}
+        </div>
+      ))}
     </div>
   );
 }

@@ -213,3 +213,39 @@ def test_postgres_version_chain_parity(pg_conn, seeded) -> None:
     # P1/P2 공유 읽기 표면 — 컬렉션 단위 조회에도 같은 체인이 보인다 (Memory 패리티).
     collection_log = service.collection_versions("issues")
     assert [v.version for v in collection_log if v.object_id == issue_id] == [1, 2, 3]
+
+
+def test_whatif_sets_store_roundtrip(pg_conn) -> None:
+    """X2 (설계 19) — 가정 세트 저장/목록/단건이 메모리 구현과 패리티를 이룬다."""
+    import uuid
+
+    from backend.services.what_if import WhatIfAssumption
+    from backend.services.what_if_sets import (
+        InMemoryWhatIfSets,
+        PostgresWhatIfSets,
+        build_set,
+    )
+
+    project = f"pg_wset_proj_{uuid.uuid4().hex[:8]}"
+    first = build_set(
+        name="PG 세트 1",
+        assumptions=[WhatIfAssumption(kind="issue_status", target_id="iss", value="open")],
+        project_id=project,
+    )
+    second = build_set(
+        name="PG 세트 2",
+        assumptions=[
+            WhatIfAssumption(kind="issue_week_shift", target_id="iss", week_delta=-2)
+        ],
+        note="주간 리뷰",
+        project_id=project,
+    )
+    memory = InMemoryWhatIfSets()
+    pg = PostgresWhatIfSets(pg_conn)
+    for store in (memory, pg):
+        store.save(first)
+        store.save(second)
+    assert [s.id for s in pg.list(project)] == [s.id for s in memory.list(project)]
+    assert pg.get(first.id) == memory.get(first.id) == first
+    assert pg.get("wset_없음") is None
+    pg_conn.commit()
