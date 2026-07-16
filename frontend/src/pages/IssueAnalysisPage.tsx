@@ -643,7 +643,23 @@ function WhatIfCard({ chainData }: { chainData: RCAChain }) {
         onClick={execute}
       >
         {closed ? t.whatif_button_reopen : t.whatif_button_resolve}
-      </button>
+      </button>{" "}
+      {/* X1 (설계 19) — 같은 가정을 위험 지도 워크벤치에서 오버레이로 본다 */}
+      <Link
+        to={`/?project=${chainData.project_id}&whatif=${encodeURIComponent(
+          JSON.stringify([
+            {
+              kind: "issue_status",
+              target_id: chainData.issue_id,
+              value: assumedValue,
+              note: t.whatif_auto_note,
+            },
+          ]),
+        )}`}
+        className="chip-link"
+      >
+        {t.whatif_open_map}
+      </Link>
       {state.status === "loading" && <p className="status-msg">{ko.app.loading}</p>}
       {state.status === "error" && <p className="status-msg">{ko.app.error}</p>}
       {result && (

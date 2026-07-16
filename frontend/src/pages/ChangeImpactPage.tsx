@@ -255,6 +255,34 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
             {subject.summary}
           </span>
           <span className="badge badge-info">{result.note_ko}</span>
+          {/* X3 (설계 19) — 영향 결과를 new_issue 가정으로 직렬화해 워크벤치로 */}
+          {result.impacted_scenarios.length > 0 && (
+            <Link
+              to={`/?whatif=${encodeURIComponent(
+                JSON.stringify([
+                  {
+                    kind: "new_issue",
+                    target_id: `whatif_ci_${subject.ip_id}${subject.knob ? `_${subject.knob.knob_id}` : ""}`,
+                    title: `${t.whatif_bridge_title_prefix}${subject.summary}${t.whatif_bridge_title_suffix}`,
+                    scenario_ids: result.impacted_scenarios.map(
+                      (scenario) => scenario.scenario_id,
+                    ),
+                    ip_ids: [
+                      ...new Set([
+                        subject.ip_id,
+                        ...result.chained_ips.map((chained) => chained.ip_id),
+                      ]),
+                    ],
+                    severity: "medium",
+                    note: t.whatif_bridge_note,
+                  },
+                ]),
+              )}`}
+              className="chip-link"
+            >
+              ⚗ {t.whatif_bridge}
+            </Link>
+          )}
         </div>
         {subject.knob && (
           <p className="desc" title={subject.knob.knob_id}>
