@@ -84,6 +84,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/as-of/risk/diff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * As Of Risk Diff
+         * @description Y2 (설계 20) — 두 재구성 시점의 위험 지도 차이.
+         *
+         *     비교 로직은 what-if와 동일(heatmap_diff 공유) — 시점 비교와 가정 비교가
+         *     같은 언어(기준→투영 셀 변화)로 읽힌다.
+         */
+        get: operations["as_of_risk_diff_api_v1_as_of_risk_diff_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/as-of/risk/heatmap": {
         parameters: {
             query?: never;
@@ -383,10 +406,11 @@ export interface paths {
         };
         /**
          * Object History
-         * @description 객체 버전 이력 + status 전이 (시간 모델 T2, 읽기 전용).
+         * @description 객체 버전 이력 + status 전이 + 프로세스 판정 (시간 모델 T2 + 설계 20 Y1).
          *
          *     캡처 이전(synthetic fixture 등) 객체는 버전이 없다 — 빈 이력을 돌려준다.
          *     transaction time(recorded_at) 축이다: "twin이 그 시점에 알던 것".
+         *     판정은 모델 등재 컬렉션(issues/action_items/development_events)만 계산된다.
          */
         get: operations["object_history_api_v1_history__collection___object_id__get"];
         put?: never;
@@ -1217,6 +1241,23 @@ export interface components {
         AsOfPortfolioOverview: {
             meta: components["schemas"]["AsOfMeta"];
             overview: components["schemas"]["PortfolioOverview"];
+        };
+        /**
+         * AsOfRiskDiff
+         * @description as-of 두 시점 diff (Y2, 설계 20 §3) — 셀 변화 언어는 what-if와 동일.
+         *
+         *     baseline=ts_a(기준), projected=ts_b(비교). 두 시점 각각의 재생 정직성
+         *     메타를 그대로 동반한다 — 어느 쪽이 가정/근사를 얼마나 썼는지 숨기지 않는다.
+         */
+        AsOfRiskDiff: {
+            /** Changed Rows */
+            changed_rows: components["schemas"]["WhatIfRowChange"][];
+            meta_a: components["schemas"]["AsOfMeta"];
+            meta_b: components["schemas"]["AsOfMeta"];
+            /** Note Ko */
+            note_ko: string;
+            /** Unchanged Scenario Count */
+            unchanged_scenario_count: number;
         };
         /**
          * AsOfRiskHeatmap
@@ -2482,16 +2523,20 @@ export interface components {
             variant_id?: string | null;
         };
         /**
-         * ObjectHistory
-         * @description 이력 조회 응답 — 버전 목록(오름차순) + status 전이 추출.
+         * ObjectHistoryFindings
+         * @description 이력 조회 응답 + 프로세스 판정 (Y1) — 저장 계약 무변경, 읽기 시점 계산.
+         *
+         *     모델 미등재 컬렉션은 findings가 항상 빈 목록이다 (판정 대상이 아니다).
          */
-        ObjectHistory: {
+        ObjectHistoryFindings: {
             /** Collection */
             collection: string;
             /** Object Id */
             object_id: string;
             /** Status Transitions */
             status_transitions?: components["schemas"]["StatusTransition"][];
+            /** Transition Findings */
+            transition_findings?: components["schemas"]["TransitionFinding"][];
             /** Versions */
             versions?: components["schemas"]["ObjectVersion"][];
         };
@@ -3936,6 +3981,42 @@ export interface operations {
             };
         };
     };
+    as_of_risk_diff_api_v1_as_of_risk_diff_get: {
+        parameters: {
+            query: {
+                /** @description 기준 시점 (ISO 8601, transaction time) */
+                ts_a: string;
+                /** @description 비교 시점 (ISO 8601, transaction time) */
+                ts_b: string;
+                /** @description 프로젝트 필터 */
+                project_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AsOfRiskDiff"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     as_of_risk_heatmap_api_v1_as_of_risk_heatmap_get: {
         parameters: {
             query: {
@@ -4400,7 +4481,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ObjectHistory"];
+                    "application/json": components["schemas"]["ObjectHistoryFindings"];
                 };
             };
             /** @description Validation Error */

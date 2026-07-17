@@ -278,6 +278,11 @@ def history_cmd(
             f"status 전이: {transition.from_status or '(생성)'} → {transition.to_status} "
             f"(v{transition.version}, {transition.recorded_at})"
         )
+    # Y1 (설계 20) — 프로세스 판정 (모델 등재 컬렉션만, normal은 출력 없음)
+    from backend.services.process_model import transition_findings
+
+    for finding in transition_findings(collection, history.status_transitions):
+        console.print(f"[yellow]판정[/yellow] [{finding.kind_ko}] {finding.note_ko} (v{finding.version})")
 
 
 @app.command("ingest-rollback")

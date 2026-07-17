@@ -18,7 +18,11 @@ from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.repository import InMemoryRepository
 from backend.ontology import COLLECTIONS, OntologyObject
 from backend.ontology.glossary import value_label
-from backend.services.common import BasisItem
+from backend.services.heatmap_diff import (  # noqa: F401 — 스키마 호환 re-export
+    WhatIfCellChange,
+    WhatIfRowChange,
+    diff_heatmaps,
+)
 from backend.services.risk import RiskService
 
 # 가정 종류 → (컬렉션, 대상 필드, 값 도메인, 한국어 라벨)
@@ -88,33 +92,6 @@ class AppliedAssumption(BaseModel):
     confidence: str = "medium"  # 가정 기반 — high 금지
 
 
-class WhatIfCellChange(BaseModel):
-    """시나리오×IP 셀의 등급 변화 — 재계산 근거 동반."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    ip_id: str
-    baseline_grade: str
-    baseline_grade_ko: str
-    projected_grade: str
-    projected_grade_ko: str
-    projected_basis: list[BasisItem]
-
-
-class WhatIfRowChange(BaseModel):
-    """시나리오 행의 변화 — 종합 등급과 달라진 셀."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    scenario_id: str
-    scenario_name: str
-    baseline_grade: str
-    baseline_grade_ko: str
-    projected_grade: str
-    projected_grade_ko: str
-    changed_cells: list[WhatIfCellChange] = Field(default_factory=list)
-
-
 class IssueSignalChange(BaseModel):
     """이슈 신호 delta (Q2) — 주차 기반 신호(상태/정체/지연/검증)의 변화 사실."""
 
@@ -177,45 +154,8 @@ class WhatIfService:
         overlay, applied = self._overlay(assumptions)
         baseline = RiskService(self._repo).heatmap()
         projected = RiskService(overlay).heatmap()
-
-        baseline_rows = {row.scenario_id: row for row in baseline.rows}
-        projected_rows = {row.scenario_id: row for row in projected.rows}
-        changed: list[WhatIfRowChange] = []
-        unchanged = 0
-        for scenario_id in sorted(set(baseline_rows) | set(projected_rows)):
-            before = baseline_rows.get(scenario_id)
-            after = projected_rows.get(scenario_id)
-            if before is None or after is None:
-                # 가정은 시나리오 집합을 바꾸지 않는다 — 방어적으로 건너뜀.
-                continue
-            before_cells = {c.ip_id: c for c in before.cells}
-            after_cells = {c.ip_id: c for c in after.cells}
-            cell_changes = [
-                WhatIfCellChange(
-                    ip_id=ip_id,
-                    baseline_grade=before_cells[ip_id].grade,
-                    baseline_grade_ko=before_cells[ip_id].grade_ko,
-                    projected_grade=after_cells[ip_id].grade,
-                    projected_grade_ko=after_cells[ip_id].grade_ko,
-                    projected_basis=after_cells[ip_id].basis,
-                )
-                for ip_id in sorted(set(before_cells) & set(after_cells))
-                if before_cells[ip_id].grade != after_cells[ip_id].grade
-            ]
-            if before.overall_grade == after.overall_grade and not cell_changes:
-                unchanged += 1
-                continue
-            changed.append(
-                WhatIfRowChange(
-                    scenario_id=scenario_id,
-                    scenario_name=before.scenario_name,
-                    baseline_grade=before.overall_grade,
-                    baseline_grade_ko=before.overall_grade_ko,
-                    projected_grade=after.overall_grade,
-                    projected_grade_ko=after.overall_grade_ko,
-                    changed_cells=cell_changes,
-                )
-            )
+        # 비교 로직은 as-of diff와 공유 (heatmap_diff — 설계 20 §3).
+        changed, unchanged = diff_heatmaps(baseline, projected)
         return WhatIfResult(
             assumptions=applied,
             changed_rows=changed,

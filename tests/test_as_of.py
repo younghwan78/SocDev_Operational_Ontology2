@@ -137,3 +137,24 @@ def test_naive_and_z_suffix_timestamps_accepted() -> None:
     for ts in ("2026-06-15T00:00:00Z", "2026-06-15T00:00:00"):
         snapshot, _ = service.snapshot(ts)
         assert _status_map(snapshot)["iss_a"] == "closed"
+
+
+
+# ------------------------------------------------- Y2 두 시점 diff (설계 20 §3)
+
+
+def test_diff_heatmaps_same_language_as_what_if() -> None:
+    """Y2 — 비교 로직 공유: 이슈 상태만 다른 두 우주의 diff가 셀 변화로 나온다."""
+    from backend.services.heatmap_diff import diff_heatmaps
+    from tests.test_what_if import _repo as what_if_repo
+
+    before = RiskService(what_if_repo("open")).heatmap()
+    after = RiskService(what_if_repo("resolved")).heatmap()
+    changed, unchanged = diff_heatmaps(before, after)
+    assert [(r.scenario_id, r.baseline_grade, r.projected_grade) for r in changed] == [
+        ("scn_x", "high", "medium")
+    ]
+    assert changed[0].changed_cells[0].ip_id == "ip_x"
+    # 동일 입력 동일 출력 — 같은 지도끼리는 변화 없음.
+    same_changed, same_unchanged = diff_heatmaps(before, before)
+    assert same_changed == [] and same_unchanged == 1

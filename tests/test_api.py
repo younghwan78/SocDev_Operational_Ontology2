@@ -516,6 +516,29 @@ def test_what_if_sets_reject_broken_assumptions(client: TestClient) -> None:
     assert unknown.status_code == 404
 
 
+def test_as_of_risk_diff_endpoint(client: TestClient) -> None:
+    """Y2 (설계 20) — 같은 ts끼리는 변화 없음, 두 메타 동반, 잘못된 ts는 400."""
+    same = client.get(
+        "/api/v1/as-of/risk/diff?ts_a=2100-01-01T00:00:00Z&ts_b=2100-01-01T00:00:00Z"
+    )
+    assert same.status_code == 200
+    body = same.json()
+    assert body["changed_rows"] == []
+    assert body["unchanged_scenario_count"] >= 1
+    assert body["meta_a"]["as_of"] == body["meta_b"]["as_of"]
+    bad = client.get("/api/v1/as-of/risk/diff?ts_a=이상한값&ts_b=2100-01-01T00:00:00Z")
+    assert bad.status_code == 400
+
+
+def test_history_carries_transition_findings(client: TestClient) -> None:
+    """Y1 (설계 20) — history 응답에 프로세스 판정 필드가 병기된다 (빈 이력 포함)."""
+    response = client.get("/api/v1/history/issues/issue_isp_csid_bw_overrun_u")
+    assert response.status_code == 200
+    body = response.json()
+    assert "transition_findings" in body
+    assert body["transition_findings"] == []  # 메모리 클라이언트 — 버전 이력 없음
+
+
 def test_as_of_portfolio_and_change_impact(client: TestClient) -> None:
     """Q3 — as-of 확대 표면: 미래 ts 재생은 현재 뷰와 동일, 오류 계약 동일."""
     portfolio = client.get("/api/v1/as-of/portfolio/overview?ts=2100-01-01T00:00:00Z")

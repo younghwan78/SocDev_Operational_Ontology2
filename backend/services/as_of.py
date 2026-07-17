@@ -26,6 +26,7 @@ from backend.loaders.protocols import RepositoryProtocol
 from backend.loaders.repository import InMemoryRepository
 from backend.ontology import COLLECTIONS, OntologyObject
 from backend.services.change_impact import ChangeImpactResult
+from backend.services.heatmap_diff import WhatIfRowChange
 from backend.services.portfolio import PortfolioOverview
 from backend.services.risk import RiskHeatmap
 
@@ -69,6 +70,22 @@ class AsOfChangeImpact(BaseModel):
 
     meta: AsOfMeta
     result: ChangeImpactResult
+
+
+class AsOfRiskDiff(BaseModel):
+    """as-of 두 시점 diff (Y2, 설계 20 §3) — 셀 변화 언어는 what-if와 동일.
+
+    baseline=ts_a(기준), projected=ts_b(비교). 두 시점 각각의 재생 정직성
+    메타를 그대로 동반한다 — 어느 쪽이 가정/근사를 얼마나 썼는지 숨기지 않는다.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    meta_a: AsOfMeta
+    meta_b: AsOfMeta
+    changed_rows: list[WhatIfRowChange]
+    unchanged_scenario_count: int
+    note_ko: str
 
 
 class InvalidTimestampError(ValueError):

@@ -31,7 +31,6 @@ from backend.agents.ask_runner import PRESET_QUESTIONS, AskPreview, AskResult, A
 from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
 from backend.agents.runner import AdvisoryRunner
 from backend.api.observability import RequestTimer, log_error, log_request, setup_logging
-from backend.ingest.history import ObjectHistory
 from backend.ingest.service import (
     IngestBatch,
     IngestError,
@@ -56,6 +55,7 @@ from backend.services.action_draft import ActionDraft, ActionDraftService
 from backend.services.as_of import (
     AsOfChangeImpact,
     AsOfPortfolioOverview,
+    AsOfRiskDiff,
     AsOfRiskHeatmap,
     AsOfService,
     InvalidTimestampError,
@@ -68,6 +68,7 @@ from backend.services.change_impact import (
     UnknownIPError,
 )
 from backend.services.evidence_ladder import EvidenceLadder, EvidenceLadderService
+from backend.services.heatmap_diff import diff_heatmaps
 from backend.services.kpi_series import (
     KPICatalogEntry,
     KPINotFoundError,
@@ -75,6 +76,7 @@ from backend.services.kpi_series import (
     KPISeriesService,
 )
 from backend.services.portfolio import PortfolioOverview, PortfolioService
+from backend.services.process_model import ObjectHistoryFindings, annotate_history
 from backend.services.rca import (
     IssueNotFoundError,
     IssueSummary,
@@ -476,6 +478,37 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             meta=meta, heatmap=RiskService(snapshot_repo).heatmap(project_id)
         )
 
+    @app.get(f"{prefix}/as-of/risk/diff", response_model=AsOfRiskDiff)
+    def as_of_risk_diff(
+        ts_a: str = Query(description="기준 시점 (ISO 8601, transaction time)"),
+        ts_b: str = Query(description="비교 시점 (ISO 8601, transaction time)"),
+        project_id: str | None = Query(default=None, description="프로젝트 필터"),
+    ) -> AsOfRiskDiff:
+        """Y2 (설계 20) — 두 재구성 시점의 위험 지도 차이.
+
+        비교 로직은 what-if와 동일(heatmap_diff 공유) — 시점 비교와 가정 비교가
+        같은 언어(기준→투영 셀 변화)로 읽힌다.
+        """
+        try:
+            snap_a, meta_a = services.as_of.snapshot(ts_a)
+            snap_b, meta_b = services.as_of.snapshot(ts_b)
+        except InvalidTimestampError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        changed, unchanged = diff_heatmaps(
+            RiskService(snap_a).heatmap(project_id),
+            RiskService(snap_b).heatmap(project_id),
+        )
+        return AsOfRiskDiff(
+            meta_a=meta_a,
+            meta_b=meta_b,
+            changed_rows=changed,
+            unchanged_scenario_count=unchanged,
+            note_ko=(
+                "두 시점의 재생 상태를 같은 판정 룰로 재계산해 비교했다 — "
+                "기준(ts_a)→비교(ts_b) 등급 변화만 나열한다 (결정론)."
+            ),
+        )
+
     @app.get(f"{prefix}/as-of/portfolio/overview", response_model=AsOfPortfolioOverview)
     def as_of_portfolio_overview(
         ts: str = Query(description="ISO 8601 시각 — transaction time"),
@@ -713,16 +746,20 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         """반입 이력 (최신순)."""
         return services.ingest.list_batches()
 
-    @app.get(f"{prefix}/history/{{collection}}/{{object_id}}", response_model=ObjectHistory)
-    def object_history(collection: str, object_id: str) -> ObjectHistory:
-        """객체 버전 이력 + status 전이 (시간 모델 T2, 읽기 전용).
+    @app.get(
+        f"{prefix}/history/{{collection}}/{{object_id}}",
+        response_model=ObjectHistoryFindings,
+    )
+    def object_history(collection: str, object_id: str) -> ObjectHistoryFindings:
+        """객체 버전 이력 + status 전이 + 프로세스 판정 (시간 모델 T2 + 설계 20 Y1).
 
         캡처 이전(synthetic fixture 등) 객체는 버전이 없다 — 빈 이력을 돌려준다.
         transaction time(recorded_at) 축이다: "twin이 그 시점에 알던 것".
+        판정은 모델 등재 컬렉션(issues/action_items/development_events)만 계산된다.
         """
         if collection not in COLLECTIONS:
             raise HTTPException(status_code=404, detail=f"알 수 없는 컬렉션: {collection}")
-        return services.ingest.history(collection, object_id)
+        return annotate_history(services.ingest.history(collection, object_id))
 
     @app.post(f"{prefix}/what-if", response_model=WhatIfResult)
     def what_if(request: WhatIfRequest) -> WhatIfResult:
