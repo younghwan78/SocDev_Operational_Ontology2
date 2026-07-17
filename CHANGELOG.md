@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## Digital Twin 3라운드 — 타 컬렉션 프로세스 모델·as-of 시점 비교·변경 영향 as-of UI (2026-07-17)
+
+> 설계: `internal_docs/design/20_digital_twin_round3.md`. CURRENT_TASK에 남아
+> 있던 digital twin 후보 3건 — D4·Stage 13+는 사내 일정/표준 확정 전제로 범위 외.
+
+- **Y1 타 컬렉션 프로세스 모델**: `process_model.py`를 레지스트리로 일반화 —
+  판정 룰은 하나, 단계 사상만 컬렉션별 계약. action_items(미착수/진행{blocked
+  포함}/종결{cancelled 포함} 3단계), development_events(접수/검토/처리 3단계)
+  추가. `GET /history/...` 응답에 `transition_findings` 병기
+  (`ObjectHistoryFindings` — additive, 모델 미등재 컬렉션은 빈 목록) +
+  CLI `history` 판정 출력. 이슈 RCA 표면은 wrapper로 무변경.
+- **Y2 as-of 두 시점 diff**: what-if의 지도 비교를 `heatmap_diff.py`로 추출
+  (모델 이름 유지 — 스키마 안정, what_if는 re-export). "가정 비교"와 "시점
+  비교"가 같은 언어. `GET /as-of/risk/diff?ts_a=&ts_b=&project_id=` →
+  두 시점 각각의 정직성 메타 + 변경 행. UI: 위험 지도에 **비교 시점** 입력
+  (`asofb`) — 기본 지도는 기준 시점, 변경 셀은 비교 시점 등급을 점선
+  오버레이(라벨 "기준 시점 → 비교 시점") + 비교 배너.
+- **Y3 변경 영향 as-of UI**: 설계 17 §4에서 보류했던 노출 — 변경 영향 폼에
+  시점 재구성 입력(URL `asof`), `GET /as-of/change-impact` 전환 + 정직성 배너.
+  계약 신설 없음.
+- 검증: backend 282 / PG soc_test 12 / ruff / mypy / validate-data 오류 0 /
+  frontend build·34 tests·lint / 실서버 — 데모 데이터로 Y2 diff가 "배치1 전
+  중간 → 후 높음"을 점선 오버레이로 재현함을 확인.
+
 ## what-if 워크벤치 심화 — 화면 연결·가정 세트 영속화 (2026-07-17)
 
 > 설계: `internal_docs/design/19_whatif_depth.md`. 설계 18의 후속 3건 —
