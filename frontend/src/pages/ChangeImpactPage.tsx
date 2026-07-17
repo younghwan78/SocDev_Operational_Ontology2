@@ -7,8 +7,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
+  fetchAsOfChangeImpact,
   fetchChangeImpact,
   fetchChangeImpactOptions,
+  type AsOfMeta,
   type BasisItem,
   type ChangeImpactParams,
   type ChangeImpactResult,
@@ -59,9 +61,18 @@ export function ChangeImpactPage() {
       : null,
   );
 
-  const result = useQuery({
-    queryKey: ["change-impact", params],
-    queryFn: () => fetchChangeImpact(params!),
+  // Y3 (설계 20): asof가 있으면 시점 재구성 결과로 전환 — 계약은 동일, 배너로 명시.
+  const asOfParam = searchParams.get("asof");
+  const asOfTs = asOfParam ? new Date(asOfParam).toISOString() : null;
+  const result = useQuery<{ result: ChangeImpactResult; meta: AsOfMeta | null }>({
+    queryKey: ["change-impact", params, asOfTs],
+    queryFn: async () => {
+      if (asOfTs) {
+        const asOf = await fetchAsOfChangeImpact(asOfTs, params!);
+        return { result: asOf.result, meta: asOf.meta };
+      }
+      return { result: await fetchChangeImpact(params!), meta: null };
+    },
     enabled: params !== null,
   });
 
@@ -147,6 +158,26 @@ export function ChangeImpactPage() {
           </select>
           <span className="q-text">{t.q_in}</span>
           <span className="q-text">{t.q_tail}</span>
+          <label className="filter-label" htmlFor="ci-asof">
+            {ko.risk.asof_label}
+          </label>
+          <input
+            id="ci-asof"
+            type="datetime-local"
+            className="search-input"
+            value={asOfParam ?? ""}
+            onChange={(event) =>
+              setSearchParams(
+                (previous) => {
+                  const next = new URLSearchParams(previous);
+                  if (event.target.value) next.set("asof", event.target.value);
+                  else next.delete("asof");
+                  return next;
+                },
+                { replace: true },
+              )
+            }
+          />
           <button
             type="button"
             className="run-btn"
@@ -190,9 +221,20 @@ export function ChangeImpactPage() {
           {t.analysis_failed}
         </p>
       )}
+      {/* Y3 as-of 정직성 배너 — 위험 지도와 동일 패턴 */}
+      {result.data?.meta && !result.isFetching && (
+        <p className="section-note rca-banner">
+          ⏱ {ko.risk.asof_banner}:{" "}
+          {new Date(result.data.meta.as_of).toLocaleString("ko-KR")} —{" "}
+          {ko.risk.asof_replayed} {result.data.meta.replayed_versions} ·{" "}
+          {ko.risk.asof_assumed} {result.data.meta.precapture_assumed_objects} ·{" "}
+          {ko.risk.asof_approx} {result.data.meta.approximated_objects} ·{" "}
+          {ko.risk.asof_excluded} {result.data.meta.excluded_objects}
+        </p>
+      )}
       {params !== null && result.data && !result.isFetching && (
         <div aria-live="polite">
-          <ImpactResult result={result.data} />
+          <ImpactResult result={result.data.result} />
         </div>
       )}
     </div>

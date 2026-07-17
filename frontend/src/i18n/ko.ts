@@ -229,6 +229,10 @@ export const ko = {
     asof_assumed: "캡처 이전 가정",
     asof_approx: "근사",
     asof_excluded: "당시 없음",
+    // Y2 (설계 20) — 두 시점 비교
+    asof_diff_label: "비교 시점",
+    asof_diff_banner: "시점 비교(as-of diff)",
+    asof_diff_cell: "기준 시점 → 비교 시점",
     // W2 (설계 18) — 가정 실험 워크벤치
     whatif_toggle: "가정 실험",
     whatif_banner: "개 가정 적용 중 — 실데이터가 아니며 저장되지 않습니다",

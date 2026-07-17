@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
+  fetchAsOfRiskDiff,
   fetchAsOfRiskHeatmap,
   fetchProjects,
   fetchRiskHeatmap,
@@ -114,13 +115,26 @@ export function RiskMapPage() {
   // P2 T3 as-of: URL의 asof(datetime-local 값)가 있으면 시점 재구성 뷰로 전환.
   const asOfParam = searchParams.get("asof");
   const asOfTs = asOfParam ? new Date(asOfParam).toISOString() : null;
+  // Y2 (설계 20) 두 시점 diff: asof(기준)+asofb(비교) — 기본 지도는 기준 시점,
+  // 변경 셀은 비교 시점 등급을 점선 오버레이로 (워크벤치와 같은 시각 문법).
+  const asOfBParam = searchParams.get("asofb");
+  const asOfBTs = asOfTs && asOfBParam ? new Date(asOfBParam).toISOString() : null;
+  const asOfDiff = useQuery({
+    queryKey: ["asof-risk-diff", projectId, asOfTs, asOfBTs],
+    queryFn: () => fetchAsOfRiskDiff(asOfTs ?? "", asOfBTs ?? "", projectId),
+    enabled: Boolean(asOfTs && asOfBTs && projectId),
+  });
   // W2 (설계 18) 가정 실험 워크벤치: URL whatif=가정 세트(JSON) — 링크 공유가 곧 재현.
   const whatIfParam = searchParams.get("whatif");
   const assumptions = parseWhatIfParam(whatIfParam);
   const [panelOpen, setPanelOpen] = useState(assumptions.length > 0);
   const setAssumptions = (next: WhatIfAssumptionInput[]) =>
     // asof와 상호 배타 (설계 18 §4) — 과거 상태 위에 가정을 얹지 않는다.
-    updateParams({ whatif: next.length > 0 ? JSON.stringify(next) : null, asof: null });
+    updateParams({
+      whatif: next.length > 0 ? JSON.stringify(next) : null,
+      asof: null,
+      asofb: null,
+    });
   const whatIf = useQuery<WhatIfResult>({
     queryKey: ["whatif-run", whatIfParam],
     queryFn: () => runWhatIf(assumptions),
@@ -169,10 +183,14 @@ export function RiskMapPage() {
       : gradeFilter === "medium"
         ? rows.filter((row) => row.overall_grade !== "low")
         : rows;
-  // 가정 오버레이 — 변경 행만 투영 표기, 나머지는 평소와 동일 (정직한 구분).
+  // 오버레이 — 가정(what-if) 또는 시점 비교(as-of diff)의 변경 행만 투영 표기.
+  // 두 모드는 상호 배타이며, 점선 = "지금 실제가 아닌 값"이라는 문법을 공유한다.
   const whatIfResult = assumptions.length > 0 && !asOfTs ? whatIf.data : undefined;
+  const diffResult = asOfBTs ? asOfDiff.data : undefined;
+  const overlayRows = whatIfResult?.changed_rows ?? diffResult?.changed_rows ?? [];
+  const overlayCellLabel = whatIfResult ? t.whatif_projected_cell : t.asof_diff_cell;
   const changedRowById = new Map<string, WhatIfRowChange>(
-    (whatIfResult?.changed_rows ?? []).map((change) => [change.scenario_id, change]),
+    overlayRows.map((change) => [change.scenario_id, change]),
   );
   const selectedRow = selection
     ? rows.find((row) => row.scenario_id === selection.scenarioId)
@@ -227,13 +245,25 @@ export function RiskMapPage() {
           onChange={(event) => updateParams({ asof: event.target.value || null })}
         />
         {asOfParam && (
-          <button
-            type="button"
-            className="chip chip-btn"
-            onClick={() => updateParams({ asof: null })}
-          >
-            {t.asof_clear}
-          </button>
+          <>
+            <label className="filter-label" htmlFor="asofb-input">
+              {t.asof_diff_label}
+            </label>
+            <input
+              id="asofb-input"
+              type="datetime-local"
+              className="search-input"
+              value={asOfBParam ?? ""}
+              onChange={(event) => updateParams({ asofb: event.target.value || null })}
+            />
+            <button
+              type="button"
+              className="chip chip-btn"
+              onClick={() => updateParams({ asof: null, asofb: null })}
+            >
+              {t.asof_clear}
+            </button>
+          </>
         )}
         <button
           type="button"
@@ -254,6 +284,19 @@ export function RiskMapPage() {
           {asOfMeta.approximated_objects} · {t.asof_excluded} {asOfMeta.excluded_objects}
           <br />
           {asOfMeta.note_ko}
+        </p>
+      )}
+
+      {/* Y2 시점 비교 배너 — 기준→비교 시점의 변경 요약 (점선 = 비교 시점 등급) */}
+      {diffResult && asOfMeta && (
+        <p className="section-note rca-banner">
+          ⇄ {t.asof_diff_banner}:{" "}
+          {new Date(diffResult.meta_a.as_of).toLocaleString("ko-KR")} →{" "}
+          {new Date(diffResult.meta_b.as_of).toLocaleString("ko-KR")} —{" "}
+          {t.whatif_result_changed} {diffResult.changed_rows.length} ·{" "}
+          {t.whatif_result_unchanged} {diffResult.unchanged_scenario_count}
+          <br />
+          {diffResult.note_ko}
         </p>
       )}
 
@@ -363,6 +406,7 @@ export function RiskMapPage() {
                     selection={selection}
                     onSelect={setSelection}
                     change={changedRowById.get(row.scenario_id)}
+                    changeLabel={overlayCellLabel}
                   />
                 ))}
               </tbody>
@@ -392,6 +436,7 @@ function HeatmapRow({
   selection,
   onSelect,
   change,
+  changeLabel,
 }: {
   row: ScenarioRiskRow;
   columns: HeatmapColumn[];
@@ -399,7 +444,9 @@ function HeatmapRow({
   selection: Selection | null;
   onSelect: (selection: Selection) => void;
   change?: WhatIfRowChange;
+  changeLabel?: string;
 }) {
+  const overlayLabel = changeLabel ?? t.whatif_projected_cell;
   const cellByIp = new Map(row.cells.map((cell) => [cell.ip_id, cell]));
   // W2 가정 오버레이 — 투영 등급은 기준과 항상 구분 표기한다 (점선 링 + title).
   const projectedByIp = new Map((change?.changed_cells ?? []).map((c) => [c.ip_id, c]));
@@ -442,8 +489,8 @@ function HeatmapRow({
             <td key={ipId} className={tdClass}>
               <button
                 type="button"
-                title={`${t.whatif_projected_cell}: ${projected.baseline_grade_ko} → ${projected.projected_grade_ko} — ${row.scenario_id} × ${ipId}`}
-                aria-label={`${row.scenario_name} × ${ipId} ${t.whatif_projected_cell}: ${projected.baseline_grade_ko} → ${projected.projected_grade_ko}`}
+                title={`${overlayLabel}: ${projected.baseline_grade_ko} → ${projected.projected_grade_ko} — ${row.scenario_id} × ${ipId}`}
+                aria-label={`${row.scenario_name} × ${ipId} ${overlayLabel}: ${projected.baseline_grade_ko} → ${projected.projected_grade_ko}`}
                 className={`cell-btn cell-projected ${GRADE_CLASS[projected.projected_grade]} ${
                   isSelected(ipId) ? "cell-selected" : ""
                 }`}
@@ -473,7 +520,7 @@ function HeatmapRow({
         {change && change.projected_grade !== change.baseline_grade ? (
           <button
             type="button"
-            title={`${t.whatif_projected_cell}: ${change.baseline_grade_ko} → ${change.projected_grade_ko} — ${row.scenario_id}`}
+            title={`${overlayLabel}: ${change.baseline_grade_ko} → ${change.projected_grade_ko} — ${row.scenario_id}`}
             className={`cell-btn cell-projected ${GRADE_CLASS[change.projected_grade]} ${
               isSelected(null) ? "cell-selected" : ""
             }`}

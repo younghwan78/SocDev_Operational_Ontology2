@@ -178,7 +178,8 @@ export async function fetchIssueRCA(issueId: string): Promise<RCAChain> {
   return data;
 }
 
-export type ObjectHistory = components["schemas"]["ObjectHistory"];
+// Y1 (설계 20): history 응답에 프로세스 판정 병기 — 기존 필드는 그대로 (additive).
+export type ObjectHistory = components["schemas"]["ObjectHistoryFindings"];
 export type ObjectVersion = components["schemas"]["ObjectVersion"];
 export type StatusTransition = components["schemas"]["StatusTransition"];
 
@@ -357,7 +358,7 @@ export async function fetchAsOfRiskHeatmap(
   return data;
 }
 
-// Q3 as-of 확대 — 포트폴리오 (변경 영향 as-of는 API 표면만, UI 노출 보류 — 설계 17 §4).
+// Q3 as-of 확대 — 포트폴리오.
 export type AsOfPortfolioOverview = components["schemas"]["AsOfPortfolioOverview"];
 
 export async function fetchAsOfPortfolio(ts: string): Promise<AsOfPortfolioOverview> {
@@ -365,6 +366,47 @@ export async function fetchAsOfPortfolio(ts: string): Promise<AsOfPortfolioOverv
     params: { query: { ts } },
   });
   if (error || !data) throw new Error("as-of portfolio 조회 실패");
+  return data;
+}
+
+// Y2 (설계 20) — 두 시점 diff: 셀 변화 언어는 what-if와 동일 (heatmap_diff 공유).
+export type AsOfRiskDiff = components["schemas"]["AsOfRiskDiff"];
+
+export async function fetchAsOfRiskDiff(
+  tsA: string,
+  tsB: string,
+  projectId?: string,
+): Promise<AsOfRiskDiff> {
+  const { data, error } = await client.GET("/api/v1/as-of/risk/diff", {
+    params: {
+      query: projectId
+        ? { ts_a: tsA, ts_b: tsB, project_id: projectId }
+        : { ts_a: tsA, ts_b: tsB },
+    },
+  });
+  if (error || !data) throw new Error("as-of diff 조회 실패");
+  return data;
+}
+
+// Y3 (설계 20) — 변경 영향 as-of UI 노출 (계약은 설계 17 §4 그대로).
+export type AsOfChangeImpact = components["schemas"]["AsOfChangeImpact"];
+
+export async function fetchAsOfChangeImpact(
+  ts: string,
+  params: ChangeImpactParams,
+): Promise<AsOfChangeImpact> {
+  const { data, error } = await client.GET("/api/v1/as-of/change-impact", {
+    params: {
+      query: {
+        ts,
+        ip_id: params.ipId,
+        ...(params.knobId ? { knob_id: params.knobId } : {}),
+        ...(params.capabilityId ? { capability_id: params.capabilityId } : {}),
+        ...(params.mode ? { mode: params.mode } : {}),
+      },
+    },
+  });
+  if (error || !data) throw new Error("as-of change-impact 조회 실패");
   return data;
 }
 
