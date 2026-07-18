@@ -31,6 +31,8 @@ class WhatIfSet(BaseModel):
     project_id: str | None = None
     assumptions: list[WhatIfAssumption] = Field(min_length=1, max_length=10)
     created_at: str
+    # R4 (설계 21): 저장 행위자 — X-SOC-Actor 헤더 유래, 미설정 시 None.
+    created_by: str | None = None
 
 
 def build_set(
@@ -38,6 +40,7 @@ def build_set(
     assumptions: list[WhatIfAssumption],
     note: str | None = None,
     project_id: str | None = None,
+    created_by: str | None = None,
 ) -> WhatIfSet:
     return WhatIfSet(
         id=f"wset_{uuid.uuid4().hex[:10]}",
@@ -46,6 +49,7 @@ def build_set(
         project_id=project_id,
         assumptions=assumptions,
         created_at=datetime.now(UTC).isoformat(),
+        created_by=created_by,
     )
 
 

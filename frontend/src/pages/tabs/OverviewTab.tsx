@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   fetchKPICatalog,
   fetchKPISeries,
+  fetchRiskHeatmap,
   type ProjectKPISeries,
   type ScenarioAnalysis,
 } from "../../api/client";
@@ -19,12 +21,58 @@ const GAP_BADGE: Record<string, string> = {
   confidence_blocked: "badge-danger",
 };
 
+const GRADE_BADGE: Record<string, string> = {
+  high: "risk-high-badge",
+  medium: "risk-medium-badge",
+  low: "risk-low-badge",
+};
+
+/** R7 (설계 21) — 위험 지도 왕복: 상세 상단에 동일 판정의 등급·근거 요약. */
+function RiskSummaryCard({ scenarioId }: { scenarioId: string }) {
+  const heatmap = useQuery({
+    queryKey: ["risk-heatmap", "all", null],
+    queryFn: () => fetchRiskHeatmap(),
+    staleTime: 60_000,
+  });
+  const row = heatmap.data?.rows.find((candidate) => candidate.scenario_id === scenarioId);
+  if (heatmap.isPending || heatmap.isError) return null;
+  return (
+    <div className="card">
+      <div className="head">
+        <h2 className="card-title">{t.risk_summary_title}</h2>
+        {row && (
+          <span className={`badge ${GRADE_BADGE[row.overall_grade] ?? "badge-info"}`}>
+            {row.overall_grade_ko}
+          </span>
+        )}
+        {row && (
+          <Link
+            to={`/?project=${row.project_ids[0] ?? "all"}&cell=${scenarioId}:overall`}
+            className="chip-link"
+          >
+            {t.risk_open_map}
+          </Link>
+        )}
+      </div>
+      {!row && <p className="desc">{t.risk_no_row}</p>}
+      {row &&
+        row.overall_basis.slice(0, 3).map((basis, index) => (
+          <p key={`${basis.ref_id}-${index}`} className="desc" title={basis.ref_id}>
+            <span className="badge badge-info">{basis.rule_ko}</span> {basis.description}
+          </p>
+        ))}
+      {row && <p className="section-note">{t.risk_summary_note}</p>}
+    </div>
+  );
+}
+
 export function OverviewTab({ analysis }: { analysis: ScenarioAnalysis }) {
   const { scenario } = analysis;
   const label = useLabels();
   const valueLabel = useValueLabels();
   return (
     <div>
+      <RiskSummaryCard scenarioId={scenario.id} />
       <div className="card">
         <h2 className="card-title">{t.section_basic}</h2>
         <dl className="kv">

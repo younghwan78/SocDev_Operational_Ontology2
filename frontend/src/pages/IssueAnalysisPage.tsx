@@ -21,6 +21,7 @@ import {
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
 import { useValueLabels } from "../hooks/useValueLabels";
+import { ErrorState } from "../components/ErrorState";
 import { ko } from "../i18n/ko";
 
 const t = ko.issues;
@@ -174,7 +175,8 @@ export function IssueAnalysisPage() {
     );
 
   if (issues.isPending) return <p className="status-msg">{ko.app.loading}</p>;
-  if (issues.isError) return <p className="status-msg">{ko.app.error}</p>;
+  if (issues.isError)
+    return <ErrorState error={issues.error} onRetry={() => void issues.refetch()} />;
 
   return (
     <div>
@@ -328,7 +330,9 @@ export function IssueAnalysisPage() {
         <div>
           {selectedIssue === null && <p className="status-msg">{t.select_hint}</p>}
           {chain.isFetching && <p className="status-msg">{ko.app.loading}</p>}
-          {chain.isError && <p className="status-msg">{ko.app.error}</p>}
+          {chain.isError && (
+            <ErrorState error={chain.error} onRetry={() => void chain.refetch()} />
+          )}
           {selectedIssue !== null && chain.data && !chain.isFetching && (
             <RCAFlow chainData={chain.data} />
           )}

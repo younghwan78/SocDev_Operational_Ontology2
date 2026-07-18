@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { NavLink, useParams } from "react-router-dom";
 import { fetchScenarioAnalysis } from "../api/client";
+import { ErrorState } from "../components/ErrorState";
 import { TraceabilityPanel } from "../components/TraceabilityPanel";
 import { ko } from "../i18n/ko";
 import { ActionDraftTab } from "./tabs/ActionDraftTab";
@@ -29,7 +30,8 @@ export function ScenarioDetailPage() {
 
   if (!scenarioId) return <p className="status-msg">{ko.scenario_detail.not_found}</p>;
   if (analysis.isPending) return <p className="status-msg">{ko.app.loading}</p>;
-  if (analysis.isError) return <p className="status-msg">{ko.scenario_detail.not_found}</p>;
+  if (analysis.isError)
+    return <ErrorState error={analysis.error} onRetry={() => void analysis.refetch()} />;
 
   const data = analysis.data;
 

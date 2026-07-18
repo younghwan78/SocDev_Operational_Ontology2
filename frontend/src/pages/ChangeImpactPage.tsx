@@ -18,6 +18,7 @@ import {
   type SimilarCase,
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
+import { ErrorState } from "../components/ErrorState";
 import { ImpactFlow, type FlowNodeId } from "../components/ImpactFlow";
 import { SplitHandle, useSidePanelWidth } from "../components/SplitLayout";
 import { useLabels } from "../hooks/useLabels";
@@ -77,7 +78,8 @@ export function ChangeImpactPage() {
   });
 
   if (options.isPending) return <p className="status-msg">{ko.app.loading}</p>;
-  if (options.isError) return <p className="status-msg">{ko.app.error}</p>;
+  if (options.isError)
+    return <ErrorState error={options.error} onRetry={() => void options.refetch()} />;
 
   const selected = options.data.ips.find((ip) => ip.ip_id === ipId);
 
@@ -217,9 +219,10 @@ export function ChangeImpactPage() {
       {params === null && <p className="status-msg">{t.idle_hint}</p>}
       {result.isFetching && <Busy message={ko.app.loading} />}
       {result.isError && (
-        <p className="status-msg" role="alert">
-          {t.analysis_failed}
-        </p>
+        <>
+          <ErrorState error={result.error} onRetry={() => void result.refetch()} />
+          <p className="section-note">{t.analysis_failed}</p>
+        </>
       )}
       {/* Y3 as-of 정직성 배너 — 위험 지도와 동일 패턴 */}
       {result.data?.meta && !result.isFetching && (
@@ -241,14 +244,26 @@ export function ChangeImpactPage() {
   );
 }
 
-/** G2: 계기판 요약 스트립 — 규모를 먼저 보여주고, 클릭하면 해당 섹션으로 이동. */
-function StatStrip({ result }: { result: ChangeImpactResult }) {
-  const stats = [
-    { id: "ci-flow", label: t.quadrant_scenarios, count: result.impacted_scenarios.length },
-    { id: "ci-flow", label: t.quadrant_kpis, count: result.impacted_kpis.length },
-    { id: "ci-flow", label: t.quadrant_chained, count: result.chained_ips.length },
-    { id: "ci-checklist", label: t.stat_roles, count: result.checklist.length },
-    { id: "ci-similar", label: t.similar_cases, count: result.similar_cases.length },
+/** G2: 계기판 요약 스트립 — 규모를 먼저 보여주고, 클릭하면 해당 섹션으로 이동.
+ * R8: 그래프 계열 카드는 분석 대상 노드를 선택해 우측 패널에 전체 목록을 띄운다. */
+function StatStrip({
+  result,
+  onSelect,
+}: {
+  result: ChangeImpactResult;
+  onSelect: (id: FlowNodeId | null) => void;
+}) {
+  const stats: { id: string; node: FlowNodeId | null; label: string; count: number }[] = [
+    {
+      id: "ci-flow",
+      node: "subject",
+      label: t.quadrant_scenarios,
+      count: result.impacted_scenarios.length,
+    },
+    { id: "ci-flow", node: "subject", label: t.quadrant_kpis, count: result.impacted_kpis.length },
+    { id: "ci-flow", node: "subject", label: t.quadrant_chained, count: result.chained_ips.length },
+    { id: "ci-checklist", node: null, label: t.stat_roles, count: result.checklist.length },
+    { id: "ci-similar", node: null, label: t.similar_cases, count: result.similar_cases.length },
   ];
   return (
     <div className="stat-strip">
@@ -257,11 +272,12 @@ function StatStrip({ result }: { result: ChangeImpactResult }) {
           key={stat.label}
           type="button"
           className="stat"
-          onClick={() =>
+          onClick={() => {
+            if (stat.node) onSelect(stat.node);
             document
               .getElementById(stat.id)
-              ?.scrollIntoView({ behavior: "smooth", block: "start" })
-          }
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
         >
           <b>{stat.count}</b>
           <span>{stat.label}</span>
@@ -345,7 +361,7 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
         )}
       </div>
 
-      <StatStrip result={result} />
+      <StatStrip result={result} onSelect={setSelectedNode} />
 
       {/* G1: 영향 전파 지도 + 근거 패널 — 위험 지도와 동일한 상호작용 문법 */}
       <div

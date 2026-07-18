@@ -563,3 +563,55 @@ def test_as_of_portfolio_and_change_impact(client: TestClient) -> None:
         ).status_code
         == 404
     )
+
+
+# ---- R2/R4 (설계 21): 반입 열 스펙 + 행위자 기록 API 표면 ----
+
+
+def test_ingest_mapping_column_specs(client: TestClient) -> None:
+    """R2: 열 스펙 — 허용값(코드+라벨)·형식·참조 컬렉션이 화면 계약으로 노출된다."""
+    mappings = client.get("/api/v1/ingest/mappings").json()
+    issues = next(m for m in mappings if m["name"] == "issues")
+    specs = {s["column"]: s for s in issues["column_specs"]}
+
+    status = specs["상태"]
+    assert status["required"] is True
+    assert status["kind"] == "text"
+    assert any(v.startswith("open (") for v in status["allowed_values"])
+
+    scenarios = specs["영향 시나리오"]
+    assert scenarios["kind"] == "list"
+    assert scenarios["separator"] == ";"
+    assert scenarios["ref_collection"] == "scenarios"
+
+    week = specs["해결 주차"]
+    assert week["kind"] == "int" and week["required"] is False
+
+
+def test_ask_records_actor_header(client: TestClient) -> None:
+    """R4: Ask 질의 로그에 행위자가 남는다 (percent-encoded 헤더 디코딩)."""
+    response = client.post(
+        "/api/v1/ask",
+        json={"question": "UHD60 위험 IP"},
+        headers={"X-SOC-Actor": "%EC%9E%A5%EA%B8%B8%EB%8F%99"},  # "장길동"
+    )
+    assert response.status_code == 200
+    history = client.get("/api/v1/ask/history").json()
+    assert history[0]["actor"] == "장길동"
+
+
+def test_what_if_set_records_actor(client: TestClient) -> None:
+    """R4: 가정 세트 created_by — 헤더 미설정 시 None."""
+    issue = client.get("/api/v1/issues").json()[0]["issue_id"]
+    saved = client.post(
+        "/api/v1/what-if/sets",
+        json={
+            "name": "actor 테스트 세트",
+            "assumptions": [
+                {"kind": "issue_status", "target_id": issue, "value": "resolved"}
+            ],
+        },
+        headers={"X-SOC-Actor": "%EC%9E%A5%EA%B8%B8%EB%8F%99"},
+    )
+    assert saved.status_code == 200
+    assert saved.json()["created_by"] == "장길동"

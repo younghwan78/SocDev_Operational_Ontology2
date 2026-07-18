@@ -152,6 +152,10 @@ export const ko = {
     history_empty: "아직 질문 기록이 없습니다",
     seconds_suffix: "초",
     cached_badge: "캐시 응답",
+    // R8 — 확신도 라벨을 위험 등급 문자열과 분리 (색 의미 충돌 방지)
+    confidence_high: "높음",
+    confidence_medium: "중간",
+    confidence_low: "낮음",
   },
   issues: {
     title: "이슈 분석",
@@ -222,6 +226,22 @@ export const ko = {
     grade_filter_all: "전체",
     grade_filter_medium_up: "중간 이상",
     grade_filter_high: "높음만",
+    // R5 (설계 21) — 정렬·프로젝트 전체·시점 프리셋
+    sort_grade: "위험순",
+    sort_base: "기본 순서",
+    project_all: "전체 과제",
+    diff_preset_week: "최근 1주 변화",
+    // R1 (설계 21) — 빈 저장소 온보딩
+    onboarding_title: "아직 반입된 데이터가 없습니다",
+    onboarding_note:
+      "온톨로지 데이터는 반입 배치로만 진입합니다 — 화면에서 개별 수정하는 기능은 의도적으로 없습니다. 아래 순서로 시작하세요.",
+    onboarding_step_master:
+      "① 마스터 시드 — 프로젝트·시나리오·IP 카탈로그를 YAML 시드로 등록합니다 (관리자: db-seed, 절차는 운영 문서 handover 참조)",
+    onboarding_step_ingest:
+      "② 데이터 반입 — 이슈·검증 테스트·이벤트·근거를 CSV/XLSX로 업로드합니다 (열 스펙과 검사 실행 제공)",
+    onboarding_step_sync:
+      "③ JIRA/Confluence 동기화 — 관리자 설정 후 주기 반입됩니다 (같은 품질·롤백 규칙)",
+    onboarding_open_ingest: "반입 센터 열기",
     asof_label: "시점 재구성",
     asof_clear: "현재로 복귀",
     asof_banner: "시점 재구성(as-of)",
@@ -322,6 +342,11 @@ export const ko = {
     strength: "신뢰",
   },
   scenario_detail: {
+    // R7 (설계 21) — 위험 지도 왕복: 상세 상단에 동일 판정 요약
+    risk_summary_title: "위험 등급",
+    risk_summary_note: "위험 지도와 동일한 판정 룰·근거입니다 — 수치 점수 없음",
+    risk_open_map: "위험 지도에서 보기",
+    risk_no_row: "위험 지도에 이 시나리오 행이 없습니다",
     tab_overview: "개요",
     tab_timeline: "타임라인",
     tab_events: "이벤트·활동",
@@ -436,6 +461,31 @@ export const ko = {
     file_required: "파일을 선택하세요",
     run_upload: "반입 실행",
     uploading: "반입 중…",
+    // R3 (설계 21) — 검사만 실행 (dry-run)
+    run_dry: "검사만 실행",
+    dry_checking: "검사 중…",
+    dry_run_badge: "검사 결과 — 아무것도 반입되지 않았습니다",
+    dry_run_hint: "결과가 맞으면 반입 실행으로 확정하세요",
+    // R4 (설계 21) — 행위자
+    actor_label: "작성자",
+    actor_placeholder: "이름 또는 사번 (배치 기록에 남습니다)",
+    // R2 (설계 21) — 열 스펙
+    spec_title: "열 스펙 (허용 값·형식)",
+    spec_col_column: "열",
+    spec_col_required: "필수",
+    spec_col_kind: "형식",
+    spec_col_allowed: "허용 값 · 참조",
+    spec_required_yes: "필수",
+    spec_required_no: "선택",
+    spec_kind_text: "텍스트",
+    spec_kind_int: "정수",
+    spec_kind_bool: "예/아니오",
+    spec_kind_list: "목록",
+    spec_list_sep: "구분자",
+    spec_ref_prefix: "존재하는 ID여야 함:",
+    spec_free_text: "자유 입력",
+    spec_note:
+      "허용 값 밖의 코드도 반입은 되지만 '라벨 미등재 값' 경고로 표시됩니다 — 목록 값은 구분자로 여러 개를 넣습니다",
     download_template: "템플릿 CSV 내려받기",
     required_columns: "필수 열",
     row_suffix: "행",
@@ -524,6 +574,12 @@ export const ko = {
   advisory: {
     tab: "조언",
     run_button: "조언 생성",
+    // R7 (설계 21) — 역할 선택 실행 + 실행 이력
+    roles_label: "역할 선택",
+    roles_all: "전체 역할",
+    roles_hint: "선택한 역할만 LLM 체인으로 실행합니다 — 선택이 없으면 7개 역할 전체",
+    history_label: "실행 이력",
+    history_latest: "최신",
     running: "조언 생성 중… (LLM 체인 실행, 다소 걸릴 수 있습니다)",
     empty: "아직 생성된 조언이 없습니다. 조언 생성을 눌러 시작하세요.",
     provider: "생성 엔진",

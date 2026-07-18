@@ -2,7 +2,24 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — Digital Twin 3라운드 Y1~Y3 완료 (2026-07-17).**
+**활성 Stage 없음 — 설계 21(사내 실데이터 구축 전 준비 R1~R9) 완료 (2026-07-18).**
+
+> 설계·구현: `internal_docs/design/21_pre_data_readiness.md` + CHANGELOG 최신 항목.
+> R1 빈 DB 온보딩 / R2 반입 열 스펙 / R3 dry-run / R4 actor 기록 /
+> R5 위험 지도 정렬+1주 프리셋 / R6 오류 detail+재시도 / R7 시나리오 상세 정합 /
+> R8 P2 마감 / R9 마스터 데이터 절차 문서화. backend 289 · frontend 36 ·
+> 실서버(PG) 검증 green. 전부 additive — DB 마이그레이션 없음.
+>
+> **다음 후보 (착수는 사용자 승인 — 전부 사내 입력 필요)**:
+> - **사내 반입 리허설** — handover §2b 마스터 시드 절차 + dry-run 2단계 반입.
+> - **D4 검증 세션 자료** / **Stage 13 트랙 A** — 사내 세션 일정 확정 시.
+> - **Stage 14 잔여**(인증 고도화 — actor는 최소 기록만 넣었음, 사용자 식별은
+>   사내 SSO 표준 필요), **Stage 18 잔여**(임베딩), **Stage 19**(실계정 커넥터 +
+>   동기화 상태 UI).
+> - 스케일 트리거(검토 보고서 §5): 이슈 1천건+ 시 서버 필터·가상화,
+>   버전 로그 6개월분 as-of 응답 측정, 다과제 project_ids 복수화.
+
+### 직전 완료 — Digital Twin 3라운드 Y1~Y3 (2026-07-17)
 
 > 설계·구현 상태: `internal_docs/design/20_digital_twin_round3.md` (§6).
 > Y1 프로세스 모델 레지스트리(이슈+액션+이벤트, history 판정 병기) /

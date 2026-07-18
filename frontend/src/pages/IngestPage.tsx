@@ -9,13 +9,18 @@ import {
   fetchIngestBatches,
   fetchIngestMappings,
   fetchIngestQuarantine,
+  getActor,
   rollbackIngestBatch,
+  setActor,
   uploadIngestFile,
+  type IngestColumnSpec,
   type IngestMappingInfo,
   type IngestQualityReport,
   type IngestReport,
   type QuarantineEntry,
 } from "../api/client";
+import { ErrorState } from "../components/ErrorState";
+import { formatDateTime } from "../lib/format";
 import { ko } from "../i18n/ko";
 
 const t = ko.ingest;
@@ -107,6 +112,40 @@ export function downloadTemplateCsv(mapping: IngestMappingInfo) {
   URL.revokeObjectURL(url);
 }
 
+const SPEC_KIND_LABEL: Record<string, string> = {
+  text: t.spec_kind_text,
+  int: t.spec_kind_int,
+  bool: t.spec_kind_bool,
+  list: t.spec_kind_list,
+};
+
+/** R2 — 열 스펙 한 행: 필수/형식/허용값·참조를 사람이 채울 수 있는 언어로. */
+function SpecRow({ spec }: { spec: IngestColumnSpec }) {
+  const kind =
+    spec.kind === "list" && spec.separator
+      ? `${t.spec_kind_list} (${t.spec_list_sep} '${spec.separator}')`
+      : (SPEC_KIND_LABEL[spec.kind] ?? spec.kind);
+  const allowed = (spec.allowed_values ?? []).join(", ");
+  const parts = [
+    allowed,
+    spec.ref_collection ? `${t.spec_ref_prefix} ${spec.ref_collection}` : "",
+  ].filter(Boolean);
+  return (
+    <tr>
+      <th title={spec.field_path}>{spec.column}</th>
+      <td>
+        {spec.required ? (
+          <span className="badge badge-danger">{t.spec_required_yes}</span>
+        ) : (
+          t.spec_required_no
+        )}
+      </td>
+      <td>{kind}</td>
+      <td>{parts.length > 0 ? parts.join(" · ") : t.spec_free_text}</td>
+    </tr>
+  );
+}
+
 export function IngestPage() {
   const queryClient = useQueryClient();
   const mappings = useQuery({ queryKey: ["ingest-mappings"], queryFn: fetchIngestMappings });
@@ -117,21 +156,26 @@ export function IngestPage() {
   });
   const [mappingName, setMappingName] = useState<string>("");
   const [report, setReport] = useState<IngestReport | null>(null);
+  // R4: 행위자 이름 — localStorage 유지, 모든 요청 헤더에 자동 첨부.
+  const [actorDraft, setActorDraft] = useState(() => getActor() ?? "");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const selected =
     mappings.data?.find((m) => m.name === mappingName) ?? mappings.data?.[0] ?? null;
 
   const upload = useMutation({
-    mutationFn: async () => {
+    // R3: dryRun=true면 검사만 실행 — 서버는 리포트만 계산하고 아무것도 쓰지 않는다.
+    mutationFn: async (dryRun: boolean) => {
       const file = fileRef.current?.files?.[0];
       if (!file || !selected) throw new Error(t.file_required);
-      return uploadIngestFile(file, selected.name);
+      return uploadIngestFile(file, selected.name, { dryRun });
     },
     onSuccess: (result) => {
       setReport(result);
-      void queryClient.invalidateQueries({ queryKey: ["ingest-batches"] });
-      void queryClient.invalidateQueries({ queryKey: ["ingest-quarantine"] });
+      if (!result.dry_run) {
+        void queryClient.invalidateQueries({ queryKey: ["ingest-batches"] });
+        void queryClient.invalidateQueries({ queryKey: ["ingest-quarantine"] });
+      }
     },
   });
 
@@ -145,7 +189,8 @@ export function IngestPage() {
   });
 
   if (mappings.isPending) return <p className="status-msg">{ko.app.loading}</p>;
-  if (mappings.isError) return <p className="status-msg">{ko.app.error}</p>;
+  if (mappings.isError)
+    return <ErrorState error={mappings.error} onRetry={() => void mappings.refetch()} />;
 
   return (
     <div>
@@ -174,11 +219,34 @@ export function IngestPage() {
             {t.file_label}
           </label>
           <input id="ingest-file" ref={fileRef} type="file" accept=".csv,.xlsx" />
+          <label className="filter-label" htmlFor="ingest-actor">
+            {t.actor_label}
+          </label>
+          <input
+            id="ingest-actor"
+            type="text"
+            className="search-input"
+            value={actorDraft}
+            placeholder={t.actor_placeholder}
+            onChange={(event) => {
+              setActorDraft(event.target.value);
+              setActor(event.target.value);
+            }}
+          />
+          {/* R3: 검사만 실행 → 결과 확인 → 반입 실행 2단계 */}
+          <button
+            type="button"
+            className="chip chip-btn"
+            disabled={upload.isPending}
+            onClick={() => upload.mutate(true)}
+          >
+            {upload.isPending ? t.dry_checking : t.run_dry}
+          </button>
           <button
             type="button"
             className="primary-btn"
             disabled={upload.isPending}
-            onClick={() => upload.mutate()}
+            onClick={() => upload.mutate(false)}
           >
             {upload.isPending ? t.uploading : t.run_upload}
           </button>
@@ -197,6 +265,30 @@ export function IngestPage() {
             {t.required_columns}: {selected.required_columns.join(", ")}
           </p>
         )}
+        {/* R2: 열 스펙 — 허용값·형식을 화면에서 보고 채우게 한다 (거부-루프 예방) */}
+        {selected && (selected.column_specs ?? []).length > 0 && (
+          <details>
+            <summary className="card-subtitle">{t.spec_title}</summary>
+            <p className="section-note">{t.spec_note}</p>
+            <div className="heatmap-scroll">
+              <table className="heatmap">
+                <thead>
+                  <tr>
+                    <th>{t.spec_col_column}</th>
+                    <th>{t.spec_col_required}</th>
+                    <th>{t.spec_col_kind}</th>
+                    <th>{t.spec_col_allowed}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(selected.column_specs ?? []).map((spec) => (
+                    <SpecRow key={spec.column} spec={spec} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        )}
         {upload.isError && (
           <p className="status-msg" role="alert">
             {(upload.error as Error).message}
@@ -204,6 +296,11 @@ export function IngestPage() {
         )}
         {report && (
           <div aria-live="polite">
+            {report.dry_run && (
+              <p className="section-note rca-banner">
+                🔍 {t.dry_run_badge} — {t.dry_run_hint}
+              </p>
+            )}
             <p className="desc">
               <span className="badge badge-ok">
                 {t.accepted} {report.batch.accepted_count}
@@ -315,13 +412,18 @@ export function IngestPage() {
                 <span className="chip" title={batch.mapping_name}>
                   {mappingLabel}
                 </span>
+                {batch.actor && (
+                  <span className="chip" title={t.actor_label}>
+                    {batch.actor}
+                  </span>
+                )}
                 <span className="desc">
                   {t.accepted} {batch.accepted_count} · {t.updated} {batch.updated_count ?? 0}{" "}
                   · {t.unchanged} {batch.unchanged_count ?? 0} · {t.rejected}{" "}
                   {batch.rejected_count}
                 </span>
                 <span className="desc" title={batch.created_at}>
-                  {batch.created_at.slice(0, 16).replace("T", " ")}
+                  {formatDateTime(batch.created_at)}
                 </span>
                 {batch.status === "completed" && (
                   <button

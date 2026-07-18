@@ -533,3 +533,69 @@ def test_summarize_sync_status() -> None:
     assert jira.last_counts is not None and "갱신 3" in jira.last_counts
     assert jira.pending_quarantine == 1
     assert by_source["confluence-sync"].pending_quarantine == 0
+
+
+# ---- R2~R4 (설계 21): dry-run / actor 기록 ----
+
+
+def test_dry_run_reports_without_any_writes(
+    repo: InMemoryRepository, service: IngestService
+) -> None:
+    """R3: 검사만 실행 — 리포트 카운트는 실제 반입과 동일, 저장소·이력은 불변."""
+    before = len(repo.list("project_milestones"))
+    report = service.ingest(
+        "sample_milestones.csv", SAMPLE.read_bytes(), "project_milestones", dry_run=True
+    )
+    assert report.dry_run is True
+    assert report.batch.status == "dry_run"
+    assert report.batch.accepted_count == 3
+    # 아무것도 쓰지 않았다: 객체/배치 이력/버전 로그 전부 불변.
+    assert len(repo.list("project_milestones")) == before
+    assert service.list_batches() == []
+    assert service.collection_versions("project_milestones") == []
+
+
+def test_dry_run_does_not_quarantine_rejected_rows(service: IngestService) -> None:
+    csv_content = (
+        "마일스톤 ID,프로젝트 ID,제목,설명,유형,개발 단계,결정 구간,주차,분기,관련 역할\n"
+        ",project_u,ID없는행,d,t,s,w,10,Q1,pm\n"
+    )
+    report = service.ingest("bad.csv", csv_content.encode(), "project_milestones", dry_run=True)
+    assert report.batch.rejected_count == 1
+    assert service.list_quarantine() == []
+
+
+def test_ingest_records_actor(service: IngestService) -> None:
+    """R4: 행위자 기록 — 배치와 이력 목록 양쪽에서 보인다."""
+    report = service.ingest(
+        "sample_milestones.csv", SAMPLE.read_bytes(), "project_milestones", actor="장길동"
+    )
+    assert report.batch.actor == "장길동"
+    assert service.list_batches()[0].actor == "장길동"
+
+
+def test_ingest_api_dry_run_and_actor_header() -> None:
+    """API 표면: dry_run 쿼리 + X-SOC-Actor 헤더(percent-encoding) 왕복."""
+    from backend.api.app import create_app
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_app())
+    dry = client.post(
+        "/api/v1/ingest/file",
+        params={"mapping": "project_milestones", "dry_run": "true"},
+        files={"file": ("sample_milestones.csv", SAMPLE.read_bytes(), "text/csv")},
+    )
+    assert dry.status_code == 200
+    assert dry.json()["dry_run"] is True
+    assert client.get("/api/v1/ingest/batches").json() == []
+
+    real = client.post(
+        "/api/v1/ingest/file",
+        params={"mapping": "project_milestones"},
+        files={"file": ("sample_milestones.csv", SAMPLE.read_bytes(), "text/csv")},
+        headers={"X-SOC-Actor": "%EC%9E%A5%EA%B8%B8%EB%8F%99"},  # "장길동"
+    )
+    assert real.status_code == 200
+    assert real.json()["dry_run"] is False
+    batches = client.get("/api/v1/ingest/batches").json()
+    assert batches[0]["actor"] == "장길동"

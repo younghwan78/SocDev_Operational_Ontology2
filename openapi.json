@@ -654,6 +654,17 @@
         "additionalProperties": false,
         "description": "질의 1건의 기록 — 답변 전문과 인용을 보존한다.",
         "properties": {
+          "actor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor"
+          },
           "answer": {
             "title": "Answer",
             "type": "string"
@@ -2745,6 +2756,17 @@
             "title": "Accepted Count",
             "type": "integer"
           },
+          "actor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor"
+          },
           "created_at": {
             "title": "Created At",
             "type": "string"
@@ -2797,10 +2819,76 @@
         "title": "IngestBatch",
         "type": "object"
       },
+      "IngestColumnSpec": {
+        "additionalProperties": false,
+        "description": "반입 열 스펙 (R2, 설계 21) — 매핑 정의+VALUE_LABELS에서 결정론 도출.\n\n사내 작성자가 화면에서 허용값/형식을 보고 채우게 해 거부-루프를 줄인다.",
+        "properties": {
+          "allowed_values": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Values",
+            "type": "array"
+          },
+          "column": {
+            "title": "Column",
+            "type": "string"
+          },
+          "field_path": {
+            "title": "Field Path",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "ref_collection": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Collection"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          },
+          "separator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Separator"
+          }
+        },
+        "required": [
+          "column",
+          "field_path",
+          "required",
+          "kind"
+        ],
+        "title": "IngestColumnSpec",
+        "type": "object"
+      },
       "IngestMappingInfo": {
         "additionalProperties": false,
         "description": "반입 매핑 메타 — 반입 센터 화면 계약 (읽기 전용).",
         "properties": {
+          "column_specs": {
+            "items": {
+              "$ref": "#/components/schemas/IngestColumnSpec"
+            },
+            "title": "Column Specs",
+            "type": "array"
+          },
           "columns": {
             "items": {
               "type": "string"
@@ -2844,6 +2932,11 @@
         "properties": {
           "batch": {
             "$ref": "#/components/schemas/IngestBatch"
+          },
+          "dry_run": {
+            "default": false,
+            "title": "Dry Run",
+            "type": "boolean"
           },
           "quality": {
             "anyOf": [
@@ -7369,6 +7462,17 @@
             "title": "Created At",
             "type": "string"
           },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
           "id": {
             "title": "Id",
             "type": "string"
@@ -7880,6 +7984,24 @@
       "post": {
         "description": "Ask SoC 질의 — 검색(결정론) → LLM 근거 인용 답변 (데이터 수정 아님).\n\nLLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.\n결과는 질의 로그(감사 기록·FAQ 원천)에 남는다 — 신규 쓰기 API 아님.",
         "operationId": "ask_api_v1_ask_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-soc-actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Soc-Actor"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -8760,6 +8882,34 @@
               "description": "매핑 이름 (예: project_milestones)",
               "title": "Mapping",
               "type": "string"
+            }
+          },
+          {
+            "description": "R3: true면 검사만 실행 — 리포트는 동일, 저장소는 불변",
+            "in": "query",
+            "name": "dry_run",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "R3: true면 검사만 실행 — 리포트는 동일, 저장소는 불변",
+              "title": "Dry Run",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-soc-actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Soc-Actor"
             }
           }
         ],
@@ -9903,6 +10053,24 @@
       "post": {
         "description": "X2 (설계 19) — 가정 세트 저장: 운영 기록(append-only), 온톨로지 아님.\n\n저장 전 overlay 조립으로 가정을 검증한다 — 깨진 세트는 저장되지 않는다.\n수정/삭제 API는 없다 (같은 이름 재저장 = 새 기록).",
         "operationId": "save_what_if_set_api_v1_what_if_sets_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-soc-actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Soc-Actor"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {

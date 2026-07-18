@@ -8,6 +8,7 @@ import {
 } from "../../api/client";
 import { CollapsibleList } from "../../components/CollapsibleList";
 import { PostureChip } from "../../components/PostureChip";
+import { ErrorState } from "../../components/ErrorState";
 import { ko } from "../../i18n/ko";
 
 const t = ko.action_draft;
@@ -53,7 +54,8 @@ export function ActionDraftTab({ scenarioId }: { scenarioId: string }) {
   };
 
   if (draft.isPending) return <p className="status-msg">{t.generating}</p>;
-  if (draft.isError) return <p className="status-msg">{ko.app.error}</p>;
+  if (draft.isError)
+    return <ErrorState error={draft.error} onRetry={() => void draft.refetch()} />;
 
   const data = draft.data;
 

@@ -1294,6 +1294,8 @@ export interface components {
          * @description 질의 1건의 기록 — 답변 전문과 인용을 보존한다.
          */
         AskLogEntry: {
+            /** Actor */
+            actor?: string | null;
             /** Answer */
             answer: string;
             /**
@@ -2138,6 +2140,8 @@ export interface components {
         IngestBatch: {
             /** Accepted Count */
             accepted_count: number;
+            /** Actor */
+            actor?: string | null;
             /** Created At */
             created_at: string;
             /** Filename */
@@ -2164,10 +2168,34 @@ export interface components {
             updated_count: number;
         };
         /**
+         * IngestColumnSpec
+         * @description 반입 열 스펙 (R2, 설계 21) — 매핑 정의+VALUE_LABELS에서 결정론 도출.
+         *
+         *     사내 작성자가 화면에서 허용값/형식을 보고 채우게 해 거부-루프를 줄인다.
+         */
+        IngestColumnSpec: {
+            /** Allowed Values */
+            allowed_values?: string[];
+            /** Column */
+            column: string;
+            /** Field Path */
+            field_path: string;
+            /** Kind */
+            kind: string;
+            /** Ref Collection */
+            ref_collection?: string | null;
+            /** Required */
+            required: boolean;
+            /** Separator */
+            separator?: string | null;
+        };
+        /**
          * IngestMappingInfo
          * @description 반입 매핑 메타 — 반입 센터 화면 계약 (읽기 전용).
          */
         IngestMappingInfo: {
+            /** Column Specs */
+            column_specs?: components["schemas"]["IngestColumnSpec"][];
             /** Columns */
             columns: string[];
             /** Label Ko */
@@ -2185,6 +2213,11 @@ export interface components {
          */
         IngestReport: {
             batch: components["schemas"]["IngestBatch"];
+            /**
+             * Dry Run
+             * @default false
+             */
+            dry_run: boolean;
             quality?: components["schemas"]["QualityReport"] | null;
             /** Rejected Rows */
             rejected_rows?: components["schemas"]["RejectedRow"][];
@@ -3815,6 +3848,8 @@ export interface components {
             assumptions: components["schemas"]["WhatIfAssumption"][];
             /** Created At */
             created_at: string;
+            /** Created By */
+            created_by?: string | null;
             /** Id */
             id: string;
             /** Name */
@@ -4054,7 +4089,9 @@ export interface operations {
     ask_api_v1_ask_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-soc-actor"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -4553,8 +4590,12 @@ export interface operations {
             query: {
                 /** @description 매핑 이름 (예: project_milestones) */
                 mapping: string;
+                /** @description R3: true면 검사만 실행 — 리포트는 동일, 저장소는 불변 */
+                dry_run?: boolean;
             };
-            header?: never;
+            header?: {
+                "x-soc-actor"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5343,7 +5384,9 @@ export interface operations {
     save_what_if_set_api_v1_what_if_sets_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-soc-actor"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };

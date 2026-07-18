@@ -12,6 +12,7 @@ import {
 } from "../api/client";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
+import { ErrorState } from "../components/ErrorState";
 import { ko } from "../i18n/ko";
 
 const t = ko.source_map;
@@ -23,7 +24,8 @@ export function SourceMapPage() {
   const valueLabel = useValueLabels();
 
   if (query.isPending) return <p className="status-msg">{ko.app.loading}</p>;
-  if (query.isError) return <p className="status-msg">{ko.app.error}</p>;
+  if (query.isError)
+    return <ErrorState error={query.error} onRetry={() => void query.refetch()} />;
 
   const { collections, totals } = query.data;
   const realTotal = totals.imported + totals.integrated;
@@ -86,7 +88,9 @@ export function SourceMapPage() {
         <h2 className="card-title">{t.entity_section}</h2>
         <p className="section-note">{t.entity_subtitle}</p>
         {entity.isPending && <p className="status-msg">{ko.app.loading}</p>}
-        {entity.isError && <p className="status-msg">{ko.app.error}</p>}
+        {entity.isError && (
+          <ErrorState error={entity.error} onRetry={() => void entity.refetch()} />
+        )}
         {entity.data && (
           <>
             <h3 className="subhead">{t.alias_table}</h3>

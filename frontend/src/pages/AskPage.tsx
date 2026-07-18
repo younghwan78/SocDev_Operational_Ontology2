@@ -17,7 +17,9 @@ import {
   type AskResult,
 } from "../api/client";
 import { Busy } from "../components/Busy";
+import { ErrorState } from "../components/ErrorState";
 import { SplitHandle, useSidePanelWidth } from "../components/SplitLayout";
+import { formatDateTime } from "../lib/format";
 import { ko } from "../i18n/ko";
 
 const t = ko.ask;
@@ -32,10 +34,12 @@ const CONFIDENCE_BADGE: Record<string, string> = {
   medium: "badge-warn",
   high: "badge-ok",
 };
+// R8: 확신도 라벨은 위험 등급 문자열과 분리 — "높음"이 위험(빨강)과 확신(초록)에서
+// 같은 사전 항목을 공유하지 않게 한다.
 const CONFIDENCE_LABEL: Record<string, string> = {
-  low: ko.risk.grade_low,
-  medium: ko.risk.grade_medium,
-  high: ko.risk.grade_high,
+  low: ko.ask.confidence_low,
+  medium: ko.ask.confidence_medium,
+  high: ko.ask.confidence_high,
 };
 
 // A2 각주 계약 — 백엔드 _inline_citation_ids와 동일한 마커 문법.
@@ -149,7 +153,9 @@ export function AskPage() {
           onAsk={submit}
         />
       )}
-      {result.isError && <p className="status-msg">{ko.app.error}</p>}
+      {result.isError && (
+        <ErrorState error={result.error} onRetry={() => void result.refetch()} />
+      )}
       {question !== null && !result.isError && (
         <div
           className="risk-layout risk-layout-split"
@@ -249,7 +255,7 @@ function IdleBoards({
               <span className="title">{entry.question}</span>
               <span className="desc">
                 {PROVIDER_LABELS[entry.provider] ?? entry.provider} ·{" "}
-                {entry.created_at.slice(0, 16).replace("T", " ")}
+                {formatDateTime(entry.created_at)}
               </span>
             </span>
           </button>

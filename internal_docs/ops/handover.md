@@ -38,6 +38,30 @@
 **라벨 미등재 값**과 **온톨로지 연결률**을 보고 value_maps를 보강 → 반복.
 연결률이 도입 성패 지표다: 시나리오/IP에 연결 안 된 이슈는 화면에 나타나지 않는다.
 
+## 2b. 마스터 온톨로지 구축 절차 (R9, 설계 21 — 트랜잭션 반입보다 먼저)
+
+반입 센터(CSV/JIRA)는 **트랜잭션 데이터**(이슈·테스트·이벤트·근거·KPI 관측·결정)만
+받는다. 위험 지도의 행과 열을 만드는 **마스터 온톨로지**는 의도적으로 큐레이션
+경로(YAML 시드)만 존재한다 — 시나리오/IP 카탈로그는 리뷰 없이 바뀌면 안 되는 계약이다.
+
+| 대상 | 파일 | 주의 |
+|---|---|---|
+| 프로젝트·마일스톤 구조 | `fixtures/project.yaml` | phase 값은 `VALUE_LABELS.project_phase` 등재 필수 |
+| 시나리오·그룹·변형·KPI 정의 | `fixtures/scenario.yaml` | KPI id는 반입 `kpi_observations`의 참조 대상 |
+| IP/시스템 블록·knob·의존 룰 | `fixtures/ip.yaml` | `aliases`가 커넥터 엔티티 해석의 기반 |
+| 역할 7종 | `fixtures/role.yaml` | 명칭·구성 고정 (CLAUDE.md §2.2) — 통상 수정 불필요 |
+
+**절차 (관리자, git 리뷰 경유):**
+
+1. fixture YAML 수정 → `uv run python -m backend.cli.main validate-data` (계약 검증)
+2. `uv run pytest -p no:cacheprovider` (glossary 커버리지·정합 게이트 — 새 enum 값은
+   `VALUE_LABELS`에 라벨 추가)
+3. PR 리뷰 → merge → 운영 DB에 `uv run python -m backend.cli.main db-seed` (멱등 upsert)
+4. 화면 확인: 위험 지도 열/행, 시나리오 목록, 변경 영향 IP 선택지
+
+> 사내 실물 카탈로그 작성 시작점: `56/docs/step1_synthetic_universe/`의 구조를
+> 실제 과제명·IP 목록으로 치환한다. 시나리오는 "고객이 체감하는 동작 단위"로 자른다.
+
 ## 3. 도입 1~2주차 플랜
 
 **1주차 — 리허설 (관리자만)**

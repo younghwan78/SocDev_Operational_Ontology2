@@ -40,6 +40,8 @@ class AskLogEntry(BaseModel):
     cached: bool = False  # 이 기록 자체가 캐시 응답이었는지 (FAQ 횟수에는 포함)
     duration_ms: int = 0
     created_at: str
+    # R4 (설계 21): 질의 행위자 — X-SOC-Actor 헤더 유래, 미설정 시 None.
+    actor: str | None = None
 
 
 class FAQEntry(BaseModel):
@@ -69,7 +71,9 @@ def cards_fingerprint(cards: list) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
 
-def build_entry(result: AskResult, cards_hash: str | None = None) -> AskLogEntry:
+def build_entry(
+    result: AskResult, cards_hash: str | None = None, actor: str | None = None
+) -> AskLogEntry:
     return AskLogEntry(
         id=f"ask_{uuid.uuid4().hex[:10]}",
         question=result.question,
@@ -84,13 +88,16 @@ def build_entry(result: AskResult, cards_hash: str | None = None) -> AskLogEntry
         cached=result.cached,
         duration_ms=result.duration_ms,
         created_at=datetime.now(UTC).isoformat(),
+        actor=actor,
     )
 
 
 ASK_CACHE_ENV = "SOC_ASK_CACHE"  # "false"면 캐시 비활성
 
 
-def ask_with_cache(runner, store: AskLogStoreProtocol, question: str) -> AskResult:
+def ask_with_cache(
+    runner, store: AskLogStoreProtocol, question: str, actor: str | None = None
+) -> AskResult:
     """B4 — 질의 로그 캐시를 앞단에 둔 Ask 실행.
 
     같은 정규화 질문 + 같은 카드 지문의 LLM 답변이 로그에 있으면 재호출 없이
@@ -120,11 +127,11 @@ def ask_with_cache(runner, store: AskLogStoreProtocol, question: str) -> AskResu
                 validation_notes=[f"캐시 응답 — 원 질의 {hit.created_at}"],
                 duration_ms=0,
             )
-            store.save(build_entry(result, cards_hash=fingerprint))
+            store.save(build_entry(result, cards_hash=fingerprint, actor=actor))
             return result
 
     result = runner.ask(question)
-    store.save(build_entry(result))
+    store.save(build_entry(result, actor=actor))
     return result
 
 

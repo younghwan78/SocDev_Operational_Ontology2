@@ -15,6 +15,7 @@ import {
 import { SourceBadge } from "../components/SourceBadge";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
+import { ErrorState } from "../components/ErrorState";
 import { ko } from "../i18n/ko";
 
 const t = ko.evidence;
@@ -84,7 +85,8 @@ export function EvidencePage() {
   );
 
   if (evidence.isPending) return <p className="status-msg">{ko.app.loading}</p>;
-  if (evidence.isError) return <p className="status-msg">{ko.app.error}</p>;
+  if (evidence.isError)
+    return <ErrorState error={evidence.error} onRetry={() => void evidence.refetch()} />;
 
   const all = evidence.data;
   const availabilityCounts = new Map<string, number>();

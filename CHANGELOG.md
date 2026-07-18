@@ -1,5 +1,48 @@
 # CHANGELOG
 
+## 사내 실데이터 구축 전 준비 — 온보딩·반입 UX·행위자·코크핏 정합 (2026-07-18)
+
+> 설계: `internal_docs/design/21_pre_data_readiness.md`. 전체 코드·UX 검토에서
+> 도출된 P0/P1 전부 (사용자 일괄 승인). 계약 변경은 전부 additive — DB
+> 마이그레이션 없음 (batch/ask_log/whatif_sets는 payload jsonb 복원).
+
+- **R1 빈 DB 온보딩**: 빈 저장소(사내 첫 배포)에서 홈이 무한 로딩되던 결함
+  수정 — projects가 비면 시작 안내(마스터 시드→반입→동기화 3단계 + 반입 센터
+  링크)를 렌더. 조회 쿼리는 데이터 존재 확인 후에만 활성.
+- **R2 반입 열 스펙**: `IngestMappingInfo.column_specs` — 열별 필수/형식
+  (텍스트·정수·예아니오·목록+구분자)/허용 값(`VALUE_LABELS` 코드+라벨)/참조
+  컬렉션을 매핑 정의에서 결정론 도출. 반입 센터에 "열 스펙" 접이식 표.
+- **R3 반입 dry-run**: `POST /ingest/file?dry_run=true` — 파싱→검증→upsert
+  3분류→품질 리포트 전부 계산, 쓰기 4종(객체/버전 로그/보류 풀/배치 기록)
+  전부 생략. UI "검사만 실행" 버튼 + 미반입 배너. 대량 갱신의 사실상 비가역
+  (rollback은 이전 내용 미복원)에 대한 2단계 안전장치.
+- **R4 행위자 기록**: `X-SOC-Actor` 헤더(percent-encoding, 프론트 자동 첨부)
+  → `IngestBatch.actor` / `AskLogEntry.actor` / `WhatIfSet.created_by`.
+  반입 센터 작성자 입력(localStorage) + 배치 이력 표시. 단일 공유 토큰
+  체제에서 "누가"의 최소 감사 기록 — 초기 기록 익명화 방지.
+- **R5 위험 지도 첫 질문 개선**: 기본 정렬을 위험순(등급 내림차순, 동률은
+  근거 수)으로 — docs/risk-map.md가 이미 약속하던 동작과 구현 일치.
+  `sort=base` 토글, "전체 과제" 칩(project=all), "⇄ 최근 1주 변화" 프리셋
+  (1주 전→지금 as-of diff 원클릭 — 시각 타이핑 장벽 제거).
+- **R6 오류 detail 표면**: `apiError()` — 서버가 만든 한국어 detail을 45개
+  fetcher에서 보존, 공통 `ErrorState`(detail + 다시 시도 refetch)를 전 주요
+  화면에 배선. 일반 오류 한 줄로 뭉개지 않는다.
+- **R7 시나리오 상세 정합**: 상세 개요 최상단에 위험 등급 요약 카드(위험
+  지도와 동일 판정·근거 3건 + 해당 셀로 이동 링크 — 왕복 완성). Advisory
+  역할 선택 칩(glossary role 도메인, API의 roles 파라미터 첫 노출)·실행
+  이력 선택기·시간/소요 포맷 정리.
+- **R8 마감**: 변경 영향 StatStrip 그래프 카드가 분석 대상 노드를 선택하도록
+  (앵커 중복 수정), 시간 표기 공통 포맷터(`lib/format.ts`), Ask 확신도
+  라벨을 위험 등급 사전과 분리, what-if 워크벤치 섹션 접기(후보만 기본 펼침).
+- **R9 마스터 데이터 절차**: 트랜잭션 반입과 달리 마스터 온톨로지(프로젝트/
+  시나리오/IP/역할)는 YAML 시드+리뷰 경로뿐임을 `internal_docs/ops/handover.md`
+  §2b로 명문화 (파일 맵·검증 명령·db-seed 절차). docs/ingest.md에 검사만
+  실행·열 스펙·작성자 반영, 디지털 트윈 가이드에 1주 프리셋 지름길 추가.
+- 검증: backend 289(신규 7: dry-run 무기록·quarantine 미기록·actor 왕복·열
+  스펙·ask actor·세트 created_by) / ruff / mypy / validate-data 오류 0 /
+  frontend build·36 tests(신규 2: 빈 저장소 온보딩·등급 정렬)·lint /
+  실서버(8155, PG) — 열 스펙 27건·dry-run 배치 무기록(8→8)·actor 디코딩 확인.
+
 ## Digital Twin 3라운드 — 타 컬렉션 프로세스 모델·as-of 시점 비교·변경 영향 as-of UI (2026-07-17)
 
 > 설계: `internal_docs/design/20_digital_twin_round3.md`. CURRENT_TASK에 남아

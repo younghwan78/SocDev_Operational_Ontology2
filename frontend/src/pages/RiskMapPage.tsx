@@ -26,10 +26,12 @@ import {
   type WhatIfRowChange,
 } from "../api/client";
 import { CollapsibleList } from "../components/CollapsibleList";
+import { ErrorState } from "../components/ErrorState";
 import { PostureChip } from "../components/PostureChip";
 import { SplitHandle, useSidePanelWidth } from "../components/SplitLayout";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
+import { toDateTimeLocal } from "../lib/format";
 import { ko } from "../i18n/ko";
 
 const t = ko.risk;
@@ -88,8 +90,13 @@ export function RiskMapPage() {
   const projects = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
   // URL=상태: 탭/선택/등급 필터를 URL에 반영 — 새로고침·공유가 화면을 재현한다.
   const [searchParams, setSearchParams] = useSearchParams();
-  const projectId = searchParams.get("project") ?? projects.data?.[0]?.id;
+  // R5: project=all이면 전체 과제 (API의 project_id 생략과 동일).
+  const projectParam = searchParams.get("project");
+  const projectId =
+    projectParam === "all" ? undefined : (projectParam ?? projects.data?.[0]?.id);
   const gradeFilter = searchParams.get("grade") ?? "all";
+  // R5: 기본 정렬은 위험순(등급 내림차순) — sort=base로 원래 순서 유지.
+  const sortMode = searchParams.get("sort") === "base" ? "base" : "grade";
   const cellParam = searchParams.get("cell");
   const selection: Selection | null = cellParam
     ? {
@@ -119,10 +126,12 @@ export function RiskMapPage() {
   // 변경 셀은 비교 시점 등급을 점선 오버레이로 (워크벤치와 같은 시각 문법).
   const asOfBParam = searchParams.get("asofb");
   const asOfBTs = asOfTs && asOfBParam ? new Date(asOfBParam).toISOString() : null;
+  // 빈 저장소(사내 첫 배포)에서는 조회를 걸지 않고 온보딩을 렌더한다 (R1).
+  const dataReady = projects.isSuccess && (projects.data ?? []).length > 0;
   const asOfDiff = useQuery({
-    queryKey: ["asof-risk-diff", projectId, asOfTs, asOfBTs],
+    queryKey: ["asof-risk-diff", projectId ?? "all", asOfTs, asOfBTs],
     queryFn: () => fetchAsOfRiskDiff(asOfTs ?? "", asOfBTs ?? "", projectId),
-    enabled: Boolean(asOfTs && asOfBTs && projectId),
+    enabled: dataReady && Boolean(asOfTs && asOfBTs),
   });
   // W2 (설계 18) 가정 실험 워크벤치: URL whatif=가정 세트(JSON) — 링크 공유가 곧 재현.
   const whatIfParam = searchParams.get("whatif");
@@ -141,12 +150,12 @@ export function RiskMapPage() {
     enabled: assumptions.length > 0 && !asOfTs,
   });
   const candidates = useQuery({
-    queryKey: ["whatif-candidates", projectId],
+    queryKey: ["whatif-candidates", projectId ?? "all"],
     queryFn: () => fetchWhatIfCandidates(projectId),
-    enabled: panelOpen && Boolean(projectId),
+    enabled: panelOpen && dataReady,
   });
   const heatmap = useQuery<{ heatmap: RiskHeatmap; meta: AsOfMeta | null }>({
-    queryKey: ["risk-heatmap", projectId, asOfTs],
+    queryKey: ["risk-heatmap", projectId ?? "all", asOfTs],
     queryFn: async () => {
       if (asOfTs) {
         const result = await fetchAsOfRiskHeatmap(asOfTs, projectId);
@@ -154,7 +163,7 @@ export function RiskMapPage() {
       }
       return { heatmap: await fetchRiskHeatmap(projectId), meta: null };
     },
-    enabled: Boolean(projectId),
+    enabled: dataReady,
   });
   const [askDraft, setAskDraft] = useState("");
   const navigate = useNavigate();
@@ -162,10 +171,14 @@ export function RiskMapPage() {
   const valueLabel = useValueLabels();
   const sidePanel = useSidePanelWidth("risk-side-width");
 
-  if (projects.isPending || heatmap.isPending)
-    return <p className="status-msg">{ko.app.loading}</p>;
-  if (projects.isError || heatmap.isError)
-    return <p className="status-msg">{ko.app.error}</p>;
+  if (projects.isPending) return <p className="status-msg">{ko.app.loading}</p>;
+  if (projects.isError)
+    return <ErrorState error={projects.error} onRetry={() => void projects.refetch()} />;
+  // R1: 빈 저장소 온보딩 — 사내 첫 배포에서 무한 로딩 대신 시작 안내를 보여준다.
+  if (!dataReady) return <EmptyOnboarding />;
+  if (heatmap.isPending) return <p className="status-msg">{ko.app.loading}</p>;
+  if (heatmap.isError)
+    return <ErrorState error={heatmap.error} onRetry={() => void heatmap.refetch()} />;
 
   const { columns, rows, focus } = heatmap.data.heatmap;
   const asOfMeta = heatmap.data.meta;
@@ -177,12 +190,22 @@ export function RiskMapPage() {
     if (offset > 0) catStarts.add(offset);
     offset += group.columns.length;
   }
+  // R5: 기본은 위험순 — "지금 가장 위험한 것"이 첫 줄에 온다 (동률은 근거 수).
+  const GRADE_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 };
+  const sortedRows =
+    sortMode === "base"
+      ? rows
+      : [...rows].sort(
+          (a, b) =>
+            (GRADE_ORDER[a.overall_grade] ?? 3) - (GRADE_ORDER[b.overall_grade] ?? 3) ||
+            (b.overall_basis?.length ?? 0) - (a.overall_basis?.length ?? 0),
+        );
   const visibleRows =
     gradeFilter === "high"
-      ? rows.filter((row) => row.overall_grade === "high")
+      ? sortedRows.filter((row) => row.overall_grade === "high")
       : gradeFilter === "medium"
-        ? rows.filter((row) => row.overall_grade !== "low")
-        : rows;
+        ? sortedRows.filter((row) => row.overall_grade !== "low")
+        : sortedRows;
   // 오버레이 — 가정(what-if) 또는 시점 비교(as-of diff)의 변경 행만 투영 표기.
   // 두 모드는 상호 배타이며, 점선 = "지금 실제가 아닌 값"이라는 문법을 공유한다.
   const whatIfResult = assumptions.length > 0 && !asOfTs ? whatIf.data : undefined;
@@ -223,6 +246,13 @@ export function RiskMapPage() {
       </form>
 
       <div className="filter-row">
+        <button
+          type="button"
+          className={`chip chip-btn ${projectParam === "all" ? "active" : ""}`}
+          onClick={() => updateParams({ project: "all", cell: null })}
+        >
+          {t.project_all}
+        </button>
         {(projects.data ?? []).map((project) => (
           <button
             key={project.id}
@@ -244,6 +274,20 @@ export function RiskMapPage() {
           value={asOfParam ?? ""}
           onChange={(event) => updateParams({ asof: event.target.value || null })}
         />
+        {/* R5: 원클릭 시점 비교 — "1주 전 상태 → 지금"을 diff 문법 그대로 설정 */}
+        <button
+          type="button"
+          className="chip chip-btn"
+          onClick={() =>
+            updateParams({
+              asof: toDateTimeLocal(new Date(Date.now() - 7 * 24 * 3600 * 1000)),
+              asofb: toDateTimeLocal(new Date()),
+              whatif: null,
+            })
+          }
+        >
+          ⇄ {t.diff_preset_week}
+        </button>
         {asOfParam && (
           <>
             <label className="filter-label" htmlFor="asofb-input">
@@ -360,6 +404,22 @@ export function RiskMapPage() {
                 {chipLabel}
               </button>
             ))}
+            {/* R5: 정렬 토글 — 기본은 위험순 */}
+            {(
+              [
+                ["grade", t.sort_grade],
+                ["base", t.sort_base],
+              ] as const
+            ).map(([value, chipLabel]) => (
+              <button
+                key={`sort-${value}`}
+                type="button"
+                className={`chip chip-btn ${sortMode === value ? "active" : ""}`}
+                onClick={() => updateParams({ sort: value === "grade" ? null : value })}
+              >
+                {chipLabel}
+              </button>
+            ))}
           </div>
           <div className="heatmap-scroll">
             <table className="heatmap">
@@ -424,6 +484,25 @@ export function RiskMapPage() {
           <BasisPanel row={selectedRow} selection={selection} label={label} />
           <FocusCard focus={focus} label={label} />
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** R1 (설계 21) — 빈 저장소 온보딩: 사내 첫 배포에서 시작 경로를 안내한다. */
+function EmptyOnboarding() {
+  return (
+    <div>
+      <h1>{t.title}</h1>
+      <div className="card">
+        <h2 className="card-title">{t.onboarding_title}</h2>
+        <p className="desc">{t.onboarding_note}</p>
+        <p className="desc">{t.onboarding_step_master}</p>
+        <p className="desc">{t.onboarding_step_ingest}</p>
+        <p className="desc">{t.onboarding_step_sync}</p>
+        <Link to="/ingest" className="chip-link">
+          {t.onboarding_open_ingest}
+        </Link>
       </div>
     </div>
   );
@@ -769,7 +848,9 @@ function WhatIfWorkbench({
         onChange={onChange}
       />
 
-      <h3 className="card-subtitle">{t.whatif_candidates_title}</h3>
+      {/* R8: 섹션 접기 — 워크벤치의 세로 무게를 줄인다 (후보는 기본 펼침) */}
+      <details open>
+        <summary className="card-subtitle">{t.whatif_candidates_title}</summary>
       {candidatesPending && <p className="status-msg">{ko.app.loading}</p>}
       {!candidatesPending && candidates.length === 0 && (
         <p className="desc">{t.whatif_candidates_empty}</p>
@@ -811,8 +892,10 @@ function WhatIfWorkbench({
         ))}
       </div>
       {candidatesNote && <p className="section-note">{candidatesNote}</p>}
+      </details>
 
-      <h3 className="card-subtitle">{t.whatif_new_issue_title}</h3>
+      <details>
+        <summary className="card-subtitle">{t.whatif_new_issue_title}</summary>
       <p className="section-note">{t.whatif_new_issue_note}</p>
       <input
         type="text"
@@ -874,6 +957,7 @@ function WhatIfWorkbench({
       >
         {t.whatif_new_issue_submit}
       </button>
+      </details>
     </div>
   );
 }
@@ -913,8 +997,8 @@ function WhatIfSetsSection({
   };
 
   return (
-    <div>
-      <h3 className="card-subtitle">{t.whatif_sets_title}</h3>
+    <details>
+      <summary className="card-subtitle">{t.whatif_sets_title}</summary>
       <p className="section-note">{t.whatif_set_note}</p>
       {assumptions.length > 0 && (
         <div className="head">
@@ -961,7 +1045,7 @@ function WhatIfSetsSection({
           {set.note && <p className="desc">{set.note}</p>}
         </div>
       ))}
-    </div>
+    </details>
   );
 }
 

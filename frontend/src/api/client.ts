@@ -17,10 +17,34 @@ export const client = createClient<paths>({
   fetch: (request) => globalThis.fetch(request),
 });
 
+// R6 (설계 21) — 서버가 만든 한국어 detail을 버리지 않는다.
+// openapi-fetch의 error는 파싱된 응답 본문({detail: ...})이다.
+export function apiError(error: unknown, fallback: string): Error {
+  if (error && typeof error === "object" && "detail" in error) {
+    const detail = (error as { detail?: unknown }).detail;
+    if (typeof detail === "string" && detail) return new Error(detail);
+  }
+  return new Error(fallback);
+}
+
 // D1-1 토큰 인증 — 서버가 SOC_API_TOKEN을 켠 경우에만 의미가 있다.
 // 토큰은 localStorage에 보관하고, 401을 받으면 토큰 게이트 이벤트를 올린다.
 export const API_TOKEN_KEY = "soc-api-token";
 export const AUTH_REQUIRED_EVENT = "soc-auth-required";
+
+// R4 (설계 21) — 행위자 이름: 단일 공유 토큰 체제에서 배치/질의 기록에 "누가"를 남긴다.
+// 강제 아님 — 설정 시 모든 요청에 X-SOC-Actor 헤더(percent-encoding)로 첨부된다.
+export const ACTOR_KEY = "soc-actor";
+
+export function getActor(): string | null {
+  return typeof window === "undefined" ? null : window.localStorage.getItem(ACTOR_KEY);
+}
+
+export function setActor(name: string): void {
+  const trimmed = name.trim();
+  if (trimmed) window.localStorage.setItem(ACTOR_KEY, trimmed);
+  else window.localStorage.removeItem(ACTOR_KEY);
+}
 
 export function getApiToken(): string | null {
   return typeof window === "undefined" ? null : window.localStorage.getItem(API_TOKEN_KEY);
@@ -38,6 +62,8 @@ client.use({
   onRequest({ request }) {
     const token = getApiToken();
     if (token) request.headers.set("Authorization", `Bearer ${token}`);
+    const actor = getActor();
+    if (actor) request.headers.set("X-SOC-Actor", encodeURIComponent(actor));
     return request;
   },
   onResponse({ response }) {
@@ -61,13 +87,13 @@ export async function fetchScenarios(projectId?: string): Promise<Scenario[]> {
   const { data, error } = await client.GET("/api/v1/scenarios", {
     params: { query: projectId ? { project_id: projectId } : {} },
   });
-  if (error || !data) throw new Error("scenarios 조회 실패");
+  if (error || !data) throw apiError(error, "scenarios 조회 실패");
   return data;
 }
 
 export async function fetchProjects(): Promise<Project[]> {
   const { data, error } = await client.GET("/api/v1/projects");
-  if (error || !data) throw new Error("projects 조회 실패");
+  if (error || !data) throw apiError(error, "projects 조회 실패");
   return data;
 }
 
@@ -75,7 +101,7 @@ export async function fetchScenarioAnalysis(scenarioId: string): Promise<Scenari
   const { data, error } = await client.GET("/api/v1/scenarios/{scenario_id}/analysis", {
     params: { path: { scenario_id: scenarioId } },
   });
-  if (error || !data) throw new Error("analysis 조회 실패");
+  if (error || !data) throw apiError(error, "analysis 조회 실패");
   return data;
 }
 
@@ -83,7 +109,7 @@ export async function fetchTraceability(objectId: string): Promise<TraceabilityR
   const { data, error } = await client.GET("/api/v1/traceability/{object_id}", {
     params: { path: { object_id: objectId } },
   });
-  if (error || !data) throw new Error("traceability 조회 실패");
+  if (error || !data) throw apiError(error, "traceability 조회 실패");
   return data;
 }
 
@@ -98,13 +124,13 @@ export type EvidenceCatalogEntry = components["schemas"]["EvidenceCatalogEntry"]
 
 export async function fetchPortfolio(): Promise<PortfolioOverview> {
   const { data, error } = await client.GET("/api/v1/portfolio/overview");
-  if (error || !data) throw new Error("portfolio 조회 실패");
+  if (error || !data) throw apiError(error, "portfolio 조회 실패");
   return data;
 }
 
 export async function fetchWeeklyIndex(): Promise<WeeklyIndex> {
   const { data, error } = await client.GET("/api/v1/review/weekly");
-  if (error || !data) throw new Error("weekly index 조회 실패");
+  if (error || !data) throw apiError(error, "weekly index 조회 실패");
   return data;
 }
 
@@ -112,7 +138,7 @@ export async function fetchWeeklySnapshot(week: number): Promise<WeeklySnapshot>
   const { data, error } = await client.GET("/api/v1/review/weekly/{week}", {
     params: { path: { week } },
   });
-  if (error || !data) throw new Error("weekly snapshot 조회 실패");
+  if (error || !data) throw apiError(error, "weekly snapshot 조회 실패");
   return data;
 }
 
@@ -122,7 +148,7 @@ export type ReviewPackRollup = components["schemas"]["ReviewPackRollup"];
 
 export async function fetchReviewPacks(): Promise<ReviewPackSummary[]> {
   const { data, error } = await client.GET("/api/v1/review-packs");
-  if (error || !data) throw new Error("review-packs 조회 실패");
+  if (error || !data) throw apiError(error, "review-packs 조회 실패");
   return data;
 }
 
@@ -130,7 +156,7 @@ export async function fetchReviewPack(packId: string): Promise<ReviewPackDocumen
   const { data, error } = await client.GET("/api/v1/review-packs/{pack_id}", {
     params: { path: { pack_id: packId } },
   });
-  if (error || !data) throw new Error("review-pack 조회 실패");
+  if (error || !data) throw apiError(error, "review-pack 조회 실패");
   return data;
 }
 
@@ -166,7 +192,7 @@ export async function fetchIssues(filters: {
       },
     },
   });
-  if (error || !data) throw new Error("issues 조회 실패");
+  if (error || !data) throw apiError(error, "issues 조회 실패");
   return data;
 }
 
@@ -174,7 +200,7 @@ export async function fetchIssueRCA(issueId: string): Promise<RCAChain> {
   const { data, error } = await client.GET("/api/v1/issues/{issue_id}/rca", {
     params: { path: { issue_id: issueId } },
   });
-  if (error || !data) throw new Error("rca 조회 실패");
+  if (error || !data) throw apiError(error, "rca 조회 실패");
   return data;
 }
 
@@ -190,7 +216,7 @@ export async function fetchObjectHistory(
   const { data, error } = await client.GET("/api/v1/history/{collection}/{object_id}", {
     params: { path: { collection, object_id: objectId } },
   });
-  if (error || !data) throw new Error("history 조회 실패");
+  if (error || !data) throw apiError(error, "history 조회 실패");
   return data;
 }
 
@@ -199,13 +225,13 @@ export type AskCard = components["schemas"]["AskCard"];
 
 export async function fetchAskPresets(): Promise<Record<string, string>[]> {
   const { data, error } = await client.GET("/api/v1/ask/presets");
-  if (error || !data) throw new Error("ask presets 조회 실패");
+  if (error || !data) throw apiError(error, "ask presets 조회 실패");
   return data;
 }
 
 export async function postAsk(question: string): Promise<AskResult> {
   const { data, error } = await client.POST("/api/v1/ask", { body: { question } });
-  if (error || !data) throw new Error("ask 질의 실패");
+  if (error || !data) throw apiError(error, "ask 질의 실패");
   return data;
 }
 
@@ -217,19 +243,19 @@ export async function fetchAskPreview(question: string): Promise<AskPreview> {
   const { data, error } = await client.GET("/api/v1/ask/preview", {
     params: { query: { q: question } },
   });
-  if (error || !data) throw new Error("ask preview 조회 실패");
+  if (error || !data) throw apiError(error, "ask preview 조회 실패");
   return data;
 }
 
 export async function fetchAskHistory(): Promise<AskLogEntry[]> {
   const { data, error } = await client.GET("/api/v1/ask/history");
-  if (error || !data) throw new Error("ask history 조회 실패");
+  if (error || !data) throw apiError(error, "ask history 조회 실패");
   return data;
 }
 
 export async function fetchAskFaq(): Promise<AskFaqEntry[]> {
   const { data, error } = await client.GET("/api/v1/ask/faq");
-  if (error || !data) throw new Error("ask faq 조회 실패");
+  if (error || !data) throw apiError(error, "ask faq 조회 실패");
   return data;
 }
 
@@ -242,7 +268,7 @@ export interface ChangeImpactParams {
 
 export async function fetchChangeImpactOptions(): Promise<ChangeImpactOptions> {
   const { data, error } = await client.GET("/api/v1/change-impact/options");
-  if (error || !data) throw new Error("change-impact options 조회 실패");
+  if (error || !data) throw apiError(error, "change-impact options 조회 실패");
   return data;
 }
 
@@ -257,7 +283,7 @@ export async function fetchChangeImpact(params: ChangeImpactParams): Promise<Cha
       },
     },
   });
-  if (error || !data) throw new Error("change-impact 분석 실패");
+  if (error || !data) throw apiError(error, "change-impact 분석 실패");
   return data;
 }
 
@@ -265,7 +291,7 @@ export async function fetchRiskHeatmap(projectId?: string): Promise<RiskHeatmap>
   const { data, error } = await client.GET("/api/v1/risk/heatmap", {
     params: { query: projectId ? { project_id: projectId } : {} },
   });
-  if (error || !data) throw new Error("risk heatmap 조회 실패");
+  if (error || !data) throw apiError(error, "risk heatmap 조회 실패");
   return data;
 }
 
@@ -280,7 +306,7 @@ export async function runWhatIf(
   const { data, error } = await client.POST("/api/v1/what-if", {
     body: { assumptions },
   });
-  if (error || !data) throw new Error("what-if 실행 실패");
+  if (error || !data) throw apiError(error, "what-if 실행 실패");
   return data;
 }
 
@@ -294,7 +320,7 @@ export async function fetchWhatIfCandidates(
   const { data, error } = await client.GET("/api/v1/what-if/candidates", {
     params: { query: projectId ? { project_id: projectId } : {} },
   });
-  if (error || !data) throw new Error("what-if 후보 조회 실패");
+  if (error || !data) throw apiError(error, "what-if 후보 조회 실패");
   return data;
 }
 
@@ -306,13 +332,13 @@ export async function fetchWhatIfSets(projectId?: string): Promise<WhatIfSet[]> 
   const { data, error } = await client.GET("/api/v1/what-if/sets", {
     params: { query: projectId ? { project_id: projectId } : {} },
   });
-  if (error || !data) throw new Error("가정 세트 목록 조회 실패");
+  if (error || !data) throw apiError(error, "가정 세트 목록 조회 실패");
   return data;
 }
 
 export async function saveWhatIfSet(body: WhatIfSetCreate): Promise<WhatIfSet> {
   const { data, error } = await client.POST("/api/v1/what-if/sets", { body });
-  if (error || !data) throw new Error("가정 세트 저장 실패");
+  if (error || !data) throw apiError(error, "가정 세트 저장 실패");
   return data;
 }
 
@@ -324,7 +350,7 @@ export type KPICatalogEntry = components["schemas"]["KPICatalogEntry"];
 
 export async function fetchKPICatalog(): Promise<KPICatalogEntry[]> {
   const { data, error } = await client.GET("/api/v1/kpi/catalog");
-  if (error || !data) throw new Error("kpi catalog 조회 실패");
+  if (error || !data) throw apiError(error, "kpi catalog 조회 실패");
   return data;
 }
 
@@ -339,7 +365,7 @@ export async function fetchKPISeries(
         : { kpi_id: kpiId },
     },
   });
-  if (error || !data) throw new Error("kpi series 조회 실패");
+  if (error || !data) throw apiError(error, "kpi series 조회 실패");
   return data;
 }
 
@@ -354,7 +380,7 @@ export async function fetchAsOfRiskHeatmap(
   const { data, error } = await client.GET("/api/v1/as-of/risk/heatmap", {
     params: { query: projectId ? { ts, project_id: projectId } : { ts } },
   });
-  if (error || !data) throw new Error("as-of risk heatmap 조회 실패");
+  if (error || !data) throw apiError(error, "as-of risk heatmap 조회 실패");
   return data;
 }
 
@@ -365,7 +391,7 @@ export async function fetchAsOfPortfolio(ts: string): Promise<AsOfPortfolioOverv
   const { data, error } = await client.GET("/api/v1/as-of/portfolio/overview", {
     params: { query: { ts } },
   });
-  if (error || !data) throw new Error("as-of portfolio 조회 실패");
+  if (error || !data) throw apiError(error, "as-of portfolio 조회 실패");
   return data;
 }
 
@@ -384,7 +410,7 @@ export async function fetchAsOfRiskDiff(
         : { ts_a: tsA, ts_b: tsB },
     },
   });
-  if (error || !data) throw new Error("as-of diff 조회 실패");
+  if (error || !data) throw apiError(error, "as-of diff 조회 실패");
   return data;
 }
 
@@ -406,7 +432,7 @@ export async function fetchAsOfChangeImpact(
       },
     },
   });
-  if (error || !data) throw new Error("as-of change-impact 조회 실패");
+  if (error || !data) throw apiError(error, "as-of change-impact 조회 실패");
   return data;
 }
 
@@ -415,7 +441,7 @@ export type CollectionCoverage = components["schemas"]["CollectionCoverage"];
 
 export async function fetchSourceMap(): Promise<SourceCoverage> {
   const { data, error } = await client.GET("/api/v1/source-map");
-  if (error || !data) throw new Error("source-map 조회 실패");
+  if (error || !data) throw apiError(error, "source-map 조회 실패");
   return data;
 }
 
@@ -425,7 +451,7 @@ export type UnmatchedToken = components["schemas"]["UnmatchedToken"];
 
 export async function fetchEntityResolution(): Promise<EntityResolutionReport> {
   const { data, error } = await client.GET("/api/v1/entity-resolution");
-  if (error || !data) throw new Error("entity-resolution 조회 실패");
+  if (error || !data) throw apiError(error, "entity-resolution 조회 실패");
   return data;
 }
 
@@ -437,19 +463,19 @@ export async function fetchActionDraft(scenarioId: string): Promise<ActionDraft>
   const { data, error } = await client.GET("/api/v1/action-draft/scenario/{scenario_id}", {
     params: { path: { scenario_id: scenarioId } },
   });
-  if (error || !data) throw new Error("action-draft 조회 실패");
+  if (error || !data) throw apiError(error, "action-draft 조회 실패");
   return data;
 }
 
 export async function fetchLabels(): Promise<Record<string, string>> {
   const { data, error } = await client.GET("/api/v1/meta/labels");
-  if (error || !data) throw new Error("labels 조회 실패");
+  if (error || !data) throw apiError(error, "labels 조회 실패");
   return data;
 }
 
 export async function fetchValueLabels(): Promise<Record<string, Record<string, string>>> {
   const { data, error } = await client.GET("/api/v1/meta/glossary");
-  if (error || !data) throw new Error("glossary 조회 실패");
+  if (error || !data) throw apiError(error, "glossary 조회 실패");
   const glossary = data as { value_labels?: Record<string, Record<string, string>> };
   return glossary.value_labels ?? {};
 }
@@ -458,11 +484,12 @@ export type IngestBatch = components["schemas"]["IngestBatch"];
 export type IngestReport = components["schemas"]["IngestReport"];
 export type IngestQualityReport = components["schemas"]["QualityReport"];
 export type IngestMappingInfo = components["schemas"]["IngestMappingInfo"];
+export type IngestColumnSpec = components["schemas"]["IngestColumnSpec"];
 export type QuarantineEntry = components["schemas"]["QuarantineEntry"];
 
 export async function fetchIngestQuarantine(): Promise<QuarantineEntry[]> {
   const { data, error } = await client.GET("/api/v1/ingest/quarantine");
-  if (error || !data) throw new Error("보류 행 조회 실패");
+  if (error || !data) throw apiError(error, "보류 행 조회 실패");
   return data;
 }
 export type Decision = components["schemas"]["Decision"];
@@ -470,13 +497,13 @@ export type ActionItem = components["schemas"]["ActionItem"];
 
 export async function fetchActionItems(): Promise<ActionItem[]> {
   const { data, error } = await client.GET("/api/v1/action-items");
-  if (error || !data) throw new Error("action items 조회 실패");
+  if (error || !data) throw apiError(error, "action items 조회 실패");
   return data;
 }
 
 export async function fetchIngestMappings(): Promise<IngestMappingInfo[]> {
   const { data, error } = await client.GET("/api/v1/ingest/mappings");
-  if (error || !data) throw new Error("ingest mappings 조회 실패");
+  if (error || !data) throw apiError(error, "ingest mappings 조회 실패");
   return data;
 }
 
@@ -492,21 +519,30 @@ export async function fetchDecisions(params?: {
       },
     },
   });
-  if (error || !data) throw new Error("decisions 조회 실패");
+  if (error || !data) throw apiError(error, "decisions 조회 실패");
   return data;
 }
 
 // multipart 업로드는 openapi-fetch 대신 FormData 직접 — 응답 타입은 생성 스키마 사용.
-export async function uploadIngestFile(file: File, mapping: string): Promise<IngestReport> {
+export async function uploadIngestFile(
+  file: File,
+  mapping: string,
+  options?: { dryRun?: boolean },
+): Promise<IngestReport> {
   const form = new FormData();
   form.append("file", file);
   const token = getApiToken();
+  const actor = getActor();
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  if (actor) headers["X-SOC-Actor"] = encodeURIComponent(actor);
+  const dryQuery = options?.dryRun ? "&dry_run=true" : "";
   const response = await globalThis.fetch(
-    `${baseUrl}/api/v1/ingest/file?mapping=${encodeURIComponent(mapping)}`,
+    `${baseUrl}/api/v1/ingest/file?mapping=${encodeURIComponent(mapping)}${dryQuery}`,
     {
       method: "POST",
       body: form,
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      headers: Object.keys(headers).length > 0 ? headers : undefined,
     },
   );
   if (response.status === 401) notifyAuthRequired();
@@ -521,13 +557,13 @@ export async function rollbackIngestBatch(batchId: string): Promise<number> {
   const { data, error } = await client.POST("/api/v1/ingest/batches/{batch_id}/rollback", {
     params: { path: { batch_id: batchId } },
   });
-  if (error || !data) throw new Error("rollback 실패");
+  if (error || !data) throw apiError(error, "rollback 실패");
   return (data as { removed: number }).removed;
 }
 
 export async function fetchIngestBatches(): Promise<IngestBatch[]> {
   const { data, error } = await client.GET("/api/v1/ingest/batches");
-  if (error || !data) throw new Error("ingest batches 조회 실패");
+  if (error || !data) throw apiError(error, "ingest batches 조회 실패");
   return data;
 }
 
@@ -543,7 +579,7 @@ export async function fetchEvidence(filters: {
       },
     },
   });
-  if (error || !data) throw new Error("evidence 조회 실패");
+  if (error || !data) throw apiError(error, "evidence 조회 실패");
   return data;
 }
 
@@ -561,7 +597,7 @@ export async function fetchEvidenceLadder(filters: {
       },
     },
   });
-  if (error || !data) throw new Error("evidence-ladder 조회 실패");
+  if (error || !data) throw apiError(error, "evidence-ladder 조회 실패");
   return data;
 }
 
@@ -569,7 +605,7 @@ export async function fetchAdvisoryRuns(scenarioId: string): Promise<AgentRun[]>
   const { data, error } = await client.GET("/api/v1/scenarios/{scenario_id}/advisory", {
     params: { path: { scenario_id: scenarioId } },
   });
-  if (error || !data) throw new Error("advisory 조회 실패");
+  if (error || !data) throw apiError(error, "advisory 조회 실패");
   return data;
 }
 
@@ -578,6 +614,6 @@ export async function runAdvisory(scenarioId: string, roles?: string[]): Promise
     params: { path: { scenario_id: scenarioId } },
     body: { roles: roles ?? null },
   });
-  if (error || !data) throw new Error("advisory 실행 실패");
+  if (error || !data) throw apiError(error, "advisory 실행 실패");
   return data;
 }

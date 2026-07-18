@@ -66,8 +66,11 @@ class IngestBatch(BaseModel):
     rejected_count: int
     updated_count: int = 0
     unchanged_count: int = 0
-    status: str  # completed | rolled_back
+    status: str  # completed | rolled_back | dry_run(기록되지 않음)
     created_at: str
+    # R4 (설계 21): 행위자 — 단일 공유 토큰 체제에서 "누가 반입했나"의 최소 기록.
+    # 헤더 X-SOC-Actor 유래, 미설정 시 None (payload jsonb 복원 — 마이그레이션 불필요).
+    actor: str | None = None
 
 
 class QuarantineEntry(BaseModel):
@@ -112,6 +115,8 @@ class IngestReport(BaseModel):
     batch: IngestBatch
     rejected_rows: list[RejectedRow] = Field(default_factory=list)
     quality: QualityReport | None = None
+    # R3 (설계 21): 검사만 실행 — 저장소에 아무것도 쓰지 않았음을 명시하는 에코.
+    dry_run: bool = False
 
 
 class IngestError(Exception):
@@ -368,6 +373,7 @@ class PostgresIngestWriter:
                     rejected_count=row[5],
                     updated_count=int(payload.get("updated_count", 0) or 0),
                     unchanged_count=int(payload.get("unchanged_count", 0) or 0),
+                    actor=payload.get("actor") or None,
                     status=row[6],
                     created_at=(
                         row[7].isoformat() if hasattr(row[7], "isoformat") else str(row[7])
@@ -587,12 +593,22 @@ class IngestService:
     def mappings(self) -> list[IngestMapping]:
         return list(MAPPINGS.values())
 
-    def ingest(self, filename: str, content: bytes, mapping_name: str) -> IngestReport:
+    def ingest(
+        self,
+        filename: str,
+        content: bytes,
+        mapping_name: str,
+        *,
+        actor: str | None = None,
+        dry_run: bool = False,
+    ) -> IngestReport:
         try:
             rows = parse_tabular(filename, content)
         except TabularParseError as exc:
             raise IngestError(str(exc)) from exc
-        return self.ingest_rows(filename, rows, mapping_name)
+        return self.ingest_rows(
+            filename, rows, mapping_name, actor=actor, dry_run=dry_run
+        )
 
     def ingest_rows(
         self,
@@ -602,11 +618,17 @@ class IngestService:
         *,
         origin: SourceOrigin = SourceOrigin.IMPORTED,
         row_refs: list[str] | None = None,
+        actor: str | None = None,
+        dry_run: bool = False,
     ) -> IngestReport:
         """정규화된 행을 배치로 반입한다 — CSV/XLSX와 커넥터(integrated)의 공용 경로.
 
         `row_refs[i]`가 있으면 계보에 외부 키를 담는다 (예: `jira:PROJ-123` →
         `import:<batch>:jira:PROJ-123`). rollback 접두 계약은 동일하게 유지된다.
+
+        `dry_run=True` (R3, 설계 21): 파싱→검증→upsert 3분류→품질 리포트까지 전부
+        계산하되 쓰기(객체/버전 로그/보류 풀/배치 기록)는 모두 생략한다 — 리포트
+        카운트는 실제 반입과 동일하고, 저장소·이력은 불변이다.
         """
         mapping = MAPPINGS.get(mapping_name)
         if mapping is None:
@@ -698,17 +720,17 @@ class IngestService:
                 updated_objects.append(obj)
                 updated_fields[obj.id] = changed_top_level_fields(old_body, new_body)
 
-        if updated_objects:
+        if updated_objects and not dry_run:
             self._writer.remove_by_ids(
                 mapping.target_collection, [obj.id for obj in updated_objects]
             )
         to_write = new_objects + updated_objects
-        if to_write:
+        if to_write and not dry_run:
             self._writer.add_objects(mapping.target_collection, to_write, batch_id)
 
         # 시간 모델 T1: created/updated 버전 기록 — unchanged는 기록하지 않는다
         # (로그가 실제 변경량에 비례). append-only — 이 로그를 지우는 경로는 없다.
-        if to_write:
+        if to_write and not dry_run:
             latest = self._writer.latest_version_numbers(
                 mapping.target_collection, [obj.id for obj in to_write]
             )
@@ -750,9 +772,9 @@ class IngestService:
             for index, row in enumerate(rows, start=1)
             if index in rejected_numbers
         ]
-        if quarantine_entries:
+        if quarantine_entries and not dry_run:
             self._writer.add_quarantine(quarantine_entries)
-        if deduped:
+        if deduped and not dry_run:
             self._writer.resolve_quarantine(
                 mapping.name, {obj.id for obj in deduped}
             )
@@ -766,14 +788,17 @@ class IngestService:
             rejected_count=len(rejected),
             updated_count=len(updated_objects),
             unchanged_count=unchanged_count,
-            status="completed",
+            status="dry_run" if dry_run else "completed",
             created_at=now.isoformat(),
+            actor=actor,
         )
-        self._writer.record_batch(batch)
+        if not dry_run:
+            self._writer.record_batch(batch)
         return IngestReport(
             batch=batch,
             rejected_rows=rejected,
             quality=self._quality(mapping, deduped),
+            dry_run=dry_run,
         )
 
     def _quality(

@@ -15,6 +15,7 @@ import {
 import { CollapsibleList } from "../components/CollapsibleList";
 import { useLabels } from "../hooks/useLabels";
 import { useValueLabels } from "../hooks/useValueLabels";
+import { ErrorState } from "../components/ErrorState";
 import { ko } from "../i18n/ko";
 
 const t = ko.portfolio;
@@ -64,7 +65,8 @@ export function PortfolioPage() {
   };
 
   if (portfolio.isPending) return <p className="status-msg">{ko.app.loading}</p>;
-  if (portfolio.isError) return <p className="status-msg">{ko.app.error}</p>;
+  if (portfolio.isError)
+    return <ErrorState error={portfolio.error} onRetry={() => void portfolio.refetch()} />;
 
   const { projects, attention, matrix } = portfolio.data.overview;
   const asOfMeta = portfolio.data.meta;

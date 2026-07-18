@@ -142,4 +142,48 @@ describe("RiskMapPage", () => {
     expect(screen.queryByText("ip_isp")).not.toBeInTheDocument();
     expect(screen.queryByText("project_u")).not.toBeInTheDocument();
   });
+
+  // R1 (설계 21): 빈 저장소 — 무한 로딩이 아니라 온보딩 안내를 렌더한다.
+  it("프로젝트가 없으면 온보딩 안내를 보여준다", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(jsonResponse([]))),
+    );
+    renderPage();
+    expect(
+      await screen.findByText("아직 반입된 데이터가 없습니다"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("반입 센터 열기")).toBeInTheDocument();
+    expect(screen.queryByText("불러오는 중…")).not.toBeInTheDocument();
+  });
+
+  // R5 (설계 21): 기본 정렬은 위험순 — 높음 행이 중간/낮음 행보다 먼저.
+  it("기본 정렬은 등급 내림차순이다", async () => {
+    const lowRow = {
+      ...heatmap.rows[0],
+      scenario_id: "fhd_playback",
+      scenario_name: "FHD 재생",
+      overall_grade: "low",
+      overall_grade_ko: "낮음",
+      overall_basis: [],
+      cells: [],
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: Request) => {
+        const url = typeof input === "string" ? input : input.url;
+        if (url.includes("/api/v1/projects")) return Promise.resolve(jsonResponse(projects));
+        if (url.includes("/api/v1/risk/heatmap"))
+          return Promise.resolve(
+            jsonResponse({ ...heatmap, rows: [lowRow, heatmap.rows[0]] }),
+          );
+        return Promise.resolve(jsonResponse([]));
+      }),
+    );
+    renderPage();
+    await screen.findAllByText("UHD60 녹화 (EIS)");
+    const rows = screen.getAllByRole("row").slice(2); // thead 2행 제외
+    expect(rows[0].textContent).toContain("UHD60 녹화 (EIS)");
+    expect(rows[1].textContent).toContain("FHD 재생");
+  });
 });

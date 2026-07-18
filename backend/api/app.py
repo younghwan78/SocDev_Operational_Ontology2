@@ -14,9 +14,10 @@ import hmac
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
+from urllib.parse import unquote
 
-from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi import FastAPI, File, Header, HTTPException, Query, Request, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -31,6 +32,7 @@ from backend.agents.ask_runner import PRESET_QUESTIONS, AskPreview, AskResult, A
 from backend.agents.run_store import InMemoryRunStore, RunStoreProtocol
 from backend.agents.runner import AdvisoryRunner
 from backend.api.observability import RequestTimer, log_error, log_request, setup_logging
+from backend.ingest.mappings import IngestMapping
 from backend.ingest.service import (
     IngestBatch,
     IngestError,
@@ -45,7 +47,7 @@ from backend.ontology import COLLECTIONS, RUNTIME_CONTRACTS
 from backend.ontology.decision import ActionItem, Decision
 from backend.ontology.event import DevelopmentEvent
 from backend.ontology.evidence import EvidenceCatalogEntry
-from backend.ontology.glossary import export_glossary
+from backend.ontology.glossary import VALUE_LABELS, export_glossary
 from backend.ontology.project import Project
 from backend.ontology.relation import AgentRun
 from backend.ontology.scenario import Scenario
@@ -231,6 +233,23 @@ class WhatIfSetCreate(BaseModel):
     assumptions: list[WhatIfAssumption] = Field(min_length=1, max_length=10)
 
 
+class IngestColumnSpec(BaseModel):
+    """반입 열 스펙 (R2, 설계 21) — 매핑 정의+VALUE_LABELS에서 결정론 도출.
+
+    사내 작성자가 화면에서 허용값/형식을 보고 채우게 해 거부-루프를 줄인다.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    column: str  # 한국어 열 이름 (계약)
+    field_path: str  # 모델 필드 경로 (hover 참고용)
+    required: bool
+    kind: str  # text | int | bool | list
+    separator: str | None = None  # list일 때 구분자
+    allowed_values: list[str] = Field(default_factory=list)  # "code (라벨)"
+    ref_collection: str | None = None  # 참조 무결성 검사 대상
+
+
 class IngestMappingInfo(BaseModel):
     """반입 매핑 메타 — 반입 센터 화면 계약 (읽기 전용)."""
 
@@ -241,6 +260,46 @@ class IngestMappingInfo(BaseModel):
     target_collection: str
     columns: list[str]
     required_columns: list[str]
+    column_specs: list[IngestColumnSpec] = Field(default_factory=list)
+
+
+def _column_specs(mapping: IngestMapping) -> list[IngestColumnSpec]:
+    """매핑 정의 → 열 스펙 — 매핑이 단일 소스, 여기서는 표면화만 한다."""
+    specs: list[IngestColumnSpec] = []
+    for column, path in mapping.column_map.items():
+        if path in mapping.list_columns:
+            kind, separator = "list", mapping.list_columns[path]
+        elif path in mapping.int_columns:
+            kind, separator = "int", None
+        elif path in mapping.bool_columns:
+            kind, separator = "bool", None
+        else:
+            kind, separator = "text", None
+        domain = mapping.label_domains.get(path)
+        allowed = (
+            [f"{code} ({label})" for code, label in VALUE_LABELS.get(domain, {}).items()]
+            if domain
+            else []
+        )
+        specs.append(
+            IngestColumnSpec(
+                column=column,
+                field_path=path,
+                required=column in mapping.required_columns,
+                kind=kind,
+                separator=separator,
+                allowed_values=allowed,
+                ref_collection=mapping.ref_checks.get(path),
+            )
+        )
+    return specs
+
+
+def _decode_actor(raw: str | None) -> str | None:
+    """R4 — X-SOC-Actor 헤더 디코딩 (프론트가 encodeURIComponent로 넣는다)."""
+    if not raw:
+        return None
+    return unquote(raw).strip() or None
 
 
 def _page(items: list, limit: int | None, offset: int) -> list:
@@ -662,23 +721,40 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         return services.ask_log.faq(limit)
 
     @app.post(f"{prefix}/ask", response_model=AskResult)
-    def ask(request: AskRequest) -> AskResult:
+    def ask(
+        request: AskRequest,
+        x_soc_actor: Annotated[str | None, Header()] = None,
+    ) -> AskResult:
         """Ask SoC 질의 — 검색(결정론) → LLM 근거 인용 답변 (데이터 수정 아님).
 
         LLM 미가용/검증 거부 시 검색 결과 요약만으로 답한다.
         결과는 질의 로그(감사 기록·FAQ 원천)에 남는다 — 신규 쓰기 API 아님.
         """
-        return ask_with_cache(services.ask, services.ask_log, request.question)
+        return ask_with_cache(
+            services.ask, services.ask_log, request.question,
+            actor=_decode_actor(x_soc_actor),
+        )
 
     @app.post(f"{prefix}/ingest/file", response_model=IngestReport)
     async def ingest_file(
         mapping: str = Query(description="매핑 이름 (예: project_milestones)"),
+        dry_run: bool = Query(
+            default=False,
+            description="R3: true면 검사만 실행 — 리포트는 동일, 저장소는 불변",
+        ),
         file: UploadFile = File(description="CSV 또는 XLSX 파일"),
+        x_soc_actor: Annotated[str | None, Header()] = None,
     ) -> IngestReport:
         """실데이터 반입 — 온톨로지 데이터가 진입하는 유일한 쓰기 경로."""
         content = await file.read()
         try:
-            return services.ingest.ingest(file.filename or "upload", content, mapping)
+            return services.ingest.ingest(
+                file.filename or "upload",
+                content,
+                mapping,
+                actor=_decode_actor(x_soc_actor),
+                dry_run=dry_run,
+            )
         except IngestError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -692,6 +768,7 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
                 target_collection=m.target_collection,
                 columns=list(m.column_map.keys()),
                 required_columns=sorted(m.required_columns),
+                column_specs=_column_specs(m),
             )
             for m in services.ingest.mappings()
         ]
@@ -781,7 +858,10 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         return services.what_if.candidates(project_id)
 
     @app.post(f"{prefix}/what-if/sets", response_model=WhatIfSet)
-    def save_what_if_set(request: WhatIfSetCreate) -> WhatIfSet:
+    def save_what_if_set(
+        request: WhatIfSetCreate,
+        x_soc_actor: Annotated[str | None, Header()] = None,
+    ) -> WhatIfSet:
         """X2 (설계 19) — 가정 세트 저장: 운영 기록(append-only), 온톨로지 아님.
 
         저장 전 overlay 조립으로 가정을 검증한다 — 깨진 세트는 저장되지 않는다.
@@ -798,6 +878,7 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             assumptions=request.assumptions,
             note=request.note,
             project_id=request.project_id,
+            created_by=_decode_actor(x_soc_actor),
         )
         services.whatif_sets.save(item)
         return item

@@ -15,6 +15,7 @@ import {
 import { useRef } from "react";
 import { PostureChip } from "../components/PostureChip";
 import { useValueLabels } from "../hooks/useValueLabels";
+import { ErrorState } from "../components/ErrorState";
 import { ko } from "../i18n/ko";
 
 const t = ko.review;
@@ -107,7 +108,8 @@ export function ReviewPage() {
   });
 
   if (index.isPending) return <p className="status-msg">{ko.app.loading}</p>;
-  if (index.isError) return <p className="status-msg">{ko.app.error}</p>;
+  if (index.isError)
+    return <ErrorState error={index.error} onRetry={() => void index.refetch()} />;
 
   const recentWeeks = showAllWeeks ? weeks : weeks.slice(-8);
 
@@ -285,7 +287,8 @@ function ReviewPackDetail({ packId }: { packId: string }) {
   });
 
   if (doc.isPending) return <p className="status-msg">{ko.app.loading}</p>;
-  if (doc.isError || !doc.data) return <p className="status-msg">{ko.app.error}</p>;
+  if (doc.isError || !doc.data)
+    return <ErrorState error={doc.error} onRetry={() => void doc.refetch()} />;
   const data = doc.data;
   const r = data.rollup;
 
