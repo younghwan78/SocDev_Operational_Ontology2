@@ -61,6 +61,44 @@ COLLECTION_MAP: dict[tuple[str, str], str] = {
     ("simulation_runs.yaml", "simulation_runs"): "simulation_runs",
 }
 
+# 설계 23: 58 전용 보강 — 마일스톤 exit 기준 (56 원본에 없는 계약 필드).
+# 게이트 판정 데모/테스트 재료: spec freeze(근거+이슈 상한)·아키 리뷰(검증된
+# 종결)·ES 릴리스(이슈 상한). 실데이터에서는 반입 경로가 채운다.
+GATE_CRITERIA_58: dict[str, list[dict[str, Any]]] = {
+    "project_w_spec_freeze_q2": [
+        {
+            "criterion_id": "gate_w_specfreeze_evidence",
+            "kind": "required_evidence",
+            "description": "스펙 확정 전 대표 시나리오의 현세대 실측 근거가 확보되어야 한다",
+            "evidence_types": ["current_project_measurement"],
+            "scenario_ids": ["uhd60_recording_eis_on"],
+        },
+        {
+            "criterion_id": "gate_w_specfreeze_blockers",
+            "kind": "max_open_issues",
+            "description": "높음 이상 심각도의 미해결 이슈가 없어야 한다",
+            "max_open_issues": 0,
+            "min_severity": "high",
+        },
+    ],
+    "project_w_architecture_review_q2_q3": [
+        {
+            "criterion_id": "gate_w_archreview_verified_closure",
+            "kind": "verified_closure",
+            "description": "종결된 이슈는 통과한 검증 테스트가 연결되어 있어야 한다",
+        }
+    ],
+    "project_u_es_release_w12": [
+        {
+            "criterion_id": "gate_u_es_blockers",
+            "kind": "max_open_issues",
+            "description": "ES 릴리스 전 높음 이상 심각도의 미해결 이슈가 없어야 한다",
+            "max_open_issues": 0,
+            "min_severity": "high",
+        }
+    ],
+}
+
 # 컬렉션별 id 별칭 필드 — 본 id와 동일해야 하며 제거된다.
 ID_ALIASES: dict[str, str] = {
     "development_events": "event_id",
@@ -119,6 +157,10 @@ def transform(key_56: tuple[str, str], record: dict[str, Any], problems: list[st
         "origin": "synthetic",
         "ref": f"56:synthetic_data/{filename}#{record.get('id', '?')}",
     }
+    if collection_58 == "project_milestones":
+        criteria = GATE_CRITERIA_58.get(str(record.get("id", "")))
+        if criteria:
+            record["exit_criteria"] = criteria
     return record
 
 

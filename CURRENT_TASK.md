@@ -2,7 +2,22 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — 설계 22(Digital Twin 레퍼런스 정렬 W1~W4) 완료 (2026-07-19).**
+**활성 Stage 없음 — 설계 23(마일스톤 게이트 조건 형식화) 완료 (2026-07-19).**
+
+> 설계·구현: `internal_docs/design/23_milestone_gates.md` + CHANGELOG.
+> GateCriterion(kind 3종) + exit_criteria(additive) + GateReviewService
+> (met/not_met/not_evaluable + 근거 ref) + 리뷰 팩 gates 통합 + UI 섹션 +
+> 변환기 보강 fixture 3건. backend 316 · frontend 44 · 실서버 smoke green.
+>
+> **다음 후보 (착수는 사용자 승인)**:
+> - **⑤ JIRA writeback 코멘트** (Stage 19 실계정 커넥터 결합 — 보안 승인 필요),
+>   **⑥ link-recovery 제안 에이전트** (Stage 18 임베딩 결합).
+> - 게이트 후속: 사내 게이트 정의 확보 후 criterion kind 확장, 필요 시 독립
+>   API/포트폴리오 노출.
+> - 사내 반입 리허설 / D4 검증 세션 / Stage 14·18·19 잔여 / 스케일 트리거 —
+>   설계 21 마감 목록과 동일 (전부 사내 입력 필요).
+
+### 직전 완료 — 설계 22(Digital Twin 레퍼런스 정렬 W1~W4) (2026-07-19)
 
 > 설계·구현: `internal_docs/design/22_digital_twin_alignment.md` + CHANGELOG.
 > W1 결정 워터마크+리뷰 센터 리플레이 링크 / W2 링크 커버리지 상설 지표

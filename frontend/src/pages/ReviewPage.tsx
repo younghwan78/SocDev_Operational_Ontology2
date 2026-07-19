@@ -12,6 +12,7 @@ import {
   uploadIngestFile,
   type DecisionWatermark,
   type IngestReport,
+  type MilestoneGateReview,
   type ReviewPackDocument,
 } from "../api/client";
 import { useRef } from "react";
@@ -334,6 +335,7 @@ function ReviewPackDetail({ packId }: { packId: string }) {
           {tp.absent} <b>{r.absent}</b>
         </span>
       </div>
+      <MilestoneGates gates={data.gates ?? []} />
       <div className="chip-row">
         <button type="button" className="link-btn" onClick={downloadCsv}>
           {tp.download_csv}
@@ -483,6 +485,65 @@ export function DecisionReplayLinks({ watermark }: { watermark: DecisionWatermar
         {tp.decision_diff}
       </Link>
     </>
+  );
+}
+
+/** 설계 23: 마일스톤 게이트 판정 — exit 기준의 충족/미충족/판정 불가 + 근거.
+ * 미충족은 경고색이되 차단이 아니다 — 판정과 근거를 보여줄 뿐이다. */
+export function MilestoneGates({ gates }: { gates: MilestoneGateReview[] }) {
+  if (gates.length === 0) return null;
+  return (
+    <div className="card">
+      <h3 className="card-title">{tp.gates_section}</h3>
+      <p className="section-note">{tp.gates_hint}</p>
+      {gates.map((gate) => (
+        <div key={gate.milestone_id} className="list-item">
+          <div className="head">
+            <span className="title" title={gate.milestone_id}>
+              {gate.milestone_title}
+            </span>
+            {gate.week != null && <span className="chip">W{gate.week}</span>}
+            <span className="badge badge-ok">
+              {tp.gate_count_met} {gate.met}
+            </span>
+            {gate.not_met > 0 && (
+              <span className="badge badge-danger">
+                {tp.gate_count_not_met} {gate.not_met}
+              </span>
+            )}
+            {gate.not_evaluable > 0 && (
+              <span className="badge badge-warn">
+                {tp.gate_count_not_evaluable} {gate.not_evaluable}
+              </span>
+            )}
+          </div>
+          {gate.criteria.map((criterion) => (
+            <div key={criterion.criterion_id} className="pack-item">
+              <p className="desc">
+                <span
+                  className={`badge ${
+                    criterion.verdict === "met"
+                      ? "badge-ok"
+                      : criterion.verdict === "not_met"
+                        ? "badge-danger"
+                        : "badge-warn"
+                  }`}
+                  title={criterion.kind_ko}
+                >
+                  {criterion.verdict_ko}
+                </span>{" "}
+                {criterion.description} — {criterion.note_ko}
+              </p>
+              {(criterion.basis ?? []).map((basis) => (
+                <p key={basis.ref_id} className="desc pack-item" title={basis.ref_id}>
+                  · {basis.note_ko}
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
   );
 }
 

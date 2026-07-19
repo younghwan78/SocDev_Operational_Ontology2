@@ -23,6 +23,23 @@ class Project(OntologyObject):
     target_product_generation: str | None = None
 
 
+class GateCriterion(OntologyModel):
+    """마일스톤 exit 기준 — 결정론 판정 가능한 조건 (설계 23 §2).
+
+    판정(충족/미충족/판정 불가)은 서비스 계층의 파생 뷰다 — 여기 저장하지
+    않는다. 점수·가중치·자동 차단 없음: 게이트는 판정을 보여줄 뿐이다.
+    """
+
+    criterion_id: str
+    kind: str  # gate_criterion_kind 도메인: max_open_issues | required_evidence | verified_closure
+    description: str
+    # kind별 파라미터 — 해당 kind에서만 의미를 갖는다.
+    max_open_issues: int | None = None  # max_open_issues: 허용 상한 (기본 0)
+    min_severity: str | None = None  # max_open_issues: 이 심각도 이상만 계수
+    evidence_types: list[str] = Field(default_factory=list)  # required_evidence
+    scenario_ids: list[str] = Field(default_factory=list)  # 범위 제한 — 비면 프로젝트 전체
+
+
 class ProjectMilestone(OntologyObject):
     """프로젝트 마일스톤 — 주차/분기 기반 개발 일정 앵커."""
 
@@ -38,6 +55,8 @@ class ProjectMilestone(OntologyObject):
     source_basis: list[str] = Field(default_factory=list)
     historical_relation: str | None = None
     timeline_scope: str | None = None
+    # 설계 23: exit 기준 (additive) — 56 유래 데이터는 이 필드 없이 통과한다.
+    exit_criteria: list[GateCriterion] = Field(default_factory=list)
 
 
 class CustomerRequest(OntologyObject):

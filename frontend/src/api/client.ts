@@ -525,6 +525,7 @@ export async function fetchDecisions(params?: {
 }
 
 export type DecisionWatermark = components["schemas"]["DecisionWatermark"];
+export type MilestoneGateReview = components["schemas"]["MilestoneGateReview"];
 
 // W1 (설계 22): 결정 데이터-시점 — recorded_at이 as-of 리플레이 진입점이다.
 export async function fetchDecisionWatermarks(

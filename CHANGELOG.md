@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## 설계 23 — 마일스톤 게이트 조건 형식화 (2026-07-19)
+
+> 설계: `internal_docs/design/23_milestone_gates.md` (설계 22 후속 ④).
+> §6.2 변경 규율 체인 전부 수행: 모델 → glossary → JSON Schema → fixture
+> (변환기 보강) → 서비스 → 테스트 → changelog.
+
+- **계약**: `GateCriterion`(kind 3종: 미해결 이슈 상한 / 요구 근거 존재 /
+  검증된 종결 + kind별 파라미터·scenario 범위) + `ProjectMilestone.
+  exit_criteria`(additive — 56 유래 데이터 무변경 통과). glossary 객체/필드
+  라벨 + VALUE_LABELS `gate_criterion_kind`/`gate_verdict` + 스키마 재생성.
+- **판정 서비스** (`backend/services/gate_review.py`): met/not_met/
+  not_evaluable 3값 + 근거 ref 목록(위험 지도 basis 문법). 점수·가중치·자동
+  차단 없음 — 판정을 보여줄 뿐 아무것도 막지 않는다. 심각도 미기재 이슈는
+  계수하지 않고 note로 명시(근거 없는 추정 금지), 종결 이슈 0건이면 "위반
+  대상 없음"으로 met. `ReviewPackDocument.gates`로 리뷰 팩에 통합.
+- **fixture**: 변환기(`tools/convert_56_fixtures.py`)에 58 보강 테이블
+  `GATE_CRITERIA_58` — spec freeze(근거+이슈 상한)/아키 리뷰(검증된 종결)/
+  ES 릴리스(이슈 상한) 3개 마일스톤. fixture 직접 편집 금지 원칙 유지
+  (재생성 왕복 테스트 green).
+- **UI**: 리뷰 센터 팩 문서에 "마일스톤 게이트" 섹션 — 마일스톤별 충족/
+  미충족/판정 불가 집계 배지 + 기준별 판정·근거 행. 게이트 없는 팩은 미렌더.
+- 테스트: 판정 룰 10종 + 팩 통합 1종 + 프론트 2종. backend 316 · frontend
+  44 green. 운영 DB 재시드(멱등) 후 실서버 smoke — W 스펙 확정 게이트가
+  실데이터 공백(실측 근거 누락·높음 이슈 3건)을 정직하게 드러냄.
+
 ## 설계 22 W2~W4 — 링크 커버리지 지표 · OCEL 2.0 export · 문서 반영 (2026-07-19)
 
 > 설계: `internal_docs/design/22_digital_twin_alignment.md` §3~§5 (후보 ③①⑦).

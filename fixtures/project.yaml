@@ -86,6 +86,7 @@ project_milestones:
   - CURRENT_TASK.md#project-u-milestones
   historical_relation: completed_before_w1
   timeline_scope: prior_year_context
+  exit_criteria: []
 - id: project_u_evt1_h1
   source:
     origin: synthetic
@@ -105,6 +106,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-u-milestones
+  exit_criteria: []
 - id: project_u_dvfs_characterization
   source:
     origin: synthetic
@@ -123,6 +125,7 @@ project_milestones:
   - sw_development
   source_basis:
   - CURRENT_TASK.md#project-u-milestones
+  exit_criteria: []
 - id: project_u_es_release_w12
   source:
     origin: synthetic
@@ -142,6 +145,14 @@ project_milestones:
   - sw_development
   source_basis:
   - CURRENT_TASK.md#project-u-milestones
+  exit_criteria:
+  - criterion_id: gate_u_es_blockers
+    kind: max_open_issues
+    description: ES 릴리스 전 높음 이상 심각도의 미해결 이슈가 없어야 한다
+    max_open_issues: 0
+    min_severity: high
+    evidence_types: []
+    scenario_ids: []
 - id: project_u_customer_project_setup_after_es
   source:
     origin: synthetic
@@ -161,6 +172,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-u-milestones
+  exit_criteria: []
 - id: project_u_fc_release_w20
   source:
     origin: synthetic
@@ -180,6 +192,7 @@ project_milestones:
   - sw_development
   source_basis:
   - CURRENT_TASK.md#project-u-milestones
+  exit_criteria: []
 - id: project_u_cs_release_w27
   source:
     origin: synthetic
@@ -199,6 +212,7 @@ project_milestones:
   - sw_development
   source_basis:
   - CURRENT_TASK.md#project-u-milestones
+  exit_criteria: []
 - id: project_u_kpi_evaluation_q3
   source:
     origin: synthetic
@@ -217,6 +231,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-u-milestones
+  exit_criteria: []
 - id: project_u_customer_issue_peak_q3_q4
   source:
     origin: synthetic
@@ -236,6 +251,7 @@ project_milestones:
   - product_planning
   source_basis:
   - CURRENT_TASK.md#project-u-milestones
+  exit_criteria: []
 - id: project_u_mass_production_q4
   source:
     origin: synthetic
@@ -255,6 +271,7 @@ project_milestones:
   - sw_development
   source_basis:
   - CURRENT_TASK.md#project-u-milestones
+  exit_criteria: []
 - id: project_v_evt0_fix_q1
   source:
     origin: synthetic
@@ -273,6 +290,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-v-milestones
+  exit_criteria: []
 - id: project_v_sw_predev_start_q2
   source:
     origin: synthetic
@@ -291,6 +309,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-v-milestones
+  exit_criteria: []
 - id: project_v_emulator_fc_target
   source:
     origin: synthetic
@@ -309,6 +328,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-v-milestones
+  exit_criteria: []
 - id: project_v_evt1_design_fix_q3
   source:
     origin: synthetic
@@ -328,6 +348,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-v-milestones
+  exit_criteria: []
 - id: project_v_hw_change_window_close_q3
   source:
     origin: synthetic
@@ -347,6 +368,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-v-milestones
+  exit_criteria: []
 - id: project_v_evt0_package_out_q4
   source:
     origin: synthetic
@@ -366,6 +388,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-v-milestones
+  exit_criteria: []
 - id: project_w_customer_spec_discussion_q1_q2
   source:
     origin: synthetic
@@ -384,6 +407,7 @@ project_milestones:
   - system_engineering
   source_basis:
   - CURRENT_TASK.md#project-w-milestones
+  exit_criteria: []
 - id: project_w_spec_freeze_q2
   source:
     origin: synthetic
@@ -403,6 +427,21 @@ project_milestones:
   - management
   source_basis:
   - CURRENT_TASK.md#project-w-milestones
+  exit_criteria:
+  - criterion_id: gate_w_specfreeze_evidence
+    kind: required_evidence
+    description: 스펙 확정 전 대표 시나리오의 현세대 실측 근거가 확보되어야 한다
+    evidence_types:
+    - current_project_measurement
+    scenario_ids:
+    - uhd60_recording_eis_on
+  - criterion_id: gate_w_specfreeze_blockers
+    kind: max_open_issues
+    description: 높음 이상 심각도의 미해결 이슈가 없어야 한다
+    max_open_issues: 0
+    min_severity: high
+    evidence_types: []
+    scenario_ids: []
 - id: project_w_architecture_review_q2_q3
   source:
     origin: synthetic
@@ -421,6 +460,12 @@ project_milestones:
   - management
   source_basis:
   - CURRENT_TASK.md#project-w-milestones
+  exit_criteria:
+  - criterion_id: gate_w_archreview_verified_closure
+    kind: verified_closure
+    description: 종결된 이슈는 통과한 검증 테스트가 연결되어 있어야 한다
+    evidence_types: []
+    scenario_ids: []
 - id: project_w_architecture_doc_complete_q3
   source:
     origin: synthetic
@@ -439,6 +484,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-w-milestones
+  exit_criteria: []
 - id: project_w_evt0_design_progress
   source:
     origin: synthetic
@@ -458,6 +504,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-w-milestones
+  exit_criteria: []
 - id: project_w_alpha_beta_q4
   source:
     origin: synthetic
@@ -477,6 +524,7 @@ project_milestones:
   - pm
   source_basis:
   - CURRENT_TASK.md#project-w-milestones
+  exit_criteria: []
 customer_requests:
 - id: req_u_heavy_power
   source:

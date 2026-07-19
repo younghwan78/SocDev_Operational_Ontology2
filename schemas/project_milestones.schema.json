@@ -1,6 +1,69 @@
 {
   "$comment": "GENERATED FILE — backend/ontology 모델에서 자동 생성됨. 직접 편집 금지. 재생성: uv run python -m backend.ontology.schema_export",
   "$defs": {
+    "GateCriterion": {
+      "additionalProperties": false,
+      "description": "마일스톤 exit 기준 — 결정론 판정 가능한 조건 (설계 23 §2).\n\n판정(충족/미충족/판정 불가)은 서비스 계층의 파생 뷰다 — 여기 저장하지\n않는다. 점수·가중치·자동 차단 없음: 게이트는 판정을 보여줄 뿐이다.",
+      "properties": {
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_types": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Types",
+          "type": "array"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "max_open_issues": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Open Issues"
+        },
+        "min_severity": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Severity"
+        },
+        "scenario_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Scenario Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "kind",
+        "description"
+      ],
+      "title": "GateCriterion",
+      "type": "object"
+    },
     "SourceMeta": {
       "additionalProperties": false,
       "description": "객체 출처 메타데이터. 실데이터 반입 시 origin/ref로 계보를 추적한다.",
@@ -59,6 +122,13 @@
     "description": {
       "title": "Description",
       "type": "string"
+    },
+    "exit_criteria": {
+      "items": {
+        "$ref": "#/$defs/GateCriterion"
+      },
+      "title": "Exit Criteria",
+      "type": "array"
     },
     "historical_relation": {
       "anyOf": [

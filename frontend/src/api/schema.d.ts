@@ -2065,6 +2065,40 @@ export interface components {
             target_role: string;
         };
         /**
+         * GateBasisRef
+         * @description 판정 근거 한 건 — 위험 지도 basis와 같은 문법.
+         */
+        GateBasisRef: {
+            /** Note Ko */
+            note_ko: string;
+            /** Ref Collection */
+            ref_collection: string;
+            /** Ref Id */
+            ref_id: string;
+        };
+        /**
+         * GateCriterionVerdict
+         * @description 기준 하나의 판정 — 서술+판정+근거.
+         */
+        GateCriterionVerdict: {
+            /** Basis */
+            basis?: components["schemas"]["GateBasisRef"][];
+            /** Criterion Id */
+            criterion_id: string;
+            /** Description */
+            description: string;
+            /** Kind */
+            kind: string;
+            /** Kind Ko */
+            kind_ko: string;
+            /** Note Ko */
+            note_ko: string;
+            /** Verdict */
+            verdict: string;
+            /** Verdict Ko */
+            verdict_ko: string;
+        };
+        /**
          * GroundedStatement
          * @description 근거 문장 — 서술/도출 과정/뒷받침 근거/확신도를 항상 함께 갖는다.
          */
@@ -2635,6 +2669,28 @@ export interface components {
             variant_id?: string | null;
         };
         /**
+         * MilestoneGateReview
+         * @description 마일스톤 하나의 게이트 판정 묶음 — 정수 집계 (점수 아님).
+         */
+        MilestoneGateReview: {
+            /** Criteria */
+            criteria: components["schemas"]["GateCriterionVerdict"][];
+            /** Met */
+            met: number;
+            /** Milestone Id */
+            milestone_id: string;
+            /** Milestone Title */
+            milestone_title: string;
+            /** Not Evaluable */
+            not_evaluable: number;
+            /** Not Met */
+            not_met: number;
+            /** Project Id */
+            project_id: string;
+            /** Week */
+            week: number | null;
+        };
+        /**
          * ObjectHistoryFindings
          * @description 이력 조회 응답 + 프로세스 판정 (Y1) — 저장 계약 무변경, 읽기 시점 계산.
          *
@@ -3037,6 +3093,8 @@ export interface components {
          * @description 리뷰 팩 조립 파생 뷰 — 저장되지 않는 조립 결과.
          */
         ReviewPackDocument: {
+            /** Gates */
+            gates?: components["schemas"]["MilestoneGateReview"][];
             /** Pack Id */
             pack_id: string;
             /** Project Ids */

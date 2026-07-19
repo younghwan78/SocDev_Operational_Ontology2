@@ -2528,6 +2528,83 @@
         "title": "FeedbackItem",
         "type": "object"
       },
+      "GateBasisRef": {
+        "additionalProperties": false,
+        "description": "판정 근거 한 건 — 위험 지도 basis와 같은 문법.",
+        "properties": {
+          "note_ko": {
+            "title": "Note Ko",
+            "type": "string"
+          },
+          "ref_collection": {
+            "title": "Ref Collection",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ref_collection",
+          "ref_id",
+          "note_ko"
+        ],
+        "title": "GateBasisRef",
+        "type": "object"
+      },
+      "GateCriterionVerdict": {
+        "additionalProperties": false,
+        "description": "기준 하나의 판정 — 서술+판정+근거.",
+        "properties": {
+          "basis": {
+            "items": {
+              "$ref": "#/components/schemas/GateBasisRef"
+            },
+            "title": "Basis",
+            "type": "array"
+          },
+          "criterion_id": {
+            "title": "Criterion Id",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "kind_ko": {
+            "title": "Kind Ko",
+            "type": "string"
+          },
+          "note_ko": {
+            "title": "Note Ko",
+            "type": "string"
+          },
+          "verdict": {
+            "title": "Verdict",
+            "type": "string"
+          },
+          "verdict_ko": {
+            "title": "Verdict Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "criterion_id",
+          "kind",
+          "kind_ko",
+          "description",
+          "verdict",
+          "verdict_ko",
+          "note_ko"
+        ],
+        "title": "GateCriterionVerdict",
+        "type": "object"
+      },
       "GroundedStatement": {
         "additionalProperties": false,
         "description": "근거 문장 — 서술/도출 과정/뒷받침 근거/확신도를 항상 함께 갖는다.",
@@ -4087,6 +4164,66 @@
         "title": "MeasurementRequirement",
         "type": "object"
       },
+      "MilestoneGateReview": {
+        "additionalProperties": false,
+        "description": "마일스톤 하나의 게이트 판정 묶음 — 정수 집계 (점수 아님).",
+        "properties": {
+          "criteria": {
+            "items": {
+              "$ref": "#/components/schemas/GateCriterionVerdict"
+            },
+            "title": "Criteria",
+            "type": "array"
+          },
+          "met": {
+            "title": "Met",
+            "type": "integer"
+          },
+          "milestone_id": {
+            "title": "Milestone Id",
+            "type": "string"
+          },
+          "milestone_title": {
+            "title": "Milestone Title",
+            "type": "string"
+          },
+          "not_evaluable": {
+            "title": "Not Evaluable",
+            "type": "integer"
+          },
+          "not_met": {
+            "title": "Not Met",
+            "type": "integer"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week"
+          }
+        },
+        "required": [
+          "milestone_id",
+          "milestone_title",
+          "project_id",
+          "week",
+          "met",
+          "not_met",
+          "not_evaluable",
+          "criteria"
+        ],
+        "title": "MilestoneGateReview",
+        "type": "object"
+      },
       "ObjectHistoryFindings": {
         "additionalProperties": false,
         "description": "이력 조회 응답 + 프로세스 판정 (Y1) — 저장 계약 무변경, 읽기 시점 계산.\n\n모델 미등재 컬렉션은 findings가 항상 빈 목록이다 (판정 대상이 아니다).",
@@ -5145,6 +5282,13 @@
         "additionalProperties": false,
         "description": "리뷰 팩 조립 파생 뷰 — 저장되지 않는 조립 결과.",
         "properties": {
+          "gates": {
+            "items": {
+              "$ref": "#/components/schemas/MilestoneGateReview"
+            },
+            "title": "Gates",
+            "type": "array"
+          },
           "pack_id": {
             "title": "Pack Id",
             "type": "string"

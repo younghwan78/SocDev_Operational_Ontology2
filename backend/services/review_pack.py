@@ -7,11 +7,12 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.decision import ReviewPack
 from backend.services.action_draft import ActionDraft, ActionDraftService
+from backend.services.gate_review import GateReviewService, MilestoneGateReview
 
 _PROVENANCE = (
     "이 리뷰 팩은 결정론 파생 조립입니다. 결정·담당은 회의에서 사람이 채우며, "
@@ -60,6 +61,8 @@ class ReviewPackDocument(BaseModel):
     project_ids: list[str]
     scenarios: list[ActionDraft]
     rollup: ReviewPackRollup
+    # 설계 23: 팩 프로젝트의 마일스톤 게이트 판정 (exit_criteria 있는 것만, additive).
+    gates: list[MilestoneGateReview] = Field(default_factory=list)
     provenance_note: str
 
 
@@ -67,6 +70,7 @@ class ReviewPackService:
     def __init__(self, repo: RepositoryProtocol) -> None:
         self._repo = repo
         self._draft = ActionDraftService(repo)
+        self._gates = GateReviewService(repo)
 
     def _packs(self) -> list[ReviewPack]:
         return [p for p in self._repo.list("review_packs") if isinstance(p, ReviewPack)]
@@ -126,5 +130,6 @@ class ReviewPackService:
             project_ids=pack.project_ids,
             scenarios=drafts,
             rollup=rollup,
+            gates=self._gates.for_projects(pack.project_ids),
             provenance_note=_PROVENANCE,
         )

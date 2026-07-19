@@ -16,6 +16,7 @@ OBJECT_LABELS: dict[str, str] = {
     # project
     "Project": "프로젝트",
     "ProjectMilestone": "프로젝트 마일스톤",
+    "GateCriterion": "게이트 기준",
     "CustomerRequest": "고객 요구",
     "ProjectLink": "프로젝트 연결",
     "ProjectScenarioFocus": "프로젝트 시나리오 포커스",
@@ -199,6 +200,14 @@ MODEL_FIELD_LABELS: dict[str, dict[str, str]] = {
         "decision_window": "결정 시점 구간",
         "historical_relation": "과거 이력 관계",
         "timeline_scope": "타임라인 범위",
+        "exit_criteria": "게이트 기준 목록",
+    },
+    "GateCriterion": {
+        "criterion_id": "기준 ID",
+        "kind": "기준 유형",
+        "max_open_issues": "미해결 이슈 상한",
+        "min_severity": "최소 심각도",
+        "evidence_types": "요구 근거 유형",
     },
     "CustomerRequest": {
         "target_improvement": "목표 개선",
@@ -723,6 +732,17 @@ VALUE_LABELS: dict[str, dict[str, str]] = {
         "failed": "실패",
         "blocked": "차단됨",
         "planned": "계획됨",
+    },
+    # 설계 23: 마일스톤 게이트 — 기준 유형과 판정 값 (판정은 파생 뷰).
+    "gate_criterion_kind": {
+        "max_open_issues": "미해결 이슈 상한",
+        "required_evidence": "요구 근거 존재",
+        "verified_closure": "검증된 종결",
+    },
+    "gate_verdict": {
+        "met": "충족",
+        "not_met": "미충족",
+        "not_evaluable": "판정 불가",
     },
     "event_status": {
         "recorded": "기록됨",

@@ -100,3 +100,17 @@ def test_no_store_side_effect(repo: InMemoryRepository, document: ReviewPackDocu
 def test_provenance_present(document: ReviewPackDocument) -> None:
     assert "결정" in document.provenance_note
     assert "ingest" in document.provenance_note
+
+
+def test_gates_included_for_pack_projects(document: ReviewPackDocument) -> None:
+    """설계 23 — 팩 프로젝트(project_w)의 exit_criteria 마일스톤이 week 순으로 포함."""
+    gate_ids = [g.milestone_id for g in document.gates]
+    assert gate_ids == [
+        "project_w_spec_freeze_q2",
+        "project_w_architecture_review_q2_q3",
+    ]
+    for gate in document.gates:
+        assert gate.met + gate.not_met + gate.not_evaluable == len(gate.criteria)
+        for verdict in gate.criteria:
+            assert verdict.verdict in {"met", "not_met", "not_evaluable"}
+            assert verdict.verdict_ko and verdict.kind_ko  # 한국어 라벨 존재
