@@ -523,6 +523,19 @@ export async function fetchDecisions(params?: {
   return data;
 }
 
+export type DecisionWatermark = components["schemas"]["DecisionWatermark"];
+
+// W1 (설계 22): 결정 데이터-시점 — recorded_at이 as-of 리플레이 진입점이다.
+export async function fetchDecisionWatermarks(
+  projectId?: string,
+): Promise<DecisionWatermark[]> {
+  const { data, error } = await client.GET("/api/v1/decisions/watermarks", {
+    params: { query: projectId ? { project_id: projectId } : {} },
+  });
+  if (error || !data) throw apiError(error, "decision watermarks 조회 실패");
+  return data;
+}
+
 // multipart 업로드는 openapi-fetch 대신 FormData 직접 — 응답 타입은 생성 스키마 사용.
 export async function uploadIngestFile(
   file: File,

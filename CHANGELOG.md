@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 설계 22 W1 — 결정 데이터-시점 워터마크 + 리뷰 센터 리플레이 링크 (2026-07-19)
+
+> 설계: `internal_docs/design/22_digital_twin_alignment.md` §2 (digital twin
+> 레퍼런스 후보 ② 채택). 저장 계약 무변경 — 파생 뷰만 추가.
+
+- **워터마크 서비스** (`backend/services/decision_watermark.py`): "twin이 이
+  결정을 알게 된 시각"을 transaction time 축으로 결정론 판정 — ① 버전 로그
+  첫 버전(created)의 `recorded_at`+배치 계보 ② updated-first(캡처 전 존재)나
+  버전 없음이면 `source.ingested_at`으로 근사 ③ 둘 다 없으면(synthetic 시드)
+  `precapture` — 리플레이 진입점을 만들지 않고 note_ko로 명시 (거짓 리플레이
+  금지). `decided_at` 같은 domain time 필드는 신설하지 않았다 (축 혼합 금지,
+  설계 15 §3).
+- **API**: `GET /api/v1/decisions/watermarks?project_id=` (읽기 전용) —
+  openapi 재생성 + 프론트 타입 자동 생성.
+- **리뷰 센터 UX**: 결정 행에 데이터 시점 칩(hover: 판정 근거+배치 id) +
+  **[🕐 당시 위험 지도]**(`/?asof=` as-of 재구성 — 정직성 배너 동반) +
+  **[⇄ 당시↔현재 비교]**(Y2 두 시점 diff) 링크. asof 입력이 분 정밀도라
+  워터마크 초를 올림해 결정 자신의 반입 배치가 재생에 포함되게 함.
+  `precapture`는 링크 대신 "캡처 이전 결정" 배지.
+- 테스트: 워터마크 판정 6종(+프로젝트 필터) / API 1종 / 프론트 링크 배선
+  3종. backend 296 · frontend 39 green, 실서버(PG) smoke 확인.
+
 ## 사내 실데이터 구축 전 준비 — 온보딩·반입 UX·행위자·코크핏 정합 (2026-07-18)
 
 > 설계: `internal_docs/design/21_pre_data_readiness.md`. 전체 코드·UX 검토에서

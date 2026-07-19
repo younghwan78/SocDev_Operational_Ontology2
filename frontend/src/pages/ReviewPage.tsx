@@ -1,14 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   fetchActionItems,
   fetchDecisions,
+  fetchDecisionWatermarks,
   fetchReviewPack,
   fetchReviewPacks,
   fetchWeeklyIndex,
   fetchWeeklySnapshot,
   uploadIngestFile,
+  type DecisionWatermark,
   type IngestReport,
   type ReviewPackDocument,
 } from "../api/client";
@@ -16,6 +18,7 @@ import { useRef } from "react";
 import { PostureChip } from "../components/PostureChip";
 import { useValueLabels } from "../hooks/useValueLabels";
 import { ErrorState } from "../components/ErrorState";
+import { formatDateTime, toDateTimeLocal } from "../lib/format";
 import { ko } from "../i18n/ko";
 
 const t = ko.review;
@@ -441,11 +444,57 @@ export function toActionCsv(decisions: { id: string }[]): string {
   return rows.join("\r\n");
 }
 
+/** W1 (설계 22): 워터마크 → 위험 지도 asof 파라미터. 입력이 datetime-local(분
+ * 정밀도)이라 내림하면 결정 자신의 반입 배치가 재생에서 빠진다 — 올림으로 포함 보장. */
+export function replayAsOfValue(recordedAt: string): string {
+  const date = new Date(recordedAt);
+  if (date.getSeconds() > 0 || date.getMilliseconds() > 0) {
+    date.setMinutes(date.getMinutes() + 1, 0, 0);
+  }
+  return toDateTimeLocal(date);
+}
+
+/** W1: 결정 행의 "당시 상태 보기" — 캡처 이전 결정은 링크를 만들지 않는다 (거짓 리플레이 금지). */
+export function DecisionReplayLinks({ watermark }: { watermark: DecisionWatermark }) {
+  if (!watermark.recorded_at) {
+    return (
+      <span className="badge badge-warn" title={watermark.note_ko}>
+        {tp.decision_precapture}
+      </span>
+    );
+  }
+  const asof = replayAsOfValue(watermark.recorded_at);
+  const base = `/?project=${encodeURIComponent(watermark.project_id)}&asof=${encodeURIComponent(asof)}`;
+  const chipTitle = watermark.batch_id
+    ? `${watermark.note_ko} · ${watermark.batch_id}`
+    : watermark.note_ko;
+  return (
+    <>
+      <span className="chip" title={chipTitle}>
+        {tp.decision_watermark}: {formatDateTime(watermark.recorded_at)}
+      </span>
+      <Link className="link-btn" to={base}>
+        {tp.decision_replay}
+      </Link>
+      <Link
+        className="link-btn"
+        to={`${base}&asofb=${encodeURIComponent(toDateTimeLocal(new Date()))}`}
+      >
+        {tp.decision_diff}
+      </Link>
+    </>
+  );
+}
+
 function PackDecisions({ projectIds }: { projectIds: string[] }) {
   const valueLabel = useValueLabels();
   const queryClient = useQueryClient();
   const decisions = useQuery({ queryKey: ["decisions"], queryFn: () => fetchDecisions() });
   const actions = useQuery({ queryKey: ["action-items"], queryFn: fetchActionItems });
+  const watermarks = useQuery({
+    queryKey: ["decision-watermarks"],
+    queryFn: () => fetchDecisionWatermarks(),
+  });
   const [actionReport, setActionReport] = useState<IngestReport | null>(null);
   const actionFileRef = useRef<HTMLInputElement>(null);
   const uploadActions = useMutation({
@@ -462,6 +511,9 @@ function PackDecisions({ projectIds }: { projectIds: string[] }) {
 
   const related = (decisions.data ?? []).filter((decision) =>
     projectIds.includes(decision.project_id),
+  );
+  const watermarkById = new Map(
+    (watermarks.data ?? []).map((mark) => [mark.decision_id, mark]),
   );
   const actionsByDecision = new Map<string, typeof actions.data>();
   for (const action of actions.data ?? []) {
@@ -492,6 +544,9 @@ function PackDecisions({ projectIds }: { projectIds: string[] }) {
               {tp.decision_selected}
             </span>
             <span className="title">{decision.selected_option}</span>
+            {watermarkById.has(decision.id) && (
+              <DecisionReplayLinks watermark={watermarkById.get(decision.id)!} />
+            )}
           </div>
           {(decision.supporting_basis ?? []).map((basis, index) => (
             <p key={index} className="desc" title={basis.ref_id}>

@@ -292,6 +292,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/decisions/watermarks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Decision Watermarks
+         * @description 결정 데이터-시점 워터마크 (W1, 설계 22 §2) — 읽기 전용 파생 뷰.
+         *
+         *     리뷰 센터의 "당시 위험 지도 보기"가 recorded_at을 as-of 진입점으로 쓴다.
+         *     recorded_at이 None(캡처 이전)이면 프론트는 리플레이 링크를 만들지 않는다.
+         */
+        get: operations["decision_watermarks_api_v1_decisions_watermarks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/entity-resolution": {
         parameters: {
             query?: never;
@@ -1712,6 +1735,24 @@ export interface components {
             scopes?: string[];
             /** Source Refs */
             source_refs?: string[];
+        };
+        /**
+         * DecisionWatermark
+         * @description 결정 하나의 데이터-시점 — 리플레이 진입점 + 정직성 문구.
+         */
+        DecisionWatermark: {
+            /** Batch Id */
+            batch_id: string | null;
+            /** Decision Id */
+            decision_id: string;
+            /** Note Ko */
+            note_ko: string;
+            /** Project Id */
+            project_id: string;
+            /** Recorded At */
+            recorded_at: string | null;
+            /** Source */
+            source: string;
         };
         /**
          * DevelopmentEvent
@@ -4313,6 +4354,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Decision"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decision_watermarks_api_v1_decisions_watermarks_get: {
+        parameters: {
+            query?: {
+                project_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionWatermark"][];
                 };
             };
             /** @description Validation Error */

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoC 개발 프로세스의 Operational Ontology / Digital Twin — 레퍼런스</title>
+<style>
+:root{
+  --bg:#ffffff; --fg:#1a2130; --muted:#5b6470; --line:#dde3ea;
+  --accent:#1f5fa8; --accent-bg:#eef4fb; --warn-bg:#fdf3e7; --warn-line:#e0a95e;
+  --ok-bg:#eef7f0; --code-bg:#f4f6f8; --th-bg:#f0f3f7;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14181f; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
+    --accent:#6ea8dc; --accent-bg:#1c2735; --warn-bg:#2e2417; --warn-line:#8a6a35;
+    --ok-bg:#182620; --code-bg:#1c222b; --th-bg:#1d2430;
+  }
+  .diagram{background:#f5f7fa;border-radius:8px;}
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Pretendard','Noto Sans KR','Apple SD Gothic Neo',system-ui,sans-serif;
+  background:var(--bg);color:var(--fg);line-height:1.65;font-size:15px;}
+.layout{display:flex;max-width:1400px;margin:0 auto;}
+nav{width:280px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;
+  padding:28px 18px;border-right:1px solid var(--line);font-size:13.5px;}
+nav a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:6px;}
+nav a:hover{background:var(--accent-bg);color:var(--accent);}
+nav .h{font-weight:700;color:var(--fg);margin-top:14px;}
+nav .s{padding-left:20px;}
+main{flex:1;min-width:0;padding:36px 48px 80px;}
+h1{font-size:26px;line-height:1.35;margin:.2em 0 .3em;}
+h2{font-size:20px;margin:2.2em 0 .6em;padding-bottom:.3em;border-bottom:2px solid var(--line);}
+h3{font-size:16.5px;margin:1.6em 0 .5em;color:var(--accent);}
+h2 .no,h3 .no{color:var(--accent);margin-right:.4em;}
+p{margin:.5em 0 .9em;}
+table{border-collapse:collapse;width:100%;margin:.8em 0 1.2em;font-size:13.5px;}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top;}
+th{background:var(--th-bg);font-weight:600;white-space:nowrap;}
+code,.mono{font-family:'JetBrains Mono','D2Coding',Consolas,monospace;font-size:.92em;
+  background:var(--code-bg);padding:1px 5px;border-radius:4px;}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:10px;
+  vertical-align:middle;margin-left:6px;}
+.tag.v{background:var(--ok-bg);color:#2e7d4f;border:1px solid #7dbf98;}
+.tag.u{background:var(--warn-bg);color:#a06a1f;border:1px solid var(--warn-line);}
+.tag.x{background:#fbeaea;color:#b03a3a;border:1px solid #d99;}
+.callout{border-left:4px solid var(--accent);background:var(--accent-bg);
+  padding:10px 16px;margin:1em 0;border-radius:0 8px 8px 0;}
+.warn{border-left:4px solid var(--warn-line);background:var(--warn-bg);
+  padding:10px 16px;margin:1em 0;border-radius:0 8px 8px 0;}
+.diagram{margin:1.2em 0;padding:12px;border:1px solid var(--line);border-radius:8px;overflow-x:auto;}
+.diagram svg{max-width:100%;height:auto;}
+.cap{font-size:12.5px;color:var(--muted);margin-top:6px;}
+sup a{color:var(--accent);text-decoration:none;font-weight:600;}
+.src li{margin-bottom:5px;font-size:13px;word-break:break-all;}
+.meta{color:var(--muted);font-size:13px;margin-bottom:1.6em;}
+.kbd{font-size:12px;color:var(--muted);}
+details{margin:.6em 0;}
+summary{cursor:pointer;color:var(--accent);font-weight:600;}
+@media (max-width:900px){nav{display:none}main{padding:20px 16px 60px}}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav>
+  <div class="h">목차</div>
+  <a href="#s0">0. Executive Summary</a>
+  <a class="h" href="#s1">1. 이론적 배경</a>
+  <a class="s" href="#s1-1">1.1 Palantir Ontology 해부</a>
+  <a class="s" href="#s1-2">1.2 표준·학술 기반</a>
+  <a class="s" href="#s1-3">1.3 프로세스 트윈 이론 (DTO·OCPM)</a>
+  <a class="h" href="#s2">2. 개발 프로세스 트윈 선행 사례</a>
+  <a class="s" href="#s2-1">2.1 반도체/EDA</a>
+  <a class="s" href="#s2-2">2.2 SW 개발 데이터 마이닝</a>
+  <a class="h" href="#s3">3. SoC 개발 온톨로지 설계</a>
+  <a class="s" href="#s3-1">3.1 Object/Link 모델</a>
+  <a class="s" href="#s3-2">3.2 이벤트 모델 (OCEL)</a>
+  <a class="s" href="#s3-3">3.3 Kinetic Layer (Action)</a>
+  <a class="h" href="#s4">4. 트윈 아키텍처</a>
+  <a class="s" href="#s4-1">4.1 계층 구조</a>
+  <a class="s" href="#s4-2">4.2 Foundry 없이 구축하는 스택</a>
+  <a class="h" href="#s5">5. Agentic Digital Twin</a>
+  <a class="s" href="#s5-1">5.1 에이전트 패턴 (AIP 준용)</a>
+  <a class="s" href="#s5-2">5.2 트윈을 만드는 에이전트</a>
+  <a class="s" href="#s5-3">5.3 MCP 통합 계층</a>
+  <a class="h" href="#s6">6. 실행 로드맵</a>
+  <a class="s" href="#s6-1">6.1 단계별 계획</a>
+  <a class="s" href="#s6-2">6.2 Jira/Confluence 매핑</a>
+  <a class="s" href="#s6-3">6.3 Synthetic Data 전략</a>
+  <a class="h" href="#s7">7. KPI·거버넌스·성숙도</a>
+  <a class="h" href="#s8">8. 리스크와 반론</a>
+  <a class="h" href="#s9">9. Sources</a>
+</nav>
+<main>
+
+<h1>SoC 개발 프로세스의 Operational Ontology / Digital Twin</h1>
+<div class="meta">Palantir Foundry Ontology 패턴 준용 · 이론 배경 — 개발 프로세스 모델링 — Agentic 구축 — 현업 적용 로드맵<br>
+2026-07-18 · 딥리서치 기반(28개 소스, 130개 claim 추출, 15개 3-표 교차검증) · 검증 상태 태그:
+<span class="tag v">검증</span> 3인 독립 검증 통과 ·
+<span class="tag u">단일출처</span> 검증 미완(사용량 한도로 검증 단계 일부 중단) ·
+<span class="tag x">반박</span> 검증에서 기각</div>
+
+<h2 id="s0"><span class="no">0.</span>Executive Summary</h2>
+<table>
+<tr><th>질문</th><th>결론</th></tr>
+<tr><td>개발 <em>프로세스</em>를 트윈의 대상으로 삼는 것이 이론적으로 정당한가</td>
+<td>정당하다. Palantir 자체가 Ontology를 "digital twin of the organization"으로 규정하고<sup><a href="#ref1">[1]</a></sup>, 프로세스 마이닝 학계(van der Aalst)는 DTO(Digital Twin of an Organization)를 명시적 연구 목표로 선언했으며<sup><a href="#ref9">[9]</a></sup>, ISO 23247은 'process'와 'supporting document'를 트윈 가능한 1급 요소로 분류한다<sup><a href="#ref12">[12]</a></sup>.</td></tr>
+<tr><td>SoC 설계 플로우 트윈의 선행 사례가 있는가</td>
+<td>칩/팹 트윈은 성숙했지만 <em>개발 프로세스 자체</em>의 트윈은 2025년 기준 업계 표준이 없다 — 검증 전문가들이 공개적으로 필요성을 제기하는 공백 영역이다<sup><a href="#ref16">[16]</a></sup>. 즉 선점 가능한 주제.</td></tr>
+<tr><td>무엇이 '대시보드'와 트윈을 가르는가</td>
+<td>양방향성(kinetic layer). 읽기 전용 모델은 트윈이 아니다<sup><a href="#ref12">[12]</a></sup>. Action Type(승인된 상태 변경의 번들)과 소스 시스템 writeback이 있어야 operational twin이다<sup><a href="#ref3">[3]</a></sup>.</td></tr>
+<tr><td>데이터 모델의 핵심 선택</td>
+<td>단일 case-id 이벤트 로그는 SoC처럼 다객체(스펙·IP·이슈·빌드·리그레션)가 얽힌 프로세스에서 convergence/divergence 왜곡을 일으킨다. OCEL 2.0 기반 object-centric 이벤트 모델을 처음부터 채택하라<sup><a href="#ref10">[10]</a><a href="#ref11">[11]</a></sup>.</td></tr>
+<tr><td>에이전트의 역할</td>
+<td>3분리: 스키마를 만지는 에이전트(builder) / 데이터를 읽고 쓰는 에이전트(operator) / 품질을 반박하는 에이전트(critic). Palantir도 MCP 서버를 스키마용·데이터용으로 분리했다<sup><a href="#ref5">[5]</a></sup>. 쓰기는 반드시 Action Type + HITL 승인 경유<sup><a href="#ref4">[4]</a><a href="#ref7">[7]</a></sup>.</td></tr>
+<tr><td>최대 리스크</td>
+<td>기술이 아니라 (a) 트윈 구축 예산이 프로젝트에 없다는 조직 문제<sup><a href="#ref16">[16]</a></sup>, (b) Jira 기록 규율에 따라 트윈 충실도가 결정되는 데이터 문제<sup><a href="#ref19">[19]</a></sup>.</td></tr>
+</table>
+
+<h2 id="s1"><span class="no">1.</span>이론적 배경</h2>
+
+<h3 id="s1-1"><span class="no">1.1</span>Palantir Ontology 해부 — 무엇이 'operational'인가</h3>
+<p>Palantir 공식 문서 기준으로 Ontology의 정의 요소는 다음과 같다. 전부 1차 출처 + 3인 교차검증 통과 항목이다.</p>
+<table>
+<tr><th>요소</th><th>내용</th><th>검증</th></tr>
+<tr><td>위치</td><td>통합된 디지털 자산 <em>위에</em> 놓이는 operational layer로, 자산을 실세계 대응물과 연결<sup><a href="#ref1">[1]</a></sup></td><td><span class="tag v">검증</span></td></tr>
+<tr><td>2대 구성</td><td><b>Semantic elements</b> = object type / property / link type (기존 데이터 소스에서 매핑) · <b>Kinetic elements</b> = action type / function<sup><a href="#ref1">[1]</a></sup>. 공식 용어는 "elements"이며 "semantic layer/kinetic layer"라는 층 명칭은 통용 해석임</td><td><span class="tag v">검증</span></td></tr>
+<tr><td>자기 규정</td><td>"In many settings, the Ontology serves as a <em>digital twin of the organization</em>" — 조직·프로세스 트윈의 벤더 측 근거<sup><a href="#ref1">[1]</a></sup></td><td><span class="tag v">검증</span></td></tr>
+<tr><td>본질</td><td>데이터 모델이 아니라 <em>의사결정</em> 표현 시스템. 데이터·로직·액션·보안 4중 통합<sup><a href="#ref2">[2]</a><a href="#ref6">[6]</a></sup></td><td><span class="tag v">검증</span></td></tr>
+<tr><td>Semantic layer 논쟁</td><td>Palantir는 자사 Ontology가 'semantic layer'라는 규정을 명시적으로 거부 — "얇은 semantic layer로는 4중 통합·운영화가 불가능"<sup><a href="#ref2">[2]</a></sup>. dbt/Cube류 metric layer와의 차별점 주장</td><td><span class="tag v">검증</span></td></tr>
+<tr><td>Action Type</td><td>객체·속성·링크에 대한 편집 묶음(bundle)의 형식 정의. 상태 변경이 raw write가 아닌 <em>거버넌스된 1급 연산</em>. 트랜잭션이며 전 애플리케이션에 전역 일관 반영<sup><a href="#ref3">[3]</a></sup></td><td><span class="tag v">검증</span></td></tr>
+<tr><td>쓰기 아키텍처</td><td>원자적 트랜잭션, 대규모 배치 뮤테이션, 스트리밍 쓰기, CDC 지원 — 트윈은 읽기 전용이 아니라 양방향<sup><a href="#ref2">[2]</a></sup></td><td><span class="tag v">검증</span></td></tr>
+<tr><td>Interface</td><td>object type 다형성(폴리모피즘) 제공 — 스키마 설계 시 추상 타입 활용 가능<sup><a href="#ref1">[1]</a></sup></td><td><span class="tag u">단일출처</span></td></tr>
+</table>
+<div class="warn"><b>주의 — 유통되는 오개념 2건.</b> (1) 일부 해설 블로그의 "semantic/kinetic/dynamic 3층" 프레임에서 'dynamic layer'는 저자 창작 용어로, Palantir 공식 문서에는 없다<sup><a href="#ref27">[27]</a></sup>. (2) "action 편집이 object type의 writeback dataset에 저장된다"는 구체 메커니즘 서술은 본 리서치의 3인 검증에서 0-3으로 기각됐다(현행 문서와 불일치, materialization 개념으로 대체). 사내 문서에 인용하지 말 것.</div>
+
+<h3 id="s1-2"><span class="no">1.2</span>표준·학술 기반 — 어디에 정박(anchoring)할 것인가</h3>
+<table>
+<tr><th>표준/체계</th><th>SoC 개발 트윈에 주는 것</th><th>검증</th></tr>
+<tr><td><b>ISO 23247</b> (제조 DT 프레임워크, 2021~)</td><td>참조 아키텍처와 어휘. 트윈 대상(OME, Observable Manufacturing Element)을 8종으로 분류: personnel, equipment, material, <b>process</b>, facility, environment, product, <b>supporting document</b> — '프로세스'와 '문서'가 1급 트윈 대상<sup><a href="#ref12">[12]</a></sup>. 단, 적용 범위는 제조로 한정되어 개발 프로세스 적용은 <em>범위 외 확장</em>임을 명시해야 함<sup><a href="#ref13">[13]</a></sup>. NIST는 이 프레임워크가 discrete/batch/continuous 등 상이한 프로세스로 특수화 가능한 generic 설계라고 분석<sup><a href="#ref14">[14]</a></sup></td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td><b>BFO / ISO&nbsp;IEC 21838 + IOF Core</b></td><td>NIST가 제안한 계층화 전략: 최상위 BFO → 중위 IOF Core → 도메인 → 애플리케이션 온톨로지<sup><a href="#ref12">[12]</a></sup>. 실무 시사점: 사내 온톨로지도 '전사 공통 상위 타입 → 개발 도메인 타입 → 프로젝트별 타입'으로 계층화하면 재사용·연합(federation)이 쉬워짐</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td><b>트윈 판별 기준</b></td><td>물리(원본) 대상과의 <em>양방향 통신</em>이 모델/대시보드와 트윈을 가르는 기준<sup><a href="#ref12">[12]</a></sup>. 개발 프로세스 트윈에서 '양방향' = Jira/Confluence로의 governed writeback</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td><b>DTC Business Maturity Model</b></td><td>조직 채택 성숙도 5단계: Passive → Starter → Progressive → Mature → Master. 기술 외 차원(Ambition&amp;Strategy, Leadership, Culture, Operating Model 등) 평가 — 트윈 성숙은 조직 변화 문제<sup><a href="#ref15">[15]</a></sup></td><td><span class="tag u">단일출처</span></td></tr>
+</table>
+
+<h3 id="s1-3"><span class="no">1.3</span>프로세스 트윈 이론 — DTO와 Object-Centric Process Mining</h3>
+<p>개발 '프로세스'를 트윈하는 작업의 학술적 본진은 프로세스 마이닝이다. 핵심 논지 사슬:</p>
+<table>
+<tr><th>#</th><th>논지</th><th>출처</th><th>검증</th></tr>
+<tr><td>1</td><td>프로세스 마이닝의 궁극 목표는 DTO(Digital Twin of an Organization) — 개선 액션을 탐색할 수 있는 조직의 미러<sup><a href="#ref9">[9]</a></sup>. Park &amp; van der Aalst는 DTO를 물리 제품 트윈과 구분해 '비즈니스 프로세스 개선 목적의 미러 표현'으로 정의<sup><a href="#ref8">[8]</a></sup></td><td>ICPM 2021 / Springer</td><td><span class="tag v">검증</span></td></tr>
+<tr><td>2</td><td>DTO는 시각화가 아니라 <b>action-oriented process mining</b>으로 운영화된다: 이벤트 데이터의 제약 위반을 감지하고 소스 시스템으로 교정 액션을 자동 발행하는 closed loop — Foundry action type/writeback과 동형의 패턴<sup><a href="#ref8">[8]</a></sup></td><td>ICPM 2021</td><td><span class="tag v">검증</span></td></tr>
+<tr><td>3</td><td>손으로 그린 프로세스 모델은 실제(P2P/O2C조차)를 담지 못한다 — 트윈은 이벤트 데이터에서 <em>마이닝</em>되어야 함<sup><a href="#ref9">[9]</a></sup></td><td>Springer 2021</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td>4</td><td>실제 프로세스는 다객체 동시성 — 단일 case-id 로그는 convergence(이벤트 중복 계상)/divergence(무관 이벤트 순서 혼입) 왜곡을 낳는다. 이것이 OCPM(Object-Centric Process Mining)의 존재 이유<sup><a href="#ref9">[9]</a><a href="#ref10">[10]</a></sup></td><td>van der Aalst</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td>5</td><td><b>OCEL 2.0</b>(2023)이 object-centric 이벤트 데이터의 표준 교환 포맷: E2O(event-to-object)에 더해 O2O(object-to-object) 관계, 동적 객체 속성, 관계 qualifier 지원. SQLite/XML/JSON 배포. Celonis Process Sphere로 상용화<sup><a href="#ref10">[10]</a></sup></td><td>OCEL 2.0 spec</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td>6</td><td><b>OCPM2</b> 방법론(2025): PM2를 확장해 Domain Modeling(객체 타입 식별→개념 모델→액티비티 식별→추출 매트릭스→우선순위)과 Log Extraction(구현→추출→검증) 단계를 규정 — Jira/Confluence류 시스템에서 OCED를 뽑는 실무 레시피<sup><a href="#ref11">[11]</a></sup>. 사례 연구에서 소스 시스템 로그가 객체-액티비티 관계를 누락해 자동 검증 단계가 필수였음</td><td>arXiv 2503.10735</td><td><span class="tag u">단일출처</span></td></tr>
+</table>
+<div class="callout"><b>종합.</b> Palantir 계열(ontology + action)과 프로세스 마이닝 계열(OCED + action-oriented PM)은 독립적으로 같은 결론에 수렴한다: <em>객체 중심의 의미 모델 + 이벤트 기록 + 거버넌스된 역방향 액션</em>. SoC 개발 트윈은 이 두 계보의 교집합 위에 세우는 것이 이론적으로 가장 안전하다.</div>
+<h2 id="s2"><span class="no">2.</span>개발 프로세스 트윈 선행 사례 — 무엇이 있고 무엇이 비어 있나</h2>
+
+<h3 id="s2-1"><span class="no">2.1</span>반도체/EDA 진영</h3>
+<table>
+<tr><th>사례</th><th>성격</th><th>시사점</th><th>검증</th></tr>
+<tr><td>SemiEngineering 업계 좌담 (2025-03)<sup><a href="#ref16">[16]</a></sup></td><td>담론</td><td>칩 개발 <em>프로세스 자체</em>의 트윈은 업계 표준이 부재하며, 검증 전문가(T. Wilson)가 공개적으로 구축을 촉구. 최대 장벽은 기술이 아니라 "프로젝트 팀에 트윈 구축 예산이 배정되지 않는다"(Cadence M. Young)는 조직·경제 문제. 검증 커버리지·디버그가 데이터 기반/에이전트 모델링이 가장 시급한 영역(ChipAgents W. Wang)</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td>Cadence SimAI<sup><a href="#ref16">[16]</a></sup></td><td>부분 구현</td><td>검증 테스트스위트 실행 데이터를 AI로 분석해 엔지니어에게 피드백 — 프로세스 트윈의 부분집합(분석 계층)만 상용화된 상태</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td>Jama — 반도체 digital thread<sup><a href="#ref17">[17]</a></sup></td><td>벤더 프레임</td><td>요구사항→설계→시뮬→검증→post-Si→양산을 잇는 digital thread = 사실상 개발 프로세스의 semantic layer. 현재 업계는 구간별 point tool만 강하고 end-to-end 통합은 드묾 — 트윈이 메울 공백</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td>Synopsys electronics digital twin<sup><a href="#ref18">[18]</a></sup></td><td>구분 필요</td><td>가상 프로토타입(SW bring-up·전력 분석용) — <em>설계물</em>의 트윈이지 <em>개발 프로세스</em>의 트윈이 아님. Bosch Dresden 팹 트윈도 제조 트윈. 사내 커뮤니케이션에서 이 세 층위(제품 트윈 / 팹 트윈 / 프로세스 트윈)를 반드시 구분해 혼선 방지</td><td><span class="tag u">단일출처</span></td></tr>
+</table>
+
+<h3 id="s2-2"><span class="no">2.2</span>SW 개발 데이터 마이닝 — 재사용 가능한 실증</h3>
+<table>
+<tr><th>연구</th><th>실증 내용</th><th>SoC 트윈 전용(轉用) 포인트</th><th>검증</th></tr>
+<tr><td>Coremans et al., Thermo Fisher (2023)<sup><a href="#ref19">[19]</a></sup></td><td>Jira 이슈 이력 26,109건·24팀·74리포에서 Petri net 프로세스 모델을 직접 발굴, 현업 배치. VCS 마이닝이 놓치는 편차(팀 간 'to investigate' 평균 17일 대기 vs 타팀 'to do' 중앙값 1일 미만, done→testing 역행 10%)를 Jira 데이터가 드러냄</td><td>Jira-first 접근의 타당성 실증. 동시에 핵심 한계: <b>트윈 충실도는 도구 사용 규율에 종속</b> — 미기록 작업은 보이지 않고, 지연 업데이트는 모든 구간 측정을 왜곡</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td>CodeSight (2025)<sup><a href="#ref20">[20]</a></sup></td><td>GitHub 이벤트(PR·커밋·CI run)를 case=PR 이벤트 로그로 변환, 835 케이스에서 271개 프로세스 변형 발견. LSTM으로 마감 준수 예측 정확도 0.944, 소요시간 MAE ~8.8h</td><td>개발 이벤트→예측 모델 파이프라인의 실증(단, 전통 case 기반이라 다객체 SoC 플로우엔 OCEL 필요). '일정 리스크 예측' 유스케이스의 선례</td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td>LinkAnchor (FSE 2026)<sup><a href="#ref21">[21]</a></sup></td><td>이슈↔커밋 링크 복원 전용 LLM 에이전트. GitHub 이슈의 ~42%만 커밋과 연결돼 있는 현실에서 Hit@1 0.89, 이슈당 ~$0.01·24초 미만</td><td>트윈의 링크 그래프를 에이전트가 <em>사후 복원</em>할 수 있다는 실증 + lazy-access 아키텍처(필요한 슬라이스만 동적 조회로 컨텍스트 한계 회피)는 대규모 온톨로지 위 에이전트의 표준 패턴</td><td><span class="tag u">단일출처</span></td></tr>
+</table>
+<div class="callout"><b>포지셔닝.</b> "제품 트윈(가상 프로토타입)·팹 트윈은 남들이 만든다. 우리는 <em>개발 프로세스 트윈</em>을 만든다"가 사내 한 줄 정의. 업계 표준 부재<sup><a href="#ref16">[16]</a></sup>가 곧 기회이며, SW 마이닝 실증<sup><a href="#ref19">[19]</a><a href="#ref20">[20]</a><a href="#ref21">[21]</a></sup>이 기술적 실현 가능성의 증거다.</div>
+
+<h2 id="s3"><span class="no">3.</span>SoC 개발 온톨로지 설계</h2>
+
+<h3 id="s3-1"><span class="no">3.1</span>Object/Link 모델</h3>
+<p>Foundry 패턴(semantic elements = object/property/link)<sup><a href="#ref1">[1]</a></sup>을 SoC 개발 도메인에 사상한 코어 모델. MVP는 Jira/Confluence에서 채울 수 있는 12타입으로 시작하고, CI/Git/Lab 연동 시 8타입을 확장한다.</p>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1222px" preserveAspectRatio="none" style="width:1401px;height:1222px;" version="1.1" viewBox="0 0 1401 1222" width="1401px" zoomAndPan="magnify"><defs/><g><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="351" x="531" y="13.9201">SoC 개발 프로세스 Operational Ontology — 핵심 Object/Link 모델</text><!--cluster 제품/설계 구조 (Product Structure)--><polygon fill="#FAFBFC" points="22,597.3761,222,597.3761,229,620.7522,246,620.7522,246,1210.3761,22,1210.3761,22,597.3761" style="stroke: #C3CBD4; stroke-width: 1.5;"/><line style="stroke: #C3CBD4; stroke-width: 1.5;" x1="22" x2="229" y1="620.7522" y2="620.7522"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="194" x="26" y="613.2962">제품/설계 구조 (Product Structure)</text><!--cluster 요구/사양 (Intent)--><polygon fill="#FAFBFC" points="1032,834.3761,1137,834.3761,1144,857.7522,1379,857.7522,1379,1210.3761,1032,1210.3761,1032,834.3761" style="stroke: #C3CBD4; stroke-width: 1.5;"/><line style="stroke: #C3CBD4; stroke-width: 1.5;" x1="1032" x2="1144" y1="857.7522" y2="857.7522"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="99" x="1036" y="850.2962">요구/사양 (Intent)</text><!--cluster 실행 (Execution)--><polygon fill="#FAFBFC" points="802,41.3761,903,41.3761,910,64.7522,1008,64.7522,1008,1013.3761,802,1013.3761,802,41.3761" style="stroke: #C3CBD4; stroke-width: 1.5;"/><line style="stroke: #C3CBD4; stroke-width: 1.5;" x1="802" x2="910" y1="64.7522" y2="64.7522"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="95" x="806" y="57.2962">실행 (Execution)</text><!--cluster 측정/증거 (Evidence)--><polygon fill="#FAFBFC" points="320,834.3761,442,834.3761,449,857.7522,764,857.7522,764,1004.3761,320,1004.3761,320,834.3761" style="stroke: #C3CBD4; stroke-width: 1.5;"/><line style="stroke: #C3CBD4; stroke-width: 1.5;" x1="320" x2="449" y1="857.7522" y2="857.7522"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="116" x="324" y="850.2962">측정/증거 (Evidence)</text><!--class SoCProject--><rect fill="#FFFFFF" height="115.5045" id="SoCProject" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="97" x="98.5" y="653.3761"/><ellipse cx="114.3" cy="668.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M116.1281,672.6261 Q115.7219,672.8292 115.2688,672.9386 Q114.8156,673.048 114.3313,673.048 Q112.55,673.048 111.6125,671.8917 Q110.6906,670.7199 110.6906,668.5167 Q110.6906,666.298 111.6125,665.1417 Q112.55,663.9699 114.3313,663.9699 Q114.8156,663.9699 115.2688,664.0792 Q115.7375,664.173 116.1281,664.3917 L116.1281,666.3136 Q115.6906,665.9074 115.2688,665.7199 Q114.8469,665.5167 114.4094,665.5167 Q113.4563,665.5167 112.9719,666.2824 Q112.4875,667.0324 112.4875,668.5167 Q112.4875,669.9855 112.9719,670.7355 Q113.4563,671.4855 114.4094,671.4855 Q114.8469,671.4855 115.2688,671.298 Q115.6906,671.1105 116.1281,670.7042 L116.1281,672.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="63" x="127.7" y="673.6082">SoCProject</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="99.5" x2="194.5" y1="683.3761" y2="683.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="57" x="104.5" y="701.2962">project_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="59" x="104.5" y="718.6723">codename</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="79" x="104.5" y="736.0485">process_node</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="85" x="104.5" y="753.4246">target_market</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="99.5" x2="194.5" y1="760.8806" y2="760.8806"/><!--class Subsystem--><rect fill="#FFFFFF" height="80.7522" id="Subsystem" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="192" x="38" y="898.8761"/><ellipse cx="99" cy="913.8761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M100.8281,918.1261 Q100.4219,918.3292 99.9688,918.4386 Q99.5156,918.548 99.0313,918.548 Q97.25,918.548 96.3125,917.3917 Q95.3906,916.2199 95.3906,914.0167 Q95.3906,911.798 96.3125,910.6417 Q97.25,909.4699 99.0313,909.4699 Q99.5156,909.4699 99.9688,909.5792 Q100.4375,909.673 100.8281,909.8917 L100.8281,911.8136 Q100.3906,911.4074 99.9688,911.2199 Q99.5469,911.0167 99.1094,911.0167 Q98.1563,911.0167 97.6719,911.7824 Q97.1875,912.5324 97.1875,914.0167 Q97.1875,915.4855 97.6719,916.2355 Q98.1563,916.9855 99.1094,916.9855 Q99.5469,916.9855 99.9688,916.798 Q100.3906,916.6105 100.8281,916.2042 L100.8281,918.1261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="62" x="118" y="919.1082">Subsystem</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="39" x2="229" y1="928.8761" y2="928.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="55" x="44" y="946.7962">subsys_id</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="39" x2="229" y1="954.2522" y2="954.2522"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="180" x="44" y="972.1723">domain (MM/CPU/GPU/Modem)</text><!--class IPBlock--><rect fill="#FFFFFF" height="115.5045" id="IPBlock" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="168" x="62" y="1078.3761"/><ellipse cx="120.5" cy="1093.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M122.3281,1097.6261 Q121.9219,1097.8292 121.4688,1097.9386 Q121.0156,1098.048 120.5313,1098.048 Q118.75,1098.048 117.8125,1096.8917 Q116.8906,1095.7199 116.8906,1093.5167 Q116.8906,1091.298 117.8125,1090.1417 Q118.75,1088.9699 120.5313,1088.9699 Q121.0156,1088.9699 121.4688,1089.0792 Q121.9375,1089.173 122.3281,1089.3917 L122.3281,1091.3136 Q121.8906,1090.9074 121.4688,1090.7199 Q121.0469,1090.5167 120.6094,1090.5167 Q119.6563,1090.5167 119.1719,1091.2824 Q118.6875,1092.0324 118.6875,1093.5167 Q118.6875,1094.9855 119.1719,1095.7355 Q119.6563,1096.4855 120.6094,1096.4855 Q121.0469,1096.4855 121.4688,1096.298 Q121.8906,1096.1105 122.3281,1095.7042 L122.3281,1097.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="43" x="139.5" y="1098.6082">IPBlock</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="63" x2="229" y1="1108.3761" y2="1108.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="27" x="68" y="1126.2962">ip_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="41" x="68" y="1143.6723">version</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="63" x2="229" y1="1151.1284" y2="1151.1284"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="156" x="68" y="1169.0485">type (Codec/ISP/DPU/NPU)</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="145" x="68" y="1186.4246">origin (internal/3rd-party)</text><!--class SpecRequirement--><rect fill="#FFFFFF" height="115.5045" id="SpecRequirement" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="189" x="1048.5" y="1078.3761"/><ellipse cx="1088.6" cy="1093.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M1090.4281,1097.6261 Q1090.0219,1097.8292 1089.5688,1097.9386 Q1089.1156,1098.048 1088.6313,1098.048 Q1086.85,1098.048 1085.9125,1096.8917 Q1084.9906,1095.7199 1084.9906,1093.5167 Q1084.9906,1091.298 1085.9125,1090.1417 Q1086.85,1088.9699 1088.6313,1088.9699 Q1089.1156,1088.9699 1089.5688,1089.0792 Q1090.0375,1089.173 1090.4281,1089.3917 L1090.4281,1091.3136 Q1089.9906,1090.9074 1089.5688,1090.7199 Q1089.1469,1090.5167 1088.7094,1090.5167 Q1087.7563,1090.5167 1087.2719,1091.2824 Q1086.7875,1092.0324 1086.7875,1093.5167 Q1086.7875,1094.9855 1087.2719,1095.7355 Q1087.7563,1096.4855 1088.7094,1096.4855 Q1089.1469,1096.4855 1089.5688,1096.298 Q1089.9906,1096.1105 1090.4281,1095.7042 L1090.4281,1097.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="101" x="1107.4" y="1098.6082">SpecRequirement</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="1049.5" x2="1236.5" y1="1108.3761" y2="1108.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="36" x="1054.5" y="1126.2962">req_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="73" x="1054.5" y="1143.6723">target_value</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="36" x="1054.5" y="1161.0485">status</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="1049.5" x2="1236.5" y1="1168.5045" y2="1168.5045"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="177" x="1054.5" y="1186.4246">category (Perf/Power/Feature)</text><!--class UseCaseScenario--><rect fill="#FFFFFF" height="98.1284" id="UseCaseScenario" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="155" x="1207.5" y="890.3761"/><ellipse cx="1233.2" cy="905.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M1235.0281,909.6261 Q1234.6219,909.8292 1234.1688,909.9386 Q1233.7156,910.048 1233.2313,910.048 Q1231.45,910.048 1230.5125,908.8917 Q1229.5906,907.7199 1229.5906,905.5167 Q1229.5906,903.298 1230.5125,902.1417 Q1231.45,900.9699 1233.2313,900.9699 Q1233.7156,900.9699 1234.1688,901.0792 Q1234.6375,901.173 1235.0281,901.3917 L1235.0281,903.3136 Q1234.5906,902.9074 1234.1688,902.7199 Q1233.7469,902.5167 1233.3094,902.5167 Q1232.3563,902.5167 1231.8719,903.2824 Q1231.3875,904.0324 1231.3875,905.5167 Q1231.3875,906.9855 1231.8719,907.7355 Q1232.3563,908.4855 1233.3094,908.4855 Q1233.7469,908.4855 1234.1688,908.298 Q1234.5906,908.1105 1235.0281,907.7042 L1235.0281,909.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="99" x="1248.8" y="910.6082">UseCaseScenario</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="1208.5" x2="1361.5" y1="920.3761" y2="920.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="30" x="1213.5" y="938.2962">uc_id</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="1208.5" x2="1361.5" y1="945.7522" y2="945.7522"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="131" x="1213.5" y="963.6723">name (8K60 Decode 등)</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="143" x="1213.5" y="981.0485">kpi_targets (fps/mW/ms)</text><!--class SpecDocument--><rect fill="#FFFFFF" height="98.1284" id="SpecDocument" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="124" x="1048" y="890.3761"/><ellipse cx="1066.05" cy="905.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M1067.8781,909.6261 Q1067.4719,909.8292 1067.0188,909.9386 Q1066.5656,910.048 1066.0813,910.048 Q1064.3,910.048 1063.3625,908.8917 Q1062.4406,907.7199 1062.4406,905.5167 Q1062.4406,903.298 1063.3625,902.1417 Q1064.3,900.9699 1066.0813,900.9699 Q1066.5656,900.9699 1067.0188,901.0792 Q1067.4875,901.173 1067.8781,901.3917 L1067.8781,903.3136 Q1067.4406,902.9074 1067.0188,902.7199 Q1066.5969,902.5167 1066.1594,902.5167 Q1065.2063,902.5167 1064.7219,903.2824 Q1064.2375,904.0324 1064.2375,905.5167 Q1064.2375,906.9855 1064.7219,907.7355 Q1065.2063,908.4855 1066.1594,908.4855 Q1066.5969,908.4855 1067.0188,908.298 Q1067.4406,908.1105 1067.8781,907.7042 L1067.8781,909.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="85" x="1079.95" y="910.6082">SpecDocument</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="1049" x2="1171" y1="920.3761" y2="920.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="37" x="1054" y="938.2962">doc_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="41" x="1054" y="955.6723">version</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="1049" x2="1171" y1="963.1284" y2="963.1284"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="112" x="1054" y="981.0485">source (Confluence)</text><!--class WorkItem--><rect fill="#FFFFFF" height="115.5045" id="WorkItem" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="137" x="854.5" y="881.3761"/><ellipse cx="891" cy="896.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M892.8281,900.6261 Q892.4219,900.8292 891.9688,900.9386 Q891.5156,901.048 891.0313,901.048 Q889.25,901.048 888.3125,899.8917 Q887.3906,898.7199 887.3906,896.5167 Q887.3906,894.298 888.3125,893.1417 Q889.25,891.9699 891.0313,891.9699 Q891.5156,891.9699 891.9688,892.0792 Q892.4375,892.173 892.8281,892.3917 L892.8281,894.3136 Q892.3906,893.9074 891.9688,893.7199 Q891.5469,893.5167 891.1094,893.5167 Q890.1563,893.5167 889.6719,894.2824 Q889.1875,895.0324 889.1875,896.5167 Q889.1875,897.9855 889.6719,898.7355 Q890.1563,899.4855 891.1094,899.4855 Q891.5469,899.4855 891.9688,899.298 Q892.3906,899.1105 892.8281,898.7042 L892.8281,900.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="57" x="909" y="901.6082">WorkItem</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="855.5" x2="990.5" y1="911.3761" y2="911.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="46" x="860.5" y="929.2962">issue_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="97" x="860.5" y="946.6723">status / assignee</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="855.5" x2="990.5" y1="954.1284" y2="954.1284"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="125" x="860.5" y="972.0485">type (Story/Task/Bug)</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="70" x="860.5" y="989.4246">source (Jira)</text><!--class Commit--><rect fill="#FFFFFF" height="80.7522" id="Commit" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="88" x="872" y="670.8761"/><ellipse cx="891.85" cy="685.8761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M893.6781,690.1261 Q893.2719,690.3292 892.8188,690.4386 Q892.3656,690.548 891.8813,690.548 Q890.1,690.548 889.1625,689.3917 Q888.2406,688.2199 888.2406,686.0167 Q888.2406,683.798 889.1625,682.6417 Q890.1,681.4699 891.8813,681.4699 Q892.3656,681.4699 892.8188,681.5792 Q893.2875,681.673 893.6781,681.8917 L893.6781,683.8136 Q893.2406,683.4074 892.8188,683.2199 Q892.3969,683.0167 891.9594,683.0167 Q891.0063,683.0167 890.5219,683.7824 Q890.0375,684.5324 890.0375,686.0167 Q890.0375,687.4855 890.5219,688.2355 Q891.0063,688.9855 891.9594,688.9855 Q892.3969,688.9855 892.8188,688.798 Q893.2406,688.6105 893.6781,688.2042 L893.6781,690.1261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="45" x="906.15" y="691.1082">Commit</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="873" x2="959" y1="700.8761" y2="700.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="20" x="878" y="718.7962">sha</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="76" x="878" y="736.1723">repo / branch</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="873" x2="959" y1="743.6284" y2="743.6284"/><!--class Build--><rect fill="#FFFFFF" height="80.7522" id="Build" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="165" x="822.5" y="451.3761"/><ellipse cx="887" cy="466.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M888.8281,470.6261 Q888.4219,470.8292 887.9688,470.9386 Q887.5156,471.048 887.0313,471.048 Q885.25,471.048 884.3125,469.8917 Q883.3906,468.7199 883.3906,466.5167 Q883.3906,464.298 884.3125,463.1417 Q885.25,461.9699 887.0313,461.9699 Q887.5156,461.9699 887.9688,462.0792 Q888.4375,462.173 888.8281,462.3917 L888.8281,464.3136 Q888.3906,463.9074 887.9688,463.7199 Q887.5469,463.5167 887.1094,463.5167 Q886.1563,463.5167 885.6719,464.2824 Q885.1875,465.0324 885.1875,466.5167 Q885.1875,467.9855 885.6719,468.7355 Q886.1563,469.4855 887.1094,469.4855 Q887.5469,469.4855 887.9688,469.298 Q888.3906,469.1105 888.8281,468.7042 L888.8281,470.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="28" x="906" y="471.6082">Build</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="823.5" x2="986.5" y1="481.3761" y2="481.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="44" x="828.5" y="499.2962">build_id</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="823.5" x2="986.5" y1="506.7522" y2="506.7522"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="153" x="828.5" y="524.6723">artifact_type (RTL/FW/SW)</text><!--class RegressionRun--><rect fill="#FFFFFF" height="98.1284" id="RegressionRun" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="173" x="818.5" y="274.3761"/><ellipse cx="858.6" cy="289.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M860.4281,293.6261 Q860.0219,293.8292 859.5688,293.9386 Q859.1156,294.048 858.6313,294.048 Q856.85,294.048 855.9125,292.8917 Q854.9906,291.7199 854.9906,289.5167 Q854.9906,287.298 855.9125,286.1417 Q856.85,284.9699 858.6313,284.9699 Q859.1156,284.9699 859.5688,285.0792 Q860.0375,285.173 860.4281,285.3917 L860.4281,287.3136 Q859.9906,286.9074 859.5688,286.7199 Q859.1469,286.5167 858.7094,286.5167 Q857.7563,286.5167 857.2719,287.2824 Q856.7875,288.0324 856.7875,289.5167 Q856.7875,290.9855 857.2719,291.7355 Q857.7563,292.4855 858.7094,292.4855 Q859.1469,292.4855 859.5688,292.298 Q859.9906,292.1105 860.4281,291.7042 L860.4281,293.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="85" x="877.4" y="294.6082">RegressionRun</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="819.5" x2="990.5" y1="304.3761" y2="304.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="36" x="824.5" y="322.2962">run_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="120" x="824.5" y="339.6723">pass_rate / coverage</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="819.5" x2="990.5" y1="347.1284" y2="347.1284"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="161" x="824.5" y="365.0485">platform (Sim/Emu/FPGA/Si)</text><!--class Defect--><rect fill="#FFFFFF" height="98.1284" id="Defect" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="132" x="828" y="97.3761"/><ellipse cx="871.5" cy="112.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M873.3281,116.6261 Q872.9219,116.8292 872.4688,116.9386 Q872.0156,117.048 871.5313,117.048 Q869.75,117.048 868.8125,115.8917 Q867.8906,114.7199 867.8906,112.5167 Q867.8906,110.298 868.8125,109.1417 Q869.75,107.9699 871.5313,107.9699 Q872.0156,107.9699 872.4688,108.0792 Q872.9375,108.173 873.3281,108.3917 L873.3281,110.3136 Q872.8906,109.9074 872.4688,109.7199 Q872.0469,109.5167 871.6094,109.5167 Q870.6563,109.5167 870.1719,110.2824 Q869.6875,111.0324 869.6875,112.5167 Q869.6875,113.9855 870.1719,114.7355 Q870.6563,115.4855 871.6094,115.4855 Q872.0469,115.4855 872.4688,115.298 Q872.8906,115.1105 873.3281,114.7042 L873.3281,116.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="37" x="890.5" y="117.6082">Defect</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="829" x2="959" y1="127.3761" y2="127.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="53" x="834" y="145.2962">defect_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="120" x="834" y="162.6723">severity / root_cause</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="71" x="834" y="180.0485">found_stage</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="829" x2="959" y1="187.5045" y2="187.5045"/><!--class PerfMeasurement--><rect fill="#FFFFFF" height="98.1284" id="PerfMeasurement" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="141" x="497.5" y="890.3761"/><ellipse cx="515.1" cy="905.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M516.9281,909.6261 Q516.5219,909.8292 516.0688,909.9386 Q515.6156,910.048 515.1313,910.048 Q513.35,910.048 512.4125,908.8917 Q511.4906,907.7199 511.4906,905.5167 Q511.4906,903.298 512.4125,902.1417 Q513.35,900.9699 515.1313,900.9699 Q515.6156,900.9699 516.0688,901.0792 Q516.5375,901.173 516.9281,901.3917 L516.9281,903.3136 Q516.4906,902.9074 516.0688,902.7199 Q515.6469,902.5167 515.2094,902.5167 Q514.2563,902.5167 513.7719,903.2824 Q513.2875,904.0324 513.2875,905.5167 Q513.2875,906.9855 513.7719,907.7355 Q514.2563,908.4855 515.2094,908.4855 Q515.6469,908.4855 516.0688,908.298 Q516.4906,908.1105 516.9281,907.7042 L516.9281,909.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="103" x="528.9" y="910.6082">PerfMeasurement</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="498.5" x2="637.5" y1="920.3761" y2="920.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="48" x="503.5" y="938.2962">meas_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="78" x="503.5" y="955.6723">metric / value</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="498.5" x2="637.5" y1="963.1284" y2="963.1284"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="129" x="503.5" y="981.0485">source (PMU/Perfetto)</text><!--class Milestone--><rect fill="#FFFFFF" height="98.1284" id="Milestone" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="126" x="336" y="890.3761"/><ellipse cx="368.45" cy="905.3761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M370.2781,909.6261 Q369.8719,909.8292 369.4188,909.9386 Q368.9656,910.048 368.4813,910.048 Q366.7,910.048 365.7625,908.8917 Q364.8406,907.7199 364.8406,905.5167 Q364.8406,903.298 365.7625,902.1417 Q366.7,900.9699 368.4813,900.9699 Q368.9656,900.9699 369.4188,901.0792 Q369.8875,901.173 370.2781,901.3917 L370.2781,903.3136 Q369.8406,902.9074 369.4188,902.7199 Q368.9969,902.5167 368.5594,902.5167 Q367.6063,902.5167 367.1219,903.2824 Q366.6375,904.0324 366.6375,905.5167 Q366.6375,906.9855 367.1219,907.7355 Q367.6063,908.4855 368.5594,908.4855 Q368.9969,908.4855 369.4188,908.298 Q369.8406,908.1105 370.2781,907.7042 L370.2781,909.6261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="55" x="385.55" y="910.6082">Milestone</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="337" x2="461" y1="920.3761" y2="920.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="34" x="342" y="938.2962">ms_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="26" x="342" y="955.6723">date</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="337" x2="461" y1="963.1284" y2="963.1284"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="114" x="342" y="981.0485">type (TO/ES/CS/MP)</text><!--class Person--><rect fill="#FFFFFF" height="80.7522" id="Person" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="75" x="673.5" y="898.8761"/><ellipse cx="689.75" cy="913.8761" fill="#ADD1B2" rx="10" ry="10" style="stroke: #8A93A0; stroke-width: 1.0;"/><path d="M691.5781,918.1261 Q691.1719,918.3292 690.7188,918.4386 Q690.2656,918.548 689.7813,918.548 Q688,918.548 687.0625,917.3917 Q686.1406,916.2199 686.1406,914.0167 Q686.1406,911.798 687.0625,910.6417 Q688,909.4699 689.7813,909.4699 Q690.2656,909.4699 690.7188,909.5792 Q691.1875,909.673 691.5781,909.8917 L691.5781,911.8136 Q691.1406,911.4074 690.7188,911.2199 Q690.2969,911.0167 689.8594,911.0167 Q688.9063,911.0167 688.4219,911.7824 Q687.9375,912.5324 687.9375,914.0167 Q687.9375,915.4855 688.4219,916.2355 Q688.9063,916.9855 689.8594,916.9855 Q690.2969,916.9855 690.7188,916.798 Q691.1406,916.6105 691.5781,916.2042 L691.5781,918.1261 Z "/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="40" x="703.25" y="919.1082">Person</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="674.5" x2="747.5" y1="928.8761" y2="928.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="56" x="679.5" y="946.7962">person_id</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="63" x="679.5" y="964.1723">role / team</text><line style="stroke: #8A93A0; stroke-width: 1.5;" x1="674.5" x2="747.5" y1="971.6284" y2="971.6284"/><!--link SoCProject to Subsystem--><path d="M118.02,769.7761 C114.29,779.4461 111.06,789.5361 109,799.3761 C102.03,832.7361 110,870.8461 118.74,898.7161 " fill="none" id="SoCProject-Subsystem" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="48" x="110" y="814.2962">contains</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="107.6705" y="790.6402">1</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="106.4672" y="887.5458">N</text><!--link Subsystem to IPBlock--><path d="M136.46,980.3061 C138.19,1008.4961 140.54,1046.6961 142.48,1078.1161 " fill="none" id="Subsystem-IPBlock" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="59" x="142" y="1044.2962">integrates</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="129.3073" y="1001.5321">1</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="132.5026" y="1066.953">N</text><!--link SpecRequirement to IPBlock--><path d="M1048.26,1136.3761 C854.3,1136.3761 414.76,1136.3761 230.14,1136.3761 " fill="none" id="SpecRequirement-IPBlock" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="71" x="603.75" y="1129.2962">allocated_to</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="1031.3518" y="1132.6536">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="238.0345" y="1132.578">N</text><!--link UseCaseScenario to SpecRequirement--><path d="M1249.9,988.5761 C1230.19,1015.6461 1205.47,1049.5961 1184.76,1078.0261 " fill="none" id="UseCaseScenario-SpecRequirement" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="41" x="1219" y="1044.2962">derives</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="1235.5788" y="1010.2663">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="1180.3011" y="1066.852">N</text><!--link SpecDocument to SpecRequirement--><path d="M1118.16,988.5761 C1122.74,1015.6461 1128.48,1049.5961 1133.29,1078.0261 " fill="none" id="SpecDocument-SpecRequirement" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="49" x="1128" y="1044.2962">specifies</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="1111.7862" y="1010.2663">1</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="1122.5582" y="1066.852">N</text><!--link WorkItem to SpecRequirement--><path d="M987.52,997.5661 C1016.17,1022.9661 1049.83,1052.7861 1078.48,1078.1861 " fill="none" id="WorkItem-SpecRequirement" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="67" x="1040" y="1044.2962">implements</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="985.0847" y="1018.8281">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="1061.0682" y="1067.0315">N</text><!--link WorkItem to Person--><path d="M854.15,939.3761 C819.2,939.3761 778.08,939.3761 748.9,939.3761 " fill="none" id="WorkItem-Person" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="69" x="767" y="932.2962">assigned_to</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="837.5858" y="935.4646">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="756.5331" y="934.7865">1</text><!--link Commit to WorkItem--><path d="M917.23,751.9961 C918.33,787.6961 919.97,840.6161 921.22,880.9461 " fill="none" id="Commit-WorkItem" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="47" x="920" y="814.2962">resolves</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="907.7293" y="773.4855">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="913.5765" y="869.7622">1</text><!--link Build to Commit--><path d="M907,532.5161 C908.99,571.7261 912.01,631.3961 913.99,670.6461 " fill="none" id="Build-Commit" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="59" x="910" y="577.2962">built_from</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="897.6172" y="554.0085">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="903.9118" y="659.4642">N</text><!--link RegressionRun to Build--><path d="M905,372.5361 C905,397.5061 905,427.6361 905,451.2361 " fill="none" id="RegressionRun-Build" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="51" x="906" y="417.2962">validates</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="895.3672" y="394.5821">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="897.4203" y="440.0691">1</text><!--link Defect to RegressionRun--><path d="M897.03,195.6561 C898.57,220.1461 900.44,249.7861 901.97,274.2461 " fill="none" id="Defect-RegressionRun" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="49" x="900" y="240.2962">found_in</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="887.8325" y="217.3571">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="894.0517" y="263.0794">1</text><!--link Defect to IPBlock--><path d="M827.74,152.2461 C669.57,165.6861 283,210.0361 283,322.3761 C283,322.3761 283,322.3761 283,940.3761 C283,993.5461 248.48,1042.4661 214.1,1078.0061 " fill="none" id="Defect-IPBlock" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="59" x="284" y="577.2962">located_in</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="811.0006" y="148.8921">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="214.9731" y="1066.8296">1</text><!--link PerfMeasurement to UseCaseScenario--><path d="M592.52,890.1761 C607.32,866.2361 628.65,839.7861 656,826.3761 C749.98,780.3061 1022.34,824.5461 1127,825.3761 C1155,825.5961 1164.71,814.3561 1190,826.3761 C1218.36,839.8561 1241.33,866.3061 1257.57,890.2361 " fill="none" id="PerfMeasurement-UseCaseScenario" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="56" x="1070" y="814.2962">measures</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="596.6009" y="878.9996">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="1246.2205" y="879.068">1</text><!--link PerfMeasurement to Build--><path d="M589.04,890.1461 C621.68,818.9461 689.73,683.9361 775,589.3761 C794.2,568.0861 818.74,548.4361 841.31,532.5061 " fill="none" id="PerfMeasurement-Build" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="78" x="776" y="716.7962">measured_on</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="582.3659" y="878.9654">N</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="824.0215" y="553.997">1</text><!--link Milestone to SpecRequirement--><path d="M437.37,988.4261 C449.7,1000.9661 464.28,1013.2361 480,1021.3761 C577.55,1071.8961 889.77,1109.7261 1048.47,1126.2361 " fill="none" id="Milestone-SpecRequirement" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="32" x="544" y="1044.2962">gates</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="435.2736" y="1010.4566">1</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="1031.5785" y="1121.7056">N</text><!--link SoCProject to Milestone--><path d="M195.59,755.9561 C238.5,794.4361 300.96,850.4461 345.33,890.2361 " fill="none" id="SoCProject-Milestone" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="56" x="259" y="814.2962">schedules</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="203.5663" y="758.4677">1</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="9" x="328.1498" y="879.068">N</text><!--
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontName "Noto Sans CJK KR"
+skinparam defaultFontSize 12
+skinparam classFontSize 12
+skinparam ArrowColor #5B6470
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #8A93A0
+  HeaderBackgroundColor #EEF2F7
+}
+skinparam package {
+  BackgroundColor #FAFBFC
+  BorderColor #C3CBD4
+}
+
+title SoC 개발 프로세스 Operational Ontology — 핵심 Object/Link 모델
+
+package "제품/설계 구조 (Product Structure)" {
+  class SoCProject {
+    project_id
+    codename
+    process_node
+    target_market
+  }
+  class Subsystem {
+    subsys_id
+    domain (MM/CPU/GPU/Modem)
+  }
+  class IPBlock {
+    ip_id
+    type (Codec/ISP/DPU/NPU)
+    version
+    origin (internal/3rd-party)
+  }
+}
+
+package "요구/사양 (Intent)" {
+  class SpecRequirement {
+    req_id
+    category (Perf/Power/Feature)
+    target_value
+    status
+  }
+  class UseCaseScenario {
+    uc_id
+    name (8K60 Decode 등)
+    kpi_targets (fps/mW/ms)
+  }
+  class SpecDocument {
+    doc_id
+    source (Confluence)
+    version
+  }
+}
+
+package "실행 (Execution)" {
+  class WorkItem {
+    issue_id
+    type (Story/Task/Bug)
+    status / assignee
+    source (Jira)
+  }
+  class Commit {
+    sha
+    repo / branch
+  }
+  class Build {
+    build_id
+    artifact_type (RTL/FW/SW)
+  }
+  class RegressionRun {
+    run_id
+    platform (Sim/Emu/FPGA/Si)
+    pass_rate / coverage
+  }
+  class Defect {
+    defect_id
+    severity / root_cause
+    found_stage
+  }
+}
+
+package "측정/증거 (Evidence)" {
+  class PerfMeasurement {
+    meas_id
+    source (PMU/Perfetto)
+    metric / value
+  }
+  class Milestone {
+    ms_id
+    type (TO/ES/CS/MP)
+    date
+  }
+  class Person {
+    person_id
+    role / team
+  }
+}
+
+SoCProject "1" - - "N" Subsystem : contains
+Subsystem "1" - - "N" IPBlock : integrates
+SpecRequirement "N" - - "N" IPBlock : allocated_to
+UseCaseScenario "N" - - "N" SpecRequirement : derives
+SpecDocument "1" - - "N" SpecRequirement : specifies
+WorkItem "N" - - "N" SpecRequirement : implements
+WorkItem "N" - - "1" Person : assigned_to
+Commit "N" - - "1" WorkItem : resolves
+Build "N" - - "N" Commit : built_from
+RegressionRun "N" - - "1" Build : validates
+Defect "N" - - "1" RegressionRun : found_in
+Defect "N" - - "1" IPBlock : located_in
+PerfMeasurement "N" - - "1" UseCaseScenario : measures
+PerfMeasurement "N" - - "1" Build : measured_on
+Milestone "1" - - "N" SpecRequirement : gates
+SoCProject "1" - - "N" Milestone : schedules
+@enduml
+
+PlantUML version 1.2019.06(Fri May 24 17:10:25 UTC 2019)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 21.0.10+7-Ubuntu-124.04
+Operating System: Linux
+OS Version: 6.18.5
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
+<div class="cap">그림 1 — 핵심 Object/Link 모델. 굵은 경로(SpecRequirement→WorkItem→Commit→Build→RegressionRun→PerfMeasurement)가 추적성 백본.</div></div>
+
+<table>
+<tr><th>구분</th><th>Object Type</th><th>핵심 속성</th><th>Primary Source</th></tr>
+<tr><td rowspan="12"><b>MVP<br>(P1)</b></td>
+<td>SoCProject</td><td>codename, process node, target market, 일정 앵커</td><td>Confluence(수동 시드)</td></tr>
+<tr><td>Subsystem</td><td>domain(MM/CPU/GPU/NPU…), owner</td><td>Confluence</td></tr>
+<tr><td>IPBlock</td><td>type(Codec/ISP/DPU/NPU), version, origin(내재/3rd-party)</td><td>Confluence/IP DB</td></tr>
+<tr><td>SpecRequirement</td><td>category(Perf/Power/Feature), target_value, status, version</td><td>Confluence(문단→객체 추출)</td></tr>
+<tr><td>UseCaseScenario</td><td>name(예: 8K60 Decode), kpi_targets(fps/mW/ms)</td><td>Confluence — <b>PPA 앵커 객체</b></td></tr>
+<tr><td>SpecDocument</td><td>url, version, last_edit — provenance 원본</td><td>Confluence</td></tr>
+<tr><td>WorkItem</td><td>type(Story/Task/Bug), status, assignee, sprint</td><td>Jira issue 1:1</td></tr>
+<tr><td>Defect</td><td>severity, found_stage(Sim/Emu/FPGA/Si), root_cause</td><td>Jira(WorkItem 서브타입 — Interface 다형성 활용<sup><a href="#ref1">[1]</a></sup>)</td></tr>
+<tr><td>Milestone</td><td>type(TO/ES/CS/MP), date, gate 조건</td><td>Jira/Confluence</td></tr>
+<tr><td>Person / Team</td><td>role, team, domain, capacity</td><td>Jira/LDAP</td></tr>
+<tr><td>Risk</td><td>probability, impact, mitigation</td><td>Confluence/Jira</td></tr>
+<tr><td>Decision</td><td>type(ECO/DCN/waiver-정책), rationale, approver</td><td>회의록 — 의사결정 lineage<sup><a href="#ref7">[7]</a></sup></td></tr>
+<tr><td rowspan="8"><b>확장<br>(P2+)</b></td>
+<td>Commit</td><td>sha, repo, loc</td><td>Git/Gerrit</td></tr>
+<tr><td>Build</td><td>artifact(RTL/FW/SW), config</td><td>CI</td></tr>
+<tr><td>RegressionRun</td><td>platform(Sim/Emu/FPGA/Si), pass_rate, coverage</td><td>Regression Farm DB</td></tr>
+<tr><td>TestCase</td><td>suite, feature, owner</td><td>TC DB</td></tr>
+<tr><td>PerfMeasurement</td><td>metric, value, unit, trace_ref(Perfetto/PMU)</td><td>성능랩</td></tr>
+<tr><td>PowerMeasurement</td><td>rail, scenario, mW</td><td>전력랩</td></tr>
+<tr><td>SiliconSample</td><td>lot, bin, revision</td><td>bring-up</td></tr>
+<tr><td>Waiver</td><td>scope, expiry, approver</td><td>검증 DB</td></tr>
+</table>
+
+<table>
+<tr><th>Link Type</th><th>Cardinality</th><th>역할</th></tr>
+<tr><td><code>SpecRequirement → IPBlock</code> (allocated_to)</td><td>N:M</td><td>요구 할당 — 아키텍트의 핵심 작업 산출물</td></tr>
+<tr><td><code>WorkItem → SpecRequirement</code> (implements)</td><td>N:M</td><td>추적성 백본. 현실에선 대부분 누락 — 에이전트 사후 복원 대상(§5.2)</td></tr>
+<tr><td><code>Commit → WorkItem</code> (resolves)</td><td>N:1</td><td>smart-commit 규약으로 확보</td></tr>
+<tr><td><code>RegressionRun → Build</code> (validates)</td><td>N:1</td><td>품질 증거 연결</td></tr>
+<tr><td><code>Defect → IPBlock</code> (located_in)</td><td>N:1</td><td>블록별 품질 히트맵</td></tr>
+<tr><td><code>PerfMeasurement → UseCaseScenario</code> (measures)</td><td>N:1</td><td>PPA 목표 대비 실측 편차 산출</td></tr>
+<tr><td><code>Milestone → SpecRequirement</code> (gates)</td><td>1:N</td><td>exit criteria의 형식화</td></tr>
+<tr><td><code>WorkItem → WorkItem</code> (blocks)</td><td>N:M</td><td>일정 시뮬레이션 입력(블로킹 체인)</td></tr>
+</table>
+
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="980px" preserveAspectRatio="none" style="width:1162px;height:980px;" version="1.1" viewBox="0 0 1162 980" width="1162px" zoomAndPan="magnify"><defs/><g><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="326" x="417" y="23.9201">SoC 개발 Digital Thread — 단계별 트윈 데이터 소스와 추적 링크</text><ellipse cx="95" cy="56.7083" fill="#000000" rx="10" ry="10" style="stroke: none; stroke-width: 1.0;"/><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="150" x="20" y="86.7083"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="100" x="30" y="110.6284">UseCase/KPI 정의</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="130" x="30" y="128.0045">(8K60 Decode @ x mW)</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="146" x="22" y="161.4605"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="126" x="32" y="185.3806">SpecRequirement 작성</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="77" x="32" y="202.7567">&lt;Confluence&gt;</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="156" x="207.5" y="236.2128"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="104" x="217.5" y="260.1329">IP/Subsystem 할당</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="136" x="217.5" y="277.509">req → allocated_to → ip</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="211" x="180" y="310.965"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="131" x="190" y="334.8851">RTL / FW / 드라이버 구현</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="191" x="190" y="352.2612">&lt;Git: commit → resolves → issue&gt;</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="185" x="401" y="385.7172"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="118" x="411" y="409.6373">Sim/UVM Regression</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="165" x="411" y="427.0135">&lt;CI: run → validates → build&gt;</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="176" x="405.5" y="460.4695"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="156" x="415.5" y="484.3896">Emulation / FPGA 프로토타입</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="126" x="415.5" y="501.7657">coverage · defect 축적</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="220" x="596" y="535.2217"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="145" x="606" y="559.1418">Tape-out (Milestone gate:</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="200" x="606" y="576.5179">open defect·coverage·waiver 조건)</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="194" x="609" y="609.974"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="92" x="619" y="633.8941">Bring-up / 특성화</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="174" x="619" y="651.2702">&lt;BringUpIssue, SiliconSample&gt;</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="235" x="840.25" y="684.7262"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="112" x="850.25" y="708.6463">UseCase별 PPA 실측</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="215" x="850.25" y="726.0224">&lt;PMU/Perfetto → PerfMeasurement&gt;</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="160" x="877.75" y="759.4785"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="97" x="887.75" y="783.3986">목표 대비 편차 분석</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="140" x="887.75" y="800.7747">req.target vs meas.value</text><polygon fill="#FEFECE" points="932.25,834.2307,983.25,834.2307,995.25,846.2307,983.25,858.2307,932.25,858.2307,920.25,846.2307,932.25,834.2307" style="stroke: #A80036; stroke-width: 1.5;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="51" x="932.25" y="851.4627">KPI 달성?</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="19" x="901.25" y="842.7747">yes</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="14" x="995.25" y="842.7747">no</text><rect fill="#FFFFFF" height="37.3761" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="96" x="826" y="868.2307"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="76" x="836" y="892.1508">양산 승인 (MP)</text><ellipse cx="874" cy="951.6068" fill="#FFFFFF" rx="11" ry="11" style="stroke: #000000; stroke-width: 1.0;"/><ellipse cx="874" cy="951.6068" fill="#000000" rx="6" ry="6" style="stroke: #7F7F7F; stroke-width: 1.0;"/><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="199" x="942" y="868.2307"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="114" x="952" y="892.1508">ECO / SW 최적화 결정</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="179" x="952" y="909.5269">→ 새 WorkItem 생성 (writeback)</text><line style="stroke: #5B6470; stroke-width: 1.5;" x1="95" x2="95" y1="66.7083" y2="86.7083"/><polygon fill="#5B6470" points="91,76.7083,95,86.7083,99,76.7083,95,80.7083" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="95" x2="95" y1="141.4605" y2="161.4605"/><polygon fill="#5B6470" points="91,151.4605,95,161.4605,99,151.4605,95,155.4605" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="285.5" x2="285.5" y1="290.965" y2="310.965"/><polygon fill="#5B6470" points="281.5,300.965,285.5,310.965,289.5,300.965,285.5,304.965" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="493.5" x2="493.5" y1="440.4695" y2="460.4695"/><polygon fill="#5B6470" points="489.5,450.4695,493.5,460.4695,497.5,450.4695,493.5,454.4695" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="706" x2="706" y1="589.974" y2="609.974"/><polygon fill="#5B6470" points="702,599.974,706,609.974,710,599.974,706,603.974" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="957.75" x2="957.75" y1="739.4785" y2="759.4785"/><polygon fill="#5B6470" points="953.75,749.4785,957.75,759.4785,961.75,749.4785,957.75,753.4785" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="874" x2="874" y1="905.6068" y2="940.6068"/><polygon fill="#5B6470" points="870,930.6068,874,940.6068,878,930.6068,874,934.6068" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="920.25" x2="874" y1="846.2307" y2="846.2307"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="874" x2="874" y1="846.2307" y2="868.2307"/><polygon fill="#5B6470" points="870,858.2307,874,868.2307,878,858.2307,874,862.2307" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="995.25" x2="1041.5" y1="846.2307" y2="846.2307"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="1041.5" x2="1041.5" y1="846.2307" y2="868.2307"/><polygon fill="#5B6470" points="1037.5,858.2307,1041.5,868.2307,1045.5,858.2307,1041.5,862.2307" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="957.75" x2="957.75" y1="814.2307" y2="834.2307"/><polygon fill="#5B6470" points="953.75,824.2307,957.75,834.2307,961.75,824.2307,957.75,828.2307" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="95" x2="95" y1="216.2128" y2="221.2128"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="95" x2="285.5" y1="221.2128" y2="221.2128"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="285.5" x2="285.5" y1="221.2128" y2="236.2128"/><polygon fill="#5B6470" points="281.5,226.2128,285.5,236.2128,289.5,226.2128,285.5,230.2128" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="285.5" x2="285.5" y1="365.7172" y2="370.7172"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="285.5" x2="493.5" y1="370.7172" y2="370.7172"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="493.5" x2="493.5" y1="370.7172" y2="385.7172"/><polygon fill="#5B6470" points="489.5,375.7172,493.5,385.7172,497.5,375.7172,493.5,379.7172" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="493.5" x2="493.5" y1="515.2217" y2="520.2217"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="493.5" x2="706" y1="520.2217" y2="520.2217"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="706" x2="706" y1="520.2217" y2="535.2217"/><polygon fill="#5B6470" points="702,525.2217,706,535.2217,710,525.2217,706,529.2217" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="706" x2="706" y1="664.7262" y2="669.7262"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="706" x2="957.75" y1="669.7262" y2="669.7262"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="957.75" x2="957.75" y1="669.7262" y2="684.7262"/><polygon fill="#5B6470" points="953.75,674.7262,957.75,684.7262,961.75,674.7262,957.75,678.7262" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="68" x="60.5" y="43.2522">사양 (Intent)</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="51" x="259.5" y="43.2522">설계·구현</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="22" x="482" y="43.2522">검증</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="33" x="689" y="43.2522">실리콘</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="51" x="957.5" y="43.2522">검증·양산</text><line style="stroke: #000000; stroke-width: 2.0;" x1="10" x2="10" y1="29.3321" y2="968.6068"/><line style="stroke: #000000; stroke-width: 2.0;" x1="175" x2="175" y1="29.3321" y2="968.6068"/><line style="stroke: #000000; stroke-width: 2.0;" x1="396" x2="396" y1="29.3321" y2="968.6068"/><line style="stroke: #000000; stroke-width: 2.0;" x1="591" x2="591" y1="29.3321" y2="968.6068"/><line style="stroke: #000000; stroke-width: 2.0;" x1="821" x2="821" y1="29.3321" y2="968.6068"/><line style="stroke: #000000; stroke-width: 2.0;" x1="1150" x2="1150" y1="29.3321" y2="968.6068"/><!--
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontName "Noto Sans CJK KR"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8A93A0
+}
+skinparam ArrowColor #5B6470
+
+title SoC 개발 Digital Thread — 단계별 트윈 데이터 소스와 추적 링크
+
+|사양 (Intent)|
+start
+:UseCase/KPI 정의
+(8K60 Decode @ x mW);
+:SpecRequirement 작성
+<Confluence>;
+|설계·구현|
+:IP/Subsystem 할당
+req → allocated_to → ip;
+:RTL / FW / 드라이버 구현
+<Git: commit → resolves → issue>;
+|검증|
+:Sim/UVM Regression
+<CI: run → validates → build>;
+:Emulation / FPGA 프로토타입
+coverage · defect 축적;
+|실리콘|
+:Tape-out (Milestone gate:
+open defect·coverage·waiver 조건);
+:Bring-up / 특성화
+<BringUpIssue, SiliconSample>;
+|검증·양산|
+:UseCase별 PPA 실측
+<PMU/Perfetto → PerfMeasurement>;
+:목표 대비 편차 분석
+req.target vs meas.value;
+if (KPI 달성?) then (yes)
+  :양산 승인 (MP);
+  stop
+else (no)
+  :ECO / SW 최적화 결정
+  → 새 WorkItem 생성 (writeback);
+  detach
+endif
+@enduml
+
+PlantUML version 1.2019.06(Fri May 24 17:10:25 UTC 2019)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 21.0.10+7-Ubuntu-124.04
+Operating System: Linux
+OS Version: 6.18.5
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
+<div class="cap">그림 2 — 개발 lifecycle을 관통하는 digital thread: 각 단계가 어떤 객체·링크를 생산하는지, PPA 편차가 어떻게 ECO/SW 최적화 결정으로 되먹임되는지.</div></div>
+
+<h3 id="s3-2"><span class="no">3.2</span>이벤트 모델 — OCEL 2.0 스타일</h3>
+<p>객체 상태의 스냅샷만으로는 프로세스 분석이 불가능하다. 모든 상태 변화를 <code>event(type, time, attrs, objects[])</code>로 축적하되, 하나의 이벤트가 <em>복수 객체</em>를 참조하게 한다(E2O). 객체 간 관계(O2O)와 함께 이것이 OCEL 2.0의 골자<sup><a href="#ref10">[10]</a></sup>.</p>
+<table>
+<tr><th>이벤트 타입</th><th>참조 객체(E2O)</th><th>왜 다객체인가</th></tr>
+<tr><td><code>regression_completed</code></td><td>RegressionRun, Build, Platform, TestSuite</td><td>단일 case-id로 평탄화하면 '빌드 관점'과 '스위트 관점' 분석마다 재추출 필요 + convergence 왜곡<sup><a href="#ref10">[10]</a></sup></td></tr>
+<tr><td><code>issue_transitioned</code></td><td>WorkItem, Person</td><td>팀/개인 관점과 이슈 관점 동시 지원</td></tr>
+<tr><td><code>spec_revised</code></td><td>SpecDocument, SpecRequirement*</td><td>spec churn 계측의 원천</td></tr>
+<tr><td><code>milestone_gate_review</code></td><td>Milestone, SpecRequirement*, Defect*, Waiver*</td><td>게이트 판정의 증거 번들</td></tr>
+<tr><td><code>perf_measured</code></td><td>PerfMeasurement, Build, UseCaseScenario, SiliconSample</td><td>PPA 회귀 추적</td></tr>
+</table>
+<p>추출 방법론은 OCPM2를 따른다: 객체 타입 식별 → 개념 모델 → 액티비티 식별 → 추출 매트릭스 → 우선순위 → 구현 → 추출 → <b>검증</b><sup><a href="#ref11">[11]</a></sup>. 사례 연구에서 소스 로그의 객체-액티비티 관계 누락이 실제로 발견됐으므로 검증 단계는 생략 불가.</p>
+
+<h3 id="s3-3"><span class="no">3.3</span>Kinetic Layer — Action Type 카탈로그</h3>
+<p>Action = "객체·속성·링크 편집의 번들 + 권한 검증 + 제출 기준"<sup><a href="#ref3">[3]</a></sup>. 초기 카탈로그:</p>
+<table>
+<tr><th>Action Type</th><th>편집 대상</th><th>Writeback</th><th>권한</th><th>측면효과</th></tr>
+<tr><td><code>triage_defect</code></td><td>Defect(severity, owner, stage)</td><td>Jira 필드 갱신</td><td>검증 리드</td><td>담당팀 알림</td></tr>
+<tr><td><code>approve_waiver</code></td><td>Waiver + Defect 링크</td><td>검증DB + Jira 코멘트</td><td>Architect/QA</td><td>게이트 조건 재계산</td></tr>
+<tr><td><code>allocate_requirement</code></td><td>Req↔IPBlock 링크</td><td>Confluence 표 갱신(확인 후)</td><td>Architect</td><td>영향 IP 소유자 알림</td></tr>
+<tr><td><code>update_risk</code></td><td>Risk</td><td>Jira</td><td>PM</td><td>—</td></tr>
+<tr><td><code>create_eco_workitem</code></td><td>WorkItem 생성 + 링크</td><td>Jira 이슈 생성</td><td>Architect</td><td>스프린트 후보 등록</td></tr>
+<tr><td><code>commit_ontology_change</code></td><td>임의 객체(스키마 제안 승인)</td><td>트윈 내부만</td><td>Ontology steward</td><td>provenance 기록</td></tr>
+</table>
+<div class="callout"><b>설계 원칙</b> (Foundry 검증 항목에서 도출): 액션은 트랜잭션·전역 일관<sup><a href="#ref3">[3]</a></sup>, 에이전트든 사람이든 동일 권한 모델 적용<sup><a href="#ref7">[7]</a></sup>, 모든 결정은 lineage(무엇을·언제·어떤 데이터 버전 위에서)와 함께 기록<sup><a href="#ref7">[7]</a></sup>. Writeback은 침습성 낮은 순서로 개방: 코멘트 → 필드 → 이슈 생성.</div>
+
+<h2 id="s4"><span class="no">4.</span>트윈 아키텍처</h2>
+
+<h3 id="s4-1"><span class="no">4.1</span>계층 구조</h3>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="965px" preserveAspectRatio="none" style="width:1600px;height:965px;" version="1.1" viewBox="0 0 1600 965" width="1600px" zoomAndPan="magnify"><defs/><g><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="319" x="652" y="13.9201">SoC 개발 트윈 — 계층 아키텍처 (Foundry Ontology 패턴 준용)</text><!--cluster L0--><rect fill="#FFFFFF" height="558" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="174" x="22" y="88.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="79" x="69.5" y="104.2962">L0. 소스 시스템</text><!--cluster L1--><rect fill="#FFFFFF" height="108" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="775" x="229" y="263.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="101" x="566" y="279.2962">L1. 파이프라인 계층</text><!--cluster L2--><rect fill="#FFFFFF" height="198" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="589" x="850.5" y="41.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="173" x="1058.5" y="57.2962">L2. Semantic Layer (의미 계층)</text><!--cluster L3--><rect fill="#FFFFFF" height="198" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="365" x="828" y="718.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="159" x="931" y="734.2962">L3. Kinetic Layer (동작 계층)</text><!--cluster L4--><rect fill="#FFFFFF" height="252" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="185" x="1042" y="263.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="68" x="1100.5" y="279.2962">L4. 소비 계층</text><!--cluster L5--><rect fill="#FFFFFF" height="108" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="527" x="1062" y="586.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="81" x="1285" y="602.2962">L5. Agent 계층</text><!--entity jira--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="127" x="45.5" y="574.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="21" x="55.5" y="598.7962">Jira</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="107" x="55.5" y="616.1723">(WorkItem/Defect)</text><!--entity conf--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="93" x="62.5" y="484.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="63" x="72.5" y="508.7962">Confluence</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="73" x="72.5" y="526.1723">(Spec/회의록)</text><!--entity git--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="119" x="49.5" y="124.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="54" x="59.5" y="148.7962">Git/Gerrit</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="99" x="59.5" y="166.1723">(Commit/Review)</text><!--entity ci--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="142" x="38" y="214.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="115" x="48" y="238.7962">CI·Regression Farm</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="122" x="48" y="256.1723">(Build/Run/Coverage)</text><!--entity lab--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="135" x="41.5" y="304.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="48" x="51.5" y="328.7962">Perf Lab</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="115" x="51.5" y="346.1723">(PMU/Perfetto/전력)</text><!--entity syn--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="103" x="57.5" y="394.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="83" x="67.5" y="418.7962">Synthetic Data</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="58" x="67.5" y="436.1723">Generator</text><!--entity ingest--><rect fill="#FFFFFF" height="37.3761" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="143" x="245" y="313.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="123" x="255" y="337.7962">수집 (API/CDC/Export)</text><!--entity clean--><rect fill="#FFFFFF" height="37.3761" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="82" x="449" y="310.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="62" x="459" y="334.7962">정제·정규화</text><!--entity er--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="119" x="662" y="299.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="96" x="672" y="323.7962">Entity Resolution</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="99" x="672" y="341.1723">(ID 매핑·중복 제거)</text><!--entity ocel--><rect fill="#FFFFFF" height="37.3761" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="137" x="851" y="302.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="117" x="861" y="326.7962">OCEL 이벤트 로그 생성</text><!--entity obj--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="93" x="873" y="167.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="73" x="883" y="191.7962">Object Types</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="59" x="883" y="209.1723">(20± 타입)</text><!--entity link--><rect fill="#FFFFFF" height="37.3761" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="80" x="1094.5" y="176.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="60" x="1104.5" y="200.7962">Link Types</text><!--entity prop--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="147" x="1276.5" y="167.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="60" x="1286.5" y="191.7962">Properties</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="127" x="1286.5" y="209.1723">+ Provenance/Lineage</text><!--entity ev--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="106" x="866.5" y="77.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="56" x="876.5" y="101.7962">Event Log</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="86" x="876.5" y="119.1723">(object-centric)</text><!--entity act--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="151" x="844" y="844.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="71" x="854" y="868.7962">Action Types</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="131" x="854" y="886.1723">(triage/waive/approve)</text><!--entity fn--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="135" x="852" y="754.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="55" x="862" y="778.7962">Functions</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="115" x="862" y="796.1723">(KPI 계산·시뮬레이션)</text><!--entity wb--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="85" x="1092" y="844.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="58" x="1102" y="868.7962">Writeback</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="65" x="1102" y="886.1723">(Jira 역기록)</text><!--entity dash--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="127" x="1071" y="371.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="44" x="1081" y="395.7962">대시보드</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="107" x="1081" y="413.1723">(PPA/일정/커버리지)</text><!--entity pm--><rect fill="#FFFFFF" height="37.3761" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="153" x="1058" y="299.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="133" x="1068" y="323.7962">Process Mining·What-if</text><!--entity app--><rect fill="#FFFFFF" height="37.3761" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="127" x="1071" y="461.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="107" x="1081" y="485.7962">Workshop형 운영 앱</text><!--entity mcp--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="113" x="1078" y="622.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="93" x="1088" y="646.7962">MCP Tool Server</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="77" x="1088" y="664.1723">(온톨로지 노출)</text><!--entity agents--><rect fill="#FFFFFF" height="54.7522" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="152" x="1274" y="622.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="132" x="1284" y="646.7962">Builder/Keeper/Analyst</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="39" x="1284" y="664.1723">Agents</text><!--entity hitl--><rect fill="#FFFFFF" height="37.3761" rx="4" ry="4" style="stroke: #8A93A0; stroke-width: 1.5;" width="86" x="1487" y="636.8761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="1497" y="660.7962">HITL 승인 큐</text><!--link jira to ingest--><path d="M172.97,579.4561 C184.19,573.4561 195.11,566.1461 204,557.3761 C263.77,498.4161 296.71,400.8361 309.37,356.1061 " fill="none" id="jira-ingest" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="310.74,351.1761,304.469,358.7705,309.3966,355.9923,312.1748,360.9199,310.74,351.1761" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link conf to ingest--><path d="M155.82,495.2361 C171.93,488.0061 189.6,478.6261 204,467.3761 C245.37,435.0361 281.68,384.8661 300.92,355.6561 " fill="none" id="conf-ingest" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="303.86,351.1561,295.5943,356.5113,301.1295,355.3447,302.2961,360.88,303.86,351.1561" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link git to ingest--><path d="M168.98,175.7661 C181.15,181.8961 193.45,189.1261 204,197.3761 C245.37,229.7161 281.68,279.8861 300.92,309.0961 " fill="none" id="git-ingest" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="303.86,313.5961,302.2961,303.8722,301.1295,309.4075,295.5943,308.241,303.86,313.5961" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link ci to ingest--><path d="M173.05,269.9861 C203.72,283.4261 239.97,299.2961 268.23,311.6761 " fill="none" id="ci-ingest" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="273.05,313.7861,266.4079,306.5141,268.4692,311.782,263.2013,313.8434,273.05,313.7861" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link lab to ingest--><path d="M176.72,332.3761 C196.82,332.3761 219.02,332.3761 239.66,332.3761 " fill="none" id="lab-ingest" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="244.87,332.3761,235.87,328.3761,239.87,332.3761,235.87,336.3761,244.87,332.3761" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link syn to ingest--><path d="M160.53,400.2461 C193.5,385.8061 236.22,367.0961 268.46,352.9761 " fill="none" id="syn-ingest" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="273.14,350.9261,263.2913,350.8689,268.5592,352.9302,266.4979,358.1981,273.14,350.9261" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link ingest to clean--><path d="M388.25,331.1361 C406.98,330.8061 426.69,330.4661 443.67,330.1661 " fill="none" id="ingest-clean" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="448.85,330.0761,439.7828,326.231,443.8507,330.1618,439.9199,334.2298,448.85,330.0761" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link clean to er--><path d="M531.24,329.0261 C565.81,328.7261 616.28,328.2861 656.41,327.9361 " fill="none" id="clean-er" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="661.75,327.8861,652.716,323.9634,656.7502,327.929,652.7846,331.9631,661.75,327.8861" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link er to ocel--><path d="M781.04,325.5861 C801.4,324.9561 824.5,324.2561 845.86,323.5961 " fill="none" id="er-ocel" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="850.97,323.4461,841.8488,319.7308,845.9725,323.6032,842.1001,327.7269,850.97,323.4461" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link ocel to ev--><path d="M882.79,302.7961 C854.23,286.0261 816.8,258.3961 800.5,221.8761 C790.72,199.9561 790.72,189.7961 800.5,167.8761 C811.51,143.2061 836.9,128.0661 861.42,118.8761 " fill="none" id="ocel-ev" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="866.3,117.1261,856.4768,116.4163,861.5965,118.8222,859.1905,123.942,866.3,117.1261" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link er to obj--><path d="M763.59,299.7061 C795.6,278.1461 840.02,248.2361 873.08,225.9661 " fill="none" id="er-obj" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="877.47,223.0161,867.7735,224.7417,873.3274,225.8159,872.2532,231.3699,877.47,223.0161" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link obj to link--><path d="M966.19,195.3761 C1002.54,195.3761 1053.11,195.3761 1089.11,195.3761 " fill="none" id="obj-link" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="1094.32,195.3761,1085.32,191.3761,1089.32,195.3761,1085.32,199.3761,1094.32,195.3761" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link link to prop--><path d="M1174.66,195.3761 C1201.63,195.3761 1238.37,195.3761 1271.17,195.3761 " fill="none" id="link-prop" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="1276.4,195.3761,1267.4,191.3761,1271.4,195.3761,1267.4,199.3761,1276.4,195.3761" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link prop to act--><path d="M1346.38,223.0561 C1339.28,283.5561 1314.48,429.0261 1235,515.3761 C1168.59,587.5261 1091.17,526.7061 1034,606.3761 C1005.23,646.4761 1040.13,786.8261 1012,827.3761 C1008.3,832.7061 1003.79,837.4361 998.76,841.6261 " fill="none" id="prop-act" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="994.83,844.7161,1004.3785,842.3025,998.7621,841.6276,999.437,836.0112,994.83,844.7161" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link ev to pm--><path d="M972.94,121.7261 C987.41,128.5161 1001.9,137.8261 1012,150.3761 C1037.56,182.1061 1011.98,205.0961 1034,239.3761 C1049.36,263.2861 1074.46,283.1361 1095.61,296.9561 " fill="none" id="ev-pm" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="1100.05,299.8161,1094.6424,291.5846,1095.8441,297.1123,1090.3164,298.314,1100.05,299.8161" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link act to wb--><path d="M995.3,872.3761 C1025.64,872.3761 1059.76,872.3761 1086.5,872.3761 " fill="none" id="act-wb" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="1091.75,872.3761,1082.75,868.3761,1086.75,872.3761,1082.75,876.3761,1091.75,872.3761" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link wb to jira--><path d="M1091.63,898.6761 C1049.92,922.3261 983.21,953.3761 920.5,953.3761 C315.5,953.3761 315.5,953.3761 315.5,953.3761 C168.72,953.3761 124.82,721.9761 113.5,634.9461 " fill="none" id="wb-jira" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="112.86,629.9161,110.0239,639.3478,113.489,634.8764,117.9604,638.3415,112.86,629.9161" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="69" x="562" y="949.2962">승인된 변경만</text><!--link fn to dash--><path d="M922.46,754.5861 C928.29,691.6261 950.77,536.4461 1034,444.3761 C1042.87,434.5661 1054.29,426.7661 1066.21,420.5961 " fill="none" id="fn-dash" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="1070.98,418.2261,1061.1391,418.6231,1066.4965,420.4393,1064.6803,425.7967,1070.98,418.2261" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link obj to mcp--><path d="M960.33,222.9461 C979.33,238.3861 1000.41,259.3561 1012,283.3761 C1057.02,376.6561 997.04,418.6161 1034,515.3761 C1049.09,554.8761 1079.08,593.0061 1102.21,618.6061 " fill="none" id="obj-mcp" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="1105.86,622.6061,1102.7369,613.2655,1102.4853,618.9168,1096.834,618.6651,1105.86,622.6061" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link act to mcp--><path d="M993.94,844.7061 C1000.8,839.7861 1007.03,834.0461 1012,827.3761 C1032.74,799.5461 1011.31,782.2661 1025,750.3761 C1037.13,722.1161 1061.73,698.3761 1084.45,681.1261 " fill="none" id="act-mcp" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="1088.67,677.9861,1079.0663,680.1697,1084.6649,680.9793,1083.8553,686.5779,1088.67,677.9861" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link mcp to agents--><path d="M1191.04,650.3761 C1214.67,650.3761 1242.68,650.3761 1268.51,650.3761 " fill="none" id="mcp-agents" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="1273.65,650.3761,1264.65,646.3761,1268.65,650.3761,1264.65,654.3761,1273.65,650.3761" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link agents to hitl--><path d="M1426.23,652.4861 C1444.98,653.0161 1464.56,653.5661 1481.54,654.0461 " fill="none" id="agents-hitl" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="1486.72,654.1861,1477.8379,649.9307,1481.722,654.0433,1477.6094,657.9275,1486.72,654.1861" style="stroke: #5B6470; stroke-width: 1.0;"/><!--link hitl to act--><path d="M1493.81,674.0561 C1479.64,681.2061 1463,689.1361 1447.5,695.3761 C1268.54,767.4061 1215.66,762.4561 1034,827.3761 C1020.58,832.1761 1006.38,837.5561 992.73,842.8861 " fill="none" id="hitl-act" style="stroke: #5B6470; stroke-width: 1.0;"/><polygon fill="#5B6470" points="987.73,844.8461,997.5681,845.3063,992.3889,843.0311,994.6641,837.852,987.73,844.8461" style="stroke: #5B6470; stroke-width: 1.0;"/><!--
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontName "Noto Sans CJK KR"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #8A93A0
+}
+skinparam ArrowColor #5B6470
+left to right direction
+
+title SoC 개발 트윈 — 계층 아키텍처 (Foundry Ontology 패턴 준용)
+
+rectangle "L0. 소스 시스템" as L0 {
+  rectangle "Jira\n(WorkItem/Defect)" as jira
+  rectangle "Confluence\n(Spec/회의록)" as conf
+  rectangle "Git/Gerrit\n(Commit/Review)" as git
+  rectangle "CI·Regression Farm\n(Build/Run/Coverage)" as ci
+  rectangle "Perf Lab\n(PMU/Perfetto/전력)" as lab
+  rectangle "Synthetic Data\nGenerator" as syn
+}
+
+rectangle "L1. 파이프라인 계층" as L1 {
+  rectangle "수집 (API/CDC/Export)" as ingest
+  rectangle "정제·정규화" as clean
+  rectangle "Entity Resolution\n(ID 매핑·중복 제거)" as er
+  rectangle "OCEL 이벤트 로그 생성" as ocel
+}
+
+rectangle "L2. Semantic Layer (의미 계층)" as L2 {
+  rectangle "Object Types\n(20± 타입)" as obj
+  rectangle "Link Types" as link
+  rectangle "Properties\n+ Provenance/Lineage" as prop
+  rectangle "Event Log\n(object-centric)" as ev
+}
+
+rectangle "L3. Kinetic Layer (동작 계층)" as L3 {
+  rectangle "Action Types\n(triage/waive/approve)" as act
+  rectangle "Functions\n(KPI 계산·시뮬레이션)" as fn
+  rectangle "Writeback\n(Jira 역기록)" as wb
+}
+
+rectangle "L4. 소비 계층" as L4 {
+  rectangle "대시보드\n(PPA/일정/커버리지)" as dash
+  rectangle "Process Mining·What-if" as pm
+  rectangle "Workshop형 운영 앱" as app
+}
+
+rectangle "L5. Agent 계층" as L5 {
+  rectangle "MCP Tool Server\n(온톨로지 노출)" as mcp
+  rectangle "Builder/Keeper/Analyst\nAgents" as agents
+  rectangle "HITL 승인 큐" as hitl
+}
+
+jira - -> ingest
+conf - -> ingest
+git - -> ingest
+ci - -> ingest
+lab - -> ingest
+syn - -> ingest
+ingest - -> clean
+clean - -> er
+er - -> ocel
+ocel - -> ev
+er - -> obj
+obj - -> link
+link - -> prop
+prop - -> act
+ev - -> pm
+act - -> wb
+wb - -> jira : 승인된 변경만
+fn - -> dash
+obj - -> mcp
+act - -> mcp
+mcp - -> agents
+agents - -> hitl
+hitl - -> act
+@enduml
+
+PlantUML version 1.2019.06(Fri May 24 17:10:25 UTC 2019)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 21.0.10+7-Ubuntu-124.04
+Operating System: Linux
+OS Version: 6.18.5
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
+<div class="cap">그림 3 — L0 소스 → L1 파이프라인(entity resolution·OCEL 생성) → L2 semantic → L3 kinetic → L4 소비 → L5 에이전트. 쓰기 경로는 반드시 L3 Action을 경유하며, 승인된 변경만 소스 시스템으로 writeback.</div></div>
+<table>
+<tr><th>계층</th><th>책임</th><th>핵심 결정</th></tr>
+<tr><td>L0 소스</td><td>Jira/Confluence(우선), Git·CI·랩(확장), synthetic generator</td><td>소스는 항상 진실의 원천(system of record)으로 유지 — 트윈이 SoR을 대체하지 않음</td></tr>
+<tr><td>L1 파이프라인</td><td>수집→정규화→entity resolution→OCEL 로그 생성</td><td>ER은 LLM 보조(§5.2) + 규칙 하이브리드. 모든 레코드에 source_ref·추출시각 provenance</td></tr>
+<tr><td>L2 Semantic</td><td>object/link/property + 이벤트 로그</td><td>스키마 변경은 스튜어드 승인制(§7). Interface로 다형성 확보</td></tr>
+<tr><td>L3 Kinetic</td><td>action type, function(KPI 계산·시뮬), writeback</td><td>Action 외 쓰기 경로 금지. 데이터·로직·액션·보안 4중 통합이 목표 상태<sup><a href="#ref6">[6]</a></sup></td></tr>
+<tr><td>L4 소비</td><td>추적성/PPA/커버리지 대시보드, process mining, what-if</td><td>대시보드는 부산물, 본질은 질의 가능한 결정 기록<sup><a href="#ref2">[2]</a></sup></td></tr>
+<tr><td>L5 에이전트</td><td>MCP tool server + builder/keeper/analyst/critic</td><td>읽기 스코프 제한·쓰기 HITL(§5)</td></tr>
+</table>
+
+<h3 id="s4-2"><span class="no">4.2</span>Foundry 없이 구축하는 스택</h3>
+<p>Foundry 도입 없이 사내 구축 시의 선택지와 근거:</p>
+<table>
+<tr><th>구성요소</th><th>옵션</th><th>비고</th></tr>
+<tr><td>그래프 저장소</td><td>property graph(Neo4j류) 또는 Postgres 위 그래프 계층</td><td>Foundry Ontology도 본질은 비즈니스 엔티티·관계의 property-graph식 추상<sup><a href="#ref26">[26]</a></sup>. HASH는 Rust graph-over-Postgres로 Foundry 유사 구조(types≈objects, flows≈agents)를 오픈소스로 구현했으나 기능 동등성은 미달<sup><a href="#ref25">[25]</a></sup></td></tr>
+<tr><td>이벤트 로그</td><td>OCEL 2.0 (SQLite/JSON 배포판)<sup><a href="#ref10">[10]</a></sup></td><td>표준 포맷 채택 시 상용 도구(Celonis Process Sphere)·연구 도구와 호환</td></tr>
+<tr><td>문서→그래프 인덱스</td><td>GraphRAG(MS, 오픈소스)</td><td>LLM 2단(엔티티 KG 구축→커뮤니티 요약)으로 corpus 전역 질의. 전역 sensemaking 질문에서 vector RAG 대비 승률 72–83%(comprehensiveness), 루트 요약은 토큰 9–43배 절감<sup><a href="#ref23">[23]</a></sup>. LangChain/LlamaIndex/Neo4j 구현 존재</td></tr>
+<tr><td>에이전트 통합</td><td>MCP</td><td>§5.3</td></tr>
+<tr><td>Lock-in 관점</td><td>—</td><td>Foundry는 공식 마이그레이션 경로가 없어 전환 비용이 높다는 비판이 존재<sup><a href="#ref25">[25]</a></sup>(비판 블로그 출처임을 감안). 자체 스택은 이 리스크를 회피하는 대신 4중 통합을 직접 구현해야 함</td></tr>
+</table>
+
+<h2 id="s5"><span class="no">5.</span>Agentic Digital Twin</h2>
+
+<h3 id="s5-1"><span class="no">5.1</span>에이전트 운용 패턴 — AIP에서 검증된 것들</h3>
+<p>Palantir AIP는 '온톨로지 위 에이전트'의 가장 성숙한 레퍼런스다. 교차검증된 패턴:</p>
+<table>
+<tr><th>패턴</th><th>내용</th><th>검증</th></tr>
+<tr><td>Ontology-grounded tool use</td><td>에이전트 능력은 온톨로지에 바인딩된 tool 서비스(데이터·로직·액션 primitive의 'tool factory')로 부여<sup><a href="#ref6">[6]</a></sup></td><td><span class="tag u">단일출처</span></td></tr>
+<tr><td>읽기 스코프 명시</td><td>Object Query tool은 접근 가능한 object type·property를 열거식으로 제한 — 거버넌스와 토큰 절감을 동시에<sup><a href="#ref4">[4]</a></sup></td><td><span class="tag v">검증</span></td></tr>
+<tr><td>쓰기 HITL</td><td>Action tool은 자동 실행/사용자 확인 후 실행을 설정 가능<sup><a href="#ref4">[4]</a></sup>. 시나리오(sandboxed writeback)로 스테이징 후 사람 리뷰, 신뢰 워크플로만 선별적 자동 종결<sup><a href="#ref7">[7]</a></sup></td><td><span class="tag v">검증</span></td></tr>
+<tr><td>동일 보안 모델</td><td>에이전트는 사람과 동일한 role/marking/purpose 기반 접근 제어 + 감사 로그, 권한은 인간 사용자 또는 프로젝트 구조에서 상속<sup><a href="#ref2">[2]</a><a href="#ref6">[6]</a><a href="#ref7">[7]</a></sup></td><td><span class="tag v">검증</span></td></tr>
+<tr><td>결정 lineage 자동 기록</td><td>어떤 결정이 언제, 어떤 데이터 버전 위에서 내려졌는지 기록 — 트윈이 결정을 감사·리플레이 가능<sup><a href="#ref7">[7]</a></sup></td><td><span class="tag v">검증</span></td></tr>
+<tr><td>휴먼 인터랙션 primitive</td><td>'Request Clarification' 같은 일시정지·질의 도구를 tool 목록에 포함<sup><a href="#ref4">[4]</a></sup></td><td><span class="tag u">단일출처</span></td></tr>
+</table>
+
+<h3 id="s5-2"><span class="no">5.2</span>트윈을 만드는 에이전트 — Builder / Keeper / Critic</h3>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="733px" preserveAspectRatio="none" style="width:929px;height:733px;" version="1.1" viewBox="0 0 929 733" width="929px" zoomAndPan="magnify"><defs/><g><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="271" x="329.75" y="23.9201">Agentic Twin — Builder / Critic / HITL 승인 루프</text><line style="stroke: #8A93A0; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="58" x2="58" y1="84.1284" y2="674.6508"/><line style="stroke: #8A93A0; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="219" x2="219" y1="84.1284" y2="674.6508"/><line style="stroke: #8A93A0; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="403" x2="403" y1="84.1284" y2="674.6508"/><line style="stroke: #8A93A0; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="579" x2="579" y1="84.1284" y2="674.6508"/><line style="stroke: #8A93A0; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="715" x2="715" y1="84.1284" y2="674.6508"/><line style="stroke: #8A93A0; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="889.5" x2="889.5" y1="84.1284" y2="674.6508"/><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="100" x="8" y="34.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="63" x="26.5" y="55.2962">Confluence</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="86" x="15" y="72.6723">(신규 Spec v2.3)</text><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="100" x="8" y="673.6508"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="63" x="26.5" y="694.5709">Confluence</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="86" x="15" y="711.947">(신규 Spec v2.3)</text><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="90" x="174" y="34.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="76" x="181" y="55.2962">Builder Agent</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="59" x="189.5" y="72.6723">(추출·매핑)</text><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="90" x="174" y="673.6508"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="76" x="181" y="694.5709">Builder Agent</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="59" x="189.5" y="711.947">(추출·매핑)</text><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="80" x="363" y="34.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="370" y="55.2962">Critic Agent</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="59" x="373.5" y="72.6723">(검증·반박)</text><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="80" x="363" y="673.6508"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="370" y="694.5709">Critic Agent</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="59" x="373.5" y="711.947">(검증·반박)</text><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="50" x="554" y="34.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="36" x="561" y="55.2962">승인 큐</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="35" x="561.5" y="72.6723">(HITL)</text><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="50" x="554" y="673.6508"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="36" x="561" y="694.5709">승인 큐</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="35" x="561.5" y="711.947">(HITL)</text><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="110" x="660" y="34.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="51" x="689.5" y="55.2962">Ontology</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="96" x="667" y="72.6723">(Semantic Layer)</text><rect fill="#FFFFFF" height="48.7522" style="stroke: #8A93A0; stroke-width: 1.5;" width="110" x="660" y="673.6508"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="51" x="689.5" y="694.5709">Ontology</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="96" x="667" y="711.947">(Semantic Layer)</text><rect fill="#FFFFFF" height="31.3761" style="stroke: #8A93A0; stroke-width: 1.5;" width="35" x="872.5" y="51.7522"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="21" x="879.5" y="72.6723">Jira</text><rect fill="#FFFFFF" height="31.3761" style="stroke: #8A93A0; stroke-width: 1.5;" width="35" x="872.5" y="673.6508"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="21" x="879.5" y="694.5709">Jira</text><polygon fill="#5B6470" points="207,113.5045,217,117.5045,207,121.5045,211,117.5045" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="58" x2="213" y1="117.5045" y2="117.5045"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="137" x="65" y="112.0485">변경 감지 (webhook/폴링)</text><line style="stroke: #5B6470; stroke-width: 1.0;" x1="219" x2="261" y1="166.2567" y2="166.2567"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="261" x2="261" y1="166.2567" y2="179.2567"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="220" x2="261" y1="179.2567" y2="179.2567"/><polygon fill="#5B6470" points="230,175.2567,220,179.2567,230,183.2567,226,179.2567" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="67" x="226" y="143.4246">Spec 파싱 →</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="151" x="226" y="160.8007">SpecRequirement 후보 추출</text><polygon fill="#5B6470" points="703,206.6329,713,210.6329,703,214.6329,707,210.6329" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="219" x2="709" y1="210.6329" y2="210.6329"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="176" x="226" y="205.1768">기존 객체 조회 (entity resolution)</text><polygon fill="#5B6470" points="230,238.009,220,242.009,230,246.009,226,242.009" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="224" x2="714" y1="242.009" y2="242.009"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="101" x="236" y="236.5529">유사 객체·링크 반환</text><polygon fill="#5B6470" points="391,286.7612,401,290.7612,391,294.7612,395,290.7612" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="219" x2="397" y1="290.7612" y2="290.7612"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="83" x="226" y="267.9291">변경 제안서 제출</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="160" x="226" y="285.3052">(신규 3건, 수정 2건 + 근거 인용)</text><line style="stroke: #5B6470; stroke-width: 1.0;" x1="403" x2="445" y1="339.5135" y2="339.5135"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="445" x2="445" y1="339.5135" y2="352.5135"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="404" x2="445" y1="352.5135" y2="352.5135"/><polygon fill="#5B6470" points="414,348.5135,404,352.5135,414,356.5135,410,352.5135" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="50" x="410" y="316.6813">반박 시도:</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="162" x="410" y="334.0574">중복? 출처 불일치? 스키마 위반?</text><path d="M164,367.5135 L225,367.5135 L225,376.5135 L215,386.5135 L164,386.5135 L164,367.5135 " fill="#EEEEEE" style="stroke: #000000; stroke-width: 1.0;"/><rect fill="none" height="290.1373" style="stroke: #000000; stroke-width: 2.0;" width="753.5" x="164" y="367.5135"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="16" x="179" y="382.4336">alt</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="67" x="240" y="383.4336">[Critic 통과]</text><polygon fill="#5B6470" points="567,408.6418,577,412.6418,567,416.6418,571,412.6418" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="403" x2="573" y1="412.6418" y2="412.6418"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="103" x="410" y="407.1858">제안 + 신뢰도 + 출처</text><line style="stroke: #5B6470; stroke-width: 1.0;" x1="579" x2="621" y1="444.0179" y2="444.0179"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="621" x2="621" y1="444.0179" y2="457.0179"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="580" x2="621" y1="457.0179" y2="457.0179"/><polygon fill="#5B6470" points="590,453.0179,580,457.0179,590,461.0179,586,457.0179" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="90" x="586" y="438.5619">사람 검토 (diff 뷰)</text><polygon fill="#5B6470" points="703,501.7702,713,505.7702,703,509.7702,707,505.7702" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="579" x2="709" y1="505.7702" y2="505.7702"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="112" x="586" y="482.938">Action Type으로 커밋</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="99" x="586" y="500.3142">(provenance 기록)</text><polygon fill="#5B6470" points="878,550.5224,888,554.5224,878,558.5224,882,554.5224" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="715" x2="884" y1="554.5224" y2="554.5224"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="61" x="722" y="531.6903">Writeback:</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="151" x="722" y="549.0664">영향받는 WorkItem에 코멘트</text><line style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="164" x2="917.5" y1="563.5224" y2="563.5224"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="67" x="169" y="577.4425">[Critic 반려]</text><polygon fill="#5B6470" points="230,601.2747,220,605.2747,230,609.2747,226,605.2747" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="224" x2="402" y1="605.2747" y2="605.2747"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="72" x="236" y="599.8186">반려 사유 반환</text><line style="stroke: #5B6470; stroke-width: 1.0;" x1="219" x2="261" y1="636.6508" y2="636.6508"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="261" x2="261" y1="636.6508" y2="649.6508"/><line style="stroke: #5B6470; stroke-width: 1.0;" x1="220" x2="261" y1="649.6508" y2="649.6508"/><polygon fill="#5B6470" points="230,645.6508,220,649.6508,230,653.6508,226,649.6508" style="stroke: #5B6470; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="83" x="226" y="631.1948">재추출 또는 폐기</text><!--
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontName "Noto Sans CJK KR"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #5B6470
+  LifeLineBorderColor #8A93A0
+  ParticipantBackgroundColor #FFFFFF
+  ParticipantBorderColor #8A93A0
+}
+
+title Agentic Twin — Builder / Critic / HITL 승인 루프
+
+participant "Confluence\n(신규 Spec v2.3)" as C
+participant "Builder Agent\n(추출·매핑)" as B
+participant "Critic Agent\n(검증·반박)" as V
+participant "승인 큐\n(HITL)" as H
+participant "Ontology\n(Semantic Layer)" as O
+participant "Jira" as J
+
+C -> B : 변경 감지 (webhook/폴링)
+B -> B : Spec 파싱 →\nSpecRequirement 후보 추출
+B -> O : 기존 객체 조회 (entity resolution)
+O - -> B : 유사 객체·링크 반환
+B -> V : 변경 제안서 제출\n(신규 3건, 수정 2건 + 근거 인용)
+V -> V : 반박 시도:\n중복? 출처 불일치? 스키마 위반?
+alt Critic 통과
+  V -> H : 제안 + 신뢰도 + 출처
+  H -> H : 사람 검토 (diff 뷰)
+  H -> O : Action Type으로 커밋\n(provenance 기록)
+  O -> J : Writeback:\n영향받는 WorkItem에 코멘트
+else Critic 반려
+  V -> B : 반려 사유 반환
+  B -> B : 재추출 또는 폐기
+end
+@enduml
+
+PlantUML version 1.2019.06(Fri May 24 17:10:25 UTC 2019)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 21.0.10+7-Ubuntu-124.04
+Operating System: Linux
+OS Version: 6.18.5
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
+<div class="cap">그림 4 — Builder(추출·매핑) → Critic(반박) → HITL 승인 → Action 커밋 → writeback의 표준 루프.</div></div>
+<table>
+<tr><th>역할</th><th>임무</th><th>근거 기술</th></tr>
+<tr><td><b>Builder</b></td><td>Confluence spec → SpecRequirement/UseCase 후보 추출, 스키마 제안. LLM 기반 KG 구축은 '온톨로지 엔지니어링→지식 추출→지식 융합' 3층 파이프라인으로 정식화되어 있으며, LLM이 클래스·속성·공리 생성의 co-modeler 역할 수행 가능<sup><a href="#ref22">[22]</a></sup>. schema-based(정규성) vs schema-free(개방 발견) 축에서 <b>MVP는 schema-based</b> 선택</td><td>KG 구축 서베이<sup><a href="#ref22">[22]</a></sup>, GraphRAG 인덱싱<sup><a href="#ref23">[23]</a></sup></td></tr>
+<tr><td><b>Link-recovery</b></td><td>누락 추적성 링크(WorkItem↔Req, Issue↔Commit) 사후 복원. LinkAnchor 실증: Hit@1 0.89, 이슈당 ~$0.01/24초 — 상시 동기화 에이전트로 운용 가능한 비용<sup><a href="#ref21">[21]</a></sup>. lazy-access(필요 슬라이스만 동적 조회)로 대규모 트윈에서 컨텍스트 한계 회피</td><td>LinkAnchor<sup><a href="#ref21">[21]</a></sup></td></tr>
+<tr><td><b>Keeper</b></td><td>소스↔트윈 드리프트 감지, 신선도 SLA 감시, ER 재실행. LLM ER은 문자열/임베딩 매칭을 넘어 문맥·구조·검색 신호를 결합하는 추론형으로 진화<sup><a href="#ref22">[22]</a></sup></td><td>서베이<sup><a href="#ref22">[22]</a></sup>, OCPM2 검증 단계<sup><a href="#ref11">[11]</a></sup></td></tr>
+<tr><td><b>Critic</b></td><td>Builder 제안의 반박 전담(중복? 출처 불일치? 스키마 위반?). 본 문서 제작에 쓴 딥리서치 하네스와 동일한 adversarial 검증 패턴</td><td>—</td></tr>
+<tr><td><b>Analyst</b></td><td>온톨로지 위 질의 응답·시뮬레이션. corpus 전역 질문("이번 분기 MM 서브시스템의 지배적 리스크는?")은 vector RAG가 아닌 그래프 인덱스가 필요<sup><a href="#ref23">[23]</a></sup>. 일정 예측은 CodeSight식 학습 모델을 function으로 바인딩<sup><a href="#ref20">[20]</a></sup></td><td>GraphRAG<sup><a href="#ref23">[23]</a></sup>, CodeSight<sup><a href="#ref20">[20]</a></sup></td></tr>
+</table>
+
+<h3 id="s5-3"><span class="no">5.3</span>MCP 통합 계층 — 스키마/데이터 분리 원칙</h3>
+<p>MCP는 AI-외부시스템 연결의 오픈 표준으로, Jira/GitHub/Git/Postgres류 커넥터가 초기부터 제공됐다<sup><a href="#ref24">[24]</a></sup>. 주목할 것은 Palantir의 이중 서버 아키텍처다: <b>Palantir MCP는 온톨로지 스키마(타입)는 수정하되 데이터는 쓸 수 없고, 데이터 읽기·쓰기는 별도의 Ontology MCP(OMCP)로만 허용</b><sup><a href="#ref5">[5]</a></sup> — 권한 통제는 LLM이 아니라 플랫폼 계층에서 강제한다<sup><a href="#ref5">[5]</a></sup>.</p>
+<div class="callout"><b>사내 적용 규칙.</b> (1) <code>twin-schema-mcp</code>: 스키마 제안·조회 전용, 스튜어드 승인 액션으로만 커밋. (2) <code>twin-data-mcp</code>: object query(스코프 열거식) + action 실행(HITL 기본). (3) 소스 시스템 직접 쓰기 tool은 에이전트에게 노출하지 않는다 — writeback은 항상 L3 Action을 경유.</div>
+
+<h2 id="s6"><span class="no">6.</span>실행 로드맵</h2>
+
+<h3 id="s6-1"><span class="no">6.1</span>단계별 계획</h3>
+<table>
+<tr><th>Phase</th><th>기간(안)</th><th>산출물</th><th>Exit Criteria</th></tr>
+<tr><td><b>P0 정렬</b></td><td>2–4주</td><td>기존 파일럿 인벤토리·통합 판정, Ontology Charter(범위·명명 규칙·스튜어드 지정), 용어 사전(제품 트윈/팹 트윈/프로세스 트윈 구분)</td><td>스폰서 승인 + 파일럿 통폐합 결정</td></tr>
+<tr><td><b>P1 Semantic MVP</b></td><td>4–8주</td><td>Jira/Confluence 수집 파이프라인, 12 object type read-only 트윈, synthetic OCEL 로그로 스키마 검증, 추적성 대시보드 1종</td><td>실 Jira 데이터로 객체 매핑률 ≥90%, 추적성 링크 커버리지 베이스라인 측정</td></tr>
+<tr><td><b>P2 Kinetic</b></td><td>8–12주</td><td>Action Type 6종, Jira writeback(코멘트→필드 순 개방), provenance 의무화, 거버넌스 보드 가동</td><td>주간 실사용 액션 발생, writeback 사고 0건</td></tr>
+<tr><td><b>P3 Analytic</b></td><td>P2와 병행</td><td>OCPM 분석(단계 전이·병목), 커버리지 수렴 추세, 일정 리스크 예측 모델(CodeSight 패턴<sup><a href="#ref20">[20]</a></sup>), 게이트 what-if</td><td>마일스톤 게이트 리뷰에서 트윈 산출 지표가 공식 인용됨</td></tr>
+<tr><td><b>P4 Agentic</b></td><td>P2 이후</td><td>MCP 이중 서버, Link-recovery 에이전트(누락 추적성 복원), Builder+Critic+HITL 루프, Analyst 에이전트</td><td>링크 커버리지 목표(예: 42%→85%<sup><a href="#ref21">[21]</a></sup> 참조) 달성, 에이전트 제안 승인률 추적</td></tr>
+<tr><td><b>P5 Scale</b></td><td>지속</td><td>Git/CI/랩 소스 확장(8타입), 타 서브시스템 연합 온톨로지(BFO식 계층화<sup><a href="#ref12">[12]</a></sup>), DTC 성숙도 재평가<sup><a href="#ref15">[15]</a></sup></td><td>2개 이상 조직 단위가 동일 상위 온톨로지 공유</td></tr>
+</table>
+
+<h3 id="s6-2"><span class="no">6.2</span>Jira/Confluence 매핑 초안</h3>
+<table>
+<tr><th>소스 필드/구조</th><th>트윈 매핑</th><th>주의</th></tr>
+<tr><td>Jira issue (type, status, assignee, sprint, linked issues)</td><td>WorkItem/Defect 객체 + blocks/implements 링크</td><td>changelog API에서 <code>issue_transitioned</code> 이벤트 추출 — 상태 이력이 OCEL의 원천</td></tr>
+<tr><td>Jira issue links (blocks, relates)</td><td>O2O 링크</td><td>relates는 의미 희석 — Critic이 재분류 제안</td></tr>
+<tr><td>Confluence spec 페이지(버전 이력)</td><td>SpecDocument + Builder가 SpecRequirement 추출</td><td>추출 객체는 반드시 원문 앵커(provenance) 유지, <code>spec_revised</code> 이벤트로 churn 계측</td></tr>
+<tr><td>Confluence 회의록</td><td>Decision 객체 후보</td><td>추출 신뢰도 낮음 — HITL 승인 필수 구간</td></tr>
+<tr><td>커스텀 필드(target fps/mW 등)</td><td>SpecRequirement.target_value</td><td>필드 표준화가 안 됐다면 P0에서 규약부터</td></tr>
+</table>
+<div class="warn"><b>데이터 충실도 경고.</b> TFS 사례의 교훈: 미기록 작업은 트윈에 존재하지 않고, 지연 업데이트는 모든 duration 지표를 왜곡한다<sup><a href="#ref19">[19]</a></sup>. 트윈 도입과 동시에 '기록 규율' 캠페인(smart-commit, 상태 전이 즉시성)을 병행하지 않으면 P3 분석 결과의 신뢰가 무너진다. 역으로 — VCS만 봐서는 안 보이는 편차가 Jira에서 드러난다는 것도 같은 연구의 결론이므로 Jira-first 전략 자체는 옳다.</div>
+
+<h3 id="s6-3"><span class="no">6.3</span>Synthetic Data 전략</h3>
+<table>
+<tr><th>원칙</th><th>내용</th></tr>
+<tr><td>스키마 우선</td><td>object/link/event 스키마를 먼저 확정하고 생성기가 이를 준수 — DTO 선행연구도 인공 정보 시스템으로 실현 가능성을 먼저 입증했다<sup><a href="#ref8">[8]</a></sup></td></tr>
+<tr><td>분포 모사</td><td>과거 프로젝트 통계(이슈 처리시간 분포, defect 심각도 비율, 단계별 유출률)를 파라미터로 하는 프로세스 시뮬레이터로 OCEL 로그 생성</td></tr>
+<tr><td>용도 한정</td><td>(a) 파이프라인·대시보드·에이전트 개발 테스트 (b) 시뮬레이션 캘리브레이션 (c) 민감정보 없는 데모</td></tr>
+<tr><td>전환 재검증</td><td>synthetic으로 검증한 KPI 로직·예측 모델은 실데이터 전환 시 전면 재검증 — 271개 변형이 나온 실제 프로세스의 다양성<sup><a href="#ref20">[20]</a></sup>은 synthetic이 재현 못함</td></tr>
+</table>
+
+<h2 id="s7"><span class="no">7.</span>KPI · 거버넌스 · 성숙도</h2>
+<table>
+<tr><th>분류</th><th>KPI</th><th>산출 방식</th></tr>
+<tr><td>PPA</td><td>UseCase별 perf/power 목표 대비 실측 편차</td><td>PerfMeasurement vs SpecRequirement.target — 추적성 백본 위에서 자동 산출</td></tr>
+<tr><td>품질</td><td>단계별 defect 유출률(Sim→Emu→FPGA→Si)</td><td>Defect.found_stage 전이 행렬</td></tr>
+<tr><td>검증</td><td>커버리지 수렴 속도, regression pass-rate 추세, farm 활용률/대기시간</td><td>RegressionRun 시계열</td></tr>
+<tr><td>흐름</td><td>Spec→구현→검증 사이클타임, WIP, 블로킹 체인 길이, done 역행률</td><td>OCEL 마이닝 (TFS 사례의 지표 유형<sup><a href="#ref19">[19]</a></sup>)</td></tr>
+<tr><td>사양</td><td>Spec churn(게이트 이후 요구 변경률)</td><td><code>spec_revised</code> 이벤트</td></tr>
+<tr><td>트윈 메타</td><td>객체 매핑률, 링크 커버리지(≈42% 베이스라인 참조<sup><a href="#ref21">[21]</a></sup>), 데이터 신선도, 에이전트 제안 승인률, HITL 리드타임</td><td>트윈 자체 계측 — P1부터 수집</td></tr>
+</table>
+<table>
+<tr><th>거버넌스 장치</th><th>내용</th></tr>
+<tr><td>Ontology Steward</td><td>스키마 변경 승인권자. 에이전트 스키마 제안도 동일 경로</td></tr>
+<tr><td>권한 단일화</td><td>에이전트=사람 동일 접근 제어·감사 로그<sup><a href="#ref7">[7]</a></sup>. 플랫폼 계층에서 강제<sup><a href="#ref5">[5]</a></sup></td></tr>
+<tr><td>결정 lineage</td><td>모든 액션에 데이터 버전 스탬프 — 게이트 결정 리플레이 가능<sup><a href="#ref7">[7]</a></sup></td></tr>
+<tr><td>성숙도 리뷰</td><td>DTC BMM 5단계(Passive→Master)로 반기 평가. 기술 축 외에 리더십·문화·운영모델 축 포함<sup><a href="#ref15">[15]</a></sup> — "트윈 효익은 조직이 함께 성숙해야 실현"이 모델의 전제</td></tr>
+</table>
+
+<h2 id="s8"><span class="no">8.</span>리스크와 반론</h2>
+<table>
+<tr><th>리스크/반론</th><th>내용</th><th>대응</th></tr>
+<tr><td>예산 부재</td><td>프로젝트 팀은 트윈 구축 예산이 없다 — 업계 공통 장벽<sup><a href="#ref16">[16]</a></sup></td><td>P1을 기존 파일럿 통합 + 소규모로 설계, 게이트 리뷰 인용(P3 exit)을 초기 ROI 증거로</td></tr>
+<tr><td>데이터 충실도</td><td>Jira 규율에 트윈 신뢰가 종속<sup><a href="#ref19">[19]</a></sup></td><td>기록 규율 캠페인 병행 + Keeper 에이전트의 신선도/누락 감시 + 트윈 메타 KPI 공개</td></tr>
+<tr><td>모델 왜곡</td><td>case 기반 로그의 convergence/divergence<sup><a href="#ref9">[9]</a><a href="#ref10">[10]</a></sup></td><td>OCEL 2.0 채택을 P1 비가역 결정으로 고정</td></tr>
+<tr><td>에이전트 오염</td><td>Builder가 잘못된 객체/링크를 대량 주입</td><td>Critic 반박 + HITL 승인 + provenance 의무 + 시나리오 스테이징<sup><a href="#ref7">[7]</a></sup></td></tr>
+<tr><td>플랫폼 lock-in</td><td>Foundry류 백본의 전환 비용·의존성 비판<sup><a href="#ref25">[25]</a></sup></td><td>표준 포맷(OCEL, MCP) 정박 + 자체 스택 우선. 단 4중 통합의 구현 비용은 우리 부담임을 인정</td></tr>
+<tr><td>'트윈 워싱' 반론</td><td>"결국 대시보드 아니냐"</td><td>판별 기준으로 반박: 양방향 writeback<sup><a href="#ref12">[12]</a></sup> + 결정 lineage<sup><a href="#ref7">[7]</a></sup>가 없으면 대시보드, 있으면 트윈. P2가 그 분기점</td></tr>
+<tr><td>표준 부재의 양면</td><td>선행 표준이 없다는 것은 참조도 없다는 뜻<sup><a href="#ref16">[16]</a></sup></td><td>ISO 23247 어휘·DTO 이론·OCPM2 방법론을 '차용 표준 세트'로 명문화(본 문서 §1)</td></tr>
+</table>
+
+<h2 id="s9"><span class="no">9.</span>Sources</h2>
+<ol class="src">
+<li id="ref1">[1] Palantir Docs — Ontology Overview. <a href="https://www.palantir.com/docs/foundry/ontology/overview">palantir.com/docs/foundry/ontology/overview</a></li>
+<li id="ref2">[2] Palantir Docs — Architecture Center: The Ontology System. <a href="https://www.palantir.com/docs/foundry/architecture-center/ontology-system">palantir.com/docs/foundry/architecture-center/ontology-system</a></li>
+<li id="ref3">[3] Palantir Docs — Action Types Overview. <a href="https://www.palantir.com/docs/foundry/action-types/overview">palantir.com/docs/foundry/action-types/overview</a></li>
+<li id="ref4">[4] Palantir Docs — AIP Agent Studio: Tools. <a href="https://www.palantir.com/docs/foundry/agent-studio/tools">palantir.com/docs/foundry/agent-studio/tools</a></li>
+<li id="ref5">[5] Palantir Docs — Palantir MCP Overview. <a href="https://www.palantir.com/docs/foundry/palantir-mcp/overview">palantir.com/docs/foundry/palantir-mcp/overview</a></li>
+<li id="ref6">[6] Palantir Docs — Architecture Center: AIP Architecture. <a href="https://www.palantir.com/docs/foundry/architecture-center/aip-architecture">palantir.com/docs/foundry/architecture-center/aip-architecture</a></li>
+<li id="ref7">[7] Palantir Blog — Connecting Agents to Decisions (2026-04). <a href="https://blog.palantir.com/connecting-agents-to-decisions-277dee8ddb40">blog.palantir.com</a></li>
+<li id="ref8">[8] Park &amp; van der Aalst — Realizing a Digital Twin of an Organization Using Action-oriented Process Mining, ICPM 2021. <a href="https://www.researchgate.net/publication/355794218">researchgate.net</a></li>
+<li id="ref9">[9] van der Aalst — Concepts, Algorithms, and Applications of Process Mining (DTO 장), Springer 2021. <a href="https://link.springer.com/chapter/10.1007/978-3-030-85315-0_1">springer.com</a></li>
+<li id="ref10">[10] van der Aalst — OCEL 2.0 / Object-Centric Event Data. <a href="https://www.vdaalst.com/publications/p1435.pdf">vdaalst.com/publications/p1435.pdf</a></li>
+<li id="ref11">[11] OCPM2: Object-Centric Process Mining Methodology, arXiv 2503.10735 (2025). <a href="https://arxiv.org/html/2503.10735v1">arxiv.org</a></li>
+<li id="ref12">[12] NIST — Ontologizing the ISO 23247 Digital Twin Framework (BFO/IOF 계층화). <a href="https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=936637">tsapps.nist.gov</a></li>
+<li id="ref13">[13] ISO 23247-1:2021 — Digital Twin Framework for Manufacturing, Part 1. <a href="https://www.iso.org/standard/75066.html">iso.org</a></li>
+<li id="ref14">[14] NIST — Analysis of the New ISO 23247 Series (2023). <a href="https://www.nist.gov/publications/analysis-new-iso-23247-series-standards-digital-twin-framework-manufacturing">nist.gov</a></li>
+<li id="ref15">[15] Digital Twin Consortium — Digital Twin Business Maturity Model. <a href="https://www.digitaltwinconsortium.org/publications/digital-twin-business-maturity-model/">digitaltwinconsortium.org</a></li>
+<li id="ref16">[16] SemiEngineering — Digital Twins for Design and Verification Workflows (2025-03). <a href="https://semiengineering.com/digital-twins-for-design-and-verification-workflows/">semiengineering.com</a></li>
+<li id="ref17">[17] Jama Software — Integrating Digital Engineering and the Digital Thread for Semiconductor Design (2024). <a href="https://www.jamasoftware.com/blog/integrating-digital-engineering-and-the-digital-thread-for-semiconductor-design">jamasoftware.com</a></li>
+<li id="ref18">[18] Synopsys Blog — Digital Twins in the Semiconductor Industry (2023). <a href="https://www.synopsys.com/blogs/chip-design/digital-twins-semiconductor-industry.html">synopsys.com</a></li>
+<li id="ref19">[19] Coremans, Krüger et al. — Process Mining on Jira Data at Thermo Fisher Scientific (2023). <a href="https://jacobkrueger.github.io/assets/papers/Coremans2023ProcessMiningTFS.pdf">jacobkrueger.github.io</a></li>
+<li id="ref20">[20] CodeSight — Process Mining on GitHub Events + LSTM Prediction, arXiv 2510.25935 (2025). <a href="https://arxiv.org/html/2510.25935">arxiv.org</a></li>
+<li id="ref21">[21] LinkAnchor — Autonomous LLM Agent for Issue-to-Commit Link Recovery, arXiv 2508.12232, ACM FSE 2026. <a href="https://arxiv.org/pdf/2508.12232">arxiv.org</a></li>
+<li id="ref22">[22] Survey — LLM-driven Knowledge Graph Construction, arXiv 2510.20345 (2025). <a href="https://arxiv.org/abs/2510.20345">arxiv.org</a></li>
+<li id="ref23">[23] Edge et al. (Microsoft) — GraphRAG: From Local to Global, arXiv 2404.16130. <a href="https://arxiv.org/abs/2404.16130">arxiv.org</a></li>
+<li id="ref24">[24] Anthropic — Introducing the Model Context Protocol (2024-11). <a href="https://www.anthropic.com/news/model-context-protocol">anthropic.com</a></li>
+<li id="ref25">[25] HASH — The Problem with Palantir (2025-04, 비판적 관점·경쟁사 블로그). <a href="https://hash.ai/blog/the-problem-with-palantir">hash.ai</a></li>
+<li id="ref26">[26] Towards Data Engineering — Beyond Palantir's Ontology: Path to Open Semantics (2025-10). <a href="https://medium.com/towards-data-engineering/beyond-palantirs-ontology-the-paradigm-the-platform-and-the-path-to-open-semantics-f8e8b3b5fe93">medium.com</a></li>
+<li id="ref27">[27] Medium — Semantic/Kinetic/Dynamic Layers Explained (2025-06, 'dynamic layer'는 저자 창작 용어 — 비공식). <a href="https://pythonebasta.medium.com/understanding-palantirs-ontology-semantic-kinetic-and-dynamic-layers-explained-c1c25b39ea3c">pythonebasta.medium.com</a></li>
+</ol>
+<p class="kbd">본 문서의 검증 태그는 딥리서치 하네스의 3인 독립 반박 투표 결과다. 검증 단계가 사용량 한도로 조기 종료되어 다수 항목이 '단일출처' 상태로 남았다 — 사내 공식 인용 전 해당 원문 확인 권장. '반박' 처리된 writeback-dataset 메커니즘 서술은 문서에서 배제했다.</p>
+
+</main>
+</div>
+</body>
+</html>

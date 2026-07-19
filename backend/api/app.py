@@ -69,6 +69,10 @@ from backend.services.change_impact import (
     InvalidSelectionError,
     UnknownIPError,
 )
+from backend.services.decision_watermark import (
+    DecisionWatermark,
+    DecisionWatermarkService,
+)
 from backend.services.evidence_ladder import EvidenceLadder, EvidenceLadderService
 from backend.services.heatmap_diff import diff_heatmaps
 from backend.services.kpi_series import (
@@ -145,6 +149,7 @@ class AppServices:
     ask_log: AskLogStoreProtocol
     ingest: IngestService
     as_of: AsOfService
+    decision_watermark: DecisionWatermarkService
     kpi_series: KPISeriesService
     what_if: WhatIfService
     whatif_sets: WhatIfSetStoreProtocol
@@ -206,6 +211,8 @@ def build_services(
         ask_log=ask_log,
         ingest=ingest_service,
         as_of=AsOfService(repo, ingest_service),
+        # W1 (설계 22): 결정 워터마크 — 버전 로그(같은 부수 기록)를 읽기 소스로.
+        decision_watermark=DecisionWatermarkService(repo, ingest_service),
         kpi_series=KPISeriesService(repo),
         what_if=WhatIfService(repo),
         whatif_sets=whatif_sets,
@@ -789,6 +796,19 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         if event_id:
             decisions = [d for d in decisions if d.event_id == event_id]
         return _page(sorted(decisions, key=lambda d: d.id), limit, offset)
+
+    @app.get(
+        f"{prefix}/decisions/watermarks", response_model=list[DecisionWatermark]
+    )
+    def decision_watermarks(
+        project_id: str | None = Query(default=None),
+    ) -> list[DecisionWatermark]:
+        """결정 데이터-시점 워터마크 (W1, 설계 22 §2) — 읽기 전용 파생 뷰.
+
+        리뷰 센터의 "당시 위험 지도 보기"가 recorded_at을 as-of 진입점으로 쓴다.
+        recorded_at이 None(캡처 이전)이면 프론트는 리플레이 링크를 만들지 않는다.
+        """
+        return services.decision_watermark.watermarks(project_id)
 
     @app.get(f"{prefix}/action-items", response_model=list[ActionItem])
     def list_action_items(

@@ -2,7 +2,20 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — 설계 21(사내 실데이터 구축 전 준비 R1~R9) 완료 (2026-07-18).**
+**설계 22 — Digital Twin 레퍼런스 정렬 (2026-07-19 승인, W1부터 순차 진행).**
+
+> 기준 문서: `internal_docs/design/22_digital_twin_alignment.md`.
+> - **W1 완료 (2026-07-19)**: 결정 데이터-시점 워터마크(버전 로그→ingested_at→
+>   precapture 3단 판정) + `GET /decisions/watermarks` + 리뷰 센터 결정 행
+>   시점 칩·[당시 위험 지도]·[당시↔현재 비교] 링크 (precapture는 배지만 —
+>   거짓 리플레이 금지). backend 296 · frontend 39 · 실서버 smoke green.
+> - **W2 (다음)**: 링크 커버리지 상설 지표 — §3 계약 상수·SourceCoverage
+>   additive·출처 지도 카드·배치 linkage 카운트 저장.
+> - W3 OCEL 2.0 export / W4 문서 반영 — 순차.
+> - Out: domain-time 필드 신설, 새 화면 추가, 게이트 판정(④)·writeback(⑤)·
+>   link-recovery(⑥), OCEL SQLite·PM4Py 의존성. 전부 additive — 마이그레이션 없음.
+
+### 직전 완료 — 설계 21(사내 실데이터 구축 전 준비 R1~R9) (2026-07-18)
 
 > 설계·구현: `internal_docs/design/21_pre_data_readiness.md` + CHANGELOG 최신 항목.
 > R1 빈 DB 온보딩 / R2 반입 열 스펙 / R3 dry-run / R4 actor 기록 /

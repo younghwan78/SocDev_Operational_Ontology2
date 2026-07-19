@@ -238,6 +238,22 @@ def test_decisions_endpoint_filters(client) -> None:
     assert filtered == []
 
 
+def test_decision_watermarks_endpoint(client) -> None:
+    """W1 (설계 22) — 결정마다 워터마크 1건, 캡처 이전은 리플레이 진입점 없음."""
+    decisions = client.get("/api/v1/decisions").json()
+    marks = client.get("/api/v1/decisions/watermarks").json()
+    assert {m["decision_id"] for m in marks} == {d["id"] for d in decisions}
+    for mark in marks:
+        assert mark["source"] in {"version_log", "ingested_at", "precapture"}
+        if mark["source"] == "precapture":
+            assert mark["recorded_at"] is None
+            assert mark["note_ko"]
+    filtered = client.get(
+        "/api/v1/decisions/watermarks", params={"project_id": "없는_프로젝트"}
+    ).json()
+    assert filtered == []
+
+
 def test_action_items_endpoint() -> None:
     """B3 — 결정별 액션 아이템 조회 (읽기 전용)."""
     from backend.api.app import create_app
