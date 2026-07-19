@@ -81,6 +81,7 @@ from backend.services.kpi_series import (
     KPISeriesResult,
     KPISeriesService,
 )
+from backend.services.link_proposals import LinkProposalReport, LinkProposalService
 from backend.services.portfolio import PortfolioOverview, PortfolioService
 from backend.services.process_model import ObjectHistoryFindings, annotate_history
 from backend.services.rca import (
@@ -150,6 +151,7 @@ class AppServices:
     ingest: IngestService
     as_of: AsOfService
     decision_watermark: DecisionWatermarkService
+    link_proposals: LinkProposalService
     kpi_series: KPISeriesService
     what_if: WhatIfService
     whatif_sets: WhatIfSetStoreProtocol
@@ -213,6 +215,7 @@ def build_services(
         as_of=AsOfService(repo, ingest_service),
         # W1 (설계 22): 결정 워터마크 — 버전 로그(같은 부수 기록)를 읽기 소스로.
         decision_watermark=DecisionWatermarkService(repo, ingest_service),
+        link_proposals=LinkProposalService(repo),
         kpi_series=KPISeriesService(repo),
         what_if=WhatIfService(repo),
         whatif_sets=whatif_sets,
@@ -809,6 +812,17 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
         recorded_at이 None(캡처 이전)이면 프론트는 리플레이 링크를 만들지 않는다.
         """
         return services.decision_watermark.watermarks(project_id)
+
+    @app.get(f"{prefix}/link-proposals", response_model=LinkProposalReport)
+    def link_proposals(
+        project_id: str | None = Query(default=None),
+    ) -> LinkProposalReport:
+        """링크 제안 (설계 24) — 미연결 이슈의 시나리오/IP 후보, 결정론 파생 뷰.
+
+        자동 반영 없음: 반영은 원천(JIRA 필드/반입 CSV) 수정 → 재반입 경로만.
+        W2 연결률 지표를 올리는 큐레이션 재료다.
+        """
+        return services.link_proposals.report(project_id)
 
     @app.get(f"{prefix}/action-items", response_model=list[ActionItem])
     def list_action_items(

@@ -438,6 +438,19 @@ export async function fetchAsOfChangeImpact(
 
 export type SourceCoverage = components["schemas"]["SourceCoverage"];
 export type LinkCoverage = components["schemas"]["LinkCoverage"];
+export type LinkProposalReport = components["schemas"]["LinkProposalReport"];
+export type IssueLinkProposals = components["schemas"]["IssueLinkProposals"];
+
+// 설계 24: 링크 제안 — 미연결 이슈의 시나리오/IP 후보 (결정론, 자동 반영 없음).
+export async function fetchLinkProposals(
+  projectId?: string,
+): Promise<LinkProposalReport> {
+  const { data, error } = await client.GET("/api/v1/link-proposals", {
+    params: { query: projectId ? { project_id: projectId } : {} },
+  });
+  if (error || !data) throw apiError(error, "link proposals 조회 실패");
+  return data;
+}
 export type CollectionCoverage = components["schemas"]["CollectionCoverage"];
 
 export async function fetchSourceMap(): Promise<SourceCoverage> {

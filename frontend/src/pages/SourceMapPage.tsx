@@ -6,9 +6,11 @@ import { useQuery } from "@tanstack/react-query";
 import {
   fetchEntityResolution,
   fetchIngestBatches,
+  fetchLinkProposals,
   fetchSourceMap,
   type AliasEntry,
   type CollectionCoverage,
+  type IssueLinkProposals,
   type LinkCoverage,
   type UnmatchedToken,
 } from "../api/client";
@@ -23,6 +25,10 @@ export function SourceMapPage() {
   const query = useQuery({ queryKey: ["source-map"], queryFn: fetchSourceMap });
   const entity = useQuery({ queryKey: ["entity-resolution"], queryFn: fetchEntityResolution });
   const batches = useQuery({ queryKey: ["ingest-batches"], queryFn: fetchIngestBatches });
+  const proposals = useQuery({
+    queryKey: ["link-proposals"],
+    queryFn: () => fetchLinkProposals(),
+  });
   const label = useLabels();
   const valueLabel = useValueLabels();
 
@@ -34,6 +40,7 @@ export function SourceMapPage() {
   const links = query.data.links ?? [];
   const realTotal = totals.imported + totals.integrated;
   const sorted = [...collections].sort((a, b) => b.total - a.total);
+  const proposalIssues = proposals.data?.issues ?? [];
   // W2: 연결률이 기록된 완료 배치만 — list는 최신순, 추이는 과거→최신으로 표기.
   const linkageTrend = (batches.data ?? [])
     .filter((b) => b.status === "completed" && (b.linkage_total ?? 0) > 0)
@@ -102,6 +109,20 @@ export function SourceMapPage() {
                 .join(" → ")}
             </p>
           )}
+        </div>
+      )}
+
+      {/* 설계 24: 링크 제안 — 연결률 지표(위 카드)의 실행 수단. 자동 반영 없음. */}
+      {proposalIssues.length > 0 && (
+        <div className="card">
+          <h2 className="card-title">
+            {ko.link_proposals.section} — {ko.link_proposals.count}{" "}
+            {proposalIssues.length}
+          </h2>
+          <p className="section-note">{proposals.data?.apply_note_ko}</p>
+          {proposalIssues.map((entry) => (
+            <ProposalRow key={entry.issue_id} entry={entry} />
+          ))}
         </div>
       )}
 
@@ -180,6 +201,32 @@ function AliasRow({
         {t.alias_aliases}:{" "}
         {entry.aliases.length > 0 ? entry.aliases.join(", ") : t.alias_none}
       </p>
+    </div>
+  );
+}
+
+/** 설계 24: 이슈 하나의 링크 제안 행 — 제안 칩 hover에 근거+대상 ID. */
+function ProposalRow({ entry }: { entry: IssueLinkProposals }) {
+  const label = useLabels();
+  return (
+    <div className="list-item" title={entry.issue_id}>
+      <div className="head">
+        <span className="title">{entry.issue_title}</span>
+        <span className="chip" title={entry.project_id}>
+          {label(entry.project_id)}
+        </span>
+      </div>
+      <div className="chip-row">
+        {entry.proposals.map((proposal) => (
+          <span
+            key={`${proposal.field}:${proposal.target_id}:${proposal.rule}`}
+            className="badge badge-info"
+            title={`${proposal.basis_note_ko} · ${proposal.target_id}`}
+          >
+            [{proposal.field_ko}] {label(proposal.target_id)} · {proposal.rule_ko}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

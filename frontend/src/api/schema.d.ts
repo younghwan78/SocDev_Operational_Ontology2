@@ -627,6 +627,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/link-proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Link Proposals
+         * @description 링크 제안 (설계 24) — 미연결 이슈의 시나리오/IP 후보, 결정론 파생 뷰.
+         *
+         *     자동 반영 없음: 반영은 원천(JIRA 필드/반입 CSV) 수정 → 재반입 경로만.
+         *     W2 연결률 지표를 올리는 큐레이션 재료다.
+         */
+        get: operations["link_proposals_api_v1_link_proposals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta": {
         parameters: {
             query?: never;
@@ -2357,6 +2380,20 @@ export interface components {
             workaround?: string | null;
         };
         /**
+         * IssueLinkProposals
+         * @description 이슈 하나의 제안 묶음.
+         */
+        IssueLinkProposals: {
+            /** Issue Id */
+            issue_id: string;
+            /** Issue Title */
+            issue_title: string;
+            /** Project Id */
+            project_id: string;
+            /** Proposals */
+            proposals: components["schemas"]["LinkProposal"][];
+        };
+        /**
          * IssueSignalChange
          * @description 이슈 신호 delta (Q2) — 주차 기반 신호(상태/정체/지연/검증)의 변화 사실.
          */
@@ -2574,6 +2611,37 @@ export interface components {
             field_ko: string;
             /** Linked */
             linked: number;
+        };
+        /**
+         * LinkProposal
+         * @description 제안 한 건 — 룰 이름과 basis 문장이 확신도의 전부다 (수치 없음).
+         */
+        LinkProposal: {
+            /** Basis Note Ko */
+            basis_note_ko: string;
+            /** Field */
+            field: string;
+            /** Field Ko */
+            field_ko: string;
+            /** Rule */
+            rule: string;
+            /** Rule Ko */
+            rule_ko: string;
+            /** Target Id */
+            target_id: string;
+        };
+        /**
+         * LinkProposalReport
+         * @description 링크 제안 파생 뷰 — 제안 있는 이슈만.
+         */
+        LinkProposalReport: {
+            /**
+             * Apply Note Ko
+             * @default 제안은 결정론 토큰 일치 후보다 — 자동 반영되지 않는다. 반영은 원천에서: JIRA 유래 이슈는 JIRA 필드 기입 후 재동기화, CSV 반입 이슈는 원본 CSV의 영향 시나리오/영향 IP 열 보강 후 재반입(upsert).
+             */
+            apply_note_ko: string;
+            /** Issues */
+            issues?: components["schemas"]["IssueLinkProposals"][];
         };
         /**
          * MeasurementEvidence
@@ -4964,6 +5032,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["KPISeriesResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    link_proposals_api_v1_link_proposals_get: {
+        parameters: {
+            query?: {
+                project_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinkProposalReport"];
                 };
             };
             /** @description Validation Error */

@@ -462,6 +462,10 @@ export const ko = {
     batches: "최근 배치 연결률",
     fields_hint: "펼치면 필드별 연결 건수",
   },
+  link_proposals: {
+    section: "링크 제안 (검토 후 원천에서 반영)",
+    count: "제안 이슈",
+  },
   origin: {
     synthetic: "가상",
     imported: "반입",

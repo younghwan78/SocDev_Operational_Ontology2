@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## 설계 24 — 링크 제안 (link-recovery 사외 선행분) (2026-07-19)
+
+> 설계: `internal_docs/design/24_link_proposals.md` (설계 22 후속 ⑥의 결정론
+> 선행분). W2 연결률 지표를 올리는 실행 수단 — LLM/임베딩 제안(Stage 18)은
+> 같은 계약에 추가 룰로 플러그인한다.
+
+- **결정론 룰 3종** (`backend/services/link_proposals.py`): R1 IP 별칭 토큰
+  (entity resolution `IPAliasIndex` 재사용) / R2 시나리오 토큰(변별력 필터 —
+  길이·불용어·4개+ 시나리오에 걸리는 토큰 제외, `project_relevance` 필수) /
+  R3 연결된 시나리오의 `uses_ip_blocks` 연쇄. **해당 링크 필드가 빈 이슈만**
+  대상, 모든 제안에 basis 문장(어떤 토큰이 어디서 일치) 동반, 수치 confidence
+  없음. 자유 텍스트용 `text_tokens`(공백·구두점 분해) 분리 — 식별자용
+  `normalize_tokens`와 구분.
+- **파생 뷰**: 저장·자동 반영 없음 — `GET /api/v1/link-proposals`. 반영은
+  원천 수정 경로만(JIRA 필드→재동기화 / 원본 CSV 보강→upsert 재반입),
+  응답의 apply_note_ko로 항상 안내. 수정 CSV 자동 생성은 의도적 제외
+  (root_causes 단일 행 왕복 소실·synthetic origin 오염 위험 — 설계 §1).
+- **UI**: 출처 지도 연결률 카드 아래 "링크 제안" 카드 — 이슈별 제안 칩
+  (hover=근거+대상 ID), 0건이면 미렌더.
+- 테스트: 룰 3종 매치/제외/변별력/프로젝트 필터 7종 + 프론트 2종. backend
+  323 · frontend 46 green. 실서버 왕복: 미연결 이슈 반입 → 제안 3건(ISP +
+  UHD60 시나리오 2) 확인 → rollback으로 원복.
+
 ## 설계 23 — 마일스톤 게이트 조건 형식화 (2026-07-19)
 
 > 설계: `internal_docs/design/23_milestone_gates.md` (설계 22 후속 ④).

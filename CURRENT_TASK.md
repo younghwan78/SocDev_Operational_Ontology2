@@ -2,7 +2,22 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — 설계 23(마일스톤 게이트 조건 형식화) 완료 (2026-07-19).**
+**활성 Stage 없음 — 설계 24(링크 제안, link-recovery 사외 선행분) 완료 (2026-07-19).**
+
+> 설계·구현: `internal_docs/design/24_link_proposals.md` + CHANGELOG.
+> 결정론 룰 3종(IP 별칭 토큰/시나리오 토큰/시나리오 사용 IP 연쇄) +
+> `GET /link-proposals` + 출처 지도 검토 카드. 저장·자동 반영 없음 — 반영은
+> 원천 수정→재반입만. backend 323 · frontend 46 · 실서버 왕복 검증 green.
+>
+> **다음 후보 (착수는 사용자 승인 — 남은 것은 전부 사내 입력 필요)**:
+> - **⑤ JIRA writeback 코멘트** (Stage 19 실계정 — 보안 승인·자격증명),
+>   **⑥ 잔여** = LLM/임베딩 제안 룰 추가 (Stage 18 임베딩 인프라).
+> - 게이트 kind 확장(사내 게이트 정의), D4 검증 세션, Stage 14 잔여(SSO),
+>   사내 반입 리허설, 스케일 트리거(이슈 1천건+ 시).
+> - **사외에서 더 할 수 있는 것은 소진** — 설계 21~24로 twin 레퍼런스 정렬·
+>   게이트·링크 큐레이션까지 완료. 다음 진전은 사내 데이터/계정/일정이 필요.
+
+### 직전 완료 — 설계 23(마일스톤 게이트 조건 형식화) (2026-07-19)
 
 > 설계·구현: `internal_docs/design/23_milestone_gates.md` + CHANGELOG.
 > GateCriterion(kind 3종) + exit_criteria(additive) + GateReviewService

@@ -3287,6 +3287,39 @@
         "title": "Issue",
         "type": "object"
       },
+      "IssueLinkProposals": {
+        "additionalProperties": false,
+        "description": "이슈 하나의 제안 묶음.",
+        "properties": {
+          "issue_id": {
+            "title": "Issue Id",
+            "type": "string"
+          },
+          "issue_title": {
+            "title": "Issue Title",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "proposals": {
+            "items": {
+              "$ref": "#/components/schemas/LinkProposal"
+            },
+            "title": "Proposals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "issue_id",
+          "issue_title",
+          "project_id",
+          "proposals"
+        ],
+        "title": "IssueLinkProposals",
+        "type": "object"
+      },
       "IssueSignalChange": {
         "additionalProperties": false,
         "description": "이슈 신호 delta (Q2) — 주차 기반 신호(상태/정체/지연/검증)의 변화 사실.",
@@ -3880,6 +3913,66 @@
           "linked"
         ],
         "title": "LinkFieldCoverage",
+        "type": "object"
+      },
+      "LinkProposal": {
+        "additionalProperties": false,
+        "description": "제안 한 건 — 룰 이름과 basis 문장이 확신도의 전부다 (수치 없음).",
+        "properties": {
+          "basis_note_ko": {
+            "title": "Basis Note Ko",
+            "type": "string"
+          },
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "field_ko": {
+            "title": "Field Ko",
+            "type": "string"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "rule_ko": {
+            "title": "Rule Ko",
+            "type": "string"
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "field_ko",
+          "target_id",
+          "rule",
+          "rule_ko",
+          "basis_note_ko"
+        ],
+        "title": "LinkProposal",
+        "type": "object"
+      },
+      "LinkProposalReport": {
+        "additionalProperties": false,
+        "description": "링크 제안 파생 뷰 — 제안 있는 이슈만.",
+        "properties": {
+          "apply_note_ko": {
+            "default": "제안은 결정론 토큰 일치 후보다 — 자동 반영되지 않는다. 반영은 원천에서: JIRA 유래 이슈는 JIRA 필드 기입 후 재동기화, CSV 반입 이슈는 원본 CSV의 영향 시나리오/영향 IP 열 보강 후 재반입(upsert).",
+            "title": "Apply Note Ko",
+            "type": "string"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/IssueLinkProposals"
+            },
+            "title": "Issues",
+            "type": "array"
+          }
+        },
+        "title": "LinkProposalReport",
         "type": "object"
       },
       "MeasurementEvidence": {
@@ -9615,6 +9708,53 @@
           }
         },
         "summary": "Kpi Series"
+      }
+    },
+    "/api/v1/link-proposals": {
+      "get": {
+        "description": "링크 제안 (설계 24) — 미연결 이슈의 시나리오/IP 후보, 결정론 파생 뷰.\n\n자동 반영 없음: 반영은 원천(JIRA 필드/반입 CSV) 수정 → 재반입 경로만.\nW2 연결률 지표를 올리는 큐레이션 재료다.",
+        "operationId": "link_proposals_api_v1_link_proposals_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkProposalReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Link Proposals"
       }
     },
     "/api/v1/meta": {
