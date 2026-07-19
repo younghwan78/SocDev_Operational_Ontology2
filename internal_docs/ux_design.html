@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoC Dev Twin — Gate Review UX 설계 근거</title>
+<style>
+:root{
+  --bg:#ffffff;--fg:#1a2130;--muted:#5b6470;--line:#dde3ea;
+  --accent:#1f5fa8;--accent-bg:#eef4fb;--warn-bg:#fdf3e7;--warn-line:#e0a95e;
+  --ok-bg:#eef7f0;--ok-line:#7dbf98;--bad-bg:#fbeaea;--bad-line:#d99;--code-bg:#f4f6f8;--th-bg:#f0f3f7;
+  --crit:#d03b3b;--ser:#d0662f;--warn:#c98500;--good:#0ca30c;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14181f;--fg:#e4e8ee;--muted:#9aa4b2;--line:#2c3440;
+    --accent:#6ea8dc;--accent-bg:#1c2735;--warn-bg:#2e2417;--warn-line:#8a6a35;
+    --ok-bg:#182620;--ok-line:#2f5a3f;--bad-bg:#301618;--bad-line:#6b3336;--code-bg:#1c222b;--th-bg:#1d2430;
+    --crit:#e75c5c;--ser:#e58a55;--warn:#e0a02b;--good:#33b533;
+  }
+  .diagram{background:#f5f7fa;border-radius:8px;}
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Pretendard','Noto Sans KR','Apple SD Gothic Neo',system-ui,sans-serif;
+  background:var(--bg);color:var(--fg);line-height:1.65;font-size:15px;}
+.layout{display:flex;max-width:1360px;margin:0 auto;}
+nav{width:262px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;
+  padding:26px 16px;border-right:1px solid var(--line);font-size:13.5px;}
+nav a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:6px;}
+nav a:hover{background:var(--accent-bg);color:var(--accent);}
+nav .h{font-weight:700;color:var(--fg);margin-top:12px;}
+main{flex:1;min-width:0;padding:34px 46px 90px;}
+h1{font-size:25px;line-height:1.35;margin:.1em 0 .3em;}
+h2{font-size:20px;margin:2.2em 0 .6em;padding-bottom:.3em;border-bottom:2px solid var(--line);}
+h3{font-size:16px;margin:1.5em 0 .5em;color:var(--accent);}
+h2 .no,h3 .no{color:var(--accent);margin-right:.4em;}
+p{margin:.5em 0 .9em;}
+table{border-collapse:collapse;width:100%;margin:.8em 0 1.2em;font-size:13.5px;}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top;}
+th{background:var(--th-bg);font-weight:600;}
+code{font-family:'JetBrains Mono',Consolas,monospace;font-size:.9em;background:var(--code-bg);padding:1px 5px;border-radius:4px;}
+.meta{color:var(--muted);font-size:13px;margin-bottom:1.4em;}
+.callout{border-left:4px solid var(--accent);background:var(--accent-bg);padding:11px 16px;margin:1em 0;border-radius:0 8px 8px 0;}
+.warn{border-left:4px solid var(--warn-line);background:var(--warn-bg);padding:11px 16px;margin:1em 0;border-radius:0 8px 8px 0;}
+.good{border-left:4px solid var(--ok-line);background:var(--ok-bg);padding:11px 16px;margin:1em 0;border-radius:0 8px 8px 0;}
+.diagram{margin:1.2em 0;padding:12px;border:1px solid var(--line);border-radius:8px;overflow-x:auto;}
+.diagram svg{max-width:100%;height:auto;}
+.cap{font-size:12.5px;color:var(--muted);margin-top:6px;}
+.tldr{background:var(--accent-bg);border:1px solid var(--accent);border-radius:12px;padding:16px 20px;margin:.5em 0 1.5em;font-size:15.5px;line-height:1.6}
+.tldr b{color:var(--accent)}
+
+/* altitude stack */
+.alt-stack{display:flex;flex-direction:column;gap:7px;margin:1.2em 0}
+.alt{display:grid;grid-template-columns:52px 1fr;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--bg)}
+.alt .lv{display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;padding:10px 0}
+.alt .bd{padding:11px 15px}
+.alt .bd .t{font-weight:700;font-size:14.5px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.alt .bd .t .time{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--code-bg);padding:1px 7px;border-radius:5px}
+.alt .bd .q{font-size:13px;color:var(--fg);margin-top:3px}
+.alt .bd .q b{color:var(--accent)}
+.alt .bd .d{font-size:12px;color:var(--muted);margin-top:4px}
+.alt0 .lv{background:#5b6470}.alt1 .lv{background:var(--accent)}
+.alt2 .lv{background:var(--warn)}.alt3 .lv{background:var(--ser)}.alt4 .lv{background:#6b7686}
+.width-hint{font-size:11px;color:var(--muted);text-align:right;padding-right:4px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:1em 0}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}nav{display:none}main{padding:20px 16px 60px}}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--bg)}
+.card.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.card.good{border-color:var(--ok-line);background:var(--ok-bg)}
+.card h4{margin:0 0 7px;font-size:14px}
+.card.bad h4::before{content:"✕ ";color:var(--crit);font-weight:800}
+.card.good h4::before{content:"✓ ";color:var(--good);font-weight:800}
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:1px 8px;border-radius:20px;vertical-align:middle}
+.pill.crit{background:var(--bad-bg);color:var(--crit)}.pill.good{background:var(--ok-bg);color:var(--good)}
+.chk{list-style:none;padding:0;margin:.6em 0}
+.chk li{padding:6px 0 6px 28px;position:relative;border-bottom:1px dashed var(--line);font-size:13.5px}
+.chk li::before{content:"☐";position:absolute;left:4px;top:5px;color:var(--accent);font-size:15px}
+.matrix td{text-align:center;font-size:12.5px}
+.matrix td.lbl{text-align:left;font-weight:700;background:var(--th-bg)}
+.dotrange{font-weight:800;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav>
+  <div class="h">목차</div>
+  <a href="#tldr">TL;DR — 한 문장</a>
+  <a class="h" href="#s1">1. 진단: 왜 실패하는가</a>
+  <a class="h" href="#s2">2. 설계 3원칙</a>
+  <a class="h" href="#s3">3. Altitude 모델 (A0–A4)</a>
+  <a class="h" href="#s4">4. Persona × Lens 매트릭스</a>
+  <a class="h" href="#s5">5. 인터랙션 문법</a>
+  <a class="h" href="#s6">6. 게이트 리뷰 스토리보드</a>
+  <a class="h" href="#s7">7. 안티패턴 체크리스트</a>
+  <a class="h" href="#s8">8. 프로토타입 매핑</a>
+  <a class="h" href="#s9">9. 확장·다음 단계</a>
+</nav>
+<main>
+<h1>SoC Dev Twin — Gate Review UX 설계 근거</h1>
+<div class="meta">마일스톤 게이트 리뷰 앵커 · 혼합형 페르소나 · 인터랙티브 프로토타입과 1:1 대응하는 설계 문서<br>
+동반 산출물: <code>gate_review_twin_prototype.html</code> (클릭 가능한 목업)</div>
+
+<div class="tldr" id="tldr">
+화면은 <b>온톨로지(데이터 구조)를 그리는 게 아니라 "이 게이트를 통과할 수 있는가"라는 하나의 결정을 그린다.</b>
+세부는 그 결정을 향해 <b>고도(altitude)</b>를 낮추며 점진적으로만 열리고, 모든 화면은 반드시 <b>행동 또는 다음 질문</b>으로 끝난다.
+그래프·대시보드는 이 원칙의 결과물이지 출발점이 아니다.
+</div>
+
+<h2 id="s1"><span class="no">1.</span>진단 — 왜 detail-first / 그래프-홈이 실패하는가</h2>
+<p>"이거다 싶은 UI를 못 찾았다"는 건 도구 문제가 아니라 <em>정박점(anchor)</em> 문제일 가능성이 높습니다. 대부분의 twin UI가 반복해서 빠지는 5가지 함정:</p>
+<div class="grid2">
+<div class="card bad"><h4>온톨로지 그래프를 홈에 그린다</h4>노드-링크 hairball은 twin을 <em>만든 사람</em>의 뷰다. 보는 사람에게 우선순위·의미·할 일이 없다. 그래프는 근거를 <em>따라갈 때</em>만 가치가 있다(A4).</div>
+<div class="card bad"><h4>모든 것이 대시보드 타일</h4>20개 위젯을 평등하게 나열하면 서사가 없다. "무엇을 먼저 봐야 하나"에 답하지 못한다.</div>
+<div class="card bad"><h4>대칭적 상세 (symmetric detail)</h4>모든 객체를 동일 밀도로 보여준다. 실제로는 6개 축 중 1개가 지배 요인인데, 화면은 그걸 말해주지 않는다.</div>
+<div class="card bad"><h4>정적 스냅샷</h4>"지금 상태"만 있고 "지난 게이트 대비 무엇이 바뀌었나"가 없다. 주기적 의식(ritual)에서 가장 중요한 정보가 빠진다.</div>
+<div class="card bad"><h4>읽기 전용 = 대시보드</h4>화면이 행동으로 이어지지 않으면 그건 twin이 아니라 리포트다. 결정·writeback 경로가 없으면 사람들은 다시 안 온다.</div>
+</div>
+<div class="warn"><b>핵심 통찰.</b> Palantir 문서조차 온톨로지를 "데이터가 아니라 <em>결정</em>의 표현"으로 규정한다(레퍼런스 문서 §1.1). 그런데 대부분의 구현은 <em>데이터</em>를 그린다. 정박점을 데이터 구조가 아닌 <b>반복되는 결정 의식(=게이트 리뷰)</b>으로 옮기는 순간, "무엇을 어떻게 보여줄지"가 저절로 정해진다.</div>
+
+<h2 id="s2"><span class="no">2.</span>설계 3원칙</h2>
+<table>
+<tr><th>원칙</th><th>내용</th><th>이론 근거</th></tr>
+<tr><td><b>P1 · 결정 중심 (Decision-first, not data-first)</b></td><td>모든 화면은 "이 게이트를 통과할 수 있는가"라는 단일 질문에 봉사한다. 객체·링크·이벤트는 그 질문에 필요할 때만 등장한다.</td><td>Endsley SA 모델(지각→이해→투영), Palantir "decision representation"</td></tr>
+<tr><td><b>P2 · 고도별 점진 공개 (Progressive disclosure by altitude)</b></td><td>판정(A0)→상황판(A1)→리스크(A2)→선택지(A3)→근거(A4). 위에서 아래로 갈수록 밀도↑·범위↓. 아래층은 위층에서 <em>드릴</em>할 때만 열린다.</td><td>Shneiderman "Overview first, zoom &amp; filter, details-on-demand"</td></tr>
+<tr><td><b>P3 · 막다른 화면 금지 (So-what / Now-what)</b></td><td>어떤 화면도 시각화로 끝나지 않는다. 각 화면은 "그래서 의미는(so-what)"과 "그래서 뭘 하나(now-what)"를 항상 품는다 — 상황판 카드마다 한 줄 해석 + "리스크 보기 →".</td><td>BLUF(Bottom Line Up Front) 브리핑 원칙</td></tr>
+</table>
+
+<h2 id="s3"><span class="no">3.</span>Altitude 모델 — 정보 구조의 뼈대</h2>
+<p>사용자의 직관("전체 상황 → 리스크 → 선택지 → 검토")을 5개 고도로 형식화한 것. 각 고도는 <em>답하는 질문·소요 시간·주 사용자</em>가 다르다. 이 축이 곧 내비게이션이다.</p>
+<div class="alt-stack">
+ <div class="width-hint">◀ 범위 넓음 · 밀도 낮음</div>
+ <div class="alt alt0"><div class="lv">A0</div><div class="bd">
+   <div class="t">판정 / Posture <span class="time">3초 · 한눈</span></div>
+   <div class="q"><b>지금 GO 가능한가?</b> 한 줄 판정 + 신뢰도 + 지배 차단요인 1개</div>
+   <div class="d">화면 최상단 고정 배너. "조건부 NO-GO · ISP 커버리지". 임원은 여기서 90% 끝난다.</div></div></div>
+ <div class="alt alt1"><div class="lv">A1</div><div class="bd">
+   <div class="t">상황판 (Situation Board) <span class="time">30초</span></div>
+   <div class="q"><b>전체 그림은?</b> 6개 exit 축의 신호등 + 추세 + Δ지난게이트 + 한 줄 해석</div>
+   <div class="d">"무엇을 먼저 볼지"를 색과 정렬 순서가 대신 결정. 그래프 아님 — 축별 카드. 히어로 화면.</div></div></div>
+ <div class="alt alt2"><div class="lv">A2</div><div class="bd">
+   <div class="t">워치리스트 (Risk &amp; Watchlist) <span class="time">2분</span></div>
+   <div class="q"><b>무엇이 위협하나?</b> impact×likelihood 순 리스크 + "방치 시" 투영</div>
+   <div class="d">축을 클릭하면 그 축의 리스크만 필터링. 각 리스크는 "왜"와 "방치 시 결과"를 품는다.</div></div></div>
+ <div class="alt alt3"><div class="lv">A3</div><div class="bd">
+   <div class="t">선택지 워크스페이스 (Decision / Options) <span class="time">10분</span></div>
+   <div class="q"><b>어떤 선택지가 있고 뭘 검토하나?</b> 각 선택지의 what-if: 일정Δ·PPAΔ·잔존리스크·투입</div>
+   <div class="d">여기서 결정이 내려진다. 선택 = Action 스테이징 → HITL 승인 → writeback. Kinetic layer의 UI.</div></div></div>
+ <div class="alt alt4"><div class="lv">A4</div><div class="bd">
+   <div class="t">근거 / 온톨로지 상세 (Evidence) <span class="time">on-demand</span></div>
+   <div class="q"><b>근거가 뭔가?</b> 연계 객체 테이블 + 추적성 체인(REQ→IP→TC→Defect)</div>
+   <div class="d">여기가 그래프·raw 객체가 사는 유일한 곳. 그것도 전체 그래프가 아니라 <em>이 결정에 필요한 이웃</em>만.</div></div></div>
+ <div class="width-hint">범위 좁음 · 밀도 높음 ▶</div>
+</div>
+<div class="good"><b>왜 이게 "detail 한꺼번에" 문제를 푸는가.</b> 세부는 사라진 게 아니라 <em>아래 고도로 이동</em>했을 뿐이다. 사용자는 A0에서 결론을, A1에서 그림을 받고, 필요한 축으로만 내려간다. 관심 없는 5개 축의 raw defect 테이블을 볼 일이 없다. 이것이 인지 부하를 구조적으로 제거하는 방식이다.</div>
+
+<h2 id="s4"><span class="no">4.</span>Persona × Lens 매트릭스 — 하나의 twin, 여러 진입점</h2>
+<p>혼합형 요구("설계·검증·PM·경영이 같은 twin을 본다")의 답은 <em>앱을 나누지 않는 것</em>이다. 페르소나는 <b>기본 착륙 고도 + 기본 렌즈 + 깊이 상한</b>만 바꾼다. 같은 데이터, 다른 진입점.</p>
+<table class="matrix">
+<tr><th class="lbl">페르소나</th><th>기본 착륙</th><th>기본 렌즈</th><th>고도 범위</th><th>역할</th></tr>
+<tr><td class="lbl">임원</td><td>A0/A1(요약)</td><td>전체</td><td class="dotrange" style="color:var(--muted)">A0·A1</td><td>판정과 상위 리스크만. 상세 진입 안 함</td></tr>
+<tr><td class="lbl">아키텍트 (게이트 의장)</td><td>A1</td><td>전체</td><td class="dotrange" style="color:var(--accent)">A0–A4</td><td>판정 소유. A1↔A3를 오가며 결정</td></tr>
+<tr><td class="lbl">검증 리드</td><td>A2</td><td>커버리지·품질</td><td class="dotrange" style="color:var(--ser)">A1–A4</td><td>검증 축 소유. 홀·defect까지 깊이 드릴</td></tr>
+<tr><td class="lbl">PM</td><td>A2</td><td>일정</td><td class="dotrange" style="color:var(--warn)">A1–A3</td><td>블로킹 체인·what-if 중심</td></tr>
+</table>
+<p><b>렌즈(Lens)</b>는 같은 상황판·워치리스트를 특정 exit 축(커버리지/품질/PPA/일정/Spec)으로 <em>재색칠·재정렬</em>한다. 렌즈를 바꿔도 데이터는 하나 — 관점만 바뀐다. 프로토타입에서 상단 렌즈 세그먼트를 눌러 확인할 수 있다(관련 없는 축은 흐려짐).</p>
+<div class="callout"><b>설계 규칙.</b> 페르소나 전환이 <em>다른 숫자</em>를 보여주면 안 된다(single source of truth 붕괴). 같은 twin의 같은 상태를, 다른 <b>고도·렌즈·상한</b>으로 볼 뿐이다. 임원과 검증리드가 같은 ISP 커버리지 87%를 본다 — 임원은 A1에서 한 줄로, 검증리드는 A4에서 47개 홀 테이블로.</div>
+
+<h2 id="s5"><span class="no">5.</span>인터랙션 문법 — 4가지 반복 패턴</h2>
+<table>
+<tr><th>패턴</th><th>동작</th><th>왜</th></tr>
+<tr><td><b>신호등 + 추세 + Δ</b></td><td>모든 지표 셀 = 상태색 · sparkline · "지난 게이트 대비" 델타. 상태색은 dataviz 표준(good/warning/serious/critical) + <em>아이콘·라벨 동반</em>(색맹 안전)</td><td>주기적 의식에서 "무엇이 바뀌었나"가 단일 최고가치 정보. 상단 <code>Δ</code> 토글로 시점 전환</td></tr>
+<tr><td><b>드릴 = 필터</b></td><td>A1 축 카드 클릭 → A2가 그 축으로 필터됨. 클릭이 곧 "이걸 파고들겠다"는 질의. 브레드크럼으로 되돌아감</td><td>Shneiderman zoom&amp;filter. 사용자가 서사를 스스로 좁힘</td></tr>
+<tr><td><b>선택 = Action 스테이징</b></td><td>A3 선택지 선택 → sandbox writeback <em>미리보기</em> → HITL 승인 → 커밋 + lineage. 소스 시스템 직접 쓰기 없음, 항상 Action 경유</td><td>Palantir kinetic layer/HITL 패턴. twin을 대시보드에서 operational로 만드는 분기점</td></tr>
+<tr><td><b>근거는 on-demand</b></td><td>raw 객체·그래프는 A4에서만, 명시적으로 요청할 때만. 그것도 "이 결정에 필요한 이웃"만(전체 그래프 금지)</td><td>hairball 방지. 근거는 판단을 <em>보강</em>할 때만 필요</td></tr>
+</table>
+
+<h2 id="s6"><span class="no">6.</span>게이트 리뷰 스토리보드 — 60초에서 10분까지</h2>
+<p>아키텍트가 프로토타입을 여는 순간부터 결정 커밋까지의 실제 여정. 각 단계의 소요 시간이 고도 설계와 맞물린다.</p>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="831px" preserveAspectRatio="none" style="width:469px;height:831px;" version="1.1" viewBox="0 0 469 831" width="469px" zoomAndPan="magnify"><defs/><g><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="284" x="91.75" y="23.9201">마일스톤 게이트 리뷰 — 결정 여정 (5-step, 60초→10분)</text><ellipse cx="156.5" cy="37.3761" fill="#000000" rx="10" ry="10" style="stroke: none; stroke-width: 1.0;"/><path d="M317.5,72.3761 L317.5,90.7522 L297.5,94.7522 L317.5,98.7522 L317.5,117.1284 A0,0 0 0 0 317.5,117.1284 L457.5,117.1284 A0,0 0 0 0 457.5,117.1284 L457.5,82.3761 L447.5,72.3761 L317.5,72.3761 A0,0 0 0 0 317.5,72.3761 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M447.5,72.3761 L447.5,82.3761 L457.5,82.3761 L447.5,72.3761 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="100" x="323.5" y="91.2962">전체 상황을 한 줄로.</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="119" x="323.5" y="108.6723">숫자가 아니라 결론부터.</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="282" x="15.5" y="67.3761"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="116" x="25.5" y="91.2962">【A0 · 3초】판정 배너</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="262" x="25.5" y="108.6723">"조건부 NO-GO · 지배 차단요인 1개: ISP 커버리지"</text><path d="M292.5,155.8164 L292.5,174.1925 L272.5,178.1925 L292.5,182.1925 L292.5,200.5687 A0,0 0 0 0 292.5,200.5687 L421.5,200.5687 A0,0 0 0 0 421.5,200.5687 L421.5,165.8164 L411.5,155.8164 L292.5,155.8164 A0,0 0 0 0 292.5,155.8164 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M411.5,155.8164 L411.5,165.8164 L421.5,165.8164 L411.5,155.8164 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="106" x="298.5" y="174.7365">"무엇을 먼저 볼지"를</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="108" x="298.5" y="192.1126">색과 순서가 대신 결정</text><rect fill="#FFFFFF" height="72.1284" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="232" x="40.5" y="142.1284"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="109" x="50.5" y="166.0485">【A1 · 30초】상황판</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="203" x="50.5" y="183.4246">6개 exit 축 · 위험순 정렬 · Δ지난게이트</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="212" x="50.5" y="200.8007">ISP 커버리지 red / 나머지 amber·green</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="235" x="39" y="234.2567"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="215" x="49" y="258.1768">【A2 · 2분】워치리스트 (커버리지로 필터)</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="205" x="49" y="275.5529">impact×likelihood 순 · "방치 시" 투영</text><rect fill="#FFFFFF" height="72.1284" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="210" x="51.5" y="309.009"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="178" x="61.5" y="332.9291">【A3 · 10분】선택지 워크스페이스</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="162" x="61.5" y="350.3052">수정 / 조건부 waiver / 디스코프</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="190" x="61.5" y="367.6813">각 what-if: 일정Δ·PPAΔ·잔존리스크</text><rect fill="#FFFFFF" height="72.1284" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="193" x="60" y="451.8254"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="173" x="70" y="475.7455">【A4 · on-demand】추적성 체인</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="162" x="70" y="493.1216">REQ→IP→TestCase→Defect</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="130" x="70" y="510.4977">(그래프 전체 아님, 이웃만)</text><polygon fill="#EEF4FB" points="117.5,401.1373,195.5,401.1373,207.5,413.1373,195.5,425.1373,117.5,425.1373,105.5,413.1373,117.5,401.1373" style="stroke: #8A93A0; stroke-width: 1.5;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="19" x="160.5" y="439.0574">yes</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="78" x="117.5" y="418.3694">근거 확인 필요?</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="14" x="207.5" y="409.6813">no</text><polygon fill="#EEF4FB" points="156.5,553.2859,168.5,565.2859,156.5,577.2859,144.5,565.2859,156.5,553.2859" style="stroke: #8A93A0; stroke-width: 1.5;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="47" x="162.5" y="549.8299">판단 보강</text><rect fill="#FFFFFF" height="54.7522" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="182" x="65.5" y="597.2859"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="158" x="75.5" y="621.206">선택지 선택 → Action 스테이징</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="162" x="75.5" y="638.5821">(sandbox writeback 미리보기)</text><polygon fill="#EEF4FB" points="127.5,672.0382,185.5,672.0382,197.5,684.0382,185.5,696.0382,127.5,696.0382,115.5,684.0382,127.5,672.0382" style="stroke: #8A93A0; stroke-width: 1.5;"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="58" x="127.5" y="689.2702">HITL 승인?</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="22" x="93.5" y="680.5821">승인</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="22" x="197.5" y="680.5821">반려</text><rect fill="#FFFFFF" height="72.1284" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="144" x="10" y="706.0382"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="60" x="20" y="729.9582">Action 커밋</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="124" x="20" y="747.3344">Jira/검증DB writeback</text><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="101" x="20" y="764.7105">+ 결정 lineage 기록</text><ellipse cx="82" cy="809.1665" fill="#FFFFFF" rx="11" ry="11" style="stroke: #000000; stroke-width: 1.0;"/><ellipse cx="82" cy="809.1665" fill="#000000" rx="6" ry="6" style="stroke: #7F7F7F; stroke-width: 1.0;"/><rect fill="#FFFFFF" height="37.3761" rx="12.5" ry="12.5" style="stroke: #8A93A0; stroke-width: 1.5;" width="114" x="174" y="706.0382"/><text fill="#000000" font-family="Noto Sans CJK KR" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="94" x="184" y="729.9582">다른 선택지 재검토</text><line style="stroke: #5B6470; stroke-width: 1.5;" x1="156.5" x2="156.5" y1="47.3761" y2="67.3761"/><polygon fill="#5B6470" points="152.5,57.3761,156.5,67.3761,160.5,57.3761,156.5,61.3761" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="156.5" x2="156.5" y1="122.1284" y2="142.1284"/><polygon fill="#5B6470" points="152.5,132.1284,156.5,142.1284,160.5,132.1284,156.5,136.1284" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="156.5" x2="156.5" y1="214.2567" y2="234.2567"/><polygon fill="#5B6470" points="152.5,224.2567,156.5,234.2567,160.5,224.2567,156.5,228.2567" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="156.5" x2="156.5" y1="289.009" y2="309.009"/><polygon fill="#5B6470" points="152.5,299.009,156.5,309.009,160.5,299.009,156.5,303.009" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="156.5" x2="156.5" y1="425.1373" y2="451.8254"/><polygon fill="#5B6470" points="152.5,441.8254,156.5,451.8254,160.5,441.8254,156.5,445.8254" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="207.5" x2="263" y1="413.1373" y2="413.1373"/><polygon fill="#5B6470" points="259,486.5776,263,496.5776,267,486.5776,263,490.5776" style="stroke: #5B6470; stroke-width: 1.5;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="263" x2="263" y1="413.1373" y2="565.2859"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="263" x2="168.5" y1="565.2859" y2="565.2859"/><polygon fill="#5B6470" points="178.5,561.2859,168.5,565.2859,178.5,569.2859,174.5,565.2859" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="156.5" x2="156.5" y1="523.9538" y2="553.2859"/><polygon fill="#5B6470" points="152.5,543.2859,156.5,553.2859,160.5,543.2859,156.5,547.2859" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="156.5" x2="156.5" y1="381.1373" y2="401.1373"/><polygon fill="#5B6470" points="152.5,391.1373,156.5,401.1373,160.5,391.1373,156.5,395.1373" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="156.5" x2="156.5" y1="577.2859" y2="597.2859"/><polygon fill="#5B6470" points="152.5,587.2859,156.5,597.2859,160.5,587.2859,156.5,591.2859" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="82" x2="82" y1="778.1665" y2="798.1665"/><polygon fill="#5B6470" points="78,788.1665,82,798.1665,86,788.1665,82,792.1665" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="115.5" x2="82" y1="684.0382" y2="684.0382"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="82" x2="82" y1="684.0382" y2="706.0382"/><polygon fill="#5B6470" points="78,696.0382,82,706.0382,86,696.0382,82,700.0382" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="197.5" x2="231" y1="684.0382" y2="684.0382"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="231" x2="231" y1="684.0382" y2="706.0382"/><polygon fill="#5B6470" points="227,696.0382,231,706.0382,235,696.0382,231,700.0382" style="stroke: #5B6470; stroke-width: 1.0;"/><line style="stroke: #5B6470; stroke-width: 1.5;" x1="156.5" x2="156.5" y1="652.0382" y2="672.0382"/><polygon fill="#5B6470" points="152.5,662.0382,156.5,672.0382,160.5,662.0382,156.5,666.0382" style="stroke: #5B6470; stroke-width: 1.0;"/><!--
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontName "Noto Sans CJK KR"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundcorner 9
+skinparam ArrowColor #5B6470
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8A93A0
+  DiamondBackgroundColor #EEF4FB
+  DiamondBorderColor #8A93A0
+}
+title 마일스톤 게이트 리뷰 — 결정 여정 (5-step, 60초→10분)
+
+start
+:【A0 · 3초】판정 배너\n"조건부 NO-GO · 지배 차단요인 1개: ISP 커버리지";
+note right: 전체 상황을 한 줄로.\n숫자가 아니라 결론부터.
+:【A1 · 30초】상황판\n6개 exit 축 · 위험순 정렬 · Δ지난게이트\nISP 커버리지 red / 나머지 amber·green;
+note right: "무엇을 먼저 볼지"를\n색과 순서가 대신 결정
+:【A2 · 2분】워치리스트 (커버리지로 필터)\nimpact×likelihood 순 · "방치 시" 투영;
+:【A3 · 10분】선택지 워크스페이스\n수정 / 조건부 waiver / 디스코프\n각 what-if: 일정Δ·PPAΔ·잔존리스크;
+if (근거 확인 필요?) then (yes)
+  :【A4 · on-demand】추적성 체인\nREQ→IP→TestCase→Defect\n(그래프 전체 아님, 이웃만);
+  -> 판단 보강;
+else (no)
+endif
+:선택지 선택 → Action 스테이징\n(sandbox writeback 미리보기);
+if (HITL 승인?) then (승인)
+  :Action 커밋\nJira/검증DB writeback\n+ 결정 lineage 기록;
+  stop
+else (반려)
+  :다른 선택지 재검토;
+  detach
+endif
+@enduml
+
+PlantUML version 1.2019.06(Fri May 24 17:10:25 UTC 2019)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 21.0.10+7-Ubuntu-124.04
+Operating System: Linux
+OS Version: 6.18.5
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
+<div class="cap">그림 — 판정(A0) → 상황판(A1) → 워치리스트(A2) → 선택지(A3) → (필요 시 근거 A4) → Action 스테이징 → HITL 승인 → 커밋·lineage. 근거 확인은 선택적 분기.</div></div>
+<p><b>실제 시나리오 (프로토타입에서 재현 가능):</b></p>
+<table>
+<tr><th>단계</th><th>화면</th><th>사용자가 얻는 것</th></tr>
+<tr><td>1</td><td>A0 배너</td><td>"조건부 NO-GO. 지배 차단요인 1개: ISP 커버리지 87%." — 3초 만에 결론</td></tr>
+<tr><td>2</td><td>A1 상황판</td><td>6개 축 중 커버리지 red, 나머지 amber/green. Δ 켜면 "커버리지 3주째 정체"가 보임</td></tr>
+<tr><td>3</td><td>A2 워치리스트(커버리지)</td><td>리스크 3건, 1위 "홀 47개 미해소 · 방치 시 샘플 2주 지연"</td></tr>
+<tr><td>4</td><td>A3 선택지</td><td>수정(2주, 잔존 Low·추천) / 조건부 waiver(즉시 통과, 잔존 Medium) / 디스코프(-5일 회복, 잔존 High). 각 what-if 비교</td></tr>
+<tr><td>5</td><td>Action → HITL</td><td>"수정" 선택 → ECO WorkItem 생성 + REQ/Defect 링크 writeback 미리보기 → 승인 → Jira 반영 + 결정 lineage 기록</td></tr>
+</table>
+
+<h2 id="s7"><span class="no">7.</span>안티패턴 체크리스트 — 다음 구현 전 통과 기준</h2>
+<p>그동안의 구현이 "이거다" 못 느낀 이유를 역으로 점검하는 리스트. 하나라도 해당하면 정박점을 다시 봐야 한다.</p>
+<ul class="chk">
+<li>홈 화면이 <b>결론(판정)</b>이 아니라 <b>데이터(그래프·표)</b>로 시작하는가?</li>
+<li>첫 화면에서 "무엇을 먼저 봐야 하나"에 답하지 못하는가? (모든 위젯이 평등하면 실패)</li>
+<li>6개 축 중 <b>지배 요인 1개</b>를 화면이 짚어주지 못하는가?</li>
+<li>"지난 게이트 대비 무엇이 바뀌었나"를 볼 방법이 없는가?</li>
+<li>어떤 화면이 <b>행동/다음 질문 없이</b> 시각화로 끝나는가? (so-what/now-what 부재)</li>
+<li>페르소나 전환이 <em>다른 숫자</em>를 보여주는가? (SSOT 붕괴) — 고도·렌즈만 바뀌어야 함</li>
+<li>raw 온톨로지 그래프가 <b>드릴 없이</b> 처음부터 노출되는가?</li>
+<li>결정을 내려도 소스 시스템으로 <b>writeback·lineage 경로</b>가 없는가? (=대시보드)</li>
+<li>상태색이 <b>색만으로</b> 의미를 전달하는가? (아이콘·라벨 동반 필수)</li>
+</ul>
+
+<h2 id="s8"><span class="no">8.</span>프로토타입 매핑 — 문서 ↔ 목업</h2>
+<table>
+<tr><th>설계 요소</th><th>프로토타입에서 확인</th></tr>
+<tr><td>A0 판정</td><td>최상단 "조건부 NO-GO" 배너 — 지배 요인 1개 + 신뢰도 + "▶ 지배 요인부터 보기"</td></tr>
+<tr><td>A1 상황판</td><td>6개 축 카드. 상단 <code>Δ</code> 토글로 지난 게이트 대비 델타 표시</td></tr>
+<tr><td>A2 워치리스트</td><td>축 카드 클릭 → 필터된 리스크 · heat 점수 · "방치 시" 투영</td></tr>
+<tr><td>A3 선택지 + Kinetic</td><td>리스크 클릭 → 선택지 what-if 비교 → "스테이징" → writeback 미리보기 → HITL 승인 → 결정 로그(우하단 FAB)</td></tr>
+<tr><td>A4 근거</td><td>A2에서 "근거·추적성 보기" → 연계 객체 테이블 + REQ→IP→TC→Defect 체인(이웃만)</td></tr>
+<tr><td>Persona × Lens</td><td>상단 역할/렌즈 세그먼트. 임원=요약 3축, 검증리드=A2 착륙, 관련없는 렌즈는 흐려짐</td></tr>
+<tr><td>브레드크럼</td><td>상단 경로 — 어느 고도에서도 상위로 즉시 복귀</td></tr>
+</table>
+
+<h2 id="s9"><span class="no">9.</span>확장 · 다음 단계</h2>
+<table>
+<tr><th>항목</th><th>방향</th></tr>
+<tr><td>다른 게이트로 일반화</td><td>TO/ES/CS/MP 게이트마다 exit 축·임계값만 데이터로 교체. 고도 구조는 불변 — 게이트별 "정박점"만 갈아끼움</td></tr>
+<tr><td>실데이터 연결</td><td>A1 축 = OCEL 이벤트 집계, A4 추적성 = 온톨로지 링크 질의. 합성데이터 스키마를 그대로 실 Jira/Confluence에 매핑(레퍼런스 §6.2)</td></tr>
+<tr><td>Agent 레이어</td><td>A2 리스크 랭킹·A3 what-if 수치를 Analyst 에이전트가 계산. A3 "추천" 배지 = 에이전트 제안, HITL은 그대로 유지</td></tr>
+<tr><td>시점 비교 심화</td><td>Δ 토글을 임의 두 스냅샷 비교로 확장 — 게이트 간 회귀 추적, 결정 lineage 리플레이</td></tr>
+<tr><td>협업 모드</td><td>게이트 리뷰 회의 중 다중 참여자가 같은 고도를 공유(공동 커서), 결정 커밋 시 참석자 lineage 동시 기록</td></tr>
+</table>
+<div class="callout"><b>한 줄 요약.</b> "무엇을 보여줄까"를 고민하는 대신 "어떤 결정을 돕는가"로 질문을 바꾸면, 화면은 결정 의식(게이트 리뷰)에 정박하고 — 나머지 UX(고도·렌즈·페르소나·Action)는 그 정박점에서 연역된다. 프로토타입은 그 연역의 한 인스턴스다.</div>
+</main>
+</div>
+</body>
+</html>

@@ -10,9 +10,12 @@
 > 리플레이 완료 — 8155 백엔드가 현재 리허설 DB를 보고 있다 (데모 DB 복귀:
 > DSN을 soc_ontology로 재기동). backend 327 · frontend 46 green.
 >
-> **다음 단계 — 사용자 액션**: 5275 프론트에서
-> `internal_docs/validation/03_rehearsal_ux_checklist.md` 16문항 판정 수행
-> → "못 찾음" 항목이 다음 UX 설계 라운드의 입력이 된다 (목표 A 5/5, B 9/11).
+> **다음 단계 — 사용자 결정 대기 (설계 26)**: ux_design.html·게이트 리뷰
+> 프로토타입 검토 완료 → `internal_docs/design/26_gate_anchored_ux.md`
+> (게이트 리뷰 정박 UX 재편 G1~G6 + 규율 충돌 치환 7건). 결정 3건:
+> ① 홈 정박 전환(게이트 콘솔 홈 — 권고) ② 게이트 kind 2종 additive 확장
+> ③ 구현 범위(G1 먼저 vs G1~G3 일괄). 리허설 UX 체크리스트 16문항 판정은
+> 재편과 병행 가능.
 >
 > **그 외 후보 (사내 입력 필요)**: ⑤ JIRA writeback(Stage 19) / ⑥ LLM 링크
 > 제안(Stage 18) / 게이트 kind 확장 / D4 / Stage 14 SSO / 반입 리허설(실데이터).
