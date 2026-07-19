@@ -1,0 +1,213 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-101",
+   "fields": {
+    "summary": "8K30 recording 발열 — power budget 초과(Camera)",
+    "issuetype": {
+     "name": "발열"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "표면 온도 한계로 스로틀링이 조기 발동해 8K 연속 촬영 KPI(경쟁사 대비 셀링 포인트)가 무너진다.",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-03-30"
+   }
+  },
+  {
+   "key": "SOCU-103",
+   "fields": {
+    "summary": "DPU underrun — RT latency(Display)",
+    "issuetype": {
+     "name": "언더런"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "사용자가 체감하는 프레임 드랍이라 출하 품질 이슈로 승격됐고, 근본 원인은 고부하 시 메모리 BW 경합이다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_scenarios": "video_mode_panel_underrun_prevention",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-04-06"
+   }
+  },
+  {
+   "key": "SOCU-9042",
+   "fields": {
+    "summary": "[근거 요청] APV/editing 실 BW 측정",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Field 확보 필요 — APV/editing 실 BW 측정",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-02-23"
+   }
+  },
+  {
+   "key": "SOCV-203",
+   "fields": {
+    "summary": "DPU underrun 차기 해결 검토 — U 영향 반영",
+    "issuetype": {
+     "name": "언더런"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 DPU 동작 model과 임계 BW 예측이 없어 HW 개선 폭을 정량화하지 못한 채 면적 비용부터 지불해야 한다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-03-23"
+   }
+  },
+  {
+   "key": "SOCV-205",
+   "fields": {
+    "summary": "APV/4K codec 선개발 BW — power 이슈(Video)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "APV 실 BW 측정값과 MFC/MFD 병렬 처리 model이 없어, 병렬 path 선설계(면적·공수 투자)의 근거가 얇다.",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-04-06"
+   }
+  },
+  {
+   "key": "SOCV-206",
+   "fields": {
+    "summary": "KPI power — EVT1 HW 개선 가능성 판단(U KPI 전력)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 KPI power model의 정확도가 미검증이고 U 발열 근본원인 분석도 미완 — 수정 효과가 pre-Si 추정에만 기대고 있다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_lesson": "KPI power — EVT1 HW 개선 가능성 판단(U KPI 전력) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-02-09"
+   }
+  },
+  {
+   "key": "SOCW-303",
+   "fields": {
+    "summary": "AI scaler arch 검토 — Display scale-up",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "scaler의 전력/화질 model과 scale-up 시나리오의 실제 사용 빈도 데이터가 없어, 면적 투자를 정당화할 근거가 부족하다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-03-30"
+   }
+  },
+  {
+   "key": "SOCW-9041",
+   "fields": {
+    "summary": "[근거 요청] codec 병렬 BW simulation 정확도",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — codec 병렬 BW simulation 정확도",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-02-16"
+   }
+  },
+  {
+   "key": "SOCW-9042",
+   "fields": {
+    "summary": "[근거 요청] 실 scenario BW model",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Lab 확보 필요 — 실 scenario BW model",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-02-23"
+   }
+  },
+  {
+   "key": "SOCW-9043",
+   "fields": {
+    "summary": "[근거 요청] 차세대 codec 시장 요구 우선순위",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — 차세대 codec 시장 요구 우선순위",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-09",
+    "duedate": "2026-02-16"
+   }
+  }
+ ]
+}

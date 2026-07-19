@@ -155,6 +155,113 @@ def ingest_file(
         raise typer.Exit(code=1)
 
 
+@app.command("rehearsal-replay")
+def rehearsal_replay(
+    plan_dir: Path = typer.Option(
+        ROOT / "rehearsal", "--dir", help="replay_plan.json이 있는 디렉토리"
+    ),
+    dsn: str | None = typer.Option(
+        None, "--dsn", help="PostgreSQL DSN — DB 이름에 'rehearsal' 필수"
+    ),
+    waves: int | None = typer.Option(
+        None, "--waves", help="앞에서 N개 wave만 (부분 리플레이 — 'N주차까지 상태')"
+    ),
+    allow_any_dsn: bool = typer.Option(
+        False, "--allow-any-dsn", help="rehearsal DSN 가드 해제 (권장 안 함)"
+    ),
+) -> None:
+    """리허설 리플레이 (설계 25) — 가상 JIRA/Confluence wave를 주입 시계로 순차 반입.
+
+    recorded_at을 wave 날짜로 주입해 버전 로그가 주차에 걸쳐 분포한다 —
+    as-of·diff·워터마크·프로세스 신호가 실데이터처럼 작동한다. 운영/데모 DB
+    보호를 위해 DSN에 'rehearsal'이 없으면 거부한다 (transaction time 진실 유지).
+    """
+    import json
+    import os
+    from datetime import UTC, datetime
+    from datetime import time as dtime
+
+    from backend.connectors.confluence import ConfluenceConnector, FakeConfluenceClient
+    from backend.connectors.jira import FakeJiraClient, JiraConnector, JiraFieldMap
+    from backend.db.connection import get_connection
+    from backend.ingest.service import IngestService, PostgresIngestWriter
+    from backend.ingest.tabular import parse_tabular
+
+    resolved_dsn = dsn or os.environ.get("SOC_ONTOLOGY_DSN")
+    if not resolved_dsn:
+        console.print("[red]--dsn 또는 SOC_ONTOLOGY_DSN이 필요합니다[/red]")
+        raise typer.Exit(code=1)
+    if "rehearsal" not in resolved_dsn and not allow_any_dsn:
+        console.print(
+            "[red]DSN에 'rehearsal'이 없습니다 — 운영/데모 DB 보호 가드. "
+            "전용 DB(예: soc_rehearsal)를 쓰거나 --allow-any-dsn을 명시하세요.[/red]"
+        )
+        raise typer.Exit(code=1)
+
+    plan = json.loads((plan_dir / "replay_plan.json").read_text(encoding="utf-8"))
+    field_map = JiraFieldMap.load(plan_dir / "jira_field_map.rehearsal.yaml")
+    selected = plan["waves"][:waves] if waves else plan["waves"]
+
+    totals = {"accepted": 0, "updated": 0, "unchanged": 0, "rejected": 0}
+    with get_connection(resolved_dsn) as conn:
+        service = IngestService(PostgresIngestWriter(conn))
+        for wave in selected:
+            week = wave["week"]
+            recorded = datetime.combine(
+                datetime.fromisoformat(wave["date"]).date(), dtime(10, 0), tzinfo=UTC
+            )
+            reports = []
+            if "jira" in wave:
+                connector = JiraConnector(
+                    FakeJiraClient(plan_dir / wave["jira"]), field_map
+                )
+                reports.append(
+                    connector.sync(
+                        service,
+                        source_name=f"rehearsal:jira:W{week:02d}",
+                        recorded_at=recorded,
+                    )
+                )
+            if "confluence" in wave:
+                reports.append(
+                    ConfluenceConnector(
+                        FakeConfluenceClient(plan_dir / wave["confluence"])
+                    ).sync(
+                        service,
+                        source_name=f"rehearsal:confluence:W{week:02d}",
+                        recorded_at=recorded,
+                    )
+                )
+            if "decisions" in wave:
+                path = plan_dir / wave["decisions"]
+                rows = parse_tabular(path.name, path.read_bytes())
+                reports.append(
+                    service.ingest_rows(
+                        f"rehearsal:decisions:W{week:02d}",
+                        rows,
+                        "decisions",
+                        recorded_at=recorded,
+                    )
+                )
+            summary = []
+            for report in reports:
+                batch = report.batch
+                totals["accepted"] += batch.accepted_count
+                totals["updated"] += batch.updated_count
+                totals["unchanged"] += batch.unchanged_count
+                totals["rejected"] += batch.rejected_count
+                summary.append(
+                    f"{batch.mapping_name}: +{batch.accepted_count}"
+                    f"/~{batch.updated_count}/={batch.unchanged_count}"
+                    f"/x{batch.rejected_count}"
+                )
+            console.print(f"W{week:02d} ({wave['date']}): " + " · ".join(summary))
+    console.print(
+        f"리플레이 완료 — 신규 {totals['accepted']} · 갱신 {totals['updated']} · "
+        f"변동없음 {totals['unchanged']} · 거부 {totals['rejected']} (wave {len(selected)}개)"
+    )
+
+
 @app.command("export-ocel")
 def export_ocel(
     out: Path = typer.Option(..., "--out", help="출력 JSON 경로"),

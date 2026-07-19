@@ -1,0 +1,190 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-101",
+   "fields": {
+    "summary": "8K30 recording 발열 — power budget 초과(Camera)",
+    "issuetype": {
+     "name": "발열"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "표면 온도 한계로 스로틀링이 조기 발동해 8K 연속 촬영 KPI(경쟁사 대비 셀링 포인트)가 무너진다.",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-02",
+    "duedate": "2026-03-30"
+   }
+  },
+  {
+   "key": "SOCU-9012",
+   "fields": {
+    "summary": "[근거 요청] 8K thermal margin 추가 실측",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Field 확보 필요 — 8K thermal margin 추가 실측",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-02-02",
+    "duedate": "2026-02-02"
+   }
+  },
+  {
+   "key": "SOCU-9061",
+   "fields": {
+    "summary": "[근거 요청] KPI별 전력 budget 세분화 실측",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Field 확보 필요 — KPI별 전력 budget 세분화 실측",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-02",
+    "duedate": "2026-02-16"
+   }
+  },
+  {
+   "key": "SOCU-9062",
+   "fields": {
+    "summary": "[근거 요청] 경쟁사 KPI 전력 벤치마크",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Dashboard 확보 필요 — 경쟁사 KPI 전력 벤치마크",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-02",
+    "duedate": "2026-02-16"
+   }
+  },
+  {
+   "key": "SOCV-203",
+   "fields": {
+    "summary": "DPU underrun 차기 해결 검토 — U 영향 반영",
+    "issuetype": {
+     "name": "언더런"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 DPU 동작 model과 임계 BW 예측이 없어 HW 개선 폭을 정량화하지 못한 채 면적 비용부터 지불해야 한다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-02",
+    "duedate": "2026-03-23"
+   }
+  },
+  {
+   "key": "SOCV-9032",
+   "fields": {
+    "summary": "[근거 요청] underrun 임계 BW 예측",
+    "issuetype": {
+     "name": "지연"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Confluence 확보 필요 — underrun 임계 BW 예측",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-02",
+    "duedate": "2026-02-09"
+   }
+  },
+  {
+   "key": "SOCV-207",
+   "fields": {
+    "summary": "Editable portrait depth/bokeh SW 선개발 + IQ 검증",
+    "issuetype": {
+     "name": "화질"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "실리콘 도착 전 IQ 예측 model과 portrait 회귀 커버리지가 없어, 선개발 결과물의 화질 확신이 낮다 — IQ 회귀는 출시 직전에야 드러난다.",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-02-02",
+    "duedate": "2026-03-09"
+   }
+  },
+  {
+   "key": "SOCV-9072",
+   "fields": {
+    "summary": "[근거 요청] portrait IQ 회귀 coverage",
+    "issuetype": {
+     "name": "지연"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Dashboard 확보 필요 — portrait IQ 회귀 coverage",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-02",
+    "duedate": "2026-02-16"
+   }
+  },
+  {
+   "key": "SOCW-303",
+   "fields": {
+    "summary": "AI scaler arch 검토 — Display scale-up",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "scaler의 전력/화질 model과 scale-up 시나리오의 실제 사용 빈도 데이터가 없어, 면적 투자를 정당화할 근거가 부족하다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-02",
+    "duedate": "2026-03-30"
+   }
+  }
+ ]
+}

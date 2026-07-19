@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## 설계 25 — 리허설 유니버스: 가상 JIRA/Confluence + 주차 리플레이 (2026-07-19)
+
+> 설계: `internal_docs/design/25_rehearsal_universe.md`. 사내 연결 전 UX·
+> digital twin 표면 판정용. 원천: 57 과제 world.yaml (read-only), 역할 분담
+> 반영 — JIRA=이슈·계획·진행(간결), Confluence=기술 세부·측정 리포트·결정
+> 노트·공식 architecture 문서. 실 전환은 payload/field map 교체만 (경로 동일).
+
+- **변환 도구** (`tools/build_rehearsal_from_57.py`): 이벤트 24+missing_
+  evidence 51+activity 144 → 이슈 타임라인 80건·페이지 88건·결정 24건·wave
+  43개 (`rehearsal/` 커밋 — 57 없이도 리플레이 가능). 의도된 지저분함:
+  링크 78/80 비움, 미등재 상태("In Review")·유형("근거요청"), 심각도 일부
+  누락, project_v W30~37 전이를 W38에 몰아 기록(기록 규율 왜곡).
+- **주입 시계**: `ingest_rows(recorded_at=)` additive — 배치·버전 로그·
+  ingested_at 단일 지점. JIRA/Confluence 커넥터 `sync(recorded_at=)` 관통.
+  운영 반입 경로는 불변 (미지정 시 현재 시각).
+- **`rehearsal-replay` CLI**: wave 순차 반입 + **DSN 가드**(이름에
+  'rehearsal' 없으면 거부 — 운영/데모 DB의 transaction time 보호),
+  `--waves N` 부분 리플레이.
+- **UX 판정 대본** (`internal_docs/validation/03_rehearsal_ux_checklist.md`):
+  코크핏 5문항 + 트윈 표면 11문항 × [경로→기대 답→판정], 심어진 발견
+  시나리오와 1:1 대조표. handover §3d 실행·실 전환 절차.
+- 검증: backend 327 · frontend 46 green. `soc_rehearsal` 실리플레이 —
+  신규 192·갱신 95·거부 0, 연결률 33%(38/116) 저조 시작, 링크 제안 53건,
+  결정 워터마크 25건 전부 version_log 정밀, as-of 61→280 버전 재생,
+  SOCV-201에 미등재 상태+단계 건너뜀 판정, 게이트 미충족 3건.
+
 ## 설계 24 — 링크 제안 (link-recovery 사외 선행분) (2026-07-19)
 
 > 설계: `internal_docs/design/24_link_proposals.md` (설계 22 후속 ⑥의 결정론

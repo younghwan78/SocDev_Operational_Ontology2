@@ -1,0 +1,2 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_207,project_v,evt_rehearsal_207,review_decision,portrait depth SW,"선개발 범위 확정 — 전면 선개발+IQ 검증, 기존 bokeh 재사용 호환 레이어, 일부 차기 이연.",emulator depth 동작 검증 기반 결정,Lab:CAM-207,measurement,M,depth solution soc전 IQ 예측 model;portrait IQ 회귀 coverage

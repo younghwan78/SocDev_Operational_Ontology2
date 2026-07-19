@@ -1,0 +1,91 @@
+{
+ "issues": [
+  {
+   "key": "SOCV-204",
+   "fields": {
+    "summary": "Emulator FC 검증 한계 — 성능/파워 예측 불확실",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "성능/파워 예측 model과 emulator-실리콘 상관관계 데이터가 없어, 지금 하는 선최적화가 실칩에서 맞을지 확신이 낮다 — 틀리면 재작업이다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Emulator FC 검증 한계 — 성능/파워 예측 불확실 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2025-11-10",
+    "duedate": "2025-12-29"
+   }
+  },
+  {
+   "key": "SOCV-9042",
+   "fields": {
+    "summary": "[근거 요청] emulator-실 soc 상관관계 데이터",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Lab 확보 필요 — emulator-실 soc 상관관계 데이터",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-10",
+    "duedate": "2025-11-24"
+   }
+  },
+  {
+   "key": "SOCW-302",
+   "fields": {
+    "summary": "이전 과제 필수 개선 항목 — 반영 여부/자원 산정",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "전면 반영은 area/인력 비용이 크고 미반영은 같은 문제의 재발인데, 근본원인 분석과 미반영 시 영향 정량화가 아직 연결되지 않아 절충안의 확신이 과대평가된 상태다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_lesson": "이전 과제 필수 개선 항목 — 반영 여부/자원 산정 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2025-11-10",
+    "duedate": "2026-01-12"
+   }
+  },
+  {
+   "key": "SOCW-308",
+   "fields": {
+    "summary": "Depth/bokeh HW 가속 area 검토(portrait 특화)",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "가속기의 area/power model과 portrait 시장 수요 추정이 미확보 — 면적을 지불할 근거도, 안 할 근거도 정량화되지 않았다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Depth/bokeh HW 가속 area 검토(portrait 특화) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2025-11-10",
+    "duedate": "2026-02-23"
+   }
+  }
+ ]
+}

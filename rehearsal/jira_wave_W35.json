@@ -1,0 +1,68 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-101",
+   "fields": {
+    "summary": "8K30 recording 발열 — power budget 초과(Camera)",
+    "issuetype": {
+     "name": "발열"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "표면 온도 한계로 스로틀링이 조기 발동해 8K 연속 촬영 KPI(경쟁사 대비 셀링 포인트)가 무너진다.",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-03-30",
+    "duedate": "2026-03-30"
+   }
+  },
+  {
+   "key": "SOCU-108",
+   "fields": {
+    "summary": "APV recording power 최적화 — 고BW codec(Video)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "APV 녹화 중 타 IP 동시 동작 시 BW 경합으로 전력이 초과 — 고객이 실제로 어떤 시나리오로 쓸지 데이터가 없어 최적화 우선순위가 불명확하다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "APV recording power 최적화 — 고BW codec(Video) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-03-30",
+    "duedate": "2026-05-18"
+   }
+  },
+  {
+   "key": "SOCW-303",
+   "fields": {
+    "summary": "AI scaler arch 검토 — Display scale-up",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "scaler의 전력/화질 model과 scale-up 시나리오의 실제 사용 빈도 데이터가 없어, 면적 투자를 정당화할 근거가 부족하다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Closed"
+    },
+    "updated": "2026-03-30",
+    "duedate": "2026-03-30"
+   }
+  }
+ ]
+}

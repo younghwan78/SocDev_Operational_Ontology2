@@ -1,0 +1,175 @@
+{
+ "issues": [
+  {
+   "key": "SOCV-9011",
+   "fields": {
+    "summary": "[근거 요청] EVT1 power pre-silicon model 정확도 검증",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Lab 확보 필요 — EVT1 power pre-silicon model 정확도 검증",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-17",
+    "duedate": "2025-12-01"
+   }
+  },
+  {
+   "key": "SOCV-9012",
+   "fields": {
+    "summary": "[근거 요청] U 발열 근본원인 분석 lesson",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Confluence 확보 필요 — U 발열 근본원인 분석 lesson",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-17",
+    "duedate": "2025-11-24"
+   }
+  },
+  {
+   "key": "SOCV-202",
+   "fields": {
+    "summary": "Camera ISP pipeline 구조 변경 — SW 대응/기존 scenario 검증",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "전면 재구조화는 공수가 크고, 기존 촬영 scenario의 회귀 검증 커버리지와 실리콘 도착 전 성능 예측 model이 미확보라 품질 확신이 낮다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_lesson": "Camera ISP pipeline 구조 변경 — SW 대응/기존 scenario 검증 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-17",
+    "duedate": "2026-02-23"
+   }
+  },
+  {
+   "key": "SOCV-9021",
+   "fields": {
+    "summary": "[근거 요청] soc 전 성능 예측 model",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Confluence 확보 필요 — soc 전 성능 예측 model",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2025-11-17",
+    "duedate": "2025-11-10"
+   }
+  },
+  {
+   "key": "SOCV-208",
+   "fields": {
+    "summary": "Multi-camera sensor mode seamless 전환 SW 선개발",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "전환 지연 실측과 zoom 사용 패턴 데이터가 없어 재구조화 범위(어느 배율 구간까지 seamless로 만들지)를 정하지 못하고 있다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Multi-camera sensor mode seamless 전환 SW 선개발 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-17",
+    "duedate": "2026-01-26"
+   }
+  },
+  {
+   "key": "SOCV-9081",
+   "fields": {
+    "summary": "[근거 요청] multi-camera 전환 지연 측정",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Lab 확보 필요 — multi-camera 전환 지연 측정",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2025-11-17",
+    "duedate": "2025-11-17"
+   }
+  },
+  {
+   "key": "SOCV-9082",
+   "fields": {
+    "summary": "[근거 요청] zoom scenario 사용 패턴",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "JIRA 확보 필요 — zoom scenario 사용 패턴",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2025-11-17",
+    "duedate": "2025-11-17"
+   }
+  },
+  {
+   "key": "SOCW-306",
+   "fields": {
+    "summary": "Camera pipeline 화질(IQ) 개선 arch 검토",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "IQ 개선의 area cost model과 경쟁사 화질 벤치마크가 없어 '얼마나 좋아지는데 면적이 얼마나 드는지'가 정량화되지 않았다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_lesson": "Camera pipeline 화질(IQ) 개선 arch 검토 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2025-11-17",
+    "duedate": "2026-01-12"
+   }
+  }
+ ]
+}

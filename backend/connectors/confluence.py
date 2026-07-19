@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
@@ -66,8 +67,13 @@ class ConfluenceConnector:
         return rows, refs
 
     def sync(
-        self, ingest: IngestService, *, source_name: str = "confluence-sync"
+        self,
+        ingest: IngestService,
+        *,
+        source_name: str = "confluence-sync",
+        recorded_at: datetime | None = None,
     ) -> IngestReport:
+        # recorded_at은 리허설 리플레이 전용 주입 시계 (설계 25) — 실 동기화는 미지정.
         rows, refs = self.rows()
         return ingest.ingest_rows(
             source_name,
@@ -75,4 +81,5 @@ class ConfluenceConnector:
             "semantic_chunks",
             origin=SourceOrigin.INTEGRATED,
             row_refs=refs,
+            recorded_at=recorded_at,
         )

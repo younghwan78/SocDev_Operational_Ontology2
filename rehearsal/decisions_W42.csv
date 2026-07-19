@@ -1,0 +1,2 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_108,project_u,evt_rehearsal_108,review_decision,APV recording power,"APV를 상품화 수준의 전력/BW로 — SW 스케줄링 최적화, HW 특성 분석 기반 동작점 재설정, 차기 V HW 개선 이관 중 확정한다.",APV 전력/BW 실측 기반 결정,Field:VID-108,measurement,M,APV 실 BW/전력 측정;APV 고객 사용 scenario

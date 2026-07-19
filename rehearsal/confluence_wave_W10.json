@@ -1,0 +1,35 @@
+{
+ "pages": [
+  {
+   "id": "5730701",
+   "space": "CAM",
+   "title": "Camera pipeline area 최적화 — 수익성(ISP) — 기술 검토 노트",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-307"
+   ],
+   "updated_week": 10,
+   "body": "배경: W 수익성 목표를 맞추려면 die에서 가장 큰 ISP pipeline이 area 절감의 최대 후보다 — 축소 재설계와 블록 공유가 경합 중이다.\n문제: area-perf model 정확도와 축소 시 IQ/perf 영향 데이터가 미확보 — 블록 공유(재사용)안의 확신은 근거 없이 과대평가된 상태다.\n목표: ISP area 절감 방식 확정 — 축소 재설계, 블록 공유/재사용, full pipeline 유지.\n\n[ARCH] ISP area-perf PPA를 산출해 카메라 파이프라인의 area 최적화(수익성 관점의 ISP cost 절감) 결정을 내려 경쟁사 대비 성능/전력 균형을 맞추기 위함이다.\n부족 데이터: 모델 정확도(요청 W8)의 검증 데이터(실측/근사 비교, 공정/클록/툴 버전별 오차)와 spec-architecting 단계 결과를 추가로 확보하면 area-perf PPA를 확정하고 confidence를 올려 W 목표 달성 가능성을 재판단할 수 있다.\n\n[HW] ISP 파이프라인 area 축소에 따른 수익성(ISP) 최적화 결정을 내리기 위해, 현재 모델 기반으로 area 추정을 빠르게 산출하되 영향 범위를 확정하기 위한 데이터 보강이 필요하다.\n부족 데이터: area 축소 시 IQ/perf 저하(또는 유지) 구간과 민감도(예: block별 reduction 허용치)를 Lab 실험/시뮬레이션으로 확보하면, area 추정을 확정하고 HW 설계 마진/아키텍처 변경 방향까지 판단할 수 있다.\n\n[PM] ISP area-perf 모델을 기반으로 Camera pipeline 최적화 범위의 사양(스케줄)을 M 수준 confidence로 확정해 수익성 관점(ISP)에서 spec-architecting 단계 일정을 안정화하기 위해 판단한다.\n부족 데이터: 추가로 공정/비용 환산(Area→$), 목표 성능(해상도/프레임/latency) 대비 margin, 고객 요구사항/제약(전력·열·DDR) 수치가 확보되면 spec 확정 및 일정 신뢰도를 상향(M→H)하며 리스크를 선제적으로 판단할 수 있다."
+  },
+  {
+   "id": "5730711",
+   "space": "CAM",
+   "title": "측정 리포트: ISP area-perf model",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-307"
+   ],
+   "updated_week": 10,
+   "body": "ISP area-perf model\n출처 시스템: Confluence:ISP-307 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "579100",
+   "space": "SYS",
+   "title": "주간 개발 회의록 W10",
+   "project_id": "",
+   "issue_keys": [],
+   "updated_week": 10,
+   "body": "이번 주 역할별 계획 발언:\n- 카메라 파이프라인 원가 최적화부터 잡겠습니다\n- ISP area 최적화부터 잡겠습니다\n- 카메라 파이프라인 area 최적화는 ISP 우선순위로 보겠습니다\n- 카메라 파이프라인 area, ISP 수익성부터 잡겠습니다\n- 카메라 파이프 최적화는 SW로 수익성부터 챙기겠습니다\n- 카메라 파이프 최적화는 ISP 수익성부터 먼저 잡겠습니다"
+  }
+ ]
+}

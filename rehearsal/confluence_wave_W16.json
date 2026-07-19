@@ -1,0 +1,57 @@
+{
+ "pages": [
+  {
+   "id": "5720201",
+   "space": "CAM",
+   "title": "Camera ISP pipeline 구조 변경 — SW 대응/기존 scenario 검증 — 기술 검토 노트",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-202"
+   ],
+   "updated_week": 16,
+   "body": "배경: V의 신형 ISP pipeline 구조 변경으로 기존 camera SW 스택과의 호환이 깨졌다 — 실리콘 도착 전에 SW를 선개발해 둬야 하는 구간이다.\n문제: 전면 재구조화는 공수가 크고, 기존 촬영 scenario의 회귀 검증 커버리지와 실리콘 도착 전 성능 예측 model이 미확보라 품질 확신이 낮다.\n목표: 실리콘 도착 시점에 camera 기본 동작이 서도록 — 전면 재구조화, 호환 레이어 유지, 일부 scenario 차기 이연 중 범위를 확정한다.\n\n[ARCH] ISP 파이프라인 구조 변경이 PPA에 미치는 영향을 SW 대응 수준에서 예측하고, origin V 기준 시나리오의 회귀/성능 저하를 조기에 검증하기 위함이다.\n부족 데이터: SoC 전 성능 예측 model(전력/대역폭/스케줄링/버스 경합 포함)을 연결해 기존 시나리오 대비 frame time/throughput/power를 수치로 재추정하면, 변경안의 PPA 우선순위와 SW 시나리오 검증 범위를 확정할 수 있다.\n\n[HW] HW-ISP pipeline 구조 변경에 대해 SW 대응 방향과 기존 scenario의 영향 범위를 선제적으로 확인하기 위해서다.\n부족 데이터: 추가로 silicon/보드 레벨 로그(레지스터/latency/throughput/크롭·스케일·클럭 게이팅 등)와 기존 scenario별 비교 결과가 있어야 변경 영향의 완전한 검증과 불량/에지 케이스 판단을 진행할 수 있다.\n\n[PM] origin V의 Camera ISP pipeline 구조 변경에 대해 emulator 기반 선개발로 SW 대응 범위와 시나리오 호환성을 조기에 검증해 선개발 일정 결정을 내리기 위함입니다.\n부족 데이터: 추가로 EVT1 실측 수준의 통합 테스트 결과(동일 입력/출력 비교, 주요 파라미터/성능, 실패 모드)와 변경 영향 분석 문서를 확보하면 선개발 일정의 확정(또는 조정)과 리스크 수위를 더 정확히 산정할 수 있습니다."
+  },
+  {
+   "id": "5720211",
+   "space": "CAM",
+   "title": "측정 리포트: emulator 기반 pipeline 검증",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-202"
+   ],
+   "updated_week": 16,
+   "body": "emulator 기반 pipeline 검증\n출처 시스템: Lab:CAM-202 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5720801",
+   "space": "CAM",
+   "title": "Multi-camera sensor mode seamless 전환 SW 선개발 — 기술 검토 노트",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-208"
+   ],
+   "updated_week": 16,
+   "body": "배경: multi-camera zoom 중 sensor mode(Tetra/QCell) 전환 시 끊김이 U에서 체감 이슈로 확인됐다 — V에서 seamless 전환 SW를 선개발하는 구간이다.\n문제: 전환 지연 실측과 zoom 사용 패턴 데이터가 없어 재구조화 범위(어느 배율 구간까지 seamless로 만들지)를 정하지 못하고 있다.\n목표: SW 재구조화, buffering 완화, 일부 zoom 구간 제한 중 선개발 범위를 확정한다.\n\n[ARCH] pre-Si 검증 기반으로 멀티카메라 센서 모드 seamless 전환의 multi-stream PPA를 선제 예측해 SW 선개발 의사결정을 PPA 관점에서 정렬하기 위함이다.\n부족 데이터: 전력/지연/드롭프레임/버퍼링 오버헤드(전환 전후 steady-state 포함)와 스트림 수·해상도·프레임레이트별 측정치 및 EVT1 실측에서의 실제 전환 파형/레지스터 시퀀스 데이터를 추가로 확보하면 multi-stream PPA 예측 정확도와 SW 전환 전략(트리거 시점·throttle 여부)을 확정할 수 있다.\n\n[HW] HW 연동 선개발을 통해 멀티카메라 센서 모드 seamless 전환의 타이밍/제어 제약을 조기 확정해 pre-Si에서 V 단계 리스크를 낮추기 위해서다.\n부족 데이터: 추가로 EVT1 실측 기준의 silicon/실측 로그(레지스터 시퀀스·타이밍·링크 에러/프레임 drop·AFE/CSI 상태)와 측정 결과를 확보하면 mode 전환 파형/시퀀스 확정 및 SW-HW 인터페이스 최종 판단을 진행할 수 있다.\n\n[PM] pre-Si 검증 근거를 바탕으로 멀티카메라 sensor mode seamless 전환 SW 선개발의 일정(Confidence M)을 확정하기 위해 현재 증거의 충분성을 점검한다.\n부족 데이터: 전환 시 latency/프레임 드롭/오디오·동기 영향 및 EVT1 실측 범위에서의 모드 매핑·레지스터 호환성을 확인할 수 있는 pre-Si/bench 정량 결과와 요구사항(목표 SLO/성공조건)을 추가로 확보하면 일정과 confidence를 상향 또는 보정해 판단할 수 있다."
+  },
+  {
+   "id": "5720811",
+   "space": "CAM",
+   "title": "측정 리포트: sensor mode 전환 pre-Si 검증",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-208"
+   ],
+   "updated_week": 16,
+   "body": "sensor mode 전환 pre-Si 검증\n출처 시스템: Lab:CAM-208 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "579160",
+   "space": "SYS",
+   "title": "주간 개발 회의록 W16",
+   "project_id": "",
+   "issue_keys": [],
+   "updated_week": 16,
+   "body": "이번 주 역할별 계획 발언:\n- ISP 파이프라인 변경분 시나리오 영향 정리하겠습니다\n- ISP 파이프라인 PPA 먼저 정리해드릴게요\n- ISP 파이프라인 변경, xdomain 회귀부터 점검하겠습니다\n- ISP 파이프 변경점부터 정리하겠습니다\n- ISP 파이프라인 변경 대응 먼저 확인하겠습니다\n- ISP 파이프라인 SW 선개발 일정 점검하겠습니다\n- 멀티캠 zoom 시나리오부터 확인하겠습니다.\n- 멀티스트림 PPA부터 선제검증하겠습니다"
+  }
+ ]
+}

@@ -15,6 +15,7 @@ import os
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
@@ -182,7 +183,14 @@ class JiraConnector:
             refs.append(f"jira:{issue.get('key', row.get('이슈 ID', '?'))}")
         return rows, refs
 
-    def sync(self, ingest: IngestService, *, source_name: str = "jira-sync") -> IngestReport:
+    def sync(
+        self,
+        ingest: IngestService,
+        *,
+        source_name: str = "jira-sync",
+        recorded_at: datetime | None = None,
+    ) -> IngestReport:
+        # recorded_at은 리허설 리플레이 전용 주입 시계 (설계 25) — 실 동기화는 미지정.
         rows, refs = self.rows()
         return ingest.ingest_rows(
             source_name,
@@ -190,4 +198,5 @@ class JiraConnector:
             self._map.issue_mapping,
             origin=SourceOrigin.INTEGRATED,
             row_refs=refs,
+            recorded_at=recorded_at,
         )

@@ -1,0 +1,26 @@
+{
+ "pages": [
+  {
+   "id": "5710601",
+   "space": "CAM",
+   "title": "KPI recording(UHD60) sustained power 최적화(Camera) — 기술 검토 노트",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-106"
+   ],
+   "updated_week": 29,
+   "body": "배경: UHD60 연속 녹화는 마케팅이 내세우는 핵심 KPI인데, 양산 실측에서 sustained 전력이 경쟁사 대비 높게 나왔다.\n문제: 장시간 녹화에서 전력-발열 연쇄로 KPI 유지 시간이 짧아진다 — 경쟁사 비교 데이터가 없어 '얼마나 따라잡아야 하는지'도 불명확하다.\n목표: KPI 유지 시간을 연장 — governor/pacing SW 최적화, 동작점 조정, 차기 V HW(DVFS) 개선 이연 중 확정한다.\n\n[ARCH] UHD60 카메라 sustained power를 최적화하기 위한 KPI power/PPA trade-off를 현장 실측 기반으로 확정해 경쟁사 대비 전력·성능 목표를 안전하게 달성하기 위함이다.\n부족 데이터: 추가로 부족한 데이터는 없으며, 동일 KPI 정의(프레임/해상도/센서·ISP 파이프 상태)로 로그만 유지하면 다음 PPA 검증 및 설계 파라미터 확정까지 진행 가능하다.\n\n[HW] 동작점/클럭 추정을 근거로 UHD60 지속 전력 최적화(Camera) 방향과 마진을 빠르게 확정하기 위해서입니다.\n부족 데이터: KPI별 전력 budget을 세분화한 실측(요청 W27 · 도착예정 W29)이 확보되면 클럭/동작모드별 병목·절감 포인트를 특정해 구체적인 HW 미세조정 및 다음 설계/검증 액션을 결정할 수 있습니다.\n\n[PM] UHD60 sustained power 최적화(Camera) 성과를 양산 일정에 반영해 리스크를 낮추기 위해 KPI recording을 수행합니다.\n부족 데이터: 추가 부족 데이터는 현재 지적되지 않았으므로(갭=없음) 현 증거로 양산 일정 및 일정 내 분기/마일스톤 판단을 진행합니다."
+  },
+  {
+   "id": "5710611",
+   "space": "CAM",
+   "title": "측정 리포트: UHD60 KPI 전력 실측",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-106"
+   ],
+   "updated_week": 29,
+   "body": "UHD60 KPI 전력 실측\n출처 시스템: Field:KPI-106 — 측정 조건과 한계를 기록한다."
+  }
+ ]
+}

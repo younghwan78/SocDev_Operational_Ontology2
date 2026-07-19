@@ -1,0 +1,109 @@
+{
+ "issues": [
+  {
+   "key": "SOCW-301",
+   "fields": {
+    "summary": "NN 가속기/SRAM area spec trade-off — 수익성(Audio AI)",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "perf/area model의 정확도가 미검증이고 고객의 AI audio 요구 spec도 미확정 — area를 깎으면 perf 부족, 유지하면 원가 상승인데 양쪽 다 근거가 없다.",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-09-08",
+    "duedate": "2025-12-29"
+   }
+  },
+  {
+   "key": "SOCW-9011",
+   "fields": {
+    "summary": "[근거 요청] NN 가속기 perf/area model 정확도",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — NN 가속기 perf/area model 정확도",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2025-09-08",
+    "duedate": "2025-09-01"
+   }
+  },
+  {
+   "key": "SOCW-9012",
+   "fields": {
+    "summary": "[근거 요청] 고객 AI audio 요구 spec",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "JIRA 확보 필요 — 고객 AI audio 요구 spec",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2025-09-08",
+    "duedate": "2025-09-08"
+   }
+  },
+  {
+   "key": "SOCW-9061",
+   "fields": {
+    "summary": "[근거 요청] IQ 개선 area cost model",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — IQ 개선 area cost model",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-09-08",
+    "duedate": "2025-10-06"
+   }
+  },
+  {
+   "key": "SOCW-9062",
+   "fields": {
+    "summary": "[근거 요청] 경쟁사 화질 벤치마크",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Dashboard 확보 필요 — 경쟁사 화질 벤치마크",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-09-08",
+    "duedate": "2025-09-22"
+   }
+  }
+ ]
+}

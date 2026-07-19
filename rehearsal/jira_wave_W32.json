@@ -1,0 +1,131 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-103",
+   "fields": {
+    "summary": "DPU underrun — RT latency(Display)",
+    "issuetype": {
+     "name": "언더런"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "사용자가 체감하는 프레임 드랍이라 출하 품질 이슈로 승격됐고, 근본 원인은 고부하 시 메모리 BW 경합이다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_scenarios": "video_mode_panel_underrun_prevention",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-03-09",
+    "duedate": "2026-04-06"
+   }
+  },
+  {
+   "key": "SOCU-9031",
+   "fields": {
+    "summary": "[근거 요청] underrun 재현 trace 범위 확대",
+    "issuetype": {
+     "name": "지연"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Dashboard 확보 필요 — underrun 재현 trace 범위 확대",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-03-09",
+    "duedate": "2026-03-23"
+   }
+  },
+  {
+   "key": "SOCU-9032",
+   "fields": {
+    "summary": "[근거 요청] scaler fallback 전력/대역폭 영향",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Lab 확보 필요 — scaler fallback 전력/대역폭 영향",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-03-09",
+    "duedate": "2026-03-23"
+   }
+  },
+  {
+   "key": "SOCU-9041",
+   "fields": {
+    "summary": "[근거 요청] 경쟁사 editing 내부 동작 추정",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Confluence 확보 필요 — 경쟁사 editing 내부 동작 추정",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-03-09",
+    "duedate": "2026-03-02"
+   }
+  },
+  {
+   "key": "SOCU-9082",
+   "fields": {
+    "summary": "[근거 요청] APV 고객 사용 scenario",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "JIRA 확보 필요 — APV 고객 사용 scenario",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-03-09",
+    "duedate": "2026-03-23"
+   }
+  },
+  {
+   "key": "SOCV-9051",
+   "fields": {
+    "summary": "[근거 요청] APV 실 BW 측정값",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Field 확보 필요 — APV 실 BW 측정값",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-03-09",
+    "duedate": "2026-03-23"
+   }
+  }
+ ]
+}

@@ -1,0 +1,2 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_102,project_u,evt_rehearsal_102,review_decision,dual recording power,"고객 일정 안에 전력을 수용 수준으로 — SW 제어 최적화, sensor mode 전환 구조, KPI 범위 축소 중 대응 방식을 확정한다.",dual sensor 전력 실측 기반 결정,Field:CAM-102,measurement,M,고객 특화 solution 상세 spec;dual sensor 시나리오 전력 실측

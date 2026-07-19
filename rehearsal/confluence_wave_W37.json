@@ -1,0 +1,15 @@
+{
+ "pages": [
+  {
+   "id": "5710621",
+   "space": "CAM",
+   "title": "결정 노트: KPI sustained power",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-106"
+   ],
+   "updated_week": 37,
+   "body": "결정: KPI sustained power (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  }
+ ]
+}

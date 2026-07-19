@@ -1,0 +1,293 @@
+{
+ "issues": [
+  {
+   "key": "SOCV-101",
+   "fields": {
+    "summary": "8K30 recording 발열 — power budget 초과(Camera) (U 전파)",
+    "issuetype": {
+     "name": "발열"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 HW 개선 검토(V)",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-04-20"
+   }
+  },
+  {
+   "key": "SOCU-9021",
+   "fields": {
+    "summary": "[근거 요청] 고객 특화 solution 상세 spec",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "JIRA 확보 필요 — 고객 특화 solution 상세 spec",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-05-04"
+   }
+  },
+  {
+   "key": "SOCU-104",
+   "fields": {
+    "summary": "Video editing benchmark 경쟁사 열세(Video)",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "MFC 단일 경로 처리 구조라 대용량 클립에서 격차가 벌어지고, 리뷰 점수 하락이 판매 협상에 직접 부담이 된다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Video editing benchmark 경쟁사 열세(Video) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-04-20"
+   }
+  },
+  {
+   "key": "SOCU-107",
+   "fields": {
+    "summary": "Editable portrait video recording power 최적화(Camera 특화)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "특화 기능 하나가 전력·연산 자원을 잠식해 기본 촬영 체감(발열·배터리)까지 영향을 준다",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-06-15"
+   }
+  },
+  {
+   "key": "SOCU-108",
+   "fields": {
+    "summary": "APV recording power 최적화 — 고BW codec(Video)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "APV 녹화 중 타 IP 동시 동작 시 BW 경합으로 전력이 초과 — 고객이 실제로 어떤 시나리오로 쓸지 데이터가 없어 최적화 우선순위가 불명확하다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "APV recording power 최적화 — 고BW codec(Video) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-05-18"
+   }
+  },
+  {
+   "key": "SOCU-9081",
+   "fields": {
+    "summary": "[근거 요청] APV 실 BW/전력 측정",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Field 확보 필요 — APV 실 BW/전력 측정",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-05-04"
+   }
+  },
+  {
+   "key": "SOCV-202",
+   "fields": {
+    "summary": "Camera ISP pipeline 구조 변경 — SW 대응/기존 scenario 검증",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "전면 재구조화는 공수가 크고, 기존 촬영 scenario의 회귀 검증 커버리지와 실리콘 도착 전 성능 예측 model이 미확보라 품질 확신이 낮다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_lesson": "Camera ISP pipeline 구조 변경 — SW 대응/기존 scenario 검증 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-02-23"
+   }
+  },
+  {
+   "key": "SOCV-203",
+   "fields": {
+    "summary": "DPU underrun 차기 해결 검토 — U 영향 반영",
+    "issuetype": {
+     "name": "언더런"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 DPU 동작 model과 임계 BW 예측이 없어 HW 개선 폭을 정량화하지 못한 채 면적 비용부터 지불해야 한다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-03-23"
+   }
+  },
+  {
+   "key": "SOCV-205",
+   "fields": {
+    "summary": "APV/4K codec 선개발 BW — power 이슈(Video)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "APV 실 BW 측정값과 MFC/MFD 병렬 처리 model이 없어, 병렬 path 선설계(면적·공수 투자)의 근거가 얇다.",
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-04-06"
+   }
+  },
+  {
+   "key": "SOCV-9051",
+   "fields": {
+    "summary": "[근거 요청] APV 실 BW 측정값",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Field 확보 필요 — APV 실 BW 측정값",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-03-23"
+   }
+  },
+  {
+   "key": "SOCV-207",
+   "fields": {
+    "summary": "Editable portrait depth/bokeh SW 선개발 + IQ 검증",
+    "issuetype": {
+     "name": "화질"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "실리콘 도착 전 IQ 예측 model과 portrait 회귀 커버리지가 없어, 선개발 결과물의 화질 확신이 낮다 — IQ 회귀는 출시 직전에야 드러난다.",
+    "status": {
+     "name": "Closed"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-03-09"
+   }
+  },
+  {
+   "key": "SOCW-304",
+   "fields": {
+    "summary": "HW micro-architecture — codec BW 병렬 구조(Video)",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "병렬 구조는 BW 경합을 근본 해소하지만 면적이 늘고, simulation 정확도와 실 시나리오 BW model이 미확보라 '병렬이 실제로 얼마나 버는지'의 확신이 낮다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "HW micro-architecture — codec BW 병렬 구조(Video) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-04-20"
+   }
+  },
+  {
+   "key": "SOCW-9051",
+   "fields": {
+    "summary": "[근거 요청] EVT0 PPA 최종 simulation 검증",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Lab 확보 필요 — EVT0 PPA 최종 simulation 검증",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-05-04"
+   }
+  },
+  {
+   "key": "SOCW-9052",
+   "fields": {
+    "summary": "[근거 요청] EVT0 양산 feasibility 검토",
+    "issuetype": {
+     "name": "지연"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Dashboard 확보 필요 — EVT0 양산 feasibility 검토",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-04-20",
+    "duedate": "2026-05-04"
+   }
+  }
+ ]
+}

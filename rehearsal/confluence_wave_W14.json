@@ -1,0 +1,79 @@
+{
+ "pages": [
+  {
+   "id": "5720401",
+   "space": "ARCH",
+   "title": "Emulator FC 검증 한계 — 성능/파워 예측 불확실 — 기술 검토 노트",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-204"
+   ],
+   "updated_week": 14,
+   "body": "배경: 실리콘 도착 전 V의 선개발·선최적화는 emulator 검증에 의존하는데, emulator는 기능(FC)만 확인할 수 있고 성능/파워는 보여주지 못한다.\n문제: 성능/파워 예측 model과 emulator-실리콘 상관관계 데이터가 없어, 지금 하는 선최적화가 실칩에서 맞을지 확신이 낮다 — 틀리면 재작업이다.\n목표: 검증 인프라(계측/model 환경)에 투자할지, 예측 기반으로 선최적화를 지를지, 검증 scope를 줄일지 결정한다.\n\n[ARCH] EMulator FC만으로는 성능/파워 불확실이 큰 만큼, PPA 및 경쟁사 대비 성능·전력 목표를 아키텍처 관점에서 조기 보정하기 위해 성능/파워 예측 모델 구축 필요성을 확정한다.\n부족 데이터: 성능/파워 예측 모델을 위해 최소한 EVT1에서의 마이크로/벤치마크별 성능 카운터와 전력(또는 전력 모델 파라미터) 측정 데이터, 목표 워크로드/Frequency-Voltage 스윕 결과를 확보한 뒤 모델을 생성·검증해야 판단을 고도화할 수 있다.\n\n[HW] Emulator 기반 FC 검증만으로는 origin V 및 EVT1 단계 상태에서 성능/파워 예측 불확실이 커질 수 있음을 확인하고, HW 동작 한계/신뢰도를 명확히 하여 후속 검증 우선순위를 정하기 위함입니다.\n부족 데이터: 성능/파워 불확실을 줄이기 위해서는 HW-유사 타이밍/전력 모델 보정에 필요한 구체 수치(클럭/코어 활성도/IPC, 전력 레일별 전류, workload별 실행 시간)가 추가로 확보되면 성능·파워 예측 신뢰도와 HW 동작 한계를 더 확정할 수 있습니다.\n\n[PM] EVT1 단계에서 emulator FC만으로는 성능/파워 예측 불확실 리스크가 잔존하므로, 선개발 일정에 대한 보수적 버퍼/대체검증 플랜을 선제 반영하기 위해 판단한다.\n부족 데이터: 성능/파워(클럭·전력·열) 측정치를 목표와 비교할 수 있는 초기 실측 또는 시뮬레이션-실측 상관(예: EVT1/early bring-up 또는 전력 모델 보정 결과)이 추가되면 선개발 일정의 버퍼 크기와 go/no-go 기준을 더 정확히 결정할 수 있다."
+  },
+  {
+   "id": "5720411",
+   "space": "ARCH",
+   "title": "측정 리포트: emulator FC 동작 확인",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-204"
+   ],
+   "updated_week": 14,
+   "body": "emulator FC 동작 확인\n출처 시스템: Lab:EMU-204 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5730201",
+   "space": "ARCH",
+   "title": "이전 과제 필수 개선 항목 — 반영 여부/자원 산정 — 기술 검토 노트",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-302"
+   ],
+   "updated_week": 14,
+   "body": "배경: 직전 세대 양산 과제(이미 출하)의 사후분석에서 필수 개선 5건이 도출됐다 — ①고부하 촬영 발열 마진 부족(스로틀링 조기 발동) ②camera pipeline 면적 비효율(중복 라인버퍼) ③NoC 혼잡 시 DPU underrun ④멀티센서 동시 시나리오 검증 커버리지 구멍 ⑤블록별 전력 계측 포인트 부족.\n문제: 전면 반영은 area/인력 비용이 크고 미반영은 같은 문제의 재발인데, 근본원인 분석과 미반영 시 영향 정량화가 아직 연결되지 않아 절충안의 확신이 과대평가된 상태다.\n목표: W 스펙에 반영할 범위(전면/일부/이연)와 그에 따른 area·인력 자원을 확정한다.\n\n[ARCH] 이벤트의 필수 개선 5건 반영 여부를 전제로 camera 재설계가 area/resource를 지배한다는 초기 추정(신뢰도 L)을 명확히 두고, 이후 자원 산정의 근거/리스크를 정렬하기 위해서다.\n부족 데이터: 이전 과제의 각 개선 5건에 대한 근본원인(특히 camera 면적/열/배선/패키징 영향 경로)과 예상 변경 범위(모듈·ISP/DPU 연계·검증 커버리지/계측 포인트) 및 W 요청 대비 실제 반영 설계항목을 추가 확보해야, camera 지배 항목의 면적/자원 산정과 DPU underrun·발열 마진 연쇄 리스크까지 포함해 판단을 고도화할 수 있다.\n\n[HW] 직전 양산 lesson의 ‘필수 개선’ 항목(발열 마진/계측 포인트 등)을 origin W와 spec-architecting 단계 기준에 맞춰 반영 여부 및 HW 자원 산정의 근거를 확보하기 위해서다.\n부족 데이터: 발열 마진 재설계의 목표(온도 상한/마진 폭), 계측 포인트 개수·위치·신호(레지스터/트레이싱), DVT 이후 검증 계획과 예상 변경 범위(PPA/전력/열 시뮬·펌웨어 연동)를 추가로 확보하면 HW 공수 산정과 반영 우선순위를 확정해 판단할 수 있다.\n\n[PM] 필수 개선 항목(전면/부분 반영)별 일정 영향을 산정해 spec-architecting 단계의 마감 압박을 선제적으로 관리하기 위해 이번 리스크·자원 검토 이벤트를 진행한다.\n부족 데이터: 미반영/부분반영 시 사업·품질 축(예: 발열 마진, camera 면적, DPU underrun, 검증 커버리지, 계측 포인트)별 정량 영향(지연 비용/리스크 확률/재작업 W)을 확정하면 전면 반영 여부와 자원(총 W, 스케줄 버퍼) 및 spec 마감 일정 재설계를 최종 판단할 수 있다."
+  },
+  {
+   "id": "5730211",
+   "space": "ARCH",
+   "title": "측정 리포트: 직전 양산 과제 사후분석 lesson — 필수 개선 5건 목록(발열 마진·camera 면적·DPU underrun·검증 커버리지·계측 포인트)",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-302"
+   ],
+   "updated_week": 14,
+   "body": "직전 양산 과제 사후분석 lesson — 필수 개선 5건 목록(발열 마진·camera 면적·DPU underrun·검증 커버리지·계측 포인트)\n출처 시스템: Confluence:LESSON-302 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5730801",
+   "space": "ARCH",
+   "title": "Depth/bokeh HW 가속 area 검토(portrait 특화) — 기술 검토 노트",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-308"
+   ],
+   "updated_week": 14,
+   "body": "배경: portrait 특화(depth/bokeh)를 차기에도 셀링 포인트로 가져가려면 전용 HW 가속 여부를 W spec에 지금 반영해야 한다 — U에서 전력 이슈(E-107)로 확인돼 이연된 계보다.\n문제: 가속기의 area/power model과 portrait 시장 수요 추정이 미확보 — 면적을 지불할 근거도, 안 할 근거도 정량화되지 않았다.\n목표: 전용 depth HW 가속기 추가, GPU/NPU 재사용, SW 처리 유지 중 spec 방향을 확정한다.\n\n[ARCH] portrait 특화 depth/bokeh HW 가속기의 area·power PPA를 조기에 수치화해 W 축(면적) 우선 의사결정을 위한 근거를 확보하려는 활동이다.\n부족 데이터: depth HW 가속 area/power 모델을 (1) target portrait 워크로드(입력 해상도·프레임레이트·latency), (2) memory/DMA·interconnect 포함 SoC 레벨 계측치, (3) 공정/클럭/온도·DVFS 가정으로 확정하고, 경쟁사/유사 IP 대비 벤치마크 포인트를 추가하면 W12 목표 달성 가능성과 설계 옵션(전용 블록 vs DSP/ISP 공유) 중 최선 PPA를 판단할 수 있다.\n\n[HW] portrait 특화 depth/bokeh HW 가속 area를 추정하기 위해 현재 정량 모델 기반으로 실현 가능 범위와 요구 전력을 빠르게 산정하려는 판단이다.\n부족 데이터: 추정을 확정하려면 portrait용 depth 파이프라인 구성(알고리즘 블록/해상도·프레임레이트/지원 모드), 타깃 공정·클럭·메모리 대역폭 가정, 버퍼/인터페이스(DDR, ISP) 면적 포함 여부 같은 입력 파라미터를 추가로 확보해야 한다.\n\n[PM] depth/bokeh(portrait 특화) HW 가속 area에 대해 일정과 confidence를 확정하기 위해, 현재 power model 기반으로 scope 및 검증 항목의 우선순위를 정렬한다.\n부족 데이터: 일정·confidence를 상향/확정하려면 portrait 타깃 요구사항(해상도/프레임/latency), 인터페이스 및 SW·ISP 연계 범위, 목표 전력/성능 달성 방식, 검증 계획(데이터셋·성공 기준)과 일정에 영향을 주는 제약/의존성 정보를 추가로 확보해 판단을 진행해야 한다."
+  },
+  {
+   "id": "5730811",
+   "space": "ARCH",
+   "title": "측정 리포트: depth 가속 area/power model",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-308"
+   ],
+   "updated_week": 14,
+   "body": "depth 가속 area/power model\n출처 시스템: Confluence:CAM-308 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "579140",
+   "space": "SYS",
+   "title": "주간 개발 회의록 W14",
+   "project_id": "",
+   "issue_keys": [],
+   "updated_week": 14,
+   "body": "이번 주 역할별 계획 발언:\n- Emulator FC 검증은 추정 한계라 우선 risk\n- Emu FC는 아직 추정뿐입니다\n- Emulator FC는 상관데이터 부족해요\n- Emu FC만으론 성능 파워 예측 어려워요\n- FC 기능은 구현하지만 예측은 유보하겠습니다\n- Emulator FC 검증은 선개발 일정 리스크입니다\n- 필수 개선 반영 우선, 발열부터 자원 재산정하겠습니다\n- 카메라 재설계가 area 좌우할 듯합니다"
+  }
+ ]
+}

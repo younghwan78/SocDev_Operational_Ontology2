@@ -1,0 +1,22 @@
+{
+ "issues": [
+  {
+   "key": "SOCW-307",
+   "fields": {
+    "summary": "Camera pipeline area 최적화 — 수익성(ISP)",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "area-perf model 정확도와 축소 시 IQ/perf 영향 데이터가 미확보 — 블록 공유(재사용)안의 확신은 근거 없이 과대평가된 상태다.",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2025-10-13",
+    "duedate": "2026-01-26"
+   }
+  }
+ ]
+}

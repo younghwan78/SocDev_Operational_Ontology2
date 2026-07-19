@@ -1,0 +1,132 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-101",
+   "fields": {
+    "summary": "8K30 recording 발열 — power budget 초과(Camera)",
+    "issuetype": {
+     "name": "발열"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "표면 온도 한계로 스로틀링이 조기 발동해 8K 연속 촬영 KPI(경쟁사 대비 셀링 포인트)가 무너진다.",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-03-02",
+    "duedate": "2026-03-30"
+   }
+  },
+  {
+   "key": "SOCV-103",
+   "fields": {
+    "summary": "DPU underrun — RT latency(Display) (U 전파)",
+    "issuetype": {
+     "name": "언더런"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "차기 underrun 해결(V)",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-03-02",
+    "duedate": "2026-04-27"
+   }
+  },
+  {
+   "key": "SOCU-104",
+   "fields": {
+    "summary": "Video editing benchmark 경쟁사 열세(Video)",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "MFC 단일 경로 처리 구조라 대용량 클립에서 격차가 벌어지고, 리뷰 점수 하락이 판매 협상에 직접 부담이 된다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Video editing benchmark 경쟁사 열세(Video) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-03-02",
+    "duedate": "2026-04-20"
+   }
+  },
+  {
+   "key": "SOCV-106",
+   "fields": {
+    "summary": "KPI recording(UHD60) sustained power 최적화(Camera) (U 전파)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 KPI power 검토(V)",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-03-02",
+    "duedate": "2026-04-27"
+   }
+  },
+  {
+   "key": "SOCW-303",
+   "fields": {
+    "summary": "AI scaler arch 검토 — Display scale-up",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "scaler의 전력/화질 model과 scale-up 시나리오의 실제 사용 빈도 데이터가 없어, 면적 투자를 정당화할 근거가 부족하다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-03-02",
+    "duedate": "2026-03-30"
+   }
+  },
+  {
+   "key": "SOCW-304",
+   "fields": {
+    "summary": "HW micro-architecture — codec BW 병렬 구조(Video)",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "병렬 구조는 BW 경합을 근본 해소하지만 면적이 늘고, simulation 정확도와 실 시나리오 BW model이 미확보라 '병렬이 실제로 얼마나 버는지'의 확신이 낮다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "HW micro-architecture — codec BW 병렬 구조(Video) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-03-02",
+    "duedate": "2026-04-20"
+   }
+  }
+ ]
+}

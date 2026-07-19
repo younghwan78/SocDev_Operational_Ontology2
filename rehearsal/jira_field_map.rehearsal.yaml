@@ -1,0 +1,41 @@
+issue_mapping: issues
+columns:
+  이슈 ID: key
+  제목: fields.summary
+  유형: fields.issuetype.name
+  상태: fields.status.name
+  심각도: fields.priority.name
+  증상: fields.description
+  프로젝트 ID: fields.labels.0
+  영향 시나리오: fields.customfield_scenarios
+  영향 IP: fields.customfield_ips
+  교훈: fields.customfield_lesson
+week_columns:
+  최근 활동 주차: fields.updated
+  목표 주차: fields.duedate
+value_maps:
+  상태:
+    Open: open
+    In Progress: open
+    Reopened: open
+    Resolved: resolved
+    Closed: closed
+    Done: done
+  심각도:
+    Highest: critical
+    High: high
+    Medium: medium
+    Low: low
+    Lowest: low
+  유형:
+    발열: thermal_throttling
+    전력: power_budget_overrun
+    언더런: underrun
+    지연: latency_regression
+    대역폭: bandwidth_overrun
+    아키검토: architecture_tradeoff
+    화질: image_quality_regression
+    성능: performance_competitiveness
+    결함: defect
+constants:
+  확신도: medium

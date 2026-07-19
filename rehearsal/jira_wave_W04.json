@@ -1,0 +1,46 @@
+{
+ "issues": [
+  {
+   "key": "SOCW-9011",
+   "fields": {
+    "summary": "[근거 요청] NN 가속기 perf/area model 정확도",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — NN 가속기 perf/area model 정확도",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-08-25",
+    "duedate": "2025-09-01"
+   }
+  },
+  {
+   "key": "SOCW-9012",
+   "fields": {
+    "summary": "[근거 요청] 고객 AI audio 요구 spec",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "JIRA 확보 필요 — 고객 AI audio 요구 spec",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-08-25",
+    "duedate": "2025-09-08"
+   }
+  }
+ ]
+}

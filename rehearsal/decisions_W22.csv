@@ -1,0 +1,3 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_204,project_v,evt_rehearsal_204,review_decision,선개발 검증 신뢰도,"검증 인프라(계측/model 환경)에 투자할지, 예측 기반으로 선최적화를 지를지, 검증 scope를 줄일지 결정한다.",emulator FC 동작 확인 기반 결정,Lab:EMU-204,measurement,L,성능/파워 예측 model 구축;emulator-실 soc 상관관계 데이터
+dec_rehearsal_301,project_w,evt_rehearsal_301,review_decision,NN/SRAM area spec,"spec freeze 전에 NN/SRAM area 수준을 확정한다 — 축소 spec, full spec 유지, 고객 협의 후 결정 중 택일.",NN perf/area model 추정 기반 결정,Confluence:ARCH-301,measurement,L,NN 가속기 perf/area model 정확도;고객 AI audio 요구 spec

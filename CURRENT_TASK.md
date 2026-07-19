@@ -2,7 +2,22 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — 설계 24(링크 제안, link-recovery 사외 선행분) 완료 (2026-07-19).**
+**활성 Stage 없음 — 설계 25(리허설 유니버스) 구현 완료 (2026-07-19).**
+
+> 설계·구현: `internal_docs/design/25_rehearsal_universe.md` + CHANGELOG.
+> 57 world.yaml → 가상 JIRA/Confluence wave 43개(`rehearsal/`) +
+> `recorded_at` 주입 리플레이(DSN 가드) + UX 판정 대본. `soc_rehearsal`
+> 리플레이 완료 — 8155 백엔드가 현재 리허설 DB를 보고 있다 (데모 DB 복귀:
+> DSN을 soc_ontology로 재기동). backend 327 · frontend 46 green.
+>
+> **다음 단계 — 사용자 액션**: 5275 프론트에서
+> `internal_docs/validation/03_rehearsal_ux_checklist.md` 16문항 판정 수행
+> → "못 찾음" 항목이 다음 UX 설계 라운드의 입력이 된다 (목표 A 5/5, B 9/11).
+>
+> **그 외 후보 (사내 입력 필요)**: ⑤ JIRA writeback(Stage 19) / ⑥ LLM 링크
+> 제안(Stage 18) / 게이트 kind 확장 / D4 / Stage 14 SSO / 반입 리허설(실데이터).
+
+### 직전 완료 — 설계 24(링크 제안, link-recovery 사외 선행분) (2026-07-19)
 
 > 설계·구현: `internal_docs/design/24_link_proposals.md` + CHANGELOG.
 > 결정론 룰 3종(IP 별칭 토큰/시나리오 토큰/시나리오 사용 IP 연쇄) +

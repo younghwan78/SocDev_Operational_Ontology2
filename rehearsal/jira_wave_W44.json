@@ -1,0 +1,89 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-102",
+   "fields": {
+    "summary": "Dual recording(multi-sensor) power — 고객 특화",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "실측에서 dual 시나리오 전력이 목표를 초과하는데, 고객 요구 spec 상세가 아직 미확정이라 최적화 목표점 자체가 흔들린다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Dual recording(multi-sensor) power — 고객 특화 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-06-01",
+    "duedate": "2026-06-29"
+   }
+  },
+  {
+   "key": "SOCU-9022",
+   "fields": {
+    "summary": "[근거 요청] dual sensor 시나리오 전력 실측",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Field 확보 필요 — dual sensor 시나리오 전력 실측",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-06-01",
+    "duedate": "2026-06-15"
+   }
+  },
+  {
+   "key": "SOCU-9072",
+   "fields": {
+    "summary": "[근거 요청] depth solution 전력 실측",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Field 확보 필요 — depth solution 전력 실측",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-06-01",
+    "duedate": "2026-06-01"
+   }
+  },
+  {
+   "key": "SOCV-108",
+   "fields": {
+    "summary": "APV recording power 최적화 — 고BW codec(Video) (U 전파)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 codec BW 검토(V)",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-06-01",
+    "duedate": "2026-06-01"
+   }
+  }
+ ]
+}

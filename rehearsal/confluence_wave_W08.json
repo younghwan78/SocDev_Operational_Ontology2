@@ -1,0 +1,35 @@
+{
+ "pages": [
+  {
+   "id": "5730601",
+   "space": "CAM",
+   "title": "Camera pipeline 화질(IQ) 개선 arch 검토 — 기술 검토 노트",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-306"
+   ],
+   "updated_week": 8,
+   "body": "배경: 카메라 화질(IQ)은 플래그십 구매 결정의 1순위 — 경쟁사 차기작 대비 IQ 격차 우려로 W에 차세대 ISP IQ 블록 도입을 검토 중이다.\n문제: IQ 개선의 area cost model과 경쟁사 화질 벤치마크가 없어 '얼마나 좋아지는데 면적이 얼마나 드는지'가 정량화되지 않았다.\n목표: IQ 개선 방식 확정 — 전용 HW IQ 블록 추가, NPU 기반 SW-IQ, 현 화질 유지.\n\n[ARCH] Camera pipeline IQ 개선 arch에서 면적(Area)과 전력(Power), 성능(성능/지연) 간 trade-off를 정량화해 경쟁사 대비 성능·PPA 관점의 우선순위를 확정하기 위해 활동한다.\n부족 데이터: Confluence의 미완료 ‘IQ 개선 area cost model’(도착예정 W10)을 확보해 IQ 레벨별(예: denoise/sharpen/CSC/DRAM/ISP 단계) area·QoR·전력 및 메모리 대역/지연까지 함께 맵핑되도록 추가 진행하면, 최적 아키텍처 선택과 PPA/경쟁사 비교 근거를 더 확실히 낼 수 있다.\n\n[HW] ISP IQ 블록 추정을 통해 Camera pipeline의 화질(IQ) 개선을 위한 아키텍처 옵션이 silicon/공수 관점에서 실현 가능한지 1차로 판단하기 위해서다.\n부족 데이터: 추가로 ISP IQ 블록별 변경 대상(모듈/알고리즘), 타깃 화질 지표·성능/지연 요구, 입력 포맷/버스·메모리 대역 및 테스트/벤치 조건, 전력/면적 제약, 참조 설계(유사 프로젝트 수치)를 확보하면 블록 단위 정확 추정과 아키텍처 채택/우선순위를 더 구체화할 수 있다.\n\n[PM] Camera pipeline 화질(IQ) 개선을 위한 아키텍처/스펙 일정을 확정하기 위해, 현재 추정된 개선 영역을 기반으로 origin W의 spec-architecting 단계 단계 진행 적합성을 판단한다.\n부족 데이터: 다음으로 개선 아키텍처 후보별 범위/요구사항, 예상 영향도(성능·지연·메모리), 검증 계획 및 마일스톤(샘플/측정 지표), 의존성(센서/ISP/AE-AWB/AE pipeline) 데이터를 확보해야 spec 일정(M)과 아키텍처 확정 가능성을 판단할 수 있다."
+  },
+  {
+   "id": "5730611",
+   "space": "CAM",
+   "title": "측정 리포트: IQ 개선 area model 추정",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-306"
+   ],
+   "updated_week": 8,
+   "body": "IQ 개선 area model 추정\n출처 시스템: Confluence:CAM-306 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "579080",
+   "space": "SYS",
+   "title": "주간 개발 회의록 W8",
+   "project_id": "",
+   "issue_keys": [],
+   "updated_week": 8,
+   "body": "이번 주 역할별 계획 발언:\n- IQ 경쟁력 먼저 잡고 검토 부탁드립니다\n- IQ 개선은 area cost부터 정리할게요\n- IQ개선 검토, 크로스리스크부터 봅니다\n- ISP IQ 블록 추정부터 보겠습니다\n- SW ISP 연동안 먼저 검토하겠습니다\n- Camera IQ 개선 arch 검토, spec 일정부터 공유드릴게요"
+  }
+ ]
+}

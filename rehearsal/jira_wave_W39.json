@@ -1,0 +1,64 @@
+{
+ "issues": [
+  {
+   "key": "SOCV-103",
+   "fields": {
+    "summary": "DPU underrun — RT latency(Display) (U 전파)",
+    "issuetype": {
+     "name": "언더런"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "차기 underrun 해결(V)",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-04-27",
+    "duedate": "2026-04-27"
+   }
+  },
+  {
+   "key": "SOCV-106",
+   "fields": {
+    "summary": "KPI recording(UHD60) sustained power 최적화(Camera) (U 전파)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 KPI power 검토(V)",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-04-27",
+    "duedate": "2026-04-27"
+   }
+  },
+  {
+   "key": "SOCU-107",
+   "fields": {
+    "summary": "Editable portrait video recording power 최적화(Camera 특화)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "특화 기능 하나가 전력·연산 자원을 잠식해 기본 촬영 체감(발열·배터리)까지 영향을 준다",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-04-27",
+    "duedate": "2026-06-15"
+   }
+  }
+ ]
+}

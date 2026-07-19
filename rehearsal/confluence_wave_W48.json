@@ -1,0 +1,15 @@
+{
+ "pages": [
+  {
+   "id": "5710221",
+   "space": "SYS",
+   "title": "결정 노트: dual recording power",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-102"
+   ],
+   "updated_week": 48,
+   "body": "결정: dual recording power (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  }
+ ]
+}

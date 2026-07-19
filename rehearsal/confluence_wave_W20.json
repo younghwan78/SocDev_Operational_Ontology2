@@ -1,0 +1,35 @@
+{
+ "pages": [
+  {
+   "id": "5720601",
+   "space": "SYS",
+   "title": "KPI power — EVT1 HW 개선 가능성 판단(U KPI 전력) — 기술 검토 노트",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-206"
+   ],
+   "updated_week": 20,
+   "body": "배경: U의 KPI(UHD60) 전력 lesson(E-106)을 V EVT1 rail/clock 설계에 반영할 수 있는 마지막 창이다.\n문제: EVT1 KPI power model의 정확도가 미검증이고 U 발열 근본원인 분석도 미완 — 수정 효과가 pre-Si 추정에만 기대고 있다.\n목표: EVT1에 HW 수정을 확정할지, 실리콘 도착 후 SW 검증으로 미룰지, U와 동일하게 갈지 결정한다.\n\n[ARCH] EVT1 HW 개선(특히 전력) 여지가 있는지와 그 PPA 영향의 방향성을 선제적으로 판단해 다음 리비전의 우선순위를 확정하기 위해서다.\n부족 데이터: EVT1 KPI power pre-silicon 모델의 추가 보강(시나리오별 전력 분해, 보정계수/불확실도 범위, 유사 코어·경쟁사 대비 기준점, EVT1 측정(또는 emu/early silicon)과의 캘리브레이션)을 확보하면 개선 가능성의 크기와 area 대비 power 트레이드오프까지 더 확정해 재작업 범위를 판단할 수 있다.\n\n[HW] EVT1에서 U KPI 전력의 HW 개선 여지를 조기에 판별해 V 축 파워 목표를 맞추기 위해 rail/clock 설계 추정과 개선 우선순위를 확정하려는 것이다.\n부족 데이터: U KPI 발열의 근본원인을 위한 시스템/상태별 전력 분해(rail별 IR-drop, clock gating 비효율, active state duty, 시뮬레이터/소프트웨어 스케줄 영향 포함)를 확보하면 EVT1 HW 마이그레이션(rail 듀티/도메인 분할, clock tree/gating 전략, PM/clocking 재설계)과 우선순위를 확정해 판단을 완료할 수 있다.\n\n[PM] EVT1 HW 개선(특히 U KPI 전력) 가능성을 조기에 판단해 일정 변동 없이 설계/검증 우선순위를 확정하기 위함이다.\n부족 데이터: EVT1 관련으로 전력 목표(U KPI) 기준치, pre-Si 결과 수치(결과-목표 편차) 및 EVT1 HW 개별 블록/동작모드 전력 기여도(가능 개선 포인트)를 추가 확보하면 개선 가능성 판정과 일정 영향(리비전/리워크 범위) 결론을 낼 수 있다."
+  },
+  {
+   "id": "5720611",
+   "space": "SYS",
+   "title": "측정 리포트: EVT1 KPI power pre-Si 추정",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-206"
+   ],
+   "updated_week": 20,
+   "body": "EVT1 KPI power pre-Si 추정\n출처 시스템: Lab:KPI-206 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "579200",
+   "space": "SYS",
+   "title": "주간 개발 회의록 W20",
+   "project_id": "",
+   "issue_keys": [],
+   "updated_week": 20,
+   "body": "이번 주 역할별 계획 발언:\n- EVT1 HW 개선, 전력KPI 중심으로 추정하겠습니다\n- EVT1 전력 개선안은 아직 추정입니다\n- KPI 전력 DVFS 개선 검토하겠습니다\n- EVT1 rail clock부터 점검하겠습니다\n- KPI 전력 이슈 SW로 선대응하겠습니다\n- EVT1 전력KPI 점검 먼저 하겠습니다"
+  }
+ ]
+}

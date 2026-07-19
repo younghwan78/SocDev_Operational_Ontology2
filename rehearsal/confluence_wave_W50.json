@@ -1,0 +1,37 @@
+{
+ "pages": [
+  {
+   "id": "5710521",
+   "space": "AUD",
+   "title": "결정 노트: audio latency/DoU",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-105"
+   ],
+   "updated_week": 50,
+   "body": "결정: audio latency/DoU (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730521",
+   "space": "ARCH",
+   "title": "결정 노트: EVT0 design close",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-305"
+   ],
+   "updated_week": 50,
+   "body": "결정: EVT0 design close (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730531",
+   "space": "ARCH",
+   "title": "[설계문서] EVT0 HW design close — area fix/PPA 확정 architecture 검토서",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-305"
+   ],
+   "updated_week": 50,
+   "body": "freeze 시점과 방식 확정 — 즉시 freeze, 최종 검증 반영 후 재최적화 freeze, spec 추가 반영.\n\n구조 대안·PPA 트레이드오프·선행 검증 계획을 담은 공식 설계 문서. 승인 전 초안은 기술 검토 노트를 참조한다."
+  }
+ ]
+}

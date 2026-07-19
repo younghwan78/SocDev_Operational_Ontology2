@@ -1,0 +1,48 @@
+{
+ "pages": [
+  {
+   "id": "5720121",
+   "space": "SYS",
+   "title": "결정 노트: EVT1 power 개선",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-201"
+   ],
+   "updated_week": 26,
+   "body": "결정: EVT1 power 개선 (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5720821",
+   "space": "CAM",
+   "title": "결정 노트: sensor mode seamless",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-208"
+   ],
+   "updated_week": 26,
+   "body": "결정: sensor mode seamless (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730721",
+   "space": "CAM",
+   "title": "결정 노트: ISP area 최적화",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-307"
+   ],
+   "updated_week": 26,
+   "body": "결정: ISP area 최적화 (확신도 L)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730731",
+   "space": "ARCH",
+   "title": "[설계문서] Camera pipeline area 최적화 — 수익성(ISP) architecture 검토서",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-307"
+   ],
+   "updated_week": 26,
+   "body": "ISP area 절감 방식 확정 — 축소 재설계, 블록 공유/재사용, full pipeline 유지.\n\n구조 대안·PPA 트레이드오프·선행 검증 계획을 담은 공식 설계 문서. 승인 전 초안은 기술 검토 노트를 참조한다."
+  }
+ ]
+}

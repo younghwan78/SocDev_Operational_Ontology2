@@ -1,0 +1,88 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-103",
+   "fields": {
+    "summary": "DPU underrun — RT latency(Display)",
+    "issuetype": {
+     "name": "언더런"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "사용자가 체감하는 프레임 드랍이라 출하 품질 이슈로 승격됐고, 근본 원인은 고부하 시 메모리 BW 경합이다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_scenarios": "video_mode_panel_underrun_prevention",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-02-16",
+    "duedate": "2026-04-06"
+   }
+  },
+  {
+   "key": "SOCU-106",
+   "fields": {
+    "summary": "KPI recording(UHD60) sustained power 최적화(Camera)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "장시간 녹화에서 전력-발열 연쇄로 KPI 유지 시간이 짧아진다 — 경쟁사 비교 데이터가 없어 '얼마나 따라잡아야 하는지'도 불명확하다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_scenarios": "uhd60_recording_eis_on",
+    "customfield_lesson": "KPI recording(UHD60) sustained power 최적화(Camera) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-02-16",
+    "duedate": "2026-04-13"
+   }
+  },
+  {
+   "key": "SOCU-9062",
+   "fields": {
+    "summary": "[근거 요청] 경쟁사 KPI 전력 벤치마크",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Dashboard 확보 필요 — 경쟁사 KPI 전력 벤치마크",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-02-16",
+    "duedate": "2026-02-16"
+   }
+  },
+  {
+   "key": "SOCV-205",
+   "fields": {
+    "summary": "APV/4K codec 선개발 BW — power 이슈(Video)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "APV 실 BW 측정값과 MFC/MFD 병렬 처리 model이 없어, 병렬 path 선설계(면적·공수 투자)의 근거가 얇다.",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-02-16",
+    "duedate": "2026-04-06"
+   }
+  }
+ ]
+}

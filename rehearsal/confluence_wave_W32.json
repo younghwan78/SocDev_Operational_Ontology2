@@ -1,0 +1,15 @@
+{
+ "pages": [
+  {
+   "id": "5720721",
+   "space": "SYS",
+   "title": "결정 노트: portrait depth SW",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-207"
+   ],
+   "updated_week": 32,
+   "body": "결정: portrait depth SW (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  }
+ ]
+}

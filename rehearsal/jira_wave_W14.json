@@ -1,0 +1,217 @@
+{
+ "issues": [
+  {
+   "key": "SOCV-9021",
+   "fields": {
+    "summary": "[근거 요청] soc 전 성능 예측 model",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Confluence 확보 필요 — soc 전 성능 예측 model",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2025-11-10"
+   }
+  },
+  {
+   "key": "SOCV-204",
+   "fields": {
+    "summary": "Emulator FC 검증 한계 — 성능/파워 예측 불확실",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "성능/파워 예측 model과 emulator-실리콘 상관관계 데이터가 없어, 지금 하는 선최적화가 실칩에서 맞을지 확신이 낮다 — 틀리면 재작업이다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Emulator FC 검증 한계 — 성능/파워 예측 불확실 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2025-12-29"
+   }
+  },
+  {
+   "key": "SOCV-9041",
+   "fields": {
+    "summary": "[근거 요청] 성능/파워 예측 model 구축",
+    "issuetype": {
+     "name": "지연"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Confluence 확보 필요 — 성능/파워 예측 model 구축",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2025-11-10"
+   }
+  },
+  {
+   "key": "SOCV-9081",
+   "fields": {
+    "summary": "[근거 요청] multi-camera 전환 지연 측정",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Lab 확보 필요 — multi-camera 전환 지연 측정",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2025-11-17"
+   }
+  },
+  {
+   "key": "SOCV-9082",
+   "fields": {
+    "summary": "[근거 요청] zoom scenario 사용 패턴",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "JIRA 확보 필요 — zoom scenario 사용 패턴",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2025-11-17"
+   }
+  },
+  {
+   "key": "SOCW-301",
+   "fields": {
+    "summary": "NN 가속기/SRAM area spec trade-off — 수익성(Audio AI)",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "perf/area model의 정확도가 미검증이고 고객의 AI audio 요구 spec도 미확정 — area를 깎으면 perf 부족, 유지하면 원가 상승인데 양쪽 다 근거가 없다.",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2025-12-29"
+   }
+  },
+  {
+   "key": "SOCW-302",
+   "fields": {
+    "summary": "이전 과제 필수 개선 항목 — 반영 여부/자원 산정",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "전면 반영은 area/인력 비용이 크고 미반영은 같은 문제의 재발인데, 근본원인 분석과 미반영 시 영향 정량화가 아직 연결되지 않아 절충안의 확신이 과대평가된 상태다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_lesson": "이전 과제 필수 개선 항목 — 반영 여부/자원 산정 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2026-01-12"
+   }
+  },
+  {
+   "key": "SOCW-9021",
+   "fields": {
+    "summary": "[근거 요청] 이전 과제 문제 근본원인 분석",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — 이전 과제 문제 근본원인 분석",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2025-10-27"
+   }
+  },
+  {
+   "key": "SOCW-308",
+   "fields": {
+    "summary": "Depth/bokeh HW 가속 area 검토(portrait 특화)",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "가속기의 area/power model과 portrait 시장 수요 추정이 미확보 — 면적을 지불할 근거도, 안 할 근거도 정량화되지 않았다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Depth/bokeh HW 가속 area 검토(portrait 특화) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2026-02-23"
+   }
+  },
+  {
+   "key": "SOCW-9082",
+   "fields": {
+    "summary": "[근거 요청] portrait 시장 수요 추정",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "JIRA 확보 필요 — portrait 시장 수요 추정",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2025-11-03",
+    "duedate": "2025-11-03"
+   }
+  }
+ ]
+}

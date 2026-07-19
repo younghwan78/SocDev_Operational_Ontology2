@@ -1,0 +1,59 @@
+{
+ "pages": [
+  {
+   "id": "5710301",
+   "space": "CAM",
+   "title": "DPU underrun — RT latency(Display) — 기술 검토 노트",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-103"
+   ],
+   "updated_week": 28,
+   "body": "배경: 양산 단말의 특정 scale-up 시나리오에서 DPU underrun(화면 깨짐·블랭킹)이 재현 — NoC 혼잡 구간에서 display의 실시간 latency 보장이 깨진다.\n문제: 사용자가 체감하는 프레임 드랍이라 출하 품질 이슈로 승격됐고, 근본 원인은 고부하 시 메모리 BW 경합이다.\n목표: 양산 내 안정화 — scaler fallback으로 회피할지, DPU QoS/clock으로 완화할지, 시나리오 제한으로 봉합할지 결정한다.\n\n[ARCH] DPU underrun이 RT display latency를 악화시키는지 DPU/NoC PPA 관점에서 정량화해, area·power를 우선하는 경쟁사 대비 성능 리스크를 조기에 확정하기 위해서다.\n부족 데이터: 추가로 필요한 데이터가 없으므로, 이 trace를 기반으로 DPU 스케줄링/버퍼링/NoC 트래픽 특성 변수를 가정한 시나리오별 area·power·RT latency 민감도를 바로 산출해 우선순위 결정을 진행한다.\n\n[HW] DPU underrun의 원인(특히 Display RT latency 경로)을 QoS/클럭 관점에서 규명해 U(대량양산)에서 재발을 방지하기 위해 이 활동을 수행한다.\n부족 데이터: scaler fallback이 전력/대역폭에 미치는 정량 데이터가 추가되면(요청 대비 수신 W) 리소스/클럭 여유와 QoS 파라미터를 확정해 최종 설계 판단 및 양산 적용 기준을 결정할 수 있다.\n\n[PM] DPU underrun이 Display RT latency(Origin U)에서 매스프로덕션 단계에 일정 지연을 유발할 가능성을 조기에 확정해, 필요한 대응 범위와 우선순위를 선제적으로 결정하기 위해 점검한다.\n부족 데이터: 추가로 underrun 발생 빈도/시간대, RT latency 분포(피크/평균), 관련 펌웨어·드라이버/메모리 설정 및 대응 적용 이력의 정량 데이터가 확보되면 일정 영향의 규모와 완화 전략을 더 구체적으로 확정할 수 있다."
+  },
+  {
+   "id": "5710311",
+   "space": "CAM",
+   "title": "측정 리포트: underrun 재현 trace",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-103"
+   ],
+   "updated_week": 28,
+   "body": "underrun 재현 trace\n출처 시스템: Dashboard:DPU-103 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5720501",
+   "space": "VID",
+   "title": "APV/4K codec 선개발 BW — power 이슈(Video) — 기술 검토 노트",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-205"
+   ],
+   "updated_week": 28,
+   "body": "배경: U의 APV 전력 이슈(E-108)와 같은 계열 — V codec 선개발에서 pre-silicon 추정만으로도 BW-전력 문제가 예상된다. APV는 4K MFC/MFD와 별도 가속 경로를 타는 포맷이라, 병렬 path 설계는 곧 전용 자원 투자다.\n문제: APV 실 BW 측정값과 MFC/MFD 병렬 처리 model이 없어, 병렬 path 선설계(면적·공수 투자)의 근거가 얇다.\n목표: HW 병렬 path를 선설계할지, SW 스케줄링으로 완화할지, APV를 차기로 이연할지 확정한다.\n\n[ARCH] APV/4K codec 선개발에서 Video power 이슈를 최소 면적/최대 전력 효율 관점으로 BW와 PPA를 재판단하기 위해 선행 예측모델의 병렬 처리 가정(MFC/MFD)을 검증한다.\n부족 데이터: MFC/MFD 병렬 처리 모델의 가정/스케줄링(요청 W26 · 도착예정 W27)을 확보해 전력(특히 비디오 구간)과 클록/대역 요구(BW)를 재계산하면, 경쟁사 대비 성능-전력 trade-off 및 코덱 인터페이스/아키텍처 선택을 더 확정할 수 있다.\n\n[HW] 현재 MFC/MFD 병렬 추정을 통해 APV/4K codec power 이슈(Video) 대응을 위한 pre-silicon→실측 보정 및 resource/전력 최적화 방향을 빠르게 확정하기 위함이다.\n부족 데이터: APV 실 BW 측정값(W32 요청 · W34 수신)을 전력/idle-busy(클럭, MFC/MFD duty)와 함께 매핑해 pre-silicon 대비 오차를 산정하면 병렬 추정(자원 배치)과 power 이슈의 병목 원인을 확정할 수 있다.\n\n[PM] APV/4K codec 선개발 BW의 power 이슈(Video)를 origin의 EVT1 단계 관점에서 일정 영향과 조기 리스크 수준을 확정하기 위해 판단한다.\n부족 데이터: power 측정/시뮬 결과(전력 프로파일, 타겟 시나리오별 mW/프레임, silicon/emu 대비 상관)와 EVT1 실측에서의 기준 전력 대비 차이를 추가로 확보하면 일정 재산정과 BW 수정/완화 액션 결정을 더 확실히 할 수 있다."
+  },
+  {
+   "id": "5720511",
+   "space": "VID",
+   "title": "측정 리포트: APV BW pre-silicon 추정",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-205"
+   ],
+   "updated_week": 28,
+   "body": "APV BW pre-silicon 추정\n출처 시스템: Lab:VID-205 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5720621",
+   "space": "SYS",
+   "title": "결정 노트: EVT1 KPI power",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-206"
+   ],
+   "updated_week": 28,
+   "body": "결정: EVT1 KPI power (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  }
+ ]
+}

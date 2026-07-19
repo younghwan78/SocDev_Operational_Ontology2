@@ -1,0 +1,4 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_201,project_v,evt_rehearsal_201,review_decision,EVT1 power 개선,"마감 안에 확정: EVT1에 HW 수정을 태울지, 실리콘 도착 후 SW workaround로 미룰지, 개선을 보류할지.",EVT1 pre-silicon power 추정 기반 결정,Lab:PWR-201,measurement,M,EVT1 power pre-silicon model 정확도 검증;U 발열 근본원인 분석 lesson
+dec_rehearsal_208,project_v,evt_rehearsal_208,review_decision,sensor mode seamless,"SW 재구조화, buffering 완화, 일부 zoom 구간 제한 중 선개발 범위를 확정한다.",sensor mode 전환 pre-Si 검증 기반 결정,Lab:CAM-208,measurement,M,multi-camera 전환 지연 측정;zoom scenario 사용 패턴
+dec_rehearsal_307,project_w,evt_rehearsal_307,review_decision,ISP area 최적화,"ISP area 절감 방식 확정 — 축소 재설계, 블록 공유/재사용, full pipeline 유지.",ISP area-perf model 기반 결정,Confluence:ISP-307,measurement,L,ISP area-perf model 정확도;area 축소 시 IQ/perf 영향

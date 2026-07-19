@@ -112,6 +112,29 @@ PM4Py/Celonis 등 프로세스 마이닝 도구 반입용. 시간 축은 transac
 (recorded_at)이며 domain time(week)은 객체 attribute로 남는다 — 사내 보고
 시 "우리 데이터는 표준 교환 포맷(OCEL 2.0)으로 나온다"의 실증 자료.
 
+### 3d. 리허설 유니버스 (설계 25 — 사내 연결 전 UX 검증)
+
+가상 JIRA/Confluence(57 유래, 이슈 80·페이지 88·결정 24)를 주차 wave 43개로
+리플레이해 실데이터 워크플로를 통째로 리허설한다:
+
+```bash
+# 1) 전용 DB (soc_rehearsal — 이름에 'rehearsal' 필수, CLI 가드)
+docker exec soc58-postgres psql -U soc -d postgres -c "CREATE DATABASE soc_rehearsal;"
+export SOC_ONTOLOGY_DSN=postgresql://soc:soc58local@127.0.0.1:5432/soc_rehearsal
+uv run python -m backend.cli.main db-init && uv run python -m backend.cli.main db-seed
+# 2) 리플레이 (recorded_at 주입 — 버전 로그가 1년 주차에 분포)
+uv run python -m backend.cli.main rehearsal-replay --dsn $SOC_ONTOLOGY_DSN
+# 3) 판정: internal_docs/validation/03_rehearsal_ux_checklist.md
+# (재생성이 필요하면: uv run python tools/build_rehearsal_from_57.py — 57 read-only)
+```
+
+**실 사내 전환 절차** (리허설과 코드 경로 100% 동일):
+1. `FakeJiraClient` → `JiraHttpClient` (JIRA_BASE_URL/TOKEN 환경변수) — sync-jira.
+2. `rehearsal/jira_field_map.rehearsal.yaml` → 사내 스키마 값으로 교체한
+   `backend/connectors/jira_field_map.yaml` (columns/value_maps만 편집).
+3. 주입 시계 사용 금지 — 실 동기화는 recorded_at 미지정(현재 시각 = 진실).
+4. dry-run 반복 → 연결률·미등재 값 보강 (§2) → `--execute`.
+
 ## 4. 남은 사외 후속 (파일럿 피드백 반영용)
 
 - D3 시맨틱 검색(임베딩) — Ask 개념 질문 보강, on-prem 임베딩 모델 확정 필요

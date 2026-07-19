@@ -1,0 +1,37 @@
+{
+ "pages": [
+  {
+   "id": "5710501",
+   "space": "AUD",
+   "title": "Voice call latency / DoU 전성비(Audio) — 기술 검토 노트",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-105"
+   ],
+   "updated_week": 42,
+   "body": "배경: 필드에서 voice call 응답 지연 불만과 DoU(하루 사용시간) 전성비 저하 리포트가 동시에 올라왔다 — ABOX 오디오 경로와 최저 클록 동작점이 원인 후보다.\n문제: latency와 전력이 상충한다: 클록을 낮추면 전성비는 좋아지지만 통화 지연이 커진다. 고객 AI audio solution 도입 요구까지 겹쳤는데 상세 spec이 없다.\n목표: 통화 품질 지표를 지키면서 DoU를 개선 — SW 경로 최적화, DVFS 동작점 조정, AI solution 도입 보류 중 택한다.\n\n[ARCH] 필드 기반 음성콜 DoU/지연 측정 결과를 바탕으로 Audio PPA를 정량 산정해 전성비 관점의 성능/전력 trade-off를 경쟁사 대비 area·power 우선 정책에 맞춰 확정하기 위해서입니다.\n부족 데이터: 추가로 latency/DoU를 조건별로(코덱·샘플레이트·네트워크/코덱 지터·DSP/CPU 부하·메모리/버스 클럭) 분해한 로그와 경쟁사 기준 데이터만 확보되면 PPA의 구간별 병목과 전력 절감 여지를 더 정확히 판단할 수 있습니다.\n\n[HW] 음성콜 latency와 DoU 전성비(Audio)를 만족시키기 위해 현재 확보된 측정 근거를 바탕으로 최저 clock 기준의 전력 추정을 산출해 설계/운영 포인트를 빠르게 확정하려는 목적이다.\n부족 데이터: 추정 신뢰도를 높이기 위해 같은 조건에서의 clock별 전력(또는 전압·활동량)과 latency 측정 메타데이터(코덱/비트레이트/프레임 크기/부하 패턴/온도·전원)를 추가로 확보하면 최저 clock 전력 상한·여유(margin)와 DoU 전성비 최적점을 더 단정할 수 있다.\n\n[PM] 양산(마스프로덕션) 관점에서 voice call latency 및 DoU 전성비(Audio) 요구사항이 달성 가능한지 판단해 양산 일정과 자신감(M)을 확정하기 위해 이벤트를 진행한다.\n부족 데이터: 추가로 음성 콜 지연의 목표치 대비 마진과 배치/단말 간 변동(분포·상한) 및 전성비 기준치 대비 DoU(전력/온도 조건 포함) 원자료를 확보하면 양산 일정과 confidence를 더 확정할 수 있다."
+  },
+  {
+   "id": "5710511",
+   "space": "AUD",
+   "title": "측정 리포트: voice call DoU/latency 측정",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-105"
+   ],
+   "updated_week": 42,
+   "body": "voice call DoU/latency 측정\n출처 시스템: Field:AUD-105 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5710821",
+   "space": "VID",
+   "title": "결정 노트: APV recording power",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-108"
+   ],
+   "updated_week": 42,
+   "body": "결정: APV recording power (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  }
+ ]
+}

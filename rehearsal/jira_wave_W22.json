@@ -1,0 +1,108 @@
+{
+ "issues": [
+  {
+   "key": "SOCV-201",
+   "fields": {
+    "summary": "EVT1 HW power/DVFS 최적화 — U 발열의 HW 개선 판단",
+    "issuetype": {
+     "name": "발열"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 마감이 다가오는데 U 발열의 근본원인 분석이 미완이라, 수정이 실제 얼마나 개선할지 예측 신뢰도가 낮다 — 잘못 고치면 마감만 밀린다.",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2025-12-29",
+    "duedate": "2026-01-26"
+   }
+  },
+  {
+   "key": "SOCV-204",
+   "fields": {
+    "summary": "Emulator FC 검증 한계 — 성능/파워 예측 불확실",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "성능/파워 예측 model과 emulator-실리콘 상관관계 데이터가 없어, 지금 하는 선최적화가 실칩에서 맞을지 확신이 낮다 — 틀리면 재작업이다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Emulator FC 검증 한계 — 성능/파워 예측 불확실 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Closed"
+    },
+    "updated": "2025-12-29",
+    "duedate": "2025-12-29"
+   }
+  },
+  {
+   "key": "SOCV-207",
+   "fields": {
+    "summary": "Editable portrait depth/bokeh SW 선개발 + IQ 검증",
+    "issuetype": {
+     "name": "화질"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "실리콘 도착 전 IQ 예측 model과 portrait 회귀 커버리지가 없어, 선개발 결과물의 화질 확신이 낮다 — IQ 회귀는 출시 직전에야 드러난다.",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-12-29",
+    "duedate": "2026-03-09"
+   }
+  },
+  {
+   "key": "SOCW-301",
+   "fields": {
+    "summary": "NN 가속기/SRAM area spec trade-off — 수익성(Audio AI)",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "perf/area model의 정확도가 미검증이고 고객의 AI audio 요구 spec도 미확정 — area를 깎으면 perf 부족, 유지하면 원가 상승인데 양쪽 다 근거가 없다.",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2025-12-29",
+    "duedate": "2025-12-29"
+   }
+  },
+  {
+   "key": "SOCW-308",
+   "fields": {
+    "summary": "Depth/bokeh HW 가속 area 검토(portrait 특화)",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "가속기의 area/power model과 portrait 시장 수요 추정이 미확보 — 면적을 지불할 근거도, 안 할 근거도 정량화되지 않았다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Depth/bokeh HW 가속 area 검토(portrait 특화) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2025-12-29",
+    "duedate": "2026-02-23"
+   }
+  }
+ ]
+}

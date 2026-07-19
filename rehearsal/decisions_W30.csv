@@ -1,0 +1,3 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_202,project_v,evt_rehearsal_202,review_decision,camera pipeline SW 대응,"실리콘 도착 시점에 camera 기본 동작이 서도록 — 전면 재구조화, 호환 레이어 유지, 일부 scenario 차기 이연 중 범위를 확정한다.",emulator 기반 pipeline 검증 기반 결정,Lab:CAM-202,measurement,M,soc 전 성능 예측 model;기존 scenario 회귀 coverage
+dec_rehearsal_308,project_w,evt_rehearsal_308,review_decision,depth HW 가속 area,"전용 depth HW 가속기 추가, GPU/NPU 재사용, SW 처리 유지 중 spec 방향을 확정한다.",depth 가속 area/power model 기반 결정,Confluence:CAM-308,measurement,L,depth HW 가속 area/power model;portrait 시장 수요 추정

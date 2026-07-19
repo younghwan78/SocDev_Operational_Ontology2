@@ -1,0 +1,81 @@
+{
+ "pages": [
+  {
+   "id": "5710401",
+   "space": "VID",
+   "title": "Video editing benchmark 경쟁사 열세(Video) — 기술 검토 노트",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-104"
+   ],
+   "updated_week": 30,
+   "body": "배경: 공개 벤치마크에서 video editing(대용량 클립 트랜스코딩) 성능이 경쟁사 대비 열세로 리뷰에 기사화됐다.\n문제: MFC 단일 경로 처리 구조라 대용량 클립에서 격차가 벌어지고, 리뷰 점수 하락이 판매 협상에 직접 부담이 된다.\n목표: 벤치 격차 축소 — 현 HW의 병렬 처리 활용을 극대화할지, SW 경로 최적화로 버틸지, 차기 HW 개선으로 넘길지 정한다.\n\n[ARCH] 경쟁사 대비 Video editing PPA(코덱 처리 효율·병목)에서 U가 열세로 보이는 원인을 codec 중심으로 분해해 다음 최적화/아키텍처 액션의 우선순위를 확정하기 위해서입니다.\n부족 데이터: 경쟁사 편집 워크로드에서의 내부 코덱 처리 모드·세그먼트별 시간/전력·DMA/메모리 접근 패턴(가능하면 유사 워크로드의 프로파일링 결과)을 추가로 확보하면 codec PPA 모델을 U 기준으로 보정해 ‘열세 원인(하드웨어 디코/엔코, 동시성, 전송 병목, 제어 오버헤드)’을 확정하고 area·power 최우선 관점의 설계 변경안을 판단할 수 있습니다.\n\n[HW] 경쟁사 영상 편집 벤치마크에서의 열세를 MFC/MFD 병렬 처리 관점으로 정량 비교해 병목 원인을 HW 설계/구성 변경으로 전환 가능한지 판단하기 위해서입니다.\n부족 데이터: MFC/MFD 병렬 사용 여부(코어/스케줄러 설정), 동일 클립/해상도/프레임레이트/코덱 및 파이프라인 조건, 지표(지연/처리율/전력) 원자료를 확보하면 추정을 검증·보정하고 병목이 HW 연산/메모리/스케줄링 중 무엇인지 구체적으로 판단할 수 있습니다.\n\n[PM] 경쟁사 대비 열세가 발생한 Video editing 벤치마크의 개선 일정을 수립해 Maturity(양산) 단계에서 성능·품질 목표 도달 가능성을 높이기 위해 판단한다.\n부족 데이터: 경쟁사 대비 열세 구간의 구체 지표(해당 workload별 점수/지연/전력), 자사 현재 성능 baseline, 목표 달성 임계치 및 원인(코덱·해상도·프레임레이트·경로) 데이터를 확보하면 개선 로드맵과 일정(마일스톤) 및 자신감(M)을 더 정량화해 실행 계획을 확정할 수 있다."
+  },
+  {
+   "id": "5710411",
+   "space": "VID",
+   "title": "측정 리포트: 경쟁사 editing benchmark",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-104"
+   ],
+   "updated_week": 30,
+   "body": "경쟁사 editing benchmark\n출처 시스템: Dashboard:VID-104 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5720221",
+   "space": "CAM",
+   "title": "결정 노트: camera pipeline SW 대응",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-202"
+   ],
+   "updated_week": 30,
+   "body": "결정: camera pipeline SW 대응 (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730401",
+   "space": "VID",
+   "title": "HW micro-architecture — codec BW 병렬 구조(Video) — 기술 검토 노트",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-304"
+   ],
+   "updated_week": 30,
+   "body": "배경: 차세대 codec 요구(8K·APV·멀티스트림 동시 처리)에 맞춰 W의 codec micro-architecture를 정해야 한다 — U/V에서 codec BW-전력 이슈(E-108·E-205)가 반복된 계보의 근본 해결 기회다.\n문제: 병렬 구조는 BW 경합을 근본 해소하지만 면적이 늘고, simulation 정확도와 실 시나리오 BW model이 미확보라 '병렬이 실제로 얼마나 버는지'의 확신이 낮다.\n목표: spec 창 안에 micro-arch 방향 확정 — 병렬 구조 채택, 공유 자원 재사용(arbitration 개선), spec 단순화(요구 축소).\n\n[ARCH] video codec의 병렬 BW micro-architecture를 PPA로 비교·선정해 area/power 관점에서 경쟁사 대비 성능 목표를 맞추기 위해서다.\n부족 데이터: 정확도 문제(요청 W28 · 도착예정 W29)를 해소하기 위해 동일 조건에서 확정 spec/수기 RTL/샘플링 프로파일과의 오차(throughput, stall, latency, power estimate)가 보이는 검증 패키지를 추가 확보한 뒤, 병렬도/데이터 경로/버퍼링 파라미터의 민감도-오차 보정을 포함해 최종 PPA 결정을 확정한다.\n\n[HW] Lab 기준 codec 병렬 micro-architecture의 BW(throughput) 적합성을 확인해 W(면적) 축적 위험을 줄이기 위해서다.\n부족 데이터: 실 scenario 기반 BW/트래픽 프로파일(해상도·프레임레이트·코덱·동시 스트림), 시스템 소프트/IO 병목까지 포함한 측정·모델 업데이트를 받으면 병렬 레벨(타일/코어 수)과 scheduling/버퍼링(메모리·DMA) 설계를 확정해 판단할 수 있다.\n\n[PM] 현재 Confluence VID-304의 codec 병렬 BW simulation 모델만으로도 HW micro-architecture의 codec 병렬 구조(Video) 일정을 ‘M(중간)’ 신뢰도로 잡을 수 있어, 다음 단계(구체화/검증) 착수를 위한 기준선을 마련한다.\n부족 데이터: 추가로 동일 병렬 구조에 대한 정량 결과(대역폭/지연/프레임 처리율, 리소스 사용량·전력, worst-case 시나리오, 시뮬레이션 범위·가정)가 확보되면 일정과 병렬 레벨/아키텍처 결정에 대해 confidence를 상향하고 병목 리스크를 선제적으로 판단할 수 있다."
+  },
+  {
+   "id": "5730411",
+   "space": "VID",
+   "title": "측정 리포트: codec 병렬 BW simulation",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-304"
+   ],
+   "updated_week": 30,
+   "body": "codec 병렬 BW simulation\n출처 시스템: Confluence:VID-304 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5730821",
+   "space": "ARCH",
+   "title": "결정 노트: depth HW 가속 area",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-308"
+   ],
+   "updated_week": 30,
+   "body": "결정: depth HW 가속 area (확신도 L)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730831",
+   "space": "ARCH",
+   "title": "[설계문서] Depth/bokeh HW 가속 area 검토(portrait 특화) architecture 검토서",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-308"
+   ],
+   "updated_week": 30,
+   "body": "전용 depth HW 가속기 추가, GPU/NPU 재사용, SW 처리 유지 중 spec 방향을 확정한다.\n\n구조 대안·PPA 트레이드오프·선행 검증 계획을 담은 공식 설계 문서. 승인 전 초안은 기술 검토 노트를 참조한다."
+  }
+ ]
+}

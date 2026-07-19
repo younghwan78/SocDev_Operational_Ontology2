@@ -1,0 +1,59 @@
+{
+ "pages": [
+  {
+   "id": "5710421",
+   "space": "VID",
+   "title": "결정 노트: editing 성능 개선",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-104"
+   ],
+   "updated_week": 38,
+   "body": "결정: editing 성능 개선 (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5710701",
+   "space": "CAM",
+   "title": "Editable portrait video recording power 최적화(Camera 특화) — 기술 검토 노트",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-107"
+   ],
+   "updated_week": 38,
+   "body": "배경: 촬영 후 보케를 편집할 수 있는 editable portrait 특화 기능의 녹화 전력이 목표를 초과 — depth 연산이 NPU/GPU를 상시 점유하는 구조다.\n문제: 특화 기능 하나가 전력·연산 자원을 잠식해 기본 촬영 체감(발열·배터리)까지 영향을 준다. 실제 사용 빈도 데이터가 없어 투자 대비 판단이 어렵다.\n목표: 특화 기능을 유지하면서 전력을 절감 — SW 최적화, NPU/GPU 자원 재배분, 차기 W의 전용 HW 가속 이연 중 결정한다.\n\n[ARCH] 카메라 특화(Editable portrait) 워크로드에서 depth/bokeh의 power 병목과 PPA 민감도를 조기에 확정해, 양산용 전력 예산을 경쟁사 대비 area·성능 트레이드오프로 최적 경로에 고정하기 위해 이 활동을 한다.\n부족 데이터: 추가로 필요 데이터는 없으므로(지적 부족 데이터 없음) 현재 증거로 depth/bokeh 파이프라인의 구체 설계 옵션(예: 해상도/프레임/알고리즘 정밀도/가속기 오프로딩)을 전력 예산에 매핑해 양산 타깃 PPA로 확정·검증을 진행한다.\n\n[HW] 실측 기반으로 editable portrait용 NPU/GPU 자원 소요를 추정해 power 최적화 설계(스케줄링/클럭/오프로딩) 결정을 내리기 위함이다.\n부족 데이터: 추가 부족 데이터는 현재 명시되지 않았으므로 즉시 추정치를 기반으로 power/성능 trade-off 설계를 진행할 수 있다.\n\n[PM] Camera 특화 power 최적화의 일정과 의사결정을 M 수준 confidence로 유지하기 위해, 현재 실측 기반으로 최적화 방향과 마일스톤을 확정한다.\n부족 데이터: 추가로 확인할 필요 데이터가 없으므로, 바로 다음 단계(마일스톤 산정 및 리스크/검증 범위 확정) 진행이 가능하다."
+  },
+  {
+   "id": "5710711",
+   "space": "CAM",
+   "title": "측정 리포트: editable portrait 전력 실측",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-107"
+   ],
+   "updated_week": 38,
+   "body": "editable portrait 전력 실측\n출처 시스템: Field:CAM-107 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5730421",
+   "space": "VID",
+   "title": "결정 노트: codec micro-arch",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-304"
+   ],
+   "updated_week": 38,
+   "body": "결정: codec micro-arch (확신도 L)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730431",
+   "space": "ARCH",
+   "title": "[설계문서] HW micro-architecture — codec BW 병렬 구조(Video) architecture 검토서",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-304"
+   ],
+   "updated_week": 38,
+   "body": "spec 창 안에 micro-arch 방향 확정 — 병렬 구조 채택, 공유 자원 재사용(arbitration 개선), spec 단순화(요구 축소).\n\n구조 대안·PPA 트레이드오프·선행 검증 계획을 담은 공식 설계 문서. 승인 전 초안은 기술 검토 노트를 참조한다."
+  }
+ ]
+}

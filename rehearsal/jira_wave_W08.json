@@ -1,0 +1,47 @@
+{
+ "issues": [
+  {
+   "key": "SOCW-306",
+   "fields": {
+    "summary": "Camera pipeline 화질(IQ) 개선 arch 검토",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "IQ 개선의 area cost model과 경쟁사 화질 벤치마크가 없어 '얼마나 좋아지는데 면적이 얼마나 드는지'가 정량화되지 않았다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_lesson": "Camera pipeline 화질(IQ) 개선 arch 검토 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-09-22",
+    "duedate": "2026-01-12"
+   }
+  },
+  {
+   "key": "SOCW-9071",
+   "fields": {
+    "summary": "[근거 요청] ISP area-perf model 정확도",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — ISP area-perf model 정확도",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-09-22",
+    "duedate": "2025-09-29"
+   }
+  }
+ ]
+}

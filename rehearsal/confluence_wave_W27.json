@@ -1,0 +1,70 @@
+{
+ "pages": [
+  {
+   "id": "5710101",
+   "space": "CAM",
+   "title": "8K30 recording 발열 — power budget 초과(Camera) — 기술 검토 노트",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-101"
+   ],
+   "updated_week": 27,
+   "body": "배경: 양산 단계 U의 필드 실측에서 8K30 장시간 촬영 시 SoC 전력이 power budget을 초과 — ISP·코덱·DVFS가 겹치는 고부하 구간이 원인이다.\n문제: 표면 온도 한계로 스로틀링이 조기 발동해 8K 연속 촬영 KPI(경쟁사 대비 셀링 포인트)가 무너진다.\n목표: 양산 일정 안에서 발열을 budget 안으로 — SW 완화로 막을지, 고객 KPI를 협의로 낮출지, 차기 V의 HW(DVFS) 개선으로 넘길지 확정한다.\n\n[ARCH] 8K30 카메라 발열로 인한 power budget 초과 원인을 PPA trade-off 관점에서 구조적으로 분해해, 경쟁사 대비 전력/열 여유를 확보할 수 있는 설계·운영 개선 우선순위를 확정하기 위해서입니다.\n부족 데이터: 추가 데이터가 없어도 현재 제약 내에서 열/전력 병목 블록(센서·ISP·코덱·DRAM·I/O)별 목표치를 재설정하고 DVFS/스케줄링/전력게이팅/코덱 경로 최적화 우선안을 도출할 수 있으나, 가능하다면 블록별 전력/온도 로그와 방열/열전달 조건을 함께 확보해 trade-off 예측 정확도를 더 올릴 수 있습니다.\n\n[HW] 8K30 녹화 시 Camera 전력 예산 초과로 인한 발열 원인이 clock/rail(클럭 스케일링·DVFS/전원 경로)인지 우선 판별해 대응 우선순위를 정하기 위해 활동을 진행한다.\n부족 데이터: 8K30에서의 추가 열 마진 실측(카메라/미디어 블록별 rail 전류·온도·DVFS 상태 동기)과 전원/클럭 이벤트 타임라인이 확보되면 clock/rail 미세개선(클럭 제한, DVFS 정책, rail 최적화) 및 원인 확정까지 판단을 진행할 수 있다.\n\n[PM] 양산(카메라) power budget 초과에 따른 8K30 recording 발열 리스크가 양산 일정에 미치는 영향을 조기에 확정하기 위해 검토한다.\n부족 데이터: 부족 데이터는 없으며, 현재 실측 기반으로 양산 일정(면책/대체 설계/펌웨어·쿨링·전력 제약 적용 범위)을 확정해 다음 조치 결정을 진행할 수 있다."
+  },
+  {
+   "id": "5710111",
+   "space": "CAM",
+   "title": "측정 리포트: 8K30 발열/전력 실측",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-101"
+   ],
+   "updated_week": 27,
+   "body": "8K30 발열/전력 실측\n출처 시스템: Field:THERM-101 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5720301",
+   "space": "SYS",
+   "title": "DPU underrun 차기 해결 검토 — U 영향 반영 — 기술 검토 노트",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-203"
+   ],
+   "updated_week": 27,
+   "body": "배경: U에서 터진 DPU underrun(E-103)을 V에서 근본 해결할 기회 — EVT1에 HW QoS 개선을 반영할 수 있는 마지막 시점이다.\n문제: EVT1 DPU 동작 model과 임계 BW 예측이 없어 HW 개선 폭을 정량화하지 못한 채 면적 비용부터 지불해야 한다.\n목표: HW QoS 개선을 태울지, SW scaler 정책 선반영으로 갈지, U 방식(SW 대응)을 유지할지 확정한다.\n\n[ARCH] DPU underrun 재발을 U 영향까지 반영해 차기 아키텍처/운영 파라미터를 PPA 관점에서 조기에 확정하기 위해 검토를 진행한다.\n부족 데이터: underrun 임계 BW(및/또는 큐/스케줄/stride 관련 임계조건)의 정량 모델을 보강하기 위해 추가 시뮬레이션/실측 가정치(EVT1 이후 EVT1 실측 관점)와 U 변화 조건별 튜닝 곡선을 확보하면, schedule 영향까지 포함해 차기안(사이징/arb/프리페치/BW 할당)을 확정할 수 있다.\n\n[HW] EVT1 DPU QoS 추정을 통해 U underrun의 U 영향이 반영된 차기 해결 방안을 HW 관점에서 구체화(리소스/스케줄링 관점)하기 위해서다.\n부족 데이터: EVT1 DPU 동작 model(미도착)이 확보되면 U 영향이 반영된 QoS/버퍼링/스케줄링 설계 파라미터를 정량 재산정하고 다음 회차 해결안의 우선순위와 검증 계획을 확정할 수 있다.\n\n[PM] U underrun의 재발/확대 가능성을 U 영향( origin V, EVT1 단계 ) 관점에서 반영해 차기 해결 방안의 일정과 자신도를 확정하기 위해 일정·risk를 재검토한다.\n부족 데이터: 다음 검토를 위해 U 영향이 실제로 DPU underrun에 미치는 임계값(조건/빈도), EVT1 추정의 근거 수치(지표·가정), EVT1 실측 범위에서의 재검증 결과를 확보하면 일정(마일스톤/여유)과 신뢰도 상·하향 판단이 가능하다."
+  },
+  {
+   "id": "5720311",
+   "space": "SYS",
+   "title": "측정 리포트: U underrun lesson + EVT1 추정",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-203"
+   ],
+   "updated_week": 27,
+   "body": "U underrun lesson + EVT1 추정\n출처 시스템: Confluence:DPU-203 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5730301",
+   "space": "CAM",
+   "title": "AI scaler arch 검토 — Display scale-up — 기술 검토 노트",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-303"
+   ],
+   "updated_week": 27,
+   "body": "배경: 고해상도 외부 출력·초해상(scale-up) 요구가 커지며 W에 AI scaler 전용 HW 도입을 검토 중 — GPU로 처리하면 전력이, 전용 HW면 면적이 든다.\n문제: scaler의 전력/화질 model과 scale-up 시나리오의 실제 사용 빈도 데이터가 없어, 면적 투자를 정당화할 근거가 부족하다.\n목표: AI scaler HW 블록 추가, GPU fallback 재사용, 미도입 중 arch 방향을 확정한다.\n\n[ARCH] 스케일러(디스플레이 업스케일) 아키텍처 옵션별 PPA 트레이드오프를 초기에 정량화해 power(전력) 축에서 W 목표를 만족하는 설계 방향을 빠르게 좁히기 위함이다.\n부족 데이터: 전력/화질 model의 입력 분포(해상도/프레임레이트/콘텐츠), 실행 시(클럭·메모리·액세스) 계측 기반 파라미터(버스/DRAM 대역·연산량)와 W25 목표 대비 오차/경계조건을 보강하면 옵션별 PPA 및 W 달성 가능성을 재판단하고 최종 아키텍처 결정을 더 진행할 수 있다.\n\n[HW] scaler HW 블록 추정을 통해 Display scale-up 요구사항을 silicon 수준에서 가능한 아키텍처와 자원 규모로 정합시키기 위해서이다.\n부족 데이터: 필요 리소스(클럭/타일링/메모리 용량·대역·I/O), 목표 해상도/프레임레이트/latency, 구현 제약(공정·전력 예산·패키지/버스폭)과 확정 spec(기능 범위·정밀도 요구)을 추가로 확보하면 추정을 고도화하고 아키텍처 타당성을 확정할 수 있다.\n\n[PM] AI scaler 아키텍처 검토를 통해 Display scale-up의 일정/리스크를 M(중간) 신뢰도로 확정하기 위함이다.\n부족 데이터: 일정 확정을 위해 전력/화질 model의 가정·입력/출력 범위, 성능 목표 대비 마진, 목표 성능 도달을 위한 IP/블록 변경 범위, 예상 검증 항목 및 일정(샘플/회귀/폼팩터/테스트)과 마일스톤별 리스크(전력·지연·품질 fail 조건 포함)를 추가로 확보해야 한다."
+  },
+  {
+   "id": "5730311",
+   "space": "CAM",
+   "title": "측정 리포트: scaler 전력/화질 model",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-303"
+   ],
+   "updated_week": 27,
+   "body": "scaler 전력/화질 model\n출처 시스템: Confluence:DPU-303 — 측정 조건과 한계를 기록한다."
+  }
+ ]
+}

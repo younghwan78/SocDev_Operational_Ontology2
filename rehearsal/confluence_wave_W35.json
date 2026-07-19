@@ -1,0 +1,37 @@
+{
+ "pages": [
+  {
+   "id": "5710121",
+   "space": "CAM",
+   "title": "결정 노트: 8K 발열 대응",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-101"
+   ],
+   "updated_week": 35,
+   "body": "결정: 8K 발열 대응 (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730321",
+   "space": "CAM",
+   "title": "결정 노트: AI scaler 도입",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-303"
+   ],
+   "updated_week": 35,
+   "body": "결정: AI scaler 도입 (확신도 L)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730331",
+   "space": "ARCH",
+   "title": "[설계문서] AI scaler arch 검토 — Display scale-up architecture 검토서",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-303"
+   ],
+   "updated_week": 35,
+   "body": "AI scaler HW 블록 추가, GPU fallback 재사용, 미도입 중 arch 방향을 확정한다.\n\n구조 대안·PPA 트레이드오프·선행 검증 계획을 담은 공식 설계 문서. 승인 전 초안은 기술 검토 노트를 참조한다."
+  }
+ ]
+}

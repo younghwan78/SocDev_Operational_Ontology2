@@ -1,0 +1,47 @@
+{
+ "issues": [
+  {
+   "key": "SOCV-206",
+   "fields": {
+    "summary": "KPI power — EVT1 HW 개선 가능성 판단(U KPI 전력)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 KPI power model의 정확도가 미검증이고 U 발열 근본원인 분석도 미완 — 수정 효과가 pre-Si 추정에만 기대고 있다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_lesson": "KPI power — EVT1 HW 개선 가능성 판단(U KPI 전력) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-12-15",
+    "duedate": "2026-02-09"
+   }
+  },
+  {
+   "key": "SOCV-9071",
+   "fields": {
+    "summary": "[근거 요청] depth solution soc전 IQ 예측 model",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Confluence 확보 필요 — depth solution soc전 IQ 예측 model",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-12-15",
+    "duedate": "2025-12-22"
+   }
+  }
+ ]
+}

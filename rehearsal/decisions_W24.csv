@@ -1,0 +1,3 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_302,project_w,evt_rehearsal_302,review_decision,직전 과제 필수 개선 5건 — W 반영 범위와 자원 산정,W 스펙에 반영할 범위(전면/일부/이연)와 그에 따른 area·인력 자원을 확정한다.,직전 양산 과제 사후분석 lesson — 필수 개선 5건 목록(발열 마진·camera 면적·DPU underrun·검증 커버리지·계측 포인트) 기반 결정,Confluence:LESSON-302,measurement,L,이전 과제 문제 근본원인 분석;미반영 시 영향 정량화
+dec_rehearsal_306,project_w,evt_rehearsal_306,review_decision,Camera IQ 개선,"IQ 개선 방식 확정 — 전용 HW IQ 블록 추가, NPU 기반 SW-IQ, 현 화질 유지.",IQ 개선 area model 추정 기반 결정,Confluence:CAM-306,measurement,L,IQ 개선 area cost model;경쟁사 화질 벤치마크

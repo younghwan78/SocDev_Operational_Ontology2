@@ -1,0 +1,26 @@
+{
+ "pages": [
+  {
+   "id": "5710321",
+   "space": "CAM",
+   "title": "결정 노트: DPU underrun 대응",
+   "project_id": "project_u",
+   "issue_keys": [
+    "SOCU-103"
+   ],
+   "updated_week": 36,
+   "body": "결정: DPU underrun 대응 (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5720521",
+   "space": "VID",
+   "title": "결정 노트: codec BW 선개발",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-205"
+   ],
+   "updated_week": 36,
+   "body": "결정: codec BW 선개발 (확신도 M)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  }
+ ]
+}

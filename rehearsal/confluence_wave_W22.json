@@ -1,0 +1,68 @@
+{
+ "pages": [
+  {
+   "id": "5720421",
+   "space": "ARCH",
+   "title": "결정 노트: 선개발 검증 신뢰도",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-204"
+   ],
+   "updated_week": 22,
+   "body": "결정: 선개발 검증 신뢰도 (확신도 L)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5720701",
+   "space": "SYS",
+   "title": "Editable portrait depth/bokeh SW 선개발 + IQ 검증 — 기술 검토 노트",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-207"
+   ],
+   "updated_week": 22,
+   "body": "배경: U의 portrait 특화 전력 이슈(E-107) 후속 — V에서 depth/bokeh SW를 선개발하고 화질(IQ)을 실리콘 도착 전에 검증해 둬야 한다.\n문제: 실리콘 도착 전 IQ 예측 model과 portrait 회귀 커버리지가 없어, 선개발 결과물의 화질 확신이 낮다 — IQ 회귀는 출시 직전에야 드러난다.\n목표: 선개발 범위 확정 — 전면 선개발+IQ 검증, 기존 bokeh 재사용 호환 레이어, 일부 차기 이연.\n\n[ARCH] V의 editable portrait depth/bokeh SW 선개발에서 depth pipeline PPA를 정의하고 IQ를 조기에 검증해 EVT1 실측 이전에 성능/면적/전력 트레이드오프 방향을 고정하기 위해서다.\n부족 데이터: depth solution 실리콘 도착 전 IQ 예측 model(Confluence 미완, 요청 W20 · 도착예정 W21)과 함께 emulator→실기/closure 조건(카메라/노이즈/저조도/피사체 다양성)까지 매핑되는 데이터가 확보되면, 경쟁사 대비 area/power 성능을 포함한 PPA 재산정과 IQ risk(실패 모드) 우선순위를 확정해 모델 기반 의사결정 정확도를 끌어올릴 수 있다.\n\n[HW] depth HW 연동 SW를 선개발 단계에서 확인해 bokeh 품질(Quality)과 IQ 검증 가능 범위를 조기에 확정하기 위해서입니다.\n부족 데이터: 부족 데이터가 없으므로 추가로는 실제 EVT1 브링업 환경에서 프레임별 depth 정확도/타이밍/드리프트와 bokeh 결과 상관 데이터를 확보해 IQ 합격 판정을 내리는 단계로 진행하면 됩니다.\n\n[PM] emulator 기반 depth/bokeh 선개발이 origin V 및 EVT1 단계에서 일정대로 진행 가능한지 확인하기 위해 선개발 일정과 SW confidence를 확정/조정한다.\n부족 데이터: 다음으로 EVT1 실측(실기 또는 에뮬레이터+하드웨어 연동)에서 동일 시나리오 depth 품질/지연/안정성 및 IQ 기준 충족 여부 데이터를 확보하면 선개발 일정의 구체 확정과 confidence 상향(또는 리스크 반영) 판단이 가능하다."
+  },
+  {
+   "id": "5720711",
+   "space": "SYS",
+   "title": "측정 리포트: emulator depth 동작 검증",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-207"
+   ],
+   "updated_week": 22,
+   "body": "emulator depth 동작 검증\n출처 시스템: Lab:CAM-207 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "5730121",
+   "space": "AUD",
+   "title": "결정 노트: NN/SRAM area spec",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-301"
+   ],
+   "updated_week": 22,
+   "body": "결정: NN/SRAM area spec (확신도 L)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730131",
+   "space": "ARCH",
+   "title": "[설계문서] NN 가속기/SRAM area spec trade-off — 수익성(Audio AI) architecture 검토서",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-301"
+   ],
+   "updated_week": 22,
+   "body": "spec freeze 전에 NN/SRAM area 수준을 확정한다 — 축소 spec, full spec 유지, 고객 협의 후 결정 중 택일.\n\n구조 대안·PPA 트레이드오프·선행 검증 계획을 담은 공식 설계 문서. 승인 전 초안은 기술 검토 노트를 참조한다."
+  },
+  {
+   "id": "579220",
+   "space": "SYS",
+   "title": "주간 개발 회의록 W22",
+   "project_id": "",
+   "issue_keys": [],
+   "updated_week": 22,
+   "body": "이번 주 역할별 계획 발언:\n- 초기 bokeh 특화 SW요구 먼저 정리하겠습니다\n- bokeh depth 파이프라인 PPA 먼저 보겠습니다\n- bokeh SW 선개발은 IQ회귀 방지 먼저\n- depth HW 연동부터 확인하겠습니다\n- depth SW 먼저 IQ검증부터 하겠습니다\n- 선개발 일정 먼저 맞춰가겠습니다"
+  }
+ ]
+}

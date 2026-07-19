@@ -1,0 +1,3 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_101,project_u,evt_rehearsal_101,review_decision,8K 발열 대응,"양산 일정 안에서 발열을 budget 안으로 — SW 완화로 막을지, 고객 KPI를 협의로 낮출지, 차기 V의 HW(DVFS) 개선으로 넘길지 확정한다.",8K30 발열/전력 실측 기반 결정,Field:THERM-101,measurement,M,경쟁사 8K 발열 벤치마크;8K thermal margin 추가 실측
+dec_rehearsal_303,project_w,evt_rehearsal_303,review_decision,AI scaler 도입,"AI scaler HW 블록 추가, GPU fallback 재사용, 미도입 중 arch 방향을 확정한다.",scaler 전력/화질 model 기반 결정,Confluence:DPU-303,measurement,L,AI scaler 전력/화질 model;scale-up scenario 사용 빈도

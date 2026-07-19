@@ -1,0 +1,146 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-102",
+   "fields": {
+    "summary": "Dual recording(multi-sensor) power — 고객 특화",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "실측에서 dual 시나리오 전력이 목표를 초과하는데, 고객 요구 spec 상세가 아직 미확정이라 최적화 목표점 자체가 흔들린다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Dual recording(multi-sensor) power — 고객 특화 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-05-04",
+    "duedate": "2026-06-29"
+   }
+  },
+  {
+   "key": "SOCU-9021",
+   "fields": {
+    "summary": "[근거 요청] 고객 특화 solution 상세 spec",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "JIRA 확보 필요 — 고객 특화 solution 상세 spec",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-05-04",
+    "duedate": "2026-05-04"
+   }
+  },
+  {
+   "key": "SOCU-9051",
+   "fields": {
+    "summary": "[근거 요청] 고객 AI audio solution 상세",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "JIRA 확보 필요 — 고객 AI audio solution 상세",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-05-04",
+    "duedate": "2026-05-18"
+   }
+  },
+  {
+   "key": "SOCW-107",
+   "fields": {
+    "summary": "Editable portrait video recording power 최적화(Camera 특화) (U 전파)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "depth HW 가속 arch(W)",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-05-04",
+    "duedate": "2026-06-29"
+   }
+  },
+  {
+   "key": "SOCW-305",
+   "fields": {
+    "summary": "EVT0 HW design close — area fix/PPA 확정",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "최종 PPA simulation 검증과 양산 feasibility 검토가 미완인 채 freeze하면 P&R(PI/PD) 최적화 여지를 확인하지 못한 채 보수적 마진으로 굳고, 기다리면 후속 전체가 밀린다 — 재최적화안은 검증 데이터 없인 확신이 낮다.",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-05-04",
+    "duedate": "2026-07-13"
+   }
+  },
+  {
+   "key": "SOCW-9051",
+   "fields": {
+    "summary": "[근거 요청] EVT0 PPA 최종 simulation 검증",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Lab 확보 필요 — EVT0 PPA 최종 simulation 검증",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-05-04",
+    "duedate": "2026-05-04"
+   }
+  },
+  {
+   "key": "SOCW-9053",
+   "fields": {
+    "summary": "[근거 요청] roadmap 기반 area budget 사전 배분안",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Excel 확보 필요 — roadmap 기반 area budget 사전 배분안",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-05-04",
+    "duedate": "2026-05-11"
+   }
+  }
+ ]
+}

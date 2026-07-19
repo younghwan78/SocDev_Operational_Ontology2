@@ -1,0 +1,22 @@
+{
+ "issues": [
+  {
+   "key": "SOCW-305",
+   "fields": {
+    "summary": "EVT0 HW design close — area fix/PPA 확정",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "최종 PPA simulation 검증과 양산 feasibility 검토가 미완인 채 freeze하면 P&R(PI/PD) 최적화 여지를 확인하지 못한 채 보수적 마진으로 굳고, 기다리면 후속 전체가 밀린다 — 재최적화안은 검증 데이터 없인 확신이 낮다.",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-06-08",
+    "duedate": "2026-07-13"
+   }
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_104,project_u,evt_rehearsal_104,review_decision,editing 성능 개선,"벤치 격차 축소 — 현 HW의 병렬 처리 활용을 극대화할지, SW 경로 최적화로 버틸지, 차기 HW 개선으로 넘길지 정한다.",경쟁사 editing benchmark 기반 결정,Dashboard:VID-104,measurement,M,경쟁사 editing 내부 동작 추정;APV/editing 실 BW 측정
+dec_rehearsal_304,project_w,evt_rehearsal_304,review_decision,codec micro-arch,"spec 창 안에 micro-arch 방향 확정 — 병렬 구조 채택, 공유 자원 재사용(arbitration 개선), spec 단순화(요구 축소).",codec 병렬 BW simulation 기반 결정,Confluence:VID-304,measurement,L,codec 병렬 BW simulation 정확도;실 scenario BW model

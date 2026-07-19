@@ -1,0 +1,65 @@
+{
+ "issues": [
+  {
+   "key": "SOCV-202",
+   "fields": {
+    "summary": "Camera ISP pipeline 구조 변경 — SW 대응/기존 scenario 검증",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "전면 재구조화는 공수가 크고, 기존 촬영 scenario의 회귀 검증 커버리지와 실리콘 도착 전 성능 예측 model이 미확보라 품질 확신이 낮다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_lesson": "Camera ISP pipeline 구조 변경 — SW 대응/기존 scenario 검증 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-01-05",
+    "duedate": "2026-02-23"
+   }
+  },
+  {
+   "key": "SOCV-9022",
+   "fields": {
+    "summary": "[근거 요청] 기존 scenario 회귀 coverage",
+    "issuetype": {
+     "name": "지연"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Dashboard 확보 필요 — 기존 scenario 회귀 coverage",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-01-05",
+    "duedate": "2026-01-19"
+   }
+  },
+  {
+   "key": "SOCV-207",
+   "fields": {
+    "summary": "Editable portrait depth/bokeh SW 선개발 + IQ 검증",
+    "issuetype": {
+     "name": "화질"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "실리콘 도착 전 IQ 예측 model과 portrait 회귀 커버리지가 없어, 선개발 결과물의 화질 확신이 낮다 — IQ 회귀는 출시 직전에야 드러난다.",
+    "status": {
+     "name": "In Review"
+    },
+    "updated": "2026-01-05",
+    "duedate": "2026-03-09"
+   }
+  }
+ ]
+}

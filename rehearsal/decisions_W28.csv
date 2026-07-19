@@ -1,0 +1,2 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_206,project_v,evt_rehearsal_206,review_decision,EVT1 KPI power,"EVT1에 HW 수정을 확정할지, 실리콘 도착 후 SW 검증으로 미룰지, U와 동일하게 갈지 결정한다.",EVT1 KPI power pre-Si 추정 기반 결정,Lab:KPI-206,measurement,M,EVT1 KPI power pre-silicon model;U KPI 발열 근본원인 분석

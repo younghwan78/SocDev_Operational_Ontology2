@@ -1,0 +1,2 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_107,project_u,evt_rehearsal_107,review_decision,portrait power,"특화 기능을 유지하면서 전력을 절감 — SW 최적화, NPU/GPU 자원 재배분, 차기 W의 전용 HW 가속 이연 중 결정한다.",editable portrait 전력 실측 기반 결정,Field:CAM-107,measurement,M,editable portrait 사용 빈도/시나리오;depth solution 전력 실측

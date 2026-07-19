@@ -1,0 +1,263 @@
+{
+ "source": "E:\\57_Claude_SoC_DigitalTwin\\OperationalOntology\\data\\world.yaml",
+ "base_date": "2025-08-04",
+ "issue_count": 80,
+ "page_count": 88,
+ "waves": [
+  {
+   "week": 4,
+   "date": "2025-08-25",
+   "jira": "jira_wave_W04.json"
+  },
+  {
+   "week": 6,
+   "date": "2025-09-08",
+   "jira": "jira_wave_W06.json",
+   "confluence": "confluence_wave_W06.json"
+  },
+  {
+   "week": 7,
+   "date": "2025-09-15",
+   "jira": "jira_wave_W07.json"
+  },
+  {
+   "week": 8,
+   "date": "2025-09-22",
+   "jira": "jira_wave_W08.json",
+   "confluence": "confluence_wave_W08.json"
+  },
+  {
+   "week": 9,
+   "date": "2025-09-29",
+   "jira": "jira_wave_W09.json"
+  },
+  {
+   "week": 10,
+   "date": "2025-10-06",
+   "jira": "jira_wave_W10.json",
+   "confluence": "confluence_wave_W10.json"
+  },
+  {
+   "week": 11,
+   "date": "2025-10-13",
+   "jira": "jira_wave_W11.json"
+  },
+  {
+   "week": 12,
+   "date": "2025-10-20",
+   "jira": "jira_wave_W12.json"
+  },
+  {
+   "week": 14,
+   "date": "2025-11-03",
+   "jira": "jira_wave_W14.json",
+   "confluence": "confluence_wave_W14.json"
+  },
+  {
+   "week": 15,
+   "date": "2025-11-10",
+   "jira": "jira_wave_W15.json"
+  },
+  {
+   "week": 16,
+   "date": "2025-11-17",
+   "jira": "jira_wave_W16.json",
+   "confluence": "confluence_wave_W16.json"
+  },
+  {
+   "week": 17,
+   "date": "2025-11-24",
+   "jira": "jira_wave_W17.json"
+  },
+  {
+   "week": 18,
+   "date": "2025-12-01",
+   "jira": "jira_wave_W18.json",
+   "confluence": "confluence_wave_W18.json"
+  },
+  {
+   "week": 19,
+   "date": "2025-12-08",
+   "jira": "jira_wave_W19.json"
+  },
+  {
+   "week": 20,
+   "date": "2025-12-15",
+   "jira": "jira_wave_W20.json",
+   "confluence": "confluence_wave_W20.json"
+  },
+  {
+   "week": 21,
+   "date": "2025-12-22",
+   "jira": "jira_wave_W21.json"
+  },
+  {
+   "week": 22,
+   "date": "2025-12-29",
+   "jira": "jira_wave_W22.json",
+   "confluence": "confluence_wave_W22.json",
+   "decisions": "decisions_W22.csv"
+  },
+  {
+   "week": 23,
+   "date": "2026-01-05",
+   "jira": "jira_wave_W23.json"
+  },
+  {
+   "week": 24,
+   "date": "2026-01-12",
+   "jira": "jira_wave_W24.json",
+   "confluence": "confluence_wave_W24.json",
+   "decisions": "decisions_W24.csv"
+  },
+  {
+   "week": 25,
+   "date": "2026-01-19",
+   "jira": "jira_wave_W25.json"
+  },
+  {
+   "week": 26,
+   "date": "2026-01-26",
+   "jira": "jira_wave_W26.json",
+   "confluence": "confluence_wave_W26.json",
+   "decisions": "decisions_W26.csv"
+  },
+  {
+   "week": 27,
+   "date": "2026-02-02",
+   "jira": "jira_wave_W27.json",
+   "confluence": "confluence_wave_W27.json"
+  },
+  {
+   "week": 28,
+   "date": "2026-02-09",
+   "jira": "jira_wave_W28.json",
+   "confluence": "confluence_wave_W28.json",
+   "decisions": "decisions_W28.csv"
+  },
+  {
+   "week": 29,
+   "date": "2026-02-16",
+   "jira": "jira_wave_W29.json",
+   "confluence": "confluence_wave_W29.json"
+  },
+  {
+   "week": 30,
+   "date": "2026-02-23",
+   "jira": "jira_wave_W30.json",
+   "confluence": "confluence_wave_W30.json",
+   "decisions": "decisions_W30.csv"
+  },
+  {
+   "week": 31,
+   "date": "2026-03-02",
+   "jira": "jira_wave_W31.json"
+  },
+  {
+   "week": 32,
+   "date": "2026-03-09",
+   "jira": "jira_wave_W32.json",
+   "confluence": "confluence_wave_W32.json",
+   "decisions": "decisions_W32.csv"
+  },
+  {
+   "week": 33,
+   "date": "2026-03-16",
+   "jira": "jira_wave_W33.json"
+  },
+  {
+   "week": 34,
+   "date": "2026-03-23",
+   "jira": "jira_wave_W34.json",
+   "confluence": "confluence_wave_W34.json",
+   "decisions": "decisions_W34.csv"
+  },
+  {
+   "week": 35,
+   "date": "2026-03-30",
+   "jira": "jira_wave_W35.json",
+   "confluence": "confluence_wave_W35.json",
+   "decisions": "decisions_W35.csv"
+  },
+  {
+   "week": 36,
+   "date": "2026-04-06",
+   "jira": "jira_wave_W36.json",
+   "confluence": "confluence_wave_W36.json",
+   "decisions": "decisions_W36.csv"
+  },
+  {
+   "week": 37,
+   "date": "2026-04-13",
+   "jira": "jira_wave_W37.json",
+   "confluence": "confluence_wave_W37.json",
+   "decisions": "decisions_W37.csv"
+  },
+  {
+   "week": 38,
+   "date": "2026-04-20",
+   "jira": "jira_wave_W38.json",
+   "confluence": "confluence_wave_W38.json",
+   "decisions": "decisions_W38.csv"
+  },
+  {
+   "week": 39,
+   "date": "2026-04-27",
+   "jira": "jira_wave_W39.json"
+  },
+  {
+   "week": 40,
+   "date": "2026-05-04",
+   "jira": "jira_wave_W40.json",
+   "confluence": "confluence_wave_W40.json"
+  },
+  {
+   "week": 41,
+   "date": "2026-05-11",
+   "jira": "jira_wave_W41.json"
+  },
+  {
+   "week": 42,
+   "date": "2026-05-18",
+   "jira": "jira_wave_W42.json",
+   "confluence": "confluence_wave_W42.json",
+   "decisions": "decisions_W42.csv"
+  },
+  {
+   "week": 43,
+   "date": "2026-05-25",
+   "jira": "jira_wave_W43.json"
+  },
+  {
+   "week": 44,
+   "date": "2026-06-01",
+   "jira": "jira_wave_W44.json"
+  },
+  {
+   "week": 45,
+   "date": "2026-06-08",
+   "jira": "jira_wave_W45.json"
+  },
+  {
+   "week": 46,
+   "date": "2026-06-15",
+   "jira": "jira_wave_W46.json",
+   "confluence": "confluence_wave_W46.json",
+   "decisions": "decisions_W46.csv"
+  },
+  {
+   "week": 48,
+   "date": "2026-06-29",
+   "jira": "jira_wave_W48.json",
+   "confluence": "confluence_wave_W48.json",
+   "decisions": "decisions_W48.csv"
+  },
+  {
+   "week": 50,
+   "date": "2026-07-13",
+   "jira": "jira_wave_W50.json",
+   "confluence": "confluence_wave_W50.json",
+   "decisions": "decisions_W50.csv"
+  }
+ ]
+}

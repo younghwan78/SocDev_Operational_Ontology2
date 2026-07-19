@@ -1,0 +1,112 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-9032",
+   "fields": {
+    "summary": "[근거 요청] scaler fallback 전력/대역폭 영향",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Lab 확보 필요 — scaler fallback 전력/대역폭 영향",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-03-23",
+    "duedate": "2026-03-23"
+   }
+  },
+  {
+   "key": "SOCU-104",
+   "fields": {
+    "summary": "Video editing benchmark 경쟁사 열세(Video)",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "MFC 단일 경로 처리 구조라 대용량 클립에서 격차가 벌어지고, 리뷰 점수 하락이 판매 협상에 직접 부담이 된다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Video editing benchmark 경쟁사 열세(Video) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-03-23",
+    "duedate": "2026-04-20"
+   }
+  },
+  {
+   "key": "SOCU-108",
+   "fields": {
+    "summary": "APV recording power 최적화 — 고BW codec(Video)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "APV 녹화 중 타 IP 동시 동작 시 BW 경합으로 전력이 초과 — 고객이 실제로 어떤 시나리오로 쓸지 데이터가 없어 최적화 우선순위가 불명확하다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "APV recording power 최적화 — 고BW codec(Video) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-03-23",
+    "duedate": "2026-05-18"
+   }
+  },
+  {
+   "key": "SOCU-9082",
+   "fields": {
+    "summary": "[근거 요청] APV 고객 사용 scenario",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "JIRA 확보 필요 — APV 고객 사용 scenario",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-03-23",
+    "duedate": "2026-03-23"
+   }
+  },
+  {
+   "key": "SOCW-304",
+   "fields": {
+    "summary": "HW micro-architecture — codec BW 병렬 구조(Video)",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "병렬 구조는 BW 경합을 근본 해소하지만 면적이 늘고, simulation 정확도와 실 시나리오 BW model이 미확보라 '병렬이 실제로 얼마나 버는지'의 확신이 낮다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "HW micro-architecture — codec BW 병렬 구조(Video) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-03-23",
+    "duedate": "2026-04-20"
+   }
+  }
+ ]
+}

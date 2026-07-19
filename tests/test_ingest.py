@@ -445,6 +445,36 @@ def test_quality_report_flags_unlabeled_and_missing_refs(service: IngestService)
     assert (stored.linkage_total, stored.linkage_connected) == (2, 1)
 
 
+def test_ingest_rows_recorded_at_injection() -> None:
+    """설계 25 — 주입 시계: 배치·버전 로그·ingested_at이 주입 시각으로 기록된다."""
+    from datetime import UTC, datetime
+
+    repo = InMemoryRepository({})
+    service = IngestService(MemoryIngestWriter(repo))
+    injected = datetime(2025, 9, 1, 10, 0, tzinfo=UTC)
+    report = service.ingest_rows(
+        "rehearsal:test",
+        [
+            {
+                "이슈 ID": "import_replay_case",
+                "프로젝트 ID": "project_u",
+                "제목": "리플레이 시계",
+                "유형": "power_gap",
+                "상태": "open",
+                "증상": "s",
+                "확신도": "medium",
+            }
+        ],
+        "issues",
+        recorded_at=injected,
+    )
+    assert report.batch.created_at == injected.isoformat()
+    obj = repo.get("issues", "import_replay_case")
+    assert obj is not None and obj.source.ingested_at == injected
+    [version] = service.history("issues", "import_replay_case").versions
+    assert version.recorded_at == injected.isoformat()
+
+
 def test_quarantine_stores_rejected_rows_and_resolves_on_reingest(
     service: IngestService,
 ) -> None:

@@ -1,0 +1,88 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-9011",
+   "fields": {
+    "summary": "[근거 요청] 경쟁사 8K 발열 벤치마크",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Dashboard 확보 필요 — 경쟁사 8K 발열 벤치마크",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-01-19",
+    "duedate": "2026-02-02"
+   }
+  },
+  {
+   "key": "SOCU-9012",
+   "fields": {
+    "summary": "[근거 요청] 8K thermal margin 추가 실측",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Field 확보 필요 — 8K thermal margin 추가 실측",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-01-19",
+    "duedate": "2026-02-02"
+   }
+  },
+  {
+   "key": "SOCW-9031",
+   "fields": {
+    "summary": "[근거 요청] AI scaler 전력/화질 model",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — AI scaler 전력/화질 model",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-01-19",
+    "duedate": "2026-01-26"
+   }
+  },
+  {
+   "key": "SOCW-9032",
+   "fields": {
+    "summary": "[근거 요청] scale-up scenario 사용 빈도",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "JIRA 확보 필요 — scale-up scenario 사용 빈도",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-01-19",
+    "duedate": "2026-02-02"
+   }
+  }
+ ]
+}

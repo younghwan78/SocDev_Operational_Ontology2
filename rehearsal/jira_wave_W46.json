@@ -1,0 +1,61 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-105",
+   "fields": {
+    "summary": "Voice call latency / DoU 전성비(Audio)",
+    "issuetype": {
+     "name": "지연"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "latency와 전력이 상충한다: 클록을 낮추면 전성비는 좋아지지만 통화 지연이 커진다",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-06-15",
+    "duedate": "2026-07-13"
+   }
+  },
+  {
+   "key": "SOCU-9052",
+   "fields": {
+    "summary": "[근거 요청] audio latency margin 실측",
+    "issuetype": {
+     "name": "지연"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "Lab 확보 필요 — audio latency margin 실측",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-06-15",
+    "duedate": "2026-06-29"
+   }
+  },
+  {
+   "key": "SOCU-107",
+   "fields": {
+    "summary": "Editable portrait video recording power 최적화(Camera 특화)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "특화 기능 하나가 전력·연산 자원을 잠식해 기본 촬영 체감(발열·배터리)까지 영향을 준다",
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-06-15",
+    "duedate": "2026-06-15"
+   }
+  }
+ ]
+}

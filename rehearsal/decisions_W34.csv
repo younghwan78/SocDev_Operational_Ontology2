@@ -1,0 +1,2 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_203,project_v,evt_rehearsal_203,review_decision,차기 DPU underrun,"HW QoS 개선을 태울지, SW scaler 정책 선반영으로 갈지, U 방식(SW 대응)을 유지할지 확정한다.",U underrun lesson + EVT1 추정 기반 결정,Confluence:DPU-203,measurement,M,EVT1 DPU 동작 model;underrun 임계 BW 예측

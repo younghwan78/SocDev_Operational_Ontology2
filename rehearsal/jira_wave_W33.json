@@ -1,0 +1,27 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-106",
+   "fields": {
+    "summary": "KPI recording(UHD60) sustained power 최적화(Camera)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "장시간 녹화에서 전력-발열 연쇄로 KPI 유지 시간이 짧아진다 — 경쟁사 비교 데이터가 없어 '얼마나 따라잡아야 하는지'도 불명확하다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_scenarios": "uhd60_recording_eis_on",
+    "customfield_lesson": "KPI recording(UHD60) sustained power 최적화(Camera) — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2026-03-16",
+    "duedate": "2026-04-13"
+   }
+  }
+ ]
+}

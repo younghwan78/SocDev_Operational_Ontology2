@@ -1,0 +1,68 @@
+{
+ "issues": [
+  {
+   "key": "SOCU-103",
+   "fields": {
+    "summary": "DPU underrun — RT latency(Display)",
+    "issuetype": {
+     "name": "언더런"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "사용자가 체감하는 프레임 드랍이라 출하 품질 이슈로 승격됐고, 근본 원인은 고부하 시 메모리 BW 경합이다.",
+    "priority": {
+     "name": "High"
+    },
+    "customfield_scenarios": "video_mode_panel_underrun_prevention",
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2026-04-06",
+    "duedate": "2026-04-06"
+   }
+  },
+  {
+   "key": "SOCU-9071",
+   "fields": {
+    "summary": "[근거 요청] editable portrait 사용 빈도/시나리오",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_u"
+    ],
+    "description": "JIRA 확보 필요 — editable portrait 사용 빈도/시나리오",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-04-06",
+    "duedate": "2026-04-20"
+   }
+  },
+  {
+   "key": "SOCV-108",
+   "fields": {
+    "summary": "APV recording power 최적화 — 고BW codec(Video) (U 전파)",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 codec BW 검토(V)",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2026-04-06",
+    "duedate": "2026-06-01"
+   }
+  }
+ ]
+}

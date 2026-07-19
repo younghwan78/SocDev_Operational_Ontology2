@@ -1,0 +1,67 @@
+{
+ "issues": [
+  {
+   "key": "SOCW-9021",
+   "fields": {
+    "summary": "[근거 요청] 이전 과제 문제 근본원인 분석",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — 이전 과제 문제 근본원인 분석",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-10-20",
+    "duedate": "2025-10-27"
+   }
+  },
+  {
+   "key": "SOCW-9081",
+   "fields": {
+    "summary": "[근거 요청] depth HW 가속 area/power model",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Confluence 확보 필요 — depth HW 가속 area/power model",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-10-20",
+    "duedate": "2025-10-27"
+   }
+  },
+  {
+   "key": "SOCW-9082",
+   "fields": {
+    "summary": "[근거 요청] portrait 시장 수요 추정",
+    "issuetype": {
+     "name": "성능"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "JIRA 확보 필요 — portrait 시장 수요 추정",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-10-20",
+    "duedate": "2025-11-03"
+   }
+  }
+ ]
+}

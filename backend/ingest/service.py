@@ -626,6 +626,7 @@ class IngestService:
         row_refs: list[str] | None = None,
         actor: str | None = None,
         dry_run: bool = False,
+        recorded_at: datetime | None = None,
     ) -> IngestReport:
         """정규화된 행을 배치로 반입한다 — CSV/XLSX와 커넥터(integrated)의 공용 경로.
 
@@ -635,6 +636,10 @@ class IngestService:
         `dry_run=True` (R3, 설계 21): 파싱→검증→upsert 3분류→품질 리포트까지 전부
         계산하되 쓰기(객체/버전 로그/보류 풀/배치 기록)는 모두 생략한다 — 리포트
         카운트는 실제 반입과 동일하고, 저장소·이력은 불변이다.
+
+        `recorded_at` (설계 25): 리허설 리플레이 전용 주입 시계 — 배치 시각·버전
+        로그·source.ingested_at이 이 시각으로 기록된다. 운영 반입은 절대 넘기지
+        않는다 (transaction time은 진실이어야 한다) — rehearsal-replay CLI만 사용.
         """
         mapping = MAPPINGS.get(mapping_name)
         if mapping is None:
@@ -646,7 +651,7 @@ class IngestService:
 
         model = COLLECTIONS[mapping.target_collection][1]
         batch_id = f"batch_{uuid.uuid4().hex[:10]}"
-        now = datetime.now(UTC)
+        now = recorded_at if recorded_at is not None else datetime.now(UTC)
 
         validated: list[tuple[int, OntologyObject]] = []
         rejected: list[RejectedRow] = []

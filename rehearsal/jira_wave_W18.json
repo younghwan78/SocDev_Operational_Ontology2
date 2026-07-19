@@ -1,0 +1,149 @@
+{
+ "issues": [
+  {
+   "key": "SOCV-201",
+   "fields": {
+    "summary": "EVT1 HW power/DVFS 최적화 — U 발열의 HW 개선 판단",
+    "issuetype": {
+     "name": "발열"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "EVT1 마감이 다가오는데 U 발열의 근본원인 분석이 미완이라, 수정이 실제 얼마나 개선할지 예측 신뢰도가 낮다 — 잘못 고치면 마감만 밀린다.",
+    "priority": {
+     "name": "High"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-12-01",
+    "duedate": "2026-01-26"
+   }
+  },
+  {
+   "key": "SOCV-9012",
+   "fields": {
+    "summary": "[근거 요청] U 발열 근본원인 분석 lesson",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Confluence 확보 필요 — U 발열 근본원인 분석 lesson",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Resolved"
+    },
+    "updated": "2025-12-01",
+    "duedate": "2025-11-24"
+   }
+  },
+  {
+   "key": "SOCV-204",
+   "fields": {
+    "summary": "Emulator FC 검증 한계 — 성능/파워 예측 불확실",
+    "issuetype": {
+     "name": "결함"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "성능/파워 예측 model과 emulator-실리콘 상관관계 데이터가 없어, 지금 하는 선최적화가 실칩에서 맞을지 확신이 낮다 — 틀리면 재작업이다.",
+    "priority": {
+     "name": "Medium"
+    },
+    "customfield_lesson": "Emulator FC 검증 한계 — 성능/파워 예측 불확실 — 대응 경과를 차기 과제 검토에 반영",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2025-12-01",
+    "duedate": "2025-12-29"
+   }
+  },
+  {
+   "key": "SOCV-9061",
+   "fields": {
+    "summary": "[근거 요청] EVT1 KPI power pre-silicon model",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Lab 확보 필요 — EVT1 KPI power pre-silicon model",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-12-01",
+    "duedate": "2025-12-15"
+   }
+  },
+  {
+   "key": "SOCV-9062",
+   "fields": {
+    "summary": "[근거 요청] U KPI 발열 근본원인 분석",
+    "issuetype": {
+     "name": "전력"
+    },
+    "labels": [
+     "project_v"
+    ],
+    "description": "Confluence 확보 필요 — U KPI 발열 근본원인 분석",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-12-01",
+    "duedate": "2025-12-08"
+   }
+  },
+  {
+   "key": "SOCW-307",
+   "fields": {
+    "summary": "Camera pipeline area 최적화 — 수익성(ISP)",
+    "issuetype": {
+     "name": "아키검토"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "area-perf model 정확도와 축소 시 IQ/perf 영향 데이터가 미확보 — 블록 공유(재사용)안의 확신은 근거 없이 과대평가된 상태다.",
+    "status": {
+     "name": "In Progress"
+    },
+    "updated": "2025-12-01",
+    "duedate": "2026-01-26"
+   }
+  },
+  {
+   "key": "SOCW-9072",
+   "fields": {
+    "summary": "[근거 요청] area 축소 시 IQ/perf 영향",
+    "issuetype": {
+     "name": "대역폭"
+    },
+    "labels": [
+     "project_w"
+    ],
+    "description": "Lab 확보 필요 — area 축소 시 IQ/perf 영향",
+    "priority": {
+     "name": "Medium"
+    },
+    "status": {
+     "name": "Open"
+    },
+    "updated": "2025-12-01",
+    "duedate": "2025-12-15"
+   }
+  }
+ ]
+}

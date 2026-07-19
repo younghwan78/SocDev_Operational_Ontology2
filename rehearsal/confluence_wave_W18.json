@@ -1,0 +1,35 @@
+{
+ "pages": [
+  {
+   "id": "5720101",
+   "space": "SYS",
+   "title": "EVT1 HW power/DVFS 최적화 — U 발열의 HW 개선 판단 — 기술 검토 노트",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-201"
+   ],
+   "updated_week": 18,
+   "body": "배경: U에서 확인된 발열 이슈(8K·KPI 전력)의 HW 근본 개선을 차기 V EVT1 설계에 넣을 수 있는 마지막 창이다 — rail/clock 수정 효과는 아직 pre-silicon 추정뿐.\n문제: EVT1 마감이 다가오는데 U 발열의 근본원인 분석이 미완이라, 수정이 실제 얼마나 개선할지 예측 신뢰도가 낮다 — 잘못 고치면 마감만 밀린다.\n목표: 마감 안에 확정: EVT1에 HW 수정을 태울지, 실리콘 도착 후 SW workaround로 미룰지, 개선을 보류할지.\n\n[ARCH] EVT1의 HW power/DVFS 최적화에서 U 발열 원인을 PPA 관점으로 특정해 area·전력·경쟁사 성능을 균형 있게 개선 방향을 확정하기 위해 판단합니다.\n부족 데이터: EVT1 pre-silicon power model의 정확도 검증(요청 W16 · 도착예정 W18)이 확보되면 U 발열 저감에 실제로 효과적인 HW/DVFS 변경안의 PPA 우선순위와 기대 절감률을 더 확정할 수 있습니다.\n\n[HW] EVT1의 U 발열을 DVFS/전원/클럭 관점에서 줄이기 위해 rail/clock 수정 추정을 산출해 HW 레벨에서 전력 효율과 열 여유를 확보할 판단을 하기 위해서입니다.\n부족 데이터: U 발열의 근본원인(활동 전력/누설/전환손실 중 비중, 타깃 블록·레일의 breakdown), 실측/근사 측정 결과(온도-전력 상관 및 governor/DVFS 상태별 전류/클럭 로그)가 확보되면 rail/clock 수정안을 더 정확히 우선순위화하고 최적화 범위(전압/주파수 한계·타이밍/게이팅)를 확정할 수 있습니다.\n\n[PM] 현재 보유한 pre-silicon power 추정 결과를 기반으로 EVT1 마감까지 U 발열 관련 HW power/DVFS 최적화의 방향성을 확정(또는 잠정 유지)하기 위해 판단한다.\n부족 데이터: EVT1 마감 전 U 관련 실측(실리콘 power rail/스코프 기반 열/전력, DVFS 동작 로그, thermal steady-state vs workload)과 EVT1에서의 비교 결과를 확보하면 HW 개선 적용 범위와 우선순위를 확정할 수 있다."
+  },
+  {
+   "id": "5720111",
+   "space": "SYS",
+   "title": "측정 리포트: EVT1 pre-silicon power 추정",
+   "project_id": "project_v",
+   "issue_keys": [
+    "SOCV-201"
+   ],
+   "updated_week": 18,
+   "body": "EVT1 pre-silicon power 추정\n출처 시스템: Lab:PWR-201 — 측정 조건과 한계를 기록한다."
+  },
+  {
+   "id": "579180",
+   "space": "SYS",
+   "title": "주간 개발 회의록 W18",
+   "project_id": "",
+   "issue_keys": [],
+   "updated_week": 18,
+   "body": "이번 주 역할별 계획 발언:\n- U발열 HW개선 우선순위 먼저 보겠습니다\n- EVT1 DVFS U발열은 HW개선 우선 보겠습니다\n- DVFS floor 연동은 아직 확인필요요\n- U 발열 원인부터 rail 수정 추정 드릴게요\n- HW 전력 튜닝은 아직 보류입니다\n- EVT1 마감까지 HW DVFS 개선 검토하겠습니다"
+  }
+ ]
+}

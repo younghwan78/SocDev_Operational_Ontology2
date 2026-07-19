@@ -1,0 +1,48 @@
+{
+ "pages": [
+  {
+   "id": "5730221",
+   "space": "ARCH",
+   "title": "결정 노트: 직전 과제 필수 개선 5건 — W 반영 범위와 자원 산정",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-302"
+   ],
+   "updated_week": 24,
+   "body": "결정: 직전 과제 필수 개선 5건 — W 반영 범위와 자원 산정 (확신도 L)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730231",
+   "space": "ARCH",
+   "title": "[설계문서] 이전 과제 필수 개선 항목 — 반영 여부/자원 산정 architecture 검토서",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-302"
+   ],
+   "updated_week": 24,
+   "body": "W 스펙에 반영할 범위(전면/일부/이연)와 그에 따른 area·인력 자원을 확정한다.\n\n구조 대안·PPA 트레이드오프·선행 검증 계획을 담은 공식 설계 문서. 승인 전 초안은 기술 검토 노트를 참조한다."
+  },
+  {
+   "id": "5730621",
+   "space": "CAM",
+   "title": "결정 노트: Camera IQ 개선",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-306"
+   ],
+   "updated_week": 24,
+   "body": "결정: Camera IQ 개선 (확신도 L)\n근거와 미해결 리스크는 회의 기록과 측정 리포트를 참조."
+  },
+  {
+   "id": "5730631",
+   "space": "ARCH",
+   "title": "[설계문서] Camera pipeline 화질(IQ) 개선 arch 검토 architecture 검토서",
+   "project_id": "project_w",
+   "issue_keys": [
+    "SOCW-306"
+   ],
+   "updated_week": 24,
+   "body": "IQ 개선 방식 확정 — 전용 HW IQ 블록 추가, NPU 기반 SW-IQ, 현 화질 유지.\n\n구조 대안·PPA 트레이드오프·선행 검증 계획을 담은 공식 설계 문서. 승인 전 초안은 기술 검토 노트를 참조한다."
+  }
+ ]
+}

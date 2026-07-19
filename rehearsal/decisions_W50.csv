@@ -1,0 +1,3 @@
+﻿결정 ID,프로젝트 ID,회의 이벤트 ID,결정 유형,결정,트레이드오프 요약,진술,근거,근거 유형,확신도,미해결 리스크
+dec_rehearsal_105,project_u,evt_rehearsal_105,review_decision,audio latency/DoU,"통화 품질 지표를 지키면서 DoU를 개선 — SW 경로 최적화, DVFS 동작점 조정, AI solution 도입 보류 중 택한다.",voice call DoU/latency 측정 기반 결정,Field:AUD-105,measurement,M,고객 AI audio solution 상세;audio latency margin 실측
+dec_rehearsal_305,project_w,evt_rehearsal_305,review_decision,EVT0 design close,"freeze 시점과 방식 확정 — 즉시 freeze, 최종 검증 반영 후 재최적화 freeze, spec 추가 반영.",EVT0 PPA simulation 기반 결정,Lab:PPA-305,measurement,M,EVT0 PPA 최종 simulation 검증;EVT0 양산 feasibility 검토
