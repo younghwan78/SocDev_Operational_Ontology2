@@ -155,6 +155,46 @@ def ingest_file(
         raise typer.Exit(code=1)
 
 
+@app.command("export-ocel")
+def export_ocel(
+    out: Path = typer.Option(..., "--out", help="출력 JSON 경로"),
+    dsn: str | None = typer.Option(
+        None, "--dsn", help="PostgreSQL DSN (기본: SOC_ONTOLOGY_DSN; 미지정 시 fixture)"
+    ),
+) -> None:
+    """온톨로지+버전 로그를 OCEL 2.0 JSON으로 내보낸다 (설계 22 W3, 읽기 전용).
+
+    시간 축은 transaction time(recorded_at) — week는 객체 attribute로 남는다.
+    PM4Py/Celonis 등 프로세스 마이닝 도구 반입용 교환 포맷이다.
+    """
+    import json
+    import os
+
+    from backend.ingest.service import IngestService, MemoryIngestWriter
+    from backend.services.ocel_export import build_ocel
+
+    if dsn or os.environ.get("SOC_ONTOLOGY_DSN"):
+        from backend.db.connection import get_connection
+        from backend.db.repository import PostgresRepository
+        from backend.ingest.service import PostgresIngestWriter
+
+        with get_connection(dsn) as conn:
+            document = build_ocel(
+                PostgresRepository(conn), IngestService(PostgresIngestWriter(conn))
+            )
+    else:
+        repo = InMemoryRepository.from_fixtures(DEFAULT_FIXTURES)
+        document = build_ocel(repo, IngestService(MemoryIngestWriter(repo)))
+        console.print("[yellow]DSN 미지정 — fixture 기준 (버전 로그 없음)[/yellow]")
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(document, ensure_ascii=False, indent=2), encoding="utf-8")
+    console.print(
+        f"OCEL 2.0 export: objects {len(document['objects'])}건 · "
+        f"events {len(document['events'])}건 → {out}"
+    )
+
+
 @app.command("embed-chunks")
 def embed_chunks_cmd(
     provider_name: str = typer.Option(

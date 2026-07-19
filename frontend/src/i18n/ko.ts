@@ -451,6 +451,12 @@ export const ko = {
     close: "닫기",
     empty_sections: "확인 필요 항목 없음",
   },
+  link_coverage: {
+    section: "온톨로지 연결률 (트윈 충실도)",
+    target: "파일럿 판정 기준선 70%",
+    batches: "최근 배치 연결률",
+    fields_hint: "펼치면 필드별 연결 건수",
+  },
   origin: {
     synthetic: "가상",
     imported: "반입",

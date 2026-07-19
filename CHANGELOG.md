@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## 설계 22 W2~W4 — 링크 커버리지 지표 · OCEL 2.0 export · 문서 반영 (2026-07-19)
+
+> 설계: `internal_docs/design/22_digital_twin_alignment.md` §3~§5 (후보 ③①⑦).
+> 저장 계약 변경은 전부 additive — DB 마이그레이션 없음.
+
+- **W2 링크 커버리지 상설 지표** (§3): `LINK_FIELDS` 계약 상수(컬렉션별 명시
+  링크 필드 — 도메인 태그 제외, action_items는 필수 필드 대조군) +
+  `SourceCoverage.links`(additive, 커버리지 낮은 순 정렬). 출처 지도에
+  "온톨로지 연결률 (트윈 충실도)" 카드: 채움 막대 + 70% 기준선 눈금(판정
+  아님·경고색 없음) + 펼침 시 필드별 건수 칩. `IngestBatch.linkage_total/
+  connected`(payload jsonb 복원)로 배치별 연결률 저장 → "최근 배치 연결률"
+  추이 표기. 연결 없는 객체는 파생 뷰에 안 보인다는 신뢰 한계 문구 동반.
+- **W3 OCEL 2.0 export** (§4): `export-ocel` CLI — 온톨로지 객체(objects,
+  스칼라 attribute) + 버전 로그(events, status 전이 시 타입 세분) + E2O
+  (subject+payload 링크)/O2O(`LINK_FIELDS` 재사용)를 OCEL 2.0 JSON으로 직렬화.
+  시간 축은 transaction time(recorded_at) — week는 attribute로만 (가짜
+  타임스탬프 금지). 결정론 출력(생성 시각 미포함). PM4Py/Celonis 반입용.
+- **W4 문서** (§5): handover에 기록 규율 캠페인(§3b — 미기록 작업은 트윈에
+  없다)+P1 exit 지표(매핑률 ≥90%, 연결률 베이스라인)+OCEL 사용법(§3c),
+  비즈니스 가치 문서에 "개발 프로세스 트윈" 3층 구분 후속 절, Stage 13/17
+  수용 기준에 "게이트 리뷰에서 트윈 지표 공식 인용" 추가, 사용자 가이드
+  (concepts 연결률 해석 / explorer 결정 리플레이 사용법).
+- 테스트: 커버리지 4종+배치 저장 왕복 / OCEL 5종 / 프론트 카드 3종.
+  backend 305 · PG 12 · frontend 42 green, 실서버(PG) smoke + OCEL 실파일 확인.
+
 ## 설계 22 W1 — 결정 데이터-시점 워터마크 + 리뷰 센터 리플레이 링크 (2026-07-19)
 
 > 설계: `internal_docs/design/22_digital_twin_alignment.md` §2 (digital twin

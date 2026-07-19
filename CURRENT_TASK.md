@@ -2,16 +2,22 @@
 
 ## 활성 Stage
 
-**설계 22 — Digital Twin 레퍼런스 정렬 (2026-07-19 승인, W1부터 순차 진행).**
+**활성 Stage 없음 — 설계 22(Digital Twin 레퍼런스 정렬 W1~W4) 완료 (2026-07-19).**
 
-> 기준 문서: `internal_docs/design/22_digital_twin_alignment.md`.
-> - **W1 완료 (2026-07-19)**: 결정 데이터-시점 워터마크(버전 로그→ingested_at→
->   precapture 3단 판정) + `GET /decisions/watermarks` + 리뷰 센터 결정 행
->   시점 칩·[당시 위험 지도]·[당시↔현재 비교] 링크 (precapture는 배지만 —
->   거짓 리플레이 금지). backend 296 · frontend 39 · 실서버 smoke green.
-> - **W2 (다음)**: 링크 커버리지 상설 지표 — §3 계약 상수·SourceCoverage
->   additive·출처 지도 카드·배치 linkage 카운트 저장.
-> - W3 OCEL 2.0 export / W4 문서 반영 — 순차.
+> 설계·구현: `internal_docs/design/22_digital_twin_alignment.md` + CHANGELOG.
+> W1 결정 워터마크+리뷰 센터 리플레이 링크 / W2 링크 커버리지 상설 지표
+> (출처 지도 카드+배치 추이) / W3 `export-ocel` OCEL 2.0 JSON /
+> W4 문서(기록 규율 캠페인·P1 exit 지표·프로세스 트윈 포지셔닝·게이트 인용
+> 기준). backend 305 · PG 12 · frontend 42 · 실서버 smoke green. 전부
+> additive — DB 마이그레이션 없음.
+>
+> **다음 후보 (착수는 사용자 승인)**:
+> - **설계 23 후보 — 게이트 조건 형식화(④)**: `ProjectMilestone.exit_criteria`
+>   계약 + 리뷰 팩 결정론 판정. §6.2 변경 규율 체인 필요 — 설계 문서 선행.
+> - **⑤ JIRA writeback 코멘트** (Stage 19 실계정 커넥터 결합),
+>   **⑥ link-recovery 제안 에이전트** (Stage 18 임베딩 결합).
+> - 사내 반입 리허설 / D4 검증 세션 / Stage 14·18·19 잔여 / 스케일 트리거 —
+>   설계 21 마감 목록과 동일 (전부 사내 입력 필요).
 > - Out: domain-time 필드 신설, 새 화면 추가, 게이트 판정(④)·writeback(⑤)·
 >   link-recovery(⑥), OCEL SQLite·PM4Py 의존성. 전부 additive — 마이그레이션 없음.
 

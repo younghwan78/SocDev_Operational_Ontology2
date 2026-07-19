@@ -2189,6 +2189,16 @@ export interface components {
             filename: string;
             /** Id */
             id: string;
+            /**
+             * Linkage Connected
+             * @default 0
+             */
+            linkage_connected: number;
+            /**
+             * Linkage Total
+             * @default 0
+             */
+            linkage_total: number;
             /** Mapping Name */
             mapping_name: string;
             /** Rejected Count */
@@ -2502,6 +2512,34 @@ export interface components {
             predicted: number;
             /** Total */
             total: number;
+        };
+        /**
+         * LinkCoverage
+         * @description 컬렉션 하나의 온톨로지 연결률 — 트윈 충실도 메타 지표 (점수 아님).
+         */
+        LinkCoverage: {
+            /** Collection */
+            collection: string;
+            /** Collection Ko */
+            collection_ko: string;
+            /** Fields */
+            fields: components["schemas"]["LinkFieldCoverage"][];
+            /** Linked */
+            linked: number;
+            /** Total */
+            total: number;
+        };
+        /**
+         * LinkFieldCoverage
+         * @description 링크 필드 하나의 채움 건수.
+         */
+        LinkFieldCoverage: {
+            /** Field */
+            field: string;
+            /** Field Ko */
+            field_ko: string;
+            /** Linked */
+            linked: number;
         };
         /**
          * MeasurementEvidence
@@ -3455,11 +3493,18 @@ export interface components {
         };
         /**
          * SourceCoverage
-         * @description 출처 지도 파생 뷰 — 컬렉션별 집계 + 전체 요약.
+         * @description 출처 지도 파생 뷰 — 컬렉션별 집계 + 전체 요약 (+ W2 링크 커버리지).
          */
         SourceCoverage: {
             /** Collections */
             collections: components["schemas"]["CollectionCoverage"][];
+            /**
+             * Link Note Ko
+             * @default 연결률은 위험 지도·변경 영향이 볼 수 있는 범위의 한계다 — 링크 없는 객체는 파생 뷰에 나타나지 않는다.
+             */
+            link_note_ko: string;
+            /** Links */
+            links?: components["schemas"]["LinkCoverage"][];
             totals: components["schemas"]["OriginTotals"];
         };
         /**

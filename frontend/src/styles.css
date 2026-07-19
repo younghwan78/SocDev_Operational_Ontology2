@@ -563,6 +563,21 @@ h2 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
 .origin-imported { background: var(--accent); }
 .origin-integrated { background: var(--ok); }
 .origin-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 6px; font-size: 12px; color: var(--text-dim); }
+
+/* W2 (설계 22): 링크 커버리지 — 채움 막대 + 70% 기준선 눈금 (판정 색 없음) */
+.link-cov-row summary { list-style: none; cursor: pointer; }
+.link-cov-row summary::-webkit-details-marker { display: none; }
+.link-track {
+  position: relative; flex: 1; height: 12px; min-width: 60px; border-radius: 4px;
+  background: var(--bg); border: 1px solid var(--border); overflow: hidden;
+}
+.link-fill { display: block; height: 100%; background: var(--accent); }
+.link-target-mark {
+  position: absolute; left: 70%; top: 0; bottom: 0; width: 2px;
+  background: var(--text-dim); opacity: 0.65;
+}
+.link-cov-fields { margin: 4px 0 8px 180px; }
+@media (max-width: 900px) { .link-cov-fields { margin-left: 0; } }
 .origin-key { display: inline-flex; align-items: center; gap: 5px; }
 .origin-dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
 .subhead { font-size: 13px; font-weight: 700; color: var(--text-dim); margin: 14px 0 8px; }

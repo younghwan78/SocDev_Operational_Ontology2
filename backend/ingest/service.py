@@ -71,6 +71,10 @@ class IngestBatch(BaseModel):
     # R4 (설계 21): 행위자 — 단일 공유 토큰 체제에서 "누가 반입했나"의 최소 기록.
     # 헤더 X-SOC-Actor 유래, 미설정 시 None (payload jsonb 복원 — 마이그레이션 불필요).
     actor: str | None = None
+    # W2 (설계 22): 배치 시점 연결률 — 품질 리포트의 linkage 카운트 동반 저장.
+    # 출처 지도의 "최근 배치 연결률" 추이 재료. 구 배치(기록 없음)는 0/0.
+    linkage_total: int = 0
+    linkage_connected: int = 0
 
 
 class QuarantineEntry(BaseModel):
@@ -374,6 +378,8 @@ class PostgresIngestWriter:
                     updated_count=int(payload.get("updated_count", 0) or 0),
                     unchanged_count=int(payload.get("unchanged_count", 0) or 0),
                     actor=payload.get("actor") or None,
+                    linkage_total=int(payload.get("linkage_total", 0) or 0),
+                    linkage_connected=int(payload.get("linkage_connected", 0) or 0),
                     status=row[6],
                     created_at=(
                         row[7].isoformat() if hasattr(row[7], "isoformat") else str(row[7])
@@ -779,6 +785,7 @@ class IngestService:
                 mapping.name, {obj.id for obj in deduped}
             )
 
+        quality = self._quality(mapping, deduped)
         batch = IngestBatch(
             id=batch_id,
             filename=source_name,
@@ -791,13 +798,15 @@ class IngestService:
             status="dry_run" if dry_run else "completed",
             created_at=now.isoformat(),
             actor=actor,
+            linkage_total=quality.linkage_total if quality else 0,
+            linkage_connected=quality.linkage_connected if quality else 0,
         )
         if not dry_run:
             self._writer.record_batch(batch)
         return IngestReport(
             batch=batch,
             rejected_rows=rejected,
-            quality=self._quality(mapping, deduped),
+            quality=quality,
             dry_run=dry_run,
         )
 

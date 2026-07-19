@@ -438,6 +438,11 @@ def test_quality_report_flags_unlabeled_and_missing_refs(service: IngestService)
     assert any("projects: 'project_없는과제'" in line for line in report.quality.missing_ref_warnings)
     assert report.quality.linkage_total == 2
     assert report.quality.linkage_connected == 1
+    # W2 (설계 22): 배치 기록에도 연결률 동반 — 출처 지도 배치 추이의 재료.
+    assert report.batch.linkage_total == 2
+    assert report.batch.linkage_connected == 1
+    stored = next(b for b in service.list_batches() if b.id == report.batch.id)
+    assert (stored.linkage_total, stored.linkage_connected) == (2, 1)
 
 
 def test_quarantine_stores_rejected_rows_and_resolves_on_reingest(

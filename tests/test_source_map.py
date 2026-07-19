@@ -60,3 +60,77 @@ def test_fixture_is_mostly_synthetic(coverage: SourceCoverage) -> None:
 def test_sorted_real_data_first(coverage: SourceCoverage) -> None:
     keys = [(-(c.imported + c.integrated), -c.total, c.collection) for c in coverage.collections]
     assert keys == sorted(keys)
+
+
+# --- W2 (설계 22 §3): 링크 커버리지 ---
+
+
+def test_link_coverage_counts_are_consistent(coverage: SourceCoverage) -> None:
+    assert coverage.links, "fixture에 링크 대상 컬렉션 1개 이상"
+    assert coverage.link_note_ko
+    for link in coverage.links:
+        assert 0 <= link.linked <= link.total
+        assert link.total > 0  # 빈 컬렉션은 제외
+        # linked는 "필드 중 하나 이상" — 필드별 건수 최댓값 이상, 합계 이하.
+        field_counts = [f.linked for f in link.fields]
+        assert link.linked >= max(field_counts, default=0)
+        assert link.linked <= sum(field_counts)
+        for field in link.fields:
+            assert field.field_ko  # 표시 라벨 누락 금지
+
+
+def test_link_coverage_action_items_control_group(coverage: SourceCoverage) -> None:
+    """source_decision_id는 필수 필드 — 대조군은 항상 100%여야 한다."""
+    control = next(
+        (link for link in coverage.links if link.collection == "action_items"), None
+    )
+    assert control is not None
+    assert control.linked == control.total
+
+
+def test_link_coverage_sorted_worst_first(coverage: SourceCoverage) -> None:
+    ratios = [link.linked / link.total for link in coverage.links]
+    assert ratios == sorted(ratios)
+
+
+def test_link_coverage_detects_unlinked_issue() -> None:
+    """링크 필드가 전부 비면 linked에 세지 않는다 — 판정 룰 자체 검증."""
+    from backend.ontology.event import Issue
+
+    repo = InMemoryRepository({})
+    repo.add_objects(
+        "issues",
+        [
+            Issue.model_validate(
+                {
+                    "id": "iss_linked",
+                    "project_id": "proj_u",
+                    "title": "연결 있음",
+                    "issue_type": "hw_bug",
+                    "status": "open",
+                    "symptom": "s",
+                    "confidence": "medium",
+                    "affected_scope": {"scenarios": ["sc_1"]},
+                }
+            ),
+            Issue.model_validate(
+                {
+                    "id": "iss_orphan",
+                    "project_id": "proj_u",
+                    "title": "연결 없음",
+                    "issue_type": "hw_bug",
+                    "status": "open",
+                    "symptom": "s",
+                    "confidence": "medium",
+                }
+            ),
+        ],
+    )
+    links = SourceCoverageService(repo).coverage().links
+    issue_link = next(link for link in links if link.collection == "issues")
+    assert issue_link.total == 2
+    assert issue_link.linked == 1
+    scenario_field = next(
+        f for f in issue_link.fields if f.field == "affected_scope.scenarios"
+    )
+    assert scenario_field.linked == 1

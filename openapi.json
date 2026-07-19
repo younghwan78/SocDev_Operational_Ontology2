@@ -2833,6 +2833,16 @@
             "title": "Id",
             "type": "string"
           },
+          "linkage_connected": {
+            "default": 0,
+            "title": "Linkage Connected",
+            "type": "integer"
+          },
+          "linkage_total": {
+            "default": 0,
+            "title": "Linkage Total",
+            "type": "integer"
+          },
           "mapping_name": {
             "title": "Mapping Name",
             "type": "string"
@@ -3730,6 +3740,69 @@
           "absent"
         ],
         "title": "LadderTotals",
+        "type": "object"
+      },
+      "LinkCoverage": {
+        "additionalProperties": false,
+        "description": "컬렉션 하나의 온톨로지 연결률 — 트윈 충실도 메타 지표 (점수 아님).",
+        "properties": {
+          "collection": {
+            "title": "Collection",
+            "type": "string"
+          },
+          "collection_ko": {
+            "title": "Collection Ko",
+            "type": "string"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/LinkFieldCoverage"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "linked": {
+            "title": "Linked",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "collection",
+          "collection_ko",
+          "total",
+          "linked",
+          "fields"
+        ],
+        "title": "LinkCoverage",
+        "type": "object"
+      },
+      "LinkFieldCoverage": {
+        "additionalProperties": false,
+        "description": "링크 필드 하나의 채움 건수.",
+        "properties": {
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "field_ko": {
+            "title": "Field Ko",
+            "type": "string"
+          },
+          "linked": {
+            "title": "Linked",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "field",
+          "field_ko",
+          "linked"
+        ],
+        "title": "LinkFieldCoverage",
         "type": "object"
       },
       "MeasurementEvidence": {
@@ -6326,13 +6399,25 @@
       },
       "SourceCoverage": {
         "additionalProperties": false,
-        "description": "출처 지도 파생 뷰 — 컬렉션별 집계 + 전체 요약.",
+        "description": "출처 지도 파생 뷰 — 컬렉션별 집계 + 전체 요약 (+ W2 링크 커버리지).",
         "properties": {
           "collections": {
             "items": {
               "$ref": "#/components/schemas/CollectionCoverage"
             },
             "title": "Collections",
+            "type": "array"
+          },
+          "link_note_ko": {
+            "default": "연결률은 위험 지도·변경 영향이 볼 수 있는 범위의 한계다 — 링크 없는 객체는 파생 뷰에 나타나지 않는다.",
+            "title": "Link Note Ko",
+            "type": "string"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/LinkCoverage"
+            },
+            "title": "Links",
             "type": "array"
           },
           "totals": {

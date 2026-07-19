@@ -437,6 +437,7 @@ export async function fetchAsOfChangeImpact(
 }
 
 export type SourceCoverage = components["schemas"]["SourceCoverage"];
+export type LinkCoverage = components["schemas"]["LinkCoverage"];
 export type CollectionCoverage = components["schemas"]["CollectionCoverage"];
 
 export async function fetchSourceMap(): Promise<SourceCoverage> {

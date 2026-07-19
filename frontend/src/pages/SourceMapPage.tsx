@@ -5,9 +5,11 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   fetchEntityResolution,
+  fetchIngestBatches,
   fetchSourceMap,
   type AliasEntry,
   type CollectionCoverage,
+  type LinkCoverage,
   type UnmatchedToken,
 } from "../api/client";
 import { useLabels } from "../hooks/useLabels";
@@ -20,6 +22,7 @@ const t = ko.source_map;
 export function SourceMapPage() {
   const query = useQuery({ queryKey: ["source-map"], queryFn: fetchSourceMap });
   const entity = useQuery({ queryKey: ["entity-resolution"], queryFn: fetchEntityResolution });
+  const batches = useQuery({ queryKey: ["ingest-batches"], queryFn: fetchIngestBatches });
   const label = useLabels();
   const valueLabel = useValueLabels();
 
@@ -28,8 +31,14 @@ export function SourceMapPage() {
     return <ErrorState error={query.error} onRetry={() => void query.refetch()} />;
 
   const { collections, totals } = query.data;
+  const links = query.data.links ?? [];
   const realTotal = totals.imported + totals.integrated;
   const sorted = [...collections].sort((a, b) => b.total - a.total);
+  // W2: 연결률이 기록된 완료 배치만 — list는 최신순, 추이는 과거→최신으로 표기.
+  const linkageTrend = (batches.data ?? [])
+    .filter((b) => b.status === "completed" && (b.linkage_total ?? 0) > 0)
+    .slice(0, 8)
+    .reverse();
 
   return (
     <div>
@@ -67,6 +76,34 @@ export function SourceMapPage() {
         />
         {realTotal === 0 && <p className="desc">{t.note_synthetic_ok}</p>}
       </div>
+
+      {/* W2 (설계 22): 온톨로지 연결률 — 트윈 충실도. 기준선 표시일 뿐 판정·경고가 아니다. */}
+      {links.length > 0 && (
+        <div className="card">
+          <h2 className="card-title">{ko.link_coverage.section}</h2>
+          <p className="section-note">
+            {query.data.link_note_ko} · {ko.link_coverage.target}
+          </p>
+          <div className="source-grid">
+            {links.map((link) => (
+              <LinkCoverageRow key={link.collection} link={link} />
+            ))}
+          </div>
+          {linkageTrend.length > 0 && (
+            <p className="desc">
+              {ko.link_coverage.batches}:{" "}
+              {linkageTrend
+                .map(
+                  (b) =>
+                    `${b.filename} ${Math.round(
+                      ((b.linkage_connected ?? 0) / Math.max(b.linkage_total ?? 0, 1)) * 100,
+                    )}%`,
+                )
+                .join(" → ")}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="card">
         <h2 className="card-title">
@@ -144,6 +181,36 @@ function AliasRow({
         {entry.aliases.length > 0 ? entry.aliases.join(", ") : t.alias_none}
       </p>
     </div>
+  );
+}
+
+/** W2: 연결률 행 — 채움 막대 + 70% 기준선 눈금, 펼치면 필드별 건수 칩. */
+function LinkCoverageRow({ link }: { link: LinkCoverage }) {
+  const pct = Math.round((link.linked / Math.max(link.total, 1)) * 100);
+  const summary = `${link.linked}/${link.total} (${pct}%)`;
+  return (
+    <details className="link-cov-row">
+      <summary
+        className="source-row"
+        title={`${link.collection} — ${ko.link_coverage.fields_hint}`}
+      >
+        <span className="source-name">{link.collection_ko}</span>
+        <span className="source-bar-area">
+          <span className="link-track" role="img" aria-label={summary}>
+            <span className="link-fill" style={{ width: `${pct}%` }} />
+            <span className="link-target-mark" aria-hidden="true" />
+          </span>
+          <span className="source-count">{summary}</span>
+        </span>
+      </summary>
+      <div className="chip-row link-cov-fields">
+        {link.fields.map((field) => (
+          <span key={field.field} className="chip" title={field.field}>
+            {field.field_ko} {field.linked}
+          </span>
+        ))}
+      </div>
+    </details>
   );
 }
 
