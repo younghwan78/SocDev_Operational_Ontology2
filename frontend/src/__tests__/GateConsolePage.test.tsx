@@ -54,7 +54,9 @@ const consoleData = {
         {
           milestone_id: "ms_past",
           title: "브링업",
+          description: "EVT0 브링업 완료 목표",
           week: 8,
+          quarter: "Q1",
           has_gate: false,
           verdict: null,
           verdict_ko: null,
@@ -62,7 +64,9 @@ const consoleData = {
         {
           milestone_id: "ms_next",
           title: "게이트 ms_next",
+          description: "-",
           week: 20,
+          quarter: null,
           has_gate: true,
           verdict: "not_met",
           verdict_ko: "미충족",
@@ -70,7 +74,9 @@ const consoleData = {
         {
           milestone_id: "ms_far",
           title: "게이트 ms_far",
+          description: "-",
           week: 30,
+          quarter: null,
           has_gate: true,
           verdict: "met",
           verdict_ko: "충족",
@@ -93,7 +99,9 @@ const consoleData = {
         {
           milestone_id: "ms_w_plain",
           title: "스펙 확정",
+          description: "-",
           week: 21,
+          quarter: "Q2",
           has_gate: false,
           verdict: null,
           verdict_ko: null,
@@ -151,20 +159,22 @@ describe("GateConsolePage (설계 26 G1)", () => {
     expect(screen.getByText(/최근 반입 2026-07-18/)).toBeInTheDocument();
   });
 
-  it("타임라인 칩 — 주차 순 마일스톤 + 현재 마커 + 기준 미정의 유령 칩", async () => {
+  it("캘린더 — 전 마일스톤 마커 + 현재 주차 마커 + 선택 표시", async () => {
     renderPage();
     await screen.findByText("미충족 1/1 — 지배 요인: 미해결 이슈 2건");
-    // 기준 미정의 마일스톤도 일정에 보인다 (클릭 불가 유령 칩).
-    expect(screen.getByText(/W8 브링업 · 기준 미정의/)).toBeInTheDocument();
-    // 현재 마커: 기준 주차(W15) 이상 첫 칩(W20) 앞.
+    // 기준 미정의 마일스톤도 캘린더에 마커로 보인다 (선택 가능).
+    expect(
+      screen.getByRole("button", { name: /W8 브링업 — 기준 미정의/ }),
+    ).toBeInTheDocument();
+    // 현재 주차 마커 (SVG 텍스트).
     expect(screen.getAllByText(/현재 W15/).length).toBeGreaterThan(0);
-    // 선택된 게이트 칩은 aria-pressed.
+    // 선택된 게이트 마커는 aria-pressed.
     expect(
       screen.getByRole("button", { name: /W20 게이트 ms_next/ }),
     ).toHaveAttribute("aria-pressed", "true");
   });
 
-  it("타임라인 칩 클릭 시 다른 게이트 판정으로 전환한다 (재요청 없음)", async () => {
+  it("마커 클릭 시 다른 게이트 판정으로 전환한다 (재요청 없음)", async () => {
     renderPage();
     await screen.findByText("미충족 1/1 — 지배 요인: 미해결 이슈 2건");
     fireEvent.click(screen.getByRole("button", { name: /W30 게이트 ms_far/ }));
@@ -174,13 +184,27 @@ describe("GateConsolePage (설계 26 G1)", () => {
     ).toHaveAttribute("aria-pressed", "true");
   });
 
-  it("게이트 없는 과제는 '게이트 미지정' + 일정만 유령 칩으로 보여준다", async () => {
+  it("기준 미정의 마커 클릭 시 판정 대신 마일스톤 정보 + 정직 표기", async () => {
+    renderPage();
+    await screen.findByText("미충족 1/1 — 지배 요인: 미해결 이슈 2건");
+    fireEvent.click(screen.getByRole("button", { name: /W8 브링업 — 기준 미정의/ }));
+    expect(screen.getByText("EVT0 브링업 완료 목표")).toBeInTheDocument();
+    expect(screen.getByText(/기준을 정의하면 게이트로 판정된다/)).toBeInTheDocument();
+    // 판정 배너는 사라진다 — 판정 불가를 판정처럼 보이지 않게.
+    expect(
+      screen.queryByText("미충족 1/1 — 지배 요인: 미해결 이슈 2건"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("게이트 없는 과제는 '게이트 미지정' + 일정 마커는 보여준다", async () => {
     renderPage();
     expect(await screen.findByText("게이트 미지정")).toBeInTheDocument();
     expect(
       screen.getByText("게이트 미지정 — exit 기준이 정의된 마일스톤이 없다."),
     ).toBeInTheDocument();
-    expect(screen.getByText(/W21 스펙 확정 · 기준 미정의/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /W21 스펙 확정 — 기준 미정의/ }),
+    ).toBeInTheDocument();
   });
 
   it("now-what 링크 — 지배 요인 드릴과 위험 지도/리뷰 센터로 이어진다", async () => {

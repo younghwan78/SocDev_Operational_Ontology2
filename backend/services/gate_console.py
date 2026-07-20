@@ -75,13 +75,19 @@ class GateConsoleReview(BaseModel):
 
 
 class GateTimelineEntry(BaseModel):
-    """타임라인 칩 하나 — 주차 순 마일스톤. 기준 미정의 마일스톤도 정직하게 노출."""
+    """타임라인 마커 하나 — 주차 순 마일스톤. 기준 미정의 마일스톤도 정직하게 노출.
+
+    전 마일스톤이 선택 가능하다: 게이트면 판정 배너, 아니면 마일스톤 정보 +
+    "기준 미정의" 패널의 데이터가 된다.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     milestone_id: str
     title: str
+    description: str
     week: int | None
+    quarter: str | None
     has_gate: bool  # exit_criteria 보유 여부 — False면 판정 불가(기준 미정의)
     verdict: str | None = None  # met | not_met | not_evaluable 요약 — 게이트일 때만
     verdict_ko: str | None = None
@@ -196,7 +202,9 @@ class GateConsoleService:
                 GateTimelineEntry(
                     milestone_id=milestone.id,
                     title=milestone.title,
+                    description=milestone.description,
                     week=milestone.week,
+                    quarter=milestone.quarter,
                     has_gate=bool(milestone.exit_criteria),
                     verdict=verdict,
                     verdict_ko=(

@@ -2705,8 +2705,12 @@
       },
       "GateTimelineEntry": {
         "additionalProperties": false,
-        "description": "타임라인 칩 하나 — 주차 순 마일스톤. 기준 미정의 마일스톤도 정직하게 노출.",
+        "description": "타임라인 마커 하나 — 주차 순 마일스톤. 기준 미정의 마일스톤도 정직하게 노출.\n\n전 마일스톤이 선택 가능하다: 게이트면 판정 배너, 아니면 마일스톤 정보 +\n\"기준 미정의\" 패널의 데이터가 된다.",
         "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
           "has_gate": {
             "title": "Has Gate",
             "type": "boolean"
@@ -2714,6 +2718,17 @@
           "milestone_id": {
             "title": "Milestone Id",
             "type": "string"
+          },
+          "quarter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quarter"
           },
           "title": {
             "title": "Title",
@@ -2756,7 +2771,9 @@
         "required": [
           "milestone_id",
           "title",
+          "description",
           "week",
+          "quarter",
           "has_gate"
         ],
         "title": "GateTimelineEntry",

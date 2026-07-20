@@ -2184,13 +2184,20 @@ export interface components {
         };
         /**
          * GateTimelineEntry
-         * @description 타임라인 칩 하나 — 주차 순 마일스톤. 기준 미정의 마일스톤도 정직하게 노출.
+         * @description 타임라인 마커 하나 — 주차 순 마일스톤. 기준 미정의 마일스톤도 정직하게 노출.
+         *
+         *     전 마일스톤이 선택 가능하다: 게이트면 판정 배너, 아니면 마일스톤 정보 +
+         *     "기준 미정의" 패널의 데이터가 된다.
          */
         GateTimelineEntry: {
+            /** Description */
+            description: string;
             /** Has Gate */
             has_gate: boolean;
             /** Milestone Id */
             milestone_id: string;
+            /** Quarter */
+            quarter: string | null;
             /** Title */
             title: string;
             /** Verdict */
