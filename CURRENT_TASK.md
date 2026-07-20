@@ -2,23 +2,33 @@
 
 ## 활성 Stage
 
-**활성 Stage 없음 — 설계 25(리허설 유니버스) 구현 완료 (2026-07-19).**
+**설계 26 G1 — A0 판정 배너 + 게이트 콘솔 홈 (2026-07-20 사용자 승인).**
 
-> 설계·구현: `internal_docs/design/25_rehearsal_universe.md` + CHANGELOG.
-> 57 world.yaml → 가상 JIRA/Confluence wave 43개(`rehearsal/`) +
-> `recorded_at` 주입 리플레이(DSN 가드) + UX 판정 대본. `soc_rehearsal`
-> 리플레이 완료 — 8155 백엔드가 현재 리허설 DB를 보고 있다 (데모 DB 복귀:
-> DSN을 soc_ontology로 재기동). backend 327 · frontend 46 green.
+> 기준: `internal_docs/design/26_gate_anchored_ux.md` §5 G1. 사용자 결정
+> (2026-07-20): ① 홈 정박 전환 승인(게이트 콘솔 = 홈, 기존 5질문 화면은
+> 드릴 목적지로 재배치) ② 게이트 kind 2종(schedule_signal/kpi_budget)
+> additive 확장 승인(구현은 G2에서) ③ **G1만 먼저 — 결과 보고 판단 후 계속**.
 >
-> **다음 단계 — 사용자 결정 대기 (설계 26)**: ux_design.html·게이트 리뷰
-> 프로토타입 검토 완료 → `internal_docs/design/26_gate_anchored_ux.md`
-> (게이트 리뷰 정박 UX 재편 G1~G6 + 규율 충돌 치환 7건). 결정 3건:
-> ① 홈 정박 전환(게이트 콘솔 홈 — 권고) ② 게이트 kind 2종 additive 확장
-> ③ 구현 범위(G1 먼저 vs G1~G3 일괄). 리허설 UX 체크리스트 16문항 판정은
-> 재편과 병행 가능.
+> **G1 범위 (이번 Stage)**:
+> - backend `GateConsoleService` 파생 뷰 + `GET /gate-console` (read-only):
+>   과제별 게이트 자동 선택(주차 ≥ 결정론 기준 주차 최근접, exit_criteria
+>   보유 — 없으면 "게이트 미지정" 정직 표기), 판정 배너(충족/미충족/판정
+>   불가 + 지배 요인 결정론 룰: 이슈 수 최다 → 근거 누락 순), 신뢰도 줄
+>   (프로젝트 이슈 연결률 + 최근 반입 배치 시각). GO/NO-GO 단어 금지 —
+>   판정은 조언. 모델·저장 계약 변경 없음(kind 확장은 G2).
+> - frontend: 홈(`/`) = 게이트 콘솔 화면, 위험 지도는 `/risk-map`으로 이동
+>   (기존 딥링크 3곳 + 데모 스토리 장면1 경로 갱신). now-what 링크(지배
+>   요인 드릴 → 이슈 분석/근거 탐색, 전체 → 리뷰 센터).
+> - 리허설 UX 체크리스트에 게이트 콘솔 문항 추가 (설계 26 §6).
+> - **Out**: G2~G6(축 카드·Δ지난 게이트·워치리스트·스테이징·페르소나),
+>   신규 게이트 kind 구현, 저장 계약 변경.
+> - **구현 완료 (2026-07-20)**: backend 336 · frontend 51 green + 리허설
+>   DB(8155) 실서버 확인 완료 (U W12/W W24 게이트 배너·V 미지정·신뢰도 줄).
+>   **사용자 "이거다" 판정 대기 — 판정 후 G2 이후 계속 여부 결정 (정지 상태).**
+>   G1 판정 입력으로 리허설 체크리스트 트랙 C 3문항 사용.
 >
 > **그 외 후보 (사내 입력 필요)**: ⑤ JIRA writeback(Stage 19) / ⑥ LLM 링크
-> 제안(Stage 18) / 게이트 kind 확장 / D4 / Stage 14 SSO / 반입 리허설(실데이터).
+> 제안(Stage 18) / D4 / Stage 14 SSO / 반입 리허설(실데이터).
 
 ### 직전 완료 — 설계 24(링크 제안, link-recovery 사외 선행분) (2026-07-19)
 

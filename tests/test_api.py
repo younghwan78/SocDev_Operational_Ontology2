@@ -631,3 +631,24 @@ def test_what_if_set_records_actor(client: TestClient) -> None:
     )
     assert saved.status_code == 200
     assert saved.json()["created_by"] == "장길동"
+
+
+def test_gate_console_endpoint(client: TestClient) -> None:
+    """G1 (설계 26): 게이트 콘솔 — 과제별 판정 배너 데이터 + 신뢰도 줄."""
+    body = client.get("/api/v1/gate-console").json()
+    assert len(body["projects"]) == 3
+    assert body["rule_note_ko"]
+    gated = [p for p in body["projects"] if p["selected_milestone_id"]]
+    assert gated, "fixture에 exit_criteria 게이트가 있어야 한다 (설계 23)"
+    picked = gated[0]
+    selected = next(
+        r
+        for r in picked["reviews"]
+        if r["review"]["milestone_id"] == picked["selected_milestone_id"]
+    )
+    assert selected["verdict_line_ko"]
+    # GO/NO-GO 어휘 금지 — 판정은 조언 (설계 23·26).
+    assert "GO" not in selected["verdict_line_ko"].upper()
+    trust = picked["trust"]
+    assert trust["issue_total"] >= trust["issue_linked"] >= 0
+    assert trust["note_ko"]

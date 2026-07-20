@@ -403,6 +403,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/gate-console": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Gate Console
+         * @description 게이트 콘솔(A0) — 과제별 다음 게이트 자동 선택 + 판정 배너 + 신뢰도 줄.
+         */
+        get: operations["gate_console_api_v1_gate_console_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -2100,6 +2120,31 @@ export interface components {
             ref_id: string;
         };
         /**
+         * GateConsole
+         * @description 게이트 콘솔 전체 — 과제별 A0 판정 배너의 데이터.
+         */
+        GateConsole: {
+            /** Projects */
+            projects?: components["schemas"]["ProjectGateConsole"][];
+            /** Reference Week */
+            reference_week: number | null;
+            /**
+             * Rule Note Ko
+             * @default 게이트 자동 선택: 기준 주차(데이터의 최신 활동 주차) 이후 최근접 마일스톤 — exit 기준이 정의된 마일스톤만 대상.
+             */
+            rule_note_ko: string;
+        };
+        /**
+         * GateConsoleReview
+         * @description 게이트 하나의 콘솔 표현 — 판정 묶음 + 배너 문구 + 지배 요인.
+         */
+        GateConsoleReview: {
+            dominant?: components["schemas"]["GateDominantFactor"] | null;
+            review: components["schemas"]["MilestoneGateReview"];
+            /** Verdict Line Ko */
+            verdict_line_ko: string;
+        };
+        /**
          * GateCriterionVerdict
          * @description 기준 하나의 판정 — 서술+판정+근거.
          */
@@ -2120,6 +2165,39 @@ export interface components {
             verdict: string;
             /** Verdict Ko */
             verdict_ko: string;
+        };
+        /**
+         * GateDominantFactor
+         * @description 미충족 기준 중 결정론 대표 1건 — 배너 헤드라인과 드릴 목적지.
+         */
+        GateDominantFactor: {
+            /** Criterion Id */
+            criterion_id: string;
+            /** Drill */
+            drill: string;
+            /** Headline Ko */
+            headline_ko: string;
+            /** Kind */
+            kind: string;
+            /** Kind Ko */
+            kind_ko: string;
+        };
+        /**
+         * GateTrustLine
+         * @description 판정 신뢰도 줄 — 이슈 연결률 + 반입 신선도 (점수 아님).
+         */
+        GateTrustLine: {
+            /** Issue Linked */
+            issue_linked: number;
+            /** Issue Total */
+            issue_total: number;
+            /** Latest Batch At */
+            latest_batch_at: string | null;
+            /**
+             * Note Ko
+             * @default 연결률과 반입 시각은 이 판정의 시야 한계다 — 링크 없는 이슈는 게이트 근거에 나타나지 않고, 반입 이후의 변화는 판정에 반영되지 않았다.
+             */
+            note_ko: string;
         };
         /**
          * GroundedStatement
@@ -2880,6 +2958,23 @@ export interface components {
             target_product_generation?: string | null;
             /** Type */
             type: string;
+        };
+        /**
+         * ProjectGateConsole
+         * @description 과제 하나의 게이트 콘솔 — 자동 선택 + 전 게이트 판정 (드롭다운 전환용).
+         */
+        ProjectGateConsole: {
+            /** Project Id */
+            project_id: string;
+            /** Project Name */
+            project_name: string;
+            /** Reviews */
+            reviews?: components["schemas"]["GateConsoleReview"][];
+            /** Selected Milestone Id */
+            selected_milestone_id: string | null;
+            /** Selection Note Ko */
+            selection_note_ko: string;
+            trust: components["schemas"]["GateTrustLine"];
         };
         /**
          * ProjectKPISeries
@@ -4717,6 +4812,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    gate_console_api_v1_gate_console_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GateConsole"];
                 };
             };
         };

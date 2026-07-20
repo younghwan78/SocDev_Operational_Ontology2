@@ -5,6 +5,7 @@ import { TokenGate } from "./components/TokenGate";
 import { ko } from "./i18n/ko";
 import { AskPage } from "./pages/AskPage";
 import { ChangeImpactPage } from "./pages/ChangeImpactPage";
+import { GateConsolePage } from "./pages/GateConsolePage";
 import { EvidencePage } from "./pages/EvidencePage";
 import { IssueAnalysisPage } from "./pages/IssueAnalysisPage";
 import { PortfolioPage } from "./pages/PortfolioPage";
@@ -15,9 +16,11 @@ import { ScenarioListPage } from "./pages/ScenarioListPage";
 import { SourceMapPage } from "./pages/SourceMapPage";
 import { IngestPage } from "./pages/IngestPage";
 
-// 질문이 곧 메뉴 — 원점 문서의 5대 질문이 전부 활성화됐다.
+// 질문이 곧 메뉴 — 홈은 상위 질문 "다음 게이트를 통과할 수 있는가"(설계 26 G1),
+// 5대 질문 화면은 드릴 목적지로 재배치.
 const QUESTION_NAV = [
-  { to: "/", label: ko.app.nav_risk },
+  { to: "/", label: ko.app.nav_gate },
+  { to: "/risk-map", label: ko.app.nav_risk },
   { to: "/change-impact", label: ko.app.nav_change_impact },
   { to: "/issues", label: ko.app.nav_issue_analysis },
   { to: "/ask", label: ko.app.nav_ask },
@@ -77,7 +80,7 @@ export default function App() {
               {label}
             </NavLink>
           ))}
-          <NavLink to="/?story=1" className="nav-demo">
+          <NavLink to="/risk-map?story=1" className="nav-demo">
             {ko.demo.nav}
           </NavLink>
         </nav>
@@ -85,7 +88,8 @@ export default function App() {
       <DemoStoryBar />
       <main className="app-main">
         <Routes>
-          <Route path="/" element={<RiskMapPage />} />
+          <Route path="/" element={<GateConsolePage />} />
+          <Route path="/risk-map" element={<RiskMapPage />} />
           <Route path="/change-impact" element={<ChangeImpactPage />} />
           <Route path="/issues" element={<IssueAnalysisPage />} />
           <Route path="/ask" element={<AskPage />} />

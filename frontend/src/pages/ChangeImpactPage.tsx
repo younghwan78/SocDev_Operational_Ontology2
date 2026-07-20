@@ -316,7 +316,7 @@ function ImpactResult({ result }: { result: ChangeImpactResult }) {
           {/* X3 (설계 19) — 영향 결과를 new_issue 가정으로 직렬화해 워크벤치로 */}
           {result.impacted_scenarios.length > 0 && (
             <Link
-              to={`/?whatif=${encodeURIComponent(
+              to={`/risk-map?whatif=${encodeURIComponent(
                 JSON.stringify([
                   {
                     kind: "new_issue",

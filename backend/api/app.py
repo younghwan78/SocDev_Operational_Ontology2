@@ -74,6 +74,7 @@ from backend.services.decision_watermark import (
     DecisionWatermarkService,
 )
 from backend.services.evidence_ladder import EvidenceLadder, EvidenceLadderService
+from backend.services.gate_console import GateConsole, GateConsoleService
 from backend.services.heatmap_diff import diff_heatmaps
 from backend.services.kpi_series import (
     KPICatalogEntry,
@@ -151,6 +152,7 @@ class AppServices:
     ingest: IngestService
     as_of: AsOfService
     decision_watermark: DecisionWatermarkService
+    gate_console: GateConsoleService
     link_proposals: LinkProposalService
     kpi_series: KPISeriesService
     what_if: WhatIfService
@@ -215,6 +217,8 @@ def build_services(
         as_of=AsOfService(repo, ingest_service),
         # W1 (설계 22): 결정 워터마크 — 버전 로그(같은 부수 기록)를 읽기 소스로.
         decision_watermark=DecisionWatermarkService(repo, ingest_service),
+        # G1 (설계 26): 게이트 콘솔 — 배치 기록은 신선도(최근 반입 시각) 산출용.
+        gate_console=GateConsoleService(repo, ingest_service),
         link_proposals=LinkProposalService(repo),
         kpi_series=KPISeriesService(repo),
         what_if=WhatIfService(repo),
@@ -673,6 +677,11 @@ def create_app(repo: RepositoryProtocol | None = None) -> FastAPI:
             return services.action_draft.draft(scenario_id)
         except ScenarioNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get(f"{prefix}/gate-console", response_model=GateConsole)
+    def gate_console() -> GateConsole:
+        """게이트 콘솔(A0) — 과제별 다음 게이트 자동 선택 + 판정 배너 + 신뢰도 줄."""
+        return services.gate_console.console()
 
     @app.get(f"{prefix}/review-packs", response_model=list[ReviewPackSummary])
     def review_packs() -> list[ReviewPackSummary]:

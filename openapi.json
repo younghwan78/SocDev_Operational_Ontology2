@@ -2553,6 +2553,69 @@
         "title": "GateBasisRef",
         "type": "object"
       },
+      "GateConsole": {
+        "additionalProperties": false,
+        "description": "게이트 콘솔 전체 — 과제별 A0 판정 배너의 데이터.",
+        "properties": {
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectGateConsole"
+            },
+            "title": "Projects",
+            "type": "array"
+          },
+          "reference_week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Week"
+          },
+          "rule_note_ko": {
+            "default": "게이트 자동 선택: 기준 주차(데이터의 최신 활동 주차) 이후 최근접 마일스톤 — exit 기준이 정의된 마일스톤만 대상.",
+            "title": "Rule Note Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference_week"
+        ],
+        "title": "GateConsole",
+        "type": "object"
+      },
+      "GateConsoleReview": {
+        "additionalProperties": false,
+        "description": "게이트 하나의 콘솔 표현 — 판정 묶음 + 배너 문구 + 지배 요인.",
+        "properties": {
+          "dominant": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GateDominantFactor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review": {
+            "$ref": "#/components/schemas/MilestoneGateReview"
+          },
+          "verdict_line_ko": {
+            "title": "Verdict Line Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "review",
+          "verdict_line_ko"
+        ],
+        "title": "GateConsoleReview",
+        "type": "object"
+      },
       "GateCriterionVerdict": {
         "additionalProperties": false,
         "description": "기준 하나의 판정 — 서술+판정+근거.",
@@ -2603,6 +2666,78 @@
           "note_ko"
         ],
         "title": "GateCriterionVerdict",
+        "type": "object"
+      },
+      "GateDominantFactor": {
+        "additionalProperties": false,
+        "description": "미충족 기준 중 결정론 대표 1건 — 배너 헤드라인과 드릴 목적지.",
+        "properties": {
+          "criterion_id": {
+            "title": "Criterion Id",
+            "type": "string"
+          },
+          "drill": {
+            "title": "Drill",
+            "type": "string"
+          },
+          "headline_ko": {
+            "title": "Headline Ko",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "kind_ko": {
+            "title": "Kind Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "criterion_id",
+          "kind",
+          "kind_ko",
+          "headline_ko",
+          "drill"
+        ],
+        "title": "GateDominantFactor",
+        "type": "object"
+      },
+      "GateTrustLine": {
+        "additionalProperties": false,
+        "description": "판정 신뢰도 줄 — 이슈 연결률 + 반입 신선도 (점수 아님).",
+        "properties": {
+          "issue_linked": {
+            "title": "Issue Linked",
+            "type": "integer"
+          },
+          "issue_total": {
+            "title": "Issue Total",
+            "type": "integer"
+          },
+          "latest_batch_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Batch At"
+          },
+          "note_ko": {
+            "default": "연결률과 반입 시각은 이 판정의 시야 한계다 — 링크 없는 이슈는 게이트 근거에 나타나지 않고, 반입 이후의 변화는 판정에 반영되지 않았다.",
+            "title": "Note Ko",
+            "type": "string"
+          }
+        },
+        "required": [
+          "issue_total",
+          "issue_linked",
+          "latest_batch_at"
+        ],
+        "title": "GateTrustLine",
         "type": "object"
       },
       "GroundedStatement": {
@@ -4658,6 +4793,54 @@
           "phase"
         ],
         "title": "Project",
+        "type": "object"
+      },
+      "ProjectGateConsole": {
+        "additionalProperties": false,
+        "description": "과제 하나의 게이트 콘솔 — 자동 선택 + 전 게이트 판정 (드롭다운 전환용).",
+        "properties": {
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "project_name": {
+            "title": "Project Name",
+            "type": "string"
+          },
+          "reviews": {
+            "items": {
+              "$ref": "#/components/schemas/GateConsoleReview"
+            },
+            "title": "Reviews",
+            "type": "array"
+          },
+          "selected_milestone_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Milestone Id"
+          },
+          "selection_note_ko": {
+            "title": "Selection Note Ko",
+            "type": "string"
+          },
+          "trust": {
+            "$ref": "#/components/schemas/GateTrustLine"
+          }
+        },
+        "required": [
+          "project_id",
+          "project_name",
+          "selected_milestone_id",
+          "selection_note_ko",
+          "trust"
+        ],
+        "title": "ProjectGateConsole",
         "type": "object"
       },
       "ProjectKPISeries": {
@@ -9155,6 +9338,25 @@
           }
         },
         "summary": "Evidence Ladder"
+      }
+    },
+    "/api/v1/gate-console": {
+      "get": {
+        "description": "게이트 콘솔(A0) — 과제별 다음 게이트 자동 선택 + 판정 배너 + 신뢰도 줄.",
+        "operationId": "gate_console_api_v1_gate_console_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateConsole"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Gate Console"
       }
     },
     "/api/v1/health": {

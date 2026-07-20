@@ -650,7 +650,7 @@ function WhatIfCard({ chainData }: { chainData: RCAChain }) {
       </button>{" "}
       {/* X1 (설계 19) — 같은 가정을 위험 지도 워크벤치에서 오버레이로 본다 */}
       <Link
-        to={`/?project=${chainData.project_id}&whatif=${encodeURIComponent(
+        to={`/risk-map?project=${chainData.project_id}&whatif=${encodeURIComponent(
           JSON.stringify([
             {
               kind: "issue_status",

@@ -13,7 +13,8 @@ export interface StoryScene {
 }
 
 export const STORY_SCENES: StoryScene[] = [
-  { id: "risk", title: ko.demo.s1_title, description: ko.demo.s1_desc, path: "/" },
+  // G1(설계 26): 홈이 게이트 콘솔로 바뀌어 장면1(위험 지도)은 /risk-map으로 이동.
+  { id: "risk", title: ko.demo.s1_title, description: ko.demo.s1_desc, path: "/risk-map" },
   {
     id: "cause",
     title: ko.demo.s2_title,

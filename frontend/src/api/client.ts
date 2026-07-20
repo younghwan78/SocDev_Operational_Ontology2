@@ -645,3 +645,15 @@ export async function runAdvisory(scenarioId: string, roles?: string[]): Promise
   if (error || !data) throw apiError(error, "advisory 실행 실패");
   return data;
 }
+
+// G1 (설계 26) — 게이트 콘솔: A0 판정 배너의 데이터.
+export type GateConsole = components["schemas"]["GateConsole"];
+export type ProjectGateConsole = components["schemas"]["ProjectGateConsole"];
+export type GateConsoleReview = components["schemas"]["GateConsoleReview"];
+export type GateDominantFactor = components["schemas"]["GateDominantFactor"];
+
+export async function fetchGateConsole(): Promise<GateConsole> {
+  const { data, error } = await client.GET("/api/v1/gate-console");
+  if (error || !data) throw apiError(error, "gate-console 조회 실패");
+  return data;
+}

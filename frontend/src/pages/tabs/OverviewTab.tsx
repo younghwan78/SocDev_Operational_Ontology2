@@ -47,7 +47,7 @@ function RiskSummaryCard({ scenarioId }: { scenarioId: string }) {
         )}
         {row && (
           <Link
-            to={`/?project=${row.project_ids[0] ?? "all"}&cell=${scenarioId}:overall`}
+            to={`/risk-map?project=${row.project_ids[0] ?? "all"}&cell=${scenarioId}:overall`}
             className="chip-link"
           >
             {t.risk_open_map}
