@@ -2703,6 +2703,65 @@
         "title": "GateDominantFactor",
         "type": "object"
       },
+      "GateTimelineEntry": {
+        "additionalProperties": false,
+        "description": "타임라인 칩 하나 — 주차 순 마일스톤. 기준 미정의 마일스톤도 정직하게 노출.",
+        "properties": {
+          "has_gate": {
+            "title": "Has Gate",
+            "type": "boolean"
+          },
+          "milestone_id": {
+            "title": "Milestone Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict"
+          },
+          "verdict_ko": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict Ko"
+          },
+          "week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week"
+          }
+        },
+        "required": [
+          "milestone_id",
+          "title",
+          "week",
+          "has_gate"
+        ],
+        "title": "GateTimelineEntry",
+        "type": "object"
+      },
       "GateTrustLine": {
         "additionalProperties": false,
         "description": "판정 신뢰도 줄 — 이슈 연결률 + 반입 신선도 (점수 아님).",
@@ -4828,6 +4887,13 @@
           "selection_note_ko": {
             "title": "Selection Note Ko",
             "type": "string"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/GateTimelineEntry"
+            },
+            "title": "Timeline",
+            "type": "array"
           },
           "trust": {
             "$ref": "#/components/schemas/GateTrustLine"

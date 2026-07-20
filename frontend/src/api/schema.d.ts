@@ -2183,6 +2183,24 @@ export interface components {
             kind_ko: string;
         };
         /**
+         * GateTimelineEntry
+         * @description 타임라인 칩 하나 — 주차 순 마일스톤. 기준 미정의 마일스톤도 정직하게 노출.
+         */
+        GateTimelineEntry: {
+            /** Has Gate */
+            has_gate: boolean;
+            /** Milestone Id */
+            milestone_id: string;
+            /** Title */
+            title: string;
+            /** Verdict */
+            verdict?: string | null;
+            /** Verdict Ko */
+            verdict_ko?: string | null;
+            /** Week */
+            week: number | null;
+        };
+        /**
          * GateTrustLine
          * @description 판정 신뢰도 줄 — 이슈 연결률 + 반입 신선도 (점수 아님).
          */
@@ -2974,6 +2992,8 @@ export interface components {
             selected_milestone_id: string | null;
             /** Selection Note Ko */
             selection_note_ko: string;
+            /** Timeline */
+            timeline?: components["schemas"]["GateTimelineEntry"][];
             trust: components["schemas"]["GateTrustLine"];
         };
         /**

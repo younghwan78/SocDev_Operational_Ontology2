@@ -6,9 +6,13 @@
  * GO/NO-GO 없음 — 판정은 조언이다. 모든 화면은 so-what + now-what으로 끝난다.
  */
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchGateConsole, type ProjectGateConsole } from "../api/client";
+import {
+  fetchGateConsole,
+  type GateTimelineEntry,
+  type ProjectGateConsole,
+} from "../api/client";
 import { ErrorState } from "../components/ErrorState";
 import { ko } from "../i18n/ko";
 import { MilestoneGates } from "./ReviewPage";
@@ -36,21 +40,31 @@ export function GateConsolePage() {
       </p>
       {projects.length === 0 && <p className="status-msg">{ko.app.empty}</p>}
       {projects.map((project) => (
-        <ProjectGateCard key={project.project_id} project={project} />
+        <ProjectGateCard
+          key={project.project_id}
+          project={project}
+          referenceWeek={reference_week ?? null}
+        />
       ))}
     </div>
   );
 }
 
-/** 과제 하나의 A0 배너 — 게이트 드롭다운 전환은 로컬 상태(전 게이트 판정을 이미 받음). */
-function ProjectGateCard({ project }: { project: ProjectGateConsole }) {
+/** 과제 하나의 A0 배너 — 게이트 전환은 타임라인 칩 클릭(전 게이트 판정을 이미 받음). */
+function ProjectGateCard({
+  project,
+  referenceWeek,
+}: {
+  project: ProjectGateConsole;
+  referenceWeek: number | null;
+}) {
   const [milestoneId, setMilestoneId] = useState(project.selected_milestone_id ?? "");
   const reviews = project.reviews ?? [];
+  const timeline = project.timeline ?? [];
   const current = reviews.find((r) => r.review.milestone_id === milestoneId) ?? reviews[0];
   const linkPct = Math.round(
     (project.trust.issue_linked / Math.max(project.trust.issue_total, 1)) * 100,
   );
-  const selectId = `gate-select-${project.project_id}`;
 
   return (
     <div className="card" data-testid={`gate-card-${project.project_id}`}>
@@ -58,28 +72,16 @@ function ProjectGateCard({ project }: { project: ProjectGateConsole }) {
         <h2 className="card-title" title={project.project_id}>
           {project.project_name}
         </h2>
-        {reviews.length > 0 ? (
-          <>
-            <label className="filter-label" htmlFor={selectId}>
-              {t.milestone_select}
-            </label>
-            <select
-              id={selectId}
-              value={current?.review.milestone_id ?? ""}
-              onChange={(e) => setMilestoneId(e.target.value)}
-            >
-              {reviews.map((r) => (
-                <option key={r.review.milestone_id} value={r.review.milestone_id}>
-                  {r.review.milestone_title}
-                  {r.review.week != null ? ` (${t.week_prefix}${r.review.week})` : ""}
-                </option>
-              ))}
-            </select>
-          </>
-        ) : (
-          <span className="badge badge-warn">{t.unassigned}</span>
-        )}
+        {reviews.length === 0 && <span className="badge badge-warn">{t.unassigned}</span>}
       </div>
+      {timeline.length > 0 && (
+        <GateTimeline
+          timeline={timeline}
+          referenceWeek={referenceWeek}
+          currentId={current?.review.milestone_id ?? null}
+          onSelect={setMilestoneId}
+        />
+      )}
       <p className="section-note">{project.selection_note_ko}</p>
 
       {current && (
@@ -140,6 +142,74 @@ function ProjectGateCard({ project }: { project: ProjectGateConsole }) {
           </details>
         </>
       )}
+    </div>
+  );
+}
+
+/** 게이트 타임라인 — 주차 순 전 마일스톤 칩 선택기. ● = exit 기준 있는 게이트
+ * (판정 색, 클릭 = 배너 전환), ○ = 기준 미정의(판정 대상 아님 — 정직 표기).
+ * "현재" 마커는 기준 주차 위치 — 다음 게이트가 어느 쪽인지 눈으로 보인다. */
+function GateTimeline({
+  timeline,
+  referenceWeek,
+  currentId,
+  onSelect,
+}: {
+  timeline: GateTimelineEntry[];
+  referenceWeek: number | null;
+  currentId: string | null;
+  onSelect: (milestoneId: string) => void;
+}) {
+  const dotClass = (entry: GateTimelineEntry) =>
+    entry.verdict === "not_met"
+      ? "dot-danger"
+      : entry.verdict === "not_evaluable"
+        ? "dot-warn"
+        : entry.verdict === "met"
+          ? "dot-ok"
+          : "dot-none";
+  const chipLabel = (entry: GateTimelineEntry) =>
+    `${entry.week != null ? `${t.week_prefix}${entry.week}` : t.week_unknown} ${entry.title}`;
+  // 현재 마커 위치: 기준 주차 이상인 첫 주차 칩 앞 — 전부 과거면 맨 뒤.
+  const markerBefore =
+    referenceWeek != null
+      ? timeline.findIndex((e) => e.week != null && e.week >= referenceWeek)
+      : -1;
+  const trailingMarker =
+    referenceWeek != null && markerBefore === -1 && timeline.some((e) => e.week != null);
+  const nowChip = (
+    <span className="gate-now">
+      ▸ {t.now_marker} {t.week_prefix}
+      {referenceWeek}
+    </span>
+  );
+  return (
+    <div className="chip-row gate-timeline" role="group" aria-label={t.timeline_label}>
+      {timeline.map((entry, index) => (
+        <Fragment key={entry.milestone_id}>
+          {index === markerBefore && nowChip}
+          {entry.has_gate ? (
+            <button
+              type="button"
+              className={`chip chip-btn gate-chip${
+                entry.milestone_id === currentId ? " active" : ""
+              }`}
+              aria-pressed={entry.milestone_id === currentId}
+              title={entry.verdict_ko ?? undefined}
+              onClick={() => onSelect(entry.milestone_id)}
+            >
+              <span className={`gate-dot ${dotClass(entry)}`} aria-hidden="true" />
+              {chipLabel(entry)}
+            </button>
+          ) : (
+            <span className="chip gate-chip gate-chip-ghost" title={t.no_criteria_hint}>
+              <span className="gate-dot dot-none" aria-hidden="true" />
+              {chipLabel(entry)} · {t.no_criteria}
+            </span>
+          )}
+        </Fragment>
+      ))}
+      {trailingMarker && nowChip}
     </div>
   );
 }

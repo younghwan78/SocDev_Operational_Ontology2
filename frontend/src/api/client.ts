@@ -651,6 +651,7 @@ export type GateConsole = components["schemas"]["GateConsole"];
 export type ProjectGateConsole = components["schemas"]["ProjectGateConsole"];
 export type GateConsoleReview = components["schemas"]["GateConsoleReview"];
 export type GateDominantFactor = components["schemas"]["GateDominantFactor"];
+export type GateTimelineEntry = components["schemas"]["GateTimelineEntry"];
 
 export async function fetchGateConsole(): Promise<GateConsole> {
   const { data, error } = await client.GET("/api/v1/gate-console");

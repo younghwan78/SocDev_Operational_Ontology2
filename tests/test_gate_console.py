@@ -126,6 +126,39 @@ def test_no_gated_milestone_is_honest_unassigned() -> None:
     assert project.selected_milestone_id is None
     assert "게이트 미지정" in project.selection_note_ko
     assert project.reviews == []
+    # 타임라인에는 기준 미정의 마일스톤이 유령 칩으로 노출된다 (일정은 보여준다).
+    [entry] = project.timeline
+    assert entry.milestone_id == "ms_plain"
+    assert entry.has_gate is False
+    assert entry.verdict is None
+
+
+def test_timeline_orders_all_milestones_with_verdict_summary() -> None:
+    repo = InMemoryRepository({})
+    repo.add_objects("projects", [_project()])
+    repo.add_objects(
+        "project_milestones",
+        [
+            # 종결 이슈 없음 → met (미해결 이슈가 있어도 verified_closure는 통과)
+            _milestone("ms_gate_late", 30, [_criterion("c3", "verified_closure")]),
+            _milestone("ms_plain", 20, []),  # 기준 미정의
+            _milestone(
+                "ms_gate_fail", 10, [_criterion("c1"), _criterion("c2", "unknown")]
+            ),  # 이슈 있음 → not_met 요약
+        ],
+    )
+    repo.add_objects("issues", [_issue("iss_1")])
+    [project] = _console(repo).projects
+    assert [e.milestone_id for e in project.timeline] == [
+        "ms_gate_fail",
+        "ms_plain",
+        "ms_gate_late",
+    ]
+    fail, plain, late = project.timeline
+    assert (fail.has_gate, fail.verdict) == (True, "not_met")
+    assert (plain.has_gate, plain.verdict) == (False, None)
+    assert (late.has_gate, late.verdict) == (True, "met")
+    assert fail.verdict_ko == "미충족"
 
 
 def test_gates_without_week_cannot_autoselect() -> None:

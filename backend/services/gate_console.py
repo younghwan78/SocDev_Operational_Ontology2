@@ -20,7 +20,8 @@ from backend.ingest.mappings import field_values
 from backend.ingest.service import IngestBatch
 from backend.loaders.protocols import RepositoryProtocol
 from backend.ontology.event import Issue, Test
-from backend.ontology.project import Project
+from backend.ontology.glossary import value_label
+from backend.ontology.project import Project, ProjectMilestone
 from backend.services.gate_review import (
     VERDICT_NOT_MET,
     GateCriterionVerdict,
@@ -73,6 +74,19 @@ class GateConsoleReview(BaseModel):
     dominant: GateDominantFactor | None = None
 
 
+class GateTimelineEntry(BaseModel):
+    """타임라인 칩 하나 — 주차 순 마일스톤. 기준 미정의 마일스톤도 정직하게 노출."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    milestone_id: str
+    title: str
+    week: int | None
+    has_gate: bool  # exit_criteria 보유 여부 — False면 판정 불가(기준 미정의)
+    verdict: str | None = None  # met | not_met | not_evaluable 요약 — 게이트일 때만
+    verdict_ko: str | None = None
+
+
 class GateTrustLine(BaseModel):
     """판정 신뢰도 줄 — 이슈 연결률 + 반입 신선도 (점수 아님)."""
 
@@ -93,6 +107,8 @@ class ProjectGateConsole(BaseModel):
     project_name: str
     selected_milestone_id: str | None  # None = 게이트 미지정 (정직 표기)
     selection_note_ko: str
+    # 일정 순서의 전 마일스톤 — 게이트 선택기이자 "무슨 게이트가 언제 있나"의 답.
+    timeline: list[GateTimelineEntry] = Field(default_factory=list)
     reviews: list[GateConsoleReview] = Field(default_factory=list)
     trust: GateTrustLine
 
@@ -149,9 +165,48 @@ class GateConsoleService:
             project_name=project.name,
             selected_milestone_id=selected_id,
             selection_note_ko=note,
+            timeline=self._timeline(project.id, reviews),
             reviews=reviews,
             trust=self._trust(project.id, latest_batch),
         )
+
+    def _timeline(
+        self, project_id: str, reviews: list[GateConsoleReview]
+    ) -> list[GateTimelineEntry]:
+        """주차 순 전 마일스톤 — 기준 미정의도 유령 칩으로 노출 (게이트 정의 유도)."""
+        by_milestone = {r.review.milestone_id: r.review for r in reviews}
+        milestones = [
+            m
+            for m in self._repo.list("project_milestones")
+            if isinstance(m, ProjectMilestone) and m.project_id == project_id
+        ]
+        milestones.sort(key=lambda m: (m.week is None, m.week or 0, m.id))
+        entries: list[GateTimelineEntry] = []
+        for milestone in milestones:
+            review = by_milestone.get(milestone.id)
+            verdict: str | None = None
+            if review is not None:
+                if review.not_met > 0:
+                    verdict = VERDICT_NOT_MET
+                elif review.not_evaluable > 0:
+                    verdict = "not_evaluable"
+                else:
+                    verdict = "met"
+            entries.append(
+                GateTimelineEntry(
+                    milestone_id=milestone.id,
+                    title=milestone.title,
+                    week=milestone.week,
+                    has_gate=bool(milestone.exit_criteria),
+                    verdict=verdict,
+                    verdict_ko=(
+                        value_label("gate_verdict", verdict) or verdict
+                    )
+                    if verdict
+                    else None,
+                )
+            )
+        return entries
 
     def _select(
         self, reviews: list[GateConsoleReview], reference_week: int | None
